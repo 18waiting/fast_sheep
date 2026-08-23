@@ -1,0 +1,62 @@
+{
+  "task": "SHEEP-017",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.3",
+  "objective": "Order / Logistics Domain: Order/Logistics 身份核心（D1 无 storeId；D2 Logistics.orderId 最小归属；单一事实源）",
+  "completed_requirements": 6,
+  "total_requirements": 6,
+  "owner_decisions_tightening": {
+    "d1_no_storeId": "遵守：Order 无 storeId；Order<->Store identity/scope semantics DEFERRED",
+    "d2_logistics_order_id": "遵守：Logistics.orderId 仅最小归属；无 Order<->Logistics 基数/生命周期规则（测试断言）",
+    "t1_order_single_fact_source": "遵守：Logistics 不重复 merchantId/platformAccountId（单一事实源=Order）；scope validation 留 persistence/authorization（测试断言）",
+    "t2_no_order_business_structure": "遵守：Order 无 customerId/productId/skuId/lineItems/amount/payment/refund（测试断言）",
+    "t3_logistics_ref_opaque": "遵守：LogisticsExternalRef 不解释为运单号；无 carrier/trackingNumber/status/events（测试断言）",
+    "t4_no_refund_domain": "遵守：read_refund 平台能力不等于 Refund Domain；不导出 Refund/AfterSales（测试断言）"
+  },
+  "evidence": {
+    "confirmed": [
+      "packages/domain/src/order.ts：OrderId/LogisticsId/OrderExternalRef/LogisticsExternalRef/Order{id,merchantId,platformAccountId,externalRef?}/Logistics{id,orderId,externalRef?}",
+      "单元测试 56/56 PASS（含 7 个 order 测试：D1/D2/T1/T2/T3/T4 + T1/T3/T6）",
+      "全 workspace typecheck exit=0；build exit=0"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "Order<->Store identity/scope semantics（DEFERRED）",
+    "订单业务结构（customer/product/sku/line items/amount/payment/refund；需领域证据 + Context/Platform tasks）",
+    "Order<->Logistics 基数与物流业务（carrier/tracking/status/events；Phase 4/5）",
+    "Refund / 售后领域（read_refund 能力不等于领域；后续按证据）",
+    "cloud authoritative order/logistics identity（Phase 12）"
+  ],
+  "tests": [
+    "domain build=0 / typecheck=0 / test=56/56",
+    "全 workspace typecheck=0 / build=0"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "Order 无 storeId；无订单业务结构字段",
+    "Logistics 无 merchantId/platformAccountId 重复；无基数/生命周期",
+    "LogisticsExternalRef 专属 opaque，非运单号解释",
+    "无 Refund/AfterSales 导出",
+    "无 status/sync 字段"
+  ],
+  "modified_files": [
+    "packages/domain/src/order.ts (新建)",
+    "packages/domain/src/index.ts (re-export)",
+    "packages/domain/tests/order.test.mjs (新建)",
+    "project/PROJECT_STATE.json (SHEEP-017 记录)",
+    "reports/SHEEP-017-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Phase 1 M1.3 订单/物流身份核心域模型建立（M1.3 收官）"
+  ],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

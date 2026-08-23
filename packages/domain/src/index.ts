@@ -90,3 +90,7 @@ export * from "./customer.js";
 
 // SHEEP-016: Product / SKU Domain (M1.3 Product/Customer/Order Context).
 export * from "./product.js";
+
+
+// SHEEP-017: Order / Logistics Domain (M1.3 Product/Customer/Order Context).
+export * from "./order.js";
