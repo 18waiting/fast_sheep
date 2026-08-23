@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>synthetic xianyu fixture</title></head>
+<body>
+  <div data-fw-xianyu-chat-list>
+    <div data-fw-xianyu-conversation data-conversation-id="c1" data-active="true" data-buyer-id="buyer-1" data-buyer="测试买家A">测试买家A</div>
+  </div>
+  <div data-fw-xianyu-messages>
+    <div data-fw-xianyu-message data-message-id="m1" data-direction="inbound" data-ts="2026-08-16T00:00:00Z">
+      <span data-fw-xianyu-buyer-name>测试买家A</span><span data-fw-xianyu-msg-content>有货吗</span>
+    </div>
+  </div>
+  <textarea data-fw-xianyu-composer-input></textarea>
+  <button data-fw-xianyu-send-btn>发送</button>
+  <input data-fw-xianyu-image-input type="file" />
+  <button data-fw-xianyu-send-btn data-fw-xianyu-send-disabled>发送</button>
+  <input data-fw-xianyu-image-input type="file" />
+  <div data-fw-xianyu-send-ack data-message-id="ack-1"></div>
+  <script>
+    document.addEventListener("click", function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest("[data-fw-xianyu-send-btn]") : null;
+      if (!btn) return;
+      var input = document.querySelector("[data-fw-xianyu-composer-input]");
+      var messages = document.querySelector("[data-fw-xianyu-messages]");
+      var ack = document.querySelector("[data-fw-xianyu-send-ack]");
+      if (!input || !messages) return;
+      var value = input.getAttribute("value") || input.value || "";
+      if (!value) return;
+      var mid = (ack && ack.getAttribute("data-message-id")) || "ack-" + Date.now();
+      var row = document.createElement("div");
+      row.setAttribute("data-fw-xianyu-message", "");
+      row.setAttribute("data-direction", "outbound");
+      row.setAttribute("data-message-id", mid);
+      var content = document.createElement("span");
+      content.setAttribute("data-fw-xianyu-msg-content", "");
+      content.textContent = value;
+      row.appendChild(content);
+      messages.appendChild(row);
+    });
+  </script>
+</body>

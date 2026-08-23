@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:set-mode-request",
+  "$title": "SetModeRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "shop_id",
+    "mode"
+  ],
+  "properties": {
+    "shop_id": {
+      "type": "string"
+    },
+    "conversation_id": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "human_review",
+        "full_auto"
+      ]
+    }
+  }
+}

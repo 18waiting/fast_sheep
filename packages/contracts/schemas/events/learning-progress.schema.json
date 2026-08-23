@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:event:learning-progress",
+  "$title": "Event learning-progress",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event",
+    "payload"
+  ],
+  "properties": {
+    "event": {
+      "const": "learning-progress"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "job_id": {
+          "type": "string"
+        },
+        "progress": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "job_id"
+      ]
+    },
+    "correlation_id": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:skill-definition",
+  "$title": "SkillDefinition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "description",
+    "type",
+    "run"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "JSON Schema parameters"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "query",
+        "instruction"
+      ]
+    },
+    "body": {
+      "type": "string",
+      "description": "<SKILL_BODY>"
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime"
+      ],
+      "properties": {
+        "runtime": {
+          "type": "string",
+          "enum": [
+            "python",
+            "node"
+          ]
+        },
+        "command": {
+          "type": "string"
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "network": {
+          "type": "boolean",
+          "default": false
+        },
+        "data_read_only": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "signature": {
+      "type": "string"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "description": "run.* describes future sandbox policy (ADR-003); no exec() implemented."
+}

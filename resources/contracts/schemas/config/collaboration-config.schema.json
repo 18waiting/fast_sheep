@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:config:collaboration-config",
+  "$title": "CollaborationConfig",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "human_review",
+        "full_auto"
+      ]
+    },
+    "countdown_seconds": {
+      "type": "integer"
+    },
+    "send_interval_ms": {
+      "type": "integer",
+      "default": 800
+    },
+    "send_precheck": {
+      "type": "boolean",
+      "default": true
+    },
+    "single_thread_listener": {
+      "type": "boolean",
+      "default": true
+    },
+    "breaker_threshold": {
+      "type": "integer",
+      "default": 2
+    },
+    "breaker_window_ms": {
+      "type": "integer",
+      "default": 60000
+    }
+  }
+}

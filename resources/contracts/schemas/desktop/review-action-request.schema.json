@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:review-action-request",
+  "$title": "ReviewActionRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "action"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "propose",
+        "apply",
+        "restore"
+      ]
+    },
+    "request": {
+      "type": "object"
+    }
+  }
+}

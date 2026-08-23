@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:conversation:question-completion-result",
+  "$title": "QuestionCompletionResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "completed_question"
+  ],
+  "properties": {
+    "completed_question": {
+      "type": "string"
+    },
+    "skipped": {
+      "type": "boolean",
+      "default": false
+    },
+    "reason": {
+      "type": "string"
+    }
+  }
+}

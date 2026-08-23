@@ -1,0 +1,42 @@
+# --- Fast Sheep project .gitignore ---
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+out/
+build/
+.packaging-build/
+.tmp-wd/
+
+# Python caches / venv
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Project temp (never commit)
+.tmp/
+
+# Logs
+*.log
+logs/
+
+# Env / secrets (never commit real credentials)
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor / IDE
+.vscode/
+.idea/

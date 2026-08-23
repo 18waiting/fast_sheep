@@ -1,0 +1,21 @@
+{
+  "name": "@fastwork/platform-web-common",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
+    "test": "pnpm run build && node --test \"tests/*.test.ts\""
+  },
+  "dependencies": {
+    "@fastwork/orchestrator": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0",
+    "jsdom": "^26.0.0"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:shop-list-result",
+  "$title": "ShopListResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["shops"],
+  "properties": {
+    "shops": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["shop_id", "name", "type", "enabled"],
+        "properties": {
+          "shop_id": { "type": "string", "minLength": 1 },
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "enabled": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

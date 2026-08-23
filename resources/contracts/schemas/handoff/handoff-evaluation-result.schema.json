@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:handoff:handoff-evaluation-result",
+  "$title": "HandoffEvaluationResult",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["decision"],
+  "properties": {
+    "decision": { "type": "object", "additionalProperties": true },
+    "trace": { "type": "array", "items": { "$ref": "fastwork:handoff:handoff-trace-entry" } }
+  }
+}

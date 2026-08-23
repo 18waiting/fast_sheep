@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:conversation",
+  "$title": "Conversation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversation_id",
+    "shop_id",
+    "buyer",
+    "state"
+  ],
+  "properties": {
+    "conversation_id": {
+      "type": "string"
+    },
+    "shop_id": {
+      "type": "string"
+    },
+    "buyer": {
+      "type": "string"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "pending_review",
+        "taken_over",
+        "closed"
+      ]
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "$ref": "fastwork:domain:conversation-message"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:common:trust-level",
+  "$title": "TrustLevel",
+  "type": "string",
+  "enum": [
+    "AUTO",
+    "GENERATED",
+    "PENDING",
+    "HUMAN_CONFIRMED",
+    "PROTECTED"
+  ]
+}

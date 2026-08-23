@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:platform:Xianyu-page-command",
+  "$title": "XianyuPageCommand",
+  "description": "Finite allowlist. No execute_js/click_selector/query_selector/set_html/run_script.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "type",
+    "command_id",
+    "session_id"
+  ],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "scan",
+        "send_text",
+        "send_image",
+        "transfer",
+        "focus_conversation",
+        "health"
+      ]
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "shop_id": {
+      "type": "string"
+    },
+    "conversation_id": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "asset_ref": {
+      "type": "string"
+    },
+    "target": {
+      "type": "string"
+    }
+  }
+}

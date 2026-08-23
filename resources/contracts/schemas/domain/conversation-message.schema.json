@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:conversation-message",
+  "$title": "ConversationMessage",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "message_id",
+    "conversation_id",
+    "shop_id",
+    "platform",
+    "buyer",
+    "type",
+    "content",
+    "role",
+    "created_at"
+  ],
+  "properties": {
+    "message_id": {
+      "type": "string"
+    },
+    "conversation_id": {
+      "type": "string"
+    },
+    "shop_id": {
+      "type": "string"
+    },
+    "platform": {
+      "$ref": "fastwork:common:platform"
+    },
+    "buyer": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "image",
+        "video",
+        "transfer_marker",
+        "system"
+      ]
+    },
+    "content": {
+      "type": "string"
+    },
+    "role": {
+      "$ref": "fastwork:common:conversation-role"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "product_context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "order_context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

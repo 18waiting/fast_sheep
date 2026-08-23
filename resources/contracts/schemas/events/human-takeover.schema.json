@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:event:human-takeover",
+  "$title": "Event human-takeover",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event",
+    "payload"
+  ],
+  "properties": {
+    "event": {
+      "const": "human-takeover"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "conversation_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "conversation_id"
+      ]
+    },
+    "correlation_id": {
+      "type": "string"
+    }
+  }
+}

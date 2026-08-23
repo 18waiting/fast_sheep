@@ -1,0 +1,5 @@
+# PACK-002 reproducible packaging dependencies (Python 3.12 / py -3.12).
+# Versions below are the exact versions verified on the packaging host.
+pyinstaller==6.11.1
+faiss-cpu==1.15.0
+numpy==1.26.4

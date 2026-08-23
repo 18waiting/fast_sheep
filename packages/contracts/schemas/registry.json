@@ -1,0 +1,2812 @@
+{
+  "registry_version": "1.0",
+  "canonical_format": "JSON Schema",
+  "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+  "generated_from": "rebuild/packages/contracts/schemas/",
+  "schemas": [
+    {
+      "id": "fastwork:audit:audit-decision-request",
+      "version": "1.0",
+      "path": "audit/audit-decision-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "AuditDecisionRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:audit:audit-decision-result",
+      "version": "1.0",
+      "path": "audit/audit-decision-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "AuditDecisionResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:common:conversation-role",
+      "version": "1.0",
+      "path": "common/conversation-role.schema.json",
+      "category": "common",
+      "stability": "stable",
+      "owners": [
+        "contracts"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ConversationRole",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:common:job-state",
+      "version": "1.0",
+      "path": "common/job-state.schema.json",
+      "category": "common",
+      "stability": "stable",
+      "owners": [
+        "contracts"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "JobState",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:common:parity-level",
+      "version": "1.0",
+      "path": "common/parity-level.schema.json",
+      "category": "common",
+      "stability": "stable",
+      "owners": [
+        "contracts"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ParityLevel",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:common:platform",
+      "version": "1.0",
+      "path": "common/platform.schema.json",
+      "category": "common",
+      "stability": "stable",
+      "owners": [
+        "contracts"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "Platform",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:common:send-state",
+      "version": "1.0",
+      "path": "common/send-state.schema.json",
+      "category": "common",
+      "stability": "stable",
+      "owners": [
+        "contracts"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "SendState",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:common:test-class",
+      "version": "1.0",
+      "path": "common/test-class.schema.json",
+      "category": "common",
+      "stability": "stable",
+      "owners": [
+        "contracts"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "TestClass",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:common:trust-level",
+      "version": "1.0",
+      "path": "common/trust-level.schema.json",
+      "category": "common",
+      "stability": "stable",
+      "owners": [
+        "contracts"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "TrustLevel",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:config:ai-config",
+      "version": "1.0",
+      "path": "config/ai-config.schema.json",
+      "category": "configuration",
+      "stability": "stable",
+      "owners": [
+        "SettingsRepository"
+      ],
+      "used_by": [
+        "behavior:B-PROMPT-001",
+        "behavior:B-STORE-003"
+      ],
+      "parity_behavior_ids": [
+        "B-PROMPT-001",
+        "B-STORE-003"
+      ],
+      "title": "AIConfig",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:config:collaboration-config",
+      "version": "1.0",
+      "path": "config/collaboration-config.schema.json",
+      "category": "configuration",
+      "stability": "stable",
+      "owners": [
+        "SettingsRepository"
+      ],
+      "used_by": [
+        "behavior:B-CONV-006",
+        "behavior:B-CONV-007",
+        "behavior:B-STORE-003"
+      ],
+      "parity_behavior_ids": [
+        "B-CONV-006",
+        "B-CONV-007",
+        "B-STORE-003"
+      ],
+      "title": "CollaborationConfig",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:config:conversation-policy-config",
+      "version": "1.0",
+      "path": "config/conversation-policy-config.schema.json",
+      "category": "configuration",
+      "stability": "stable",
+      "owners": [
+        "SettingsRepository"
+      ],
+      "used_by": [
+        "behavior:B-CONV-004",
+        "behavior:B-STORE-005"
+      ],
+      "parity_behavior_ids": [
+        "B-CONV-004",
+        "B-STORE-005"
+      ],
+      "title": "ConversationPolicyConfig",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:config:feature-flags",
+      "version": "1.0",
+      "path": "config/feature-flags.schema.json",
+      "category": "configuration",
+      "stability": "stable",
+      "owners": [
+        "SettingsRepository"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "FeatureFlags",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:config:handoff-config",
+      "version": "1.0",
+      "path": "config/handoff-config.schema.json",
+      "category": "configuration",
+      "stability": "stable",
+      "owners": [
+        "SettingsRepository"
+      ],
+      "used_by": [
+        "behavior:B-HANDOFF-001",
+        "behavior:B-HANDOFF-002",
+        "behavior:B-HANDOFF-003"
+      ],
+      "parity_behavior_ids": [
+        "B-HANDOFF-001",
+        "B-HANDOFF-002",
+        "B-HANDOFF-003"
+      ],
+      "title": "HandoffConfig",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:config:learning-config",
+      "version": "1.0",
+      "path": "config/learning-config.schema.json",
+      "category": "configuration",
+      "stability": "stable",
+      "owners": [
+        "SettingsRepository"
+      ],
+      "used_by": [
+        "behavior:B-JOB-002"
+      ],
+      "parity_behavior_ids": [
+        "B-JOB-002"
+      ],
+      "title": "LearningConfig",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:config:optimization-config",
+      "version": "1.0",
+      "path": "config/optimization-config.schema.json",
+      "category": "configuration",
+      "stability": "stable",
+      "owners": [
+        "SettingsRepository"
+      ],
+      "used_by": [
+        "behavior:B-JOB-005"
+      ],
+      "parity_behavior_ids": [
+        "B-JOB-005"
+      ],
+      "title": "OptimizationConfig",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:config:platform-config",
+      "version": "1.0",
+      "path": "config/platform-config.schema.json",
+      "category": "configuration",
+      "stability": "stable",
+      "owners": [
+        "SettingsRepository"
+      ],
+      "used_by": [
+        "behavior:B-PLATFORM-002"
+      ],
+      "parity_behavior_ids": [
+        "B-PLATFORM-002"
+      ],
+      "title": "PlatformConfig",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:config:provider-config",
+      "version": "1.0",
+      "path": "config/provider-config.schema.json",
+      "category": "configuration",
+      "stability": "stable",
+      "owners": [
+        "SettingsRepository"
+      ],
+      "used_by": [
+        "behavior:B-SEC-002",
+        "behavior:B-PROV-001",
+        "behavior:B-PROV-002",
+        "behavior:B-PROV-003",
+        "behavior:B-PROV-004",
+        "behavior:B-PROV-005"
+      ],
+      "parity_behavior_ids": [
+        "B-SEC-002",
+        "B-PROV-001",
+        "B-PROV-002",
+        "B-PROV-003",
+        "B-PROV-004",
+        "B-PROV-005"
+      ],
+      "title": "ProviderConfig",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:config:rag-config",
+      "version": "1.0",
+      "path": "config/rag-config.schema.json",
+      "category": "configuration",
+      "stability": "stable",
+      "owners": [
+        "SettingsRepository"
+      ],
+      "used_by": [
+        "behavior:B-RAG-001",
+        "behavior:B-RAG-002",
+        "behavior:B-RAG-003",
+        "behavior:B-RAG-004",
+        "behavior:B-RAG-005",
+        "behavior:B-PROMPT-003",
+        "behavior:B-RAG-006"
+      ],
+      "parity_behavior_ids": [
+        "B-RAG-001",
+        "B-RAG-002",
+        "B-RAG-003",
+        "B-RAG-004",
+        "B-RAG-005",
+        "B-PROMPT-003",
+        "B-RAG-006"
+      ],
+      "title": "RAGConfig",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:config:storage-config",
+      "version": "1.0",
+      "path": "config/storage-config.schema.json",
+      "category": "configuration",
+      "stability": "stable",
+      "owners": [
+        "SettingsRepository"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "StorageConfig",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:conversation:conversation-engine-request",
+      "version": "1.0",
+      "path": "conversation/conversation-engine-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ConversationEngineRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:conversation:conversation-engine-result",
+      "version": "1.0",
+      "path": "conversation/conversation-engine-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ConversationEngineResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:conversation:conversation-trace-entry",
+      "version": "1.0",
+      "path": "conversation/conversation-trace-entry.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ConversationTraceEntry",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:conversation:handoff-port-result",
+      "version": "1.0",
+      "path": "conversation/handoff-port-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "HandoffPortResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:conversation:question-completion-result",
+      "version": "1.0",
+      "path": "conversation/question-completion-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "QuestionCompletionResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:action-result",
+      "version": "1.0",
+      "path": "desktop/action-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ActionResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:audit-action-request",
+      "version": "1.0",
+      "path": "desktop/audit-action-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "AuditActionRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:background-job-event",
+      "version": "1.0",
+      "path": "desktop/background-job-event.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "BackgroundJobEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:bootstrap-state",
+      "version": "1.0",
+      "path": "desktop/bootstrap-state.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "BootstrapState",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:cancel-request",
+      "version": "1.0",
+      "path": "desktop/cancel-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "CancelRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:focus-request",
+      "version": "1.0",
+      "path": "desktop/focus-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "FocusRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:job-cancel-request",
+      "version": "1.0",
+      "path": "desktop/job-cancel-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "JobCancelRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:job-get-request",
+      "version": "1.0",
+      "path": "desktop/job-get-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "JobGetRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:job-list-result",
+      "version": "1.0",
+      "path": "desktop/job-list-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "JobListResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:learning-start-request",
+      "version": "1.0",
+      "path": "desktop/learning-start-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LearningStartRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:legacy-import-apply-action",
+      "version": "1.0",
+      "path": "desktop/legacy-import-apply-action.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportApplyAction",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:legacy-import-event",
+      "version": "1.0",
+      "path": "desktop/legacy-import-event.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:legacy-import-plan-request",
+      "version": "1.0",
+      "path": "desktop/legacy-import-plan-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportPlanRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:legacy-import-select-request",
+      "version": "1.0",
+      "path": "desktop/legacy-import-select-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportSelectRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:legacy-import-select-result",
+      "version": "1.0",
+      "path": "desktop/legacy-import-select-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportSelectResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:manual-send-request",
+      "version": "1.0",
+      "path": "desktop/manual-send-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ManualSendRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:no-save-send-request",
+      "version": "1.0",
+      "path": "desktop/no-save-send-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "NoSaveSendRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:optimization-action-request",
+      "version": "1.0",
+      "path": "desktop/optimization-action-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "OptimizationActionRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:orchestrator-event",
+      "version": "1.0",
+      "path": "desktop/orchestrator-event.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "OrchestratorEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:platform-activate-shop-request",
+      "version": "1.0",
+      "path": "desktop/platform-activate-shop-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PlatformActivateShopRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:platform-reload-request",
+      "version": "1.0",
+      "path": "desktop/platform-reload-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PlatformReloadRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:platform-set-view-bounds-request",
+      "version": "1.0",
+      "path": "desktop/platform-set-view-bounds-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PlatformSetViewBoundsRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:platform-status-changed-event",
+      "version": "1.0",
+      "path": "desktop/platform-status-changed-event.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PlatformStatusChangedEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:platform-status-view",
+      "version": "1.0",
+      "path": "desktop/platform-status-view.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PlatformStatusView",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:review-action-request",
+      "version": "1.0",
+      "path": "desktop/review-action-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ReviewActionRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:set-mode-request",
+      "version": "1.0",
+      "path": "desktop/set-mode-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "SetModeRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:shop-list-result",
+      "version": "1.0",
+      "path": "desktop/shop-list-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ShopListResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:shops-changed-event",
+      "version": "1.0",
+      "path": "desktop/shops-changed-event.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ShopsChangedEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:workbench-view-model",
+      "version": "1.0",
+      "path": "desktop/workbench-view-model.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "WorkbenchViewModel",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:desktop:worker-status",
+      "version": "1.0",
+      "path": "desktop/worker-status.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "WorkerStatus",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:background-job",
+      "version": "1.0",
+      "path": "domain/background-job.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "BackgroundJobManager"
+      ],
+      "used_by": [
+        "behavior:B-JOB-001"
+      ],
+      "parity_behavior_ids": [
+        "B-JOB-001"
+      ],
+      "title": "BackgroundJob",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:conversation",
+      "version": "1.0",
+      "path": "domain/conversation.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "ConversationRepository"
+      ],
+      "used_by": [
+        "behavior:B-STORE-006"
+      ],
+      "parity_behavior_ids": [
+        "B-STORE-006"
+      ],
+      "title": "Conversation",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:conversation-context",
+      "version": "1.0",
+      "path": "domain/conversation-context.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "ConversationContextBuilder",
+        "ConversationEngine"
+      ],
+      "used_by": [
+        "behavior:B-CONV-001",
+        "behavior:B-CONV-004",
+        "behavior:B-PROMPT-004"
+      ],
+      "parity_behavior_ids": [
+        "B-CONV-001",
+        "B-CONV-004",
+        "B-PROMPT-004"
+      ],
+      "title": "ConversationContext",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:conversation-message",
+      "version": "1.0",
+      "path": "domain/conversation-message.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "ConversationRepository",
+        "ConversationOrchestrator"
+      ],
+      "used_by": [
+        "behavior:B-STORE-006",
+        "behavior:B-PLATFORM-001",
+        "behavior:B-PLATFORM-002"
+      ],
+      "parity_behavior_ids": [
+        "B-STORE-006",
+        "B-PLATFORM-001",
+        "B-PLATFORM-002"
+      ],
+      "title": "ConversationMessage",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:feedback-record",
+      "version": "1.0",
+      "path": "domain/feedback-record.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "FeedbackService",
+        "FeedbackRepository"
+      ],
+      "used_by": [
+        "behavior:B-FEEDBACK-001",
+        "behavior:B-FEEDBACK-002"
+      ],
+      "parity_behavior_ids": [
+        "B-FEEDBACK-001",
+        "B-FEEDBACK-002"
+      ],
+      "title": "FeedbackRecord",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:generation-request",
+      "version": "1.0",
+      "path": "domain/generation-request.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "GenerationProviderRouter",
+        "ConversationEngine"
+      ],
+      "used_by": [
+        "behavior:B-PROV-002",
+        "behavior:B-PROV-003",
+        "behavior:B-PROV-004"
+      ],
+      "parity_behavior_ids": [
+        "B-PROV-002",
+        "B-PROV-003",
+        "B-PROV-004"
+      ],
+      "title": "GenerationRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:generation-result",
+      "version": "1.0",
+      "path": "domain/generation-result.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "GenerationProviderRouter",
+        "ConversationEngine"
+      ],
+      "used_by": [
+        "behavior:B-TOOL-003",
+        "behavior:B-TOOL-005",
+        "behavior:B-PROV-001",
+        "behavior:B-PROV-005"
+      ],
+      "parity_behavior_ids": [
+        "B-TOOL-003",
+        "B-TOOL-005",
+        "B-PROV-001",
+        "B-PROV-005"
+      ],
+      "title": "GenerationResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:knowledge-candidate",
+      "version": "1.0",
+      "path": "domain/knowledge-candidate.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "KnowledgeRepository",
+        "AuditEngine"
+      ],
+      "used_by": [
+        "behavior:B-STORE-001",
+        "behavior:B-JOB-003",
+        "behavior:B-JOB-004"
+      ],
+      "parity_behavior_ids": [
+        "B-STORE-001",
+        "B-JOB-003",
+        "B-JOB-004"
+      ],
+      "title": "KnowledgeCandidate",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:knowledge-entry",
+      "version": "1.0",
+      "path": "domain/knowledge-entry.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "KnowledgeRepository"
+      ],
+      "used_by": [
+        "behavior:B-STORE-001",
+        "behavior:B-FEEDBACK-001",
+        "behavior:B-FEEDBACK-002"
+      ],
+      "parity_behavior_ids": [
+        "B-STORE-001",
+        "B-FEEDBACK-001",
+        "B-FEEDBACK-002"
+      ],
+      "title": "KnowledgeEntry",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:prompt-profile",
+      "version": "1.0",
+      "path": "domain/prompt-profile.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "PromptRepository",
+        "PromptEngine"
+      ],
+      "used_by": [
+        "behavior:B-PROMPT-001",
+        "behavior:B-PROMPT-002",
+        "behavior:B-PROMPT-003",
+        "behavior:B-STORE-004"
+      ],
+      "parity_behavior_ids": [
+        "B-PROMPT-001",
+        "B-PROMPT-002",
+        "B-PROMPT-003",
+        "B-STORE-004"
+      ],
+      "title": "PromptProfile",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:retrieval-result",
+      "version": "1.0",
+      "path": "domain/retrieval-result.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "RAGEngine"
+      ],
+      "used_by": [
+        "behavior:B-RAG-001",
+        "behavior:B-RAG-002",
+        "behavior:B-RAG-003",
+        "behavior:B-RAG-004",
+        "behavior:B-RAG-005",
+        "behavior:B-RAG-006"
+      ],
+      "parity_behavior_ids": [
+        "B-RAG-001",
+        "B-RAG-002",
+        "B-RAG-003",
+        "B-RAG-004",
+        "B-RAG-005",
+        "B-RAG-006"
+      ],
+      "title": "RetrievalResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:send-command",
+      "version": "1.0",
+      "path": "domain/send-command.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "ConversationOrchestrator",
+        "PlatformSenderAdapter"
+      ],
+      "used_by": [
+        "behavior:B-CONV-008",
+        "behavior:B-PLATFORM-003"
+      ],
+      "parity_behavior_ids": [
+        "B-CONV-008",
+        "B-PLATFORM-003"
+      ],
+      "title": "SendCommand",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:send-result",
+      "version": "1.0",
+      "path": "domain/send-result.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "PlatformSenderAdapter"
+      ],
+      "used_by": [
+        "behavior:B-CONV-008",
+        "behavior:B-PLATFORM-003"
+      ],
+      "parity_behavior_ids": [
+        "B-CONV-008",
+        "B-PLATFORM-003"
+      ],
+      "title": "SendResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:send-segment",
+      "version": "1.0",
+      "path": "domain/send-segment.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "ConversationOrchestrator",
+        "PlatformSenderAdapter"
+      ],
+      "used_by": [
+        "behavior:B-CONV-008"
+      ],
+      "parity_behavior_ids": [
+        "B-CONV-008"
+      ],
+      "title": "SendSegment",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:shop",
+      "version": "1.0",
+      "path": "domain/shop.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "ShopRepository"
+      ],
+      "used_by": [
+        "behavior:B-STORE-002"
+      ],
+      "parity_behavior_ids": [
+        "B-STORE-002"
+      ],
+      "title": "Shop",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:shop-session",
+      "version": "1.0",
+      "path": "domain/shop-session.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "ShopSessionManager"
+      ],
+      "used_by": [
+        "behavior:B-PLATFORM-001"
+      ],
+      "parity_behavior_ids": [
+        "B-PLATFORM-001"
+      ],
+      "title": "ShopSession",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:skill-definition",
+      "version": "1.0",
+      "path": "domain/skill-definition.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "SkillRepository",
+        "ToolRegistry"
+      ],
+      "used_by": [
+        "behavior:B-PROMPT-002",
+        "behavior:B-TOOL-001",
+        "behavior:B-SEC-001"
+      ],
+      "parity_behavior_ids": [
+        "B-PROMPT-002",
+        "B-TOOL-001",
+        "B-SEC-001"
+      ],
+      "title": "SkillDefinition",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:suggestion",
+      "version": "1.0",
+      "path": "domain/suggestion.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "ConversationEngine",
+        "ConversationOrchestrator"
+      ],
+      "used_by": [
+        "behavior:B-CONV-005",
+        "behavior:B-CONV-006",
+        "behavior:B-CONV-007"
+      ],
+      "parity_behavior_ids": [
+        "B-CONV-005",
+        "B-CONV-006",
+        "B-CONV-007"
+      ],
+      "title": "Suggestion",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:tool-call",
+      "version": "1.0",
+      "path": "domain/tool-call.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "ToolExecutor",
+        "AgentLoop"
+      ],
+      "used_by": [
+        "behavior:B-TOOL-001",
+        "behavior:B-TOOL-002",
+        "behavior:B-TOOL-003"
+      ],
+      "parity_behavior_ids": [
+        "B-TOOL-001",
+        "B-TOOL-002",
+        "B-TOOL-003"
+      ],
+      "title": "ToolCall",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:tool-result",
+      "version": "1.0",
+      "path": "domain/tool-result.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "ToolExecutor",
+        "AgentLoop"
+      ],
+      "used_by": [
+        "behavior:B-TOOL-002",
+        "behavior:B-TOOL-004",
+        "behavior:B-SEC-001"
+      ],
+      "parity_behavior_ids": [
+        "B-TOOL-002",
+        "B-TOOL-004",
+        "B-SEC-001"
+      ],
+      "title": "ToolResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:transfer-decision",
+      "version": "1.0",
+      "path": "domain/transfer-decision.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "HandoffEngine"
+      ],
+      "used_by": [
+        "behavior:B-HANDOFF-001",
+        "behavior:B-HANDOFF-002",
+        "behavior:B-HANDOFF-003",
+        "behavior:B-HANDOFF-004"
+      ],
+      "parity_behavior_ids": [
+        "B-HANDOFF-001",
+        "B-HANDOFF-002",
+        "B-HANDOFF-003",
+        "B-HANDOFF-004"
+      ],
+      "title": "TransferDecision",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:engine:prepare-request",
+      "version": "1.0",
+      "path": "engine/prepare-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PrepareRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:engine:prepare-result",
+      "version": "1.0",
+      "path": "engine/prepare-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PrepareResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:error",
+      "version": "1.0",
+      "path": "errors/error.schema.json",
+      "category": "error",
+      "stability": "stable",
+      "owners": [
+        "AIWorkerClient",
+        "AIWorker"
+      ],
+      "used_by": [
+        "behavior:B-TOOL-005",
+        "behavior:B-IPC-001",
+        "behavior:B-SEC-002",
+        "behavior:B-PROV-005"
+      ],
+      "parity_behavior_ids": [
+        "B-TOOL-005",
+        "B-IPC-001",
+        "B-SEC-002",
+        "B-PROV-005"
+      ],
+      "title": "Error",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:buyer-message-received",
+      "version": "1.0",
+      "path": "events/buyer-message-received.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "Event buyer-message-received",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:conversation-state-changed",
+      "version": "1.0",
+      "path": "events/conversation-state-changed.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [
+        "behavior:B-CONV-005"
+      ],
+      "parity_behavior_ids": [
+        "B-CONV-005"
+      ],
+      "title": "Event conversation-state-changed",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:envelope",
+      "version": "1.0",
+      "path": "events/event-envelope.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "EventEnvelope",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:human-takeover",
+      "version": "1.0",
+      "path": "events/human-takeover.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "Event human-takeover",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:index-rebuild-completed",
+      "version": "1.0",
+      "path": "events/index-rebuild-completed.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [
+        "behavior:B-JOB-006"
+      ],
+      "parity_behavior_ids": [
+        "B-JOB-006"
+      ],
+      "title": "Event index-rebuild-completed",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:index-rebuild-started",
+      "version": "1.0",
+      "path": "events/index-rebuild-started.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [
+        "behavior:B-JOB-006"
+      ],
+      "parity_behavior_ids": [
+        "B-JOB-006"
+      ],
+      "title": "Event index-rebuild-started",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:job-state-changed",
+      "version": "1.0",
+      "path": "events/job-state-changed.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "Event job-state-changed",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:knowledge-updated",
+      "version": "1.0",
+      "path": "events/knowledge-updated.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [
+        "behavior:B-JOB-003",
+        "behavior:B-JOB-004"
+      ],
+      "parity_behavior_ids": [
+        "B-JOB-003",
+        "B-JOB-004"
+      ],
+      "title": "Event knowledge-updated",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:learning-progress",
+      "version": "1.0",
+      "path": "events/learning-progress.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [
+        "behavior:B-JOB-001"
+      ],
+      "parity_behavior_ids": [
+        "B-JOB-001"
+      ],
+      "title": "Event learning-progress",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:optimization-progress",
+      "version": "1.0",
+      "path": "events/optimization-progress.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "Event optimization-progress",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:send-completed",
+      "version": "1.0",
+      "path": "events/send-completed.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "Event send-completed",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:send-started",
+      "version": "1.0",
+      "path": "events/send-started.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "Event send-started",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:suggestion-ready",
+      "version": "1.0",
+      "path": "events/suggestion-ready.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "Event suggestion-ready",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:event:transfer-requested",
+      "version": "1.0",
+      "path": "events/transfer-requested.schema.json",
+      "category": "event",
+      "stability": "stable",
+      "owners": [
+        "EventBus"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "Event transfer-requested",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:feedback:feedback-apply-request",
+      "version": "1.0",
+      "path": "feedback/feedback-apply-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "FeedbackApplyRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:feedback:feedback-apply-result",
+      "version": "1.0",
+      "path": "feedback/feedback-apply-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "FeedbackApplyResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:feedback:feedback-effect-status",
+      "version": "1.0",
+      "path": "feedback/feedback-effect-status.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "FeedbackEffectStatus",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:feedback:feedback-retry-request",
+      "version": "1.0",
+      "path": "feedback/feedback-retry-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "FeedbackRetryRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:handoff:handoff-evaluation-request",
+      "version": "1.0",
+      "path": "handoff/handoff-evaluation-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "HandoffEvaluationRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:handoff:handoff-evaluation-result",
+      "version": "1.0",
+      "path": "handoff/handoff-evaluation-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "HandoffEvaluationResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:handoff:handoff-rule",
+      "version": "1.0",
+      "path": "handoff/handoff-rule.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "HandoffRule",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:handoff:handoff-trace-entry",
+      "version": "1.0",
+      "path": "handoff/handoff-trace-entry.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "HandoffTraceEntry",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:handoff:work-hours",
+      "version": "1.0",
+      "path": "handoff/work-hours.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "WorkHours",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:knowledge-import-request",
+      "version": "1.0",
+      "path": "import/knowledge-import-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "KnowledgeImportRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:knowledge-import-result",
+      "version": "1.0",
+      "path": "import/knowledge-import-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "KnowledgeImportResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:legacy-import-apply-request",
+      "version": "1.0",
+      "path": "import/legacy-import-apply-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportApplyRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:legacy-import-apply-result",
+      "version": "1.0",
+      "path": "import/legacy-import-apply-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportApplyResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:legacy-import-conflict",
+      "version": "1.0",
+      "path": "import/legacy-import-conflict.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportConflict",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:legacy-import-dry-run-result",
+      "version": "1.0",
+      "path": "import/legacy-import-dry-run-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportDryRunResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:legacy-import-manifest",
+      "version": "1.0",
+      "path": "import/legacy-import-manifest.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportManifest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:legacy-import-options",
+      "version": "1.0",
+      "path": "import/legacy-import-options.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportOptions",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:legacy-import-plan",
+      "version": "1.0",
+      "path": "import/legacy-import-plan.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportPlan",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:legacy-import-status",
+      "version": "1.0",
+      "path": "import/legacy-import-status.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportStatus",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:legacy-import-warning",
+      "version": "1.0",
+      "path": "import/legacy-import-warning.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacyImportWarning",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:legacy-source-item",
+      "version": "1.0",
+      "path": "import/legacy-source-item.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacySourceItem",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:import:legacy-source-selection",
+      "version": "1.0",
+      "path": "import/legacy-source-selection.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LegacySourceSelection",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:jobs:background-job-event",
+      "version": "1.0",
+      "path": "jobs/background-job-event.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "BackgroundJobEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:jobs:background-job-request",
+      "version": "1.0",
+      "path": "jobs/background-job-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "BackgroundJobRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:jobs:background-job-status",
+      "version": "1.0",
+      "path": "jobs/background-job-status.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "BackgroundJobStatus",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:learning:candidate-status",
+      "version": "1.0",
+      "path": "learning/candidate-status.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "CandidateStatus",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:learning:learning-candidate",
+      "version": "1.0",
+      "path": "learning/learning-candidate.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LearningCandidate",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:learning:learning-run-request",
+      "version": "1.0",
+      "path": "learning/learning-run-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LearningRunRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:learning:learning-run-result",
+      "version": "1.0",
+      "path": "learning/learning-run-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "LearningRunResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:optimization:product-optimization-apply-request",
+      "version": "1.0",
+      "path": "optimization/product-optimization-apply-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ProductOptimizationApplyRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:optimization:product-optimization-proposal",
+      "version": "1.0",
+      "path": "optimization/product-optimization-proposal.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ProductOptimizationProposal",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:optimization:product-optimization-request",
+      "version": "1.0",
+      "path": "optimization/product-optimization-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ProductOptimizationRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:optimization:product-optimization-result",
+      "version": "1.0",
+      "path": "optimization/product-optimization-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ProductOptimizationResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:orchestrator:feedback-intent",
+      "version": "1.0",
+      "path": "orchestrator/feedback-intent.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "FeedbackIntent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:orchestrator:inbound-message",
+      "version": "1.0",
+      "path": "orchestrator/inbound-message.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "InboundMessage",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:orchestrator:orchestrator-snapshot",
+      "version": "1.0",
+      "path": "orchestrator/orchestrator-snapshot.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "OrchestratorSnapshot",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:orchestrator:pre-send-check-result",
+      "version": "1.0",
+      "path": "orchestrator/pre-send-check-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PreSendCheckResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:orchestrator:send-attempt-result",
+      "version": "1.0",
+      "path": "orchestrator/send-attempt-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "SendAttemptResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:orchestrator:suggestion-action",
+      "version": "1.0",
+      "path": "orchestrator/suggestion-action.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "SuggestionAction",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Doudian-page-command",
+      "version": "1.0",
+      "path": "platform/doudian-page-command.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "DoudianPageCommand",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Doudian-page-command-result",
+      "version": "1.0",
+      "path": "platform/doudian-page-command-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "DoudianPageCommandResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Doudian-page-event",
+      "version": "1.0",
+      "path": "platform/doudian-page-event.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "DoudianPageEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Jd-page-command",
+      "version": "1.0",
+      "path": "platform/jd-page-command.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "JdPageCommand",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Jd-page-command-result",
+      "version": "1.0",
+      "path": "platform/jd-page-command-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "JdPageCommandResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Jd-page-event",
+      "version": "1.0",
+      "path": "platform/jd-page-event.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "JdPageEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Kuaishou-page-command",
+      "version": "1.0",
+      "path": "platform/kuaishou-page-command.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "KuaishouPageCommand",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Kuaishou-page-command-result",
+      "version": "1.0",
+      "path": "platform/kuaishou-page-command-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "KuaishouPageCommandResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Kuaishou-page-event",
+      "version": "1.0",
+      "path": "platform/kuaishou-page-event.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "KuaishouPageEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Qianniu-page-command",
+      "version": "1.0",
+      "path": "platform/qianniu-page-command.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "QianniuPageCommand",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Qianniu-page-command-result",
+      "version": "1.0",
+      "path": "platform/qianniu-page-command-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "QianniuPageCommandResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Qianniu-page-event",
+      "version": "1.0",
+      "path": "platform/qianniu-page-event.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "QianniuPageEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Xianyu-page-command",
+      "version": "1.0",
+      "path": "platform/xianyu-page-command.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "XianyuPageCommand",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Xianyu-page-command-result",
+      "version": "1.0",
+      "path": "platform/xianyu-page-command-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "XianyuPageCommandResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:Xianyu-page-event",
+      "version": "1.0",
+      "path": "platform/xianyu-page-event.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "XianyuPageEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:pdd-capabilities",
+      "version": "1.0",
+      "path": "platform/pdd-capabilities.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PddCapabilities",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:pdd-page-command",
+      "version": "1.0",
+      "path": "platform/pdd-page-command.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PddPageCommand",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:pdd-page-command-result",
+      "version": "1.0",
+      "path": "platform/pdd-page-command-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PddPageCommandResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:pdd-page-event",
+      "version": "1.0",
+      "path": "platform/pdd-page-event.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PddPageEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:pdd-session-status",
+      "version": "1.0",
+      "path": "platform/pdd-session-status.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PddSessionStatus",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:platform-capabilities",
+      "version": "1.0",
+      "path": "platform/platform-capabilities.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PlatformCapabilities",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:platform:platform-session-status",
+      "version": "1.0",
+      "path": "platform/platform-session-status.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PlatformSessionStatus",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:prompt:prompt-assembly-request",
+      "version": "1.0",
+      "path": "prompt/prompt-assembly-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PromptAssemblyRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:prompt:prompt-assembly-result",
+      "version": "1.0",
+      "path": "prompt/prompt-assembly-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "PromptAssemblyResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:providers:provider-normalization-request",
+      "version": "1.0",
+      "path": "providers/provider-normalization-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ProviderNormalizationRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:providers:provider-normalization-result",
+      "version": "1.0",
+      "path": "providers/provider-normalization-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ProviderNormalizationResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:providers:provider-route-request",
+      "version": "1.0",
+      "path": "providers/provider-route-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ProviderRouteRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:providers:provider-route-result",
+      "version": "1.0",
+      "path": "providers/provider-route-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ProviderRouteResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rag:index-status-result",
+      "version": "1.0",
+      "path": "rag/index-status-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "IndexStatusResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rag:rebuild-index-request",
+      "version": "1.0",
+      "path": "rag/rebuild-index-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "RebuildIndexRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rag:rebuild-index-result",
+      "version": "1.0",
+      "path": "rag/rebuild-index-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "RebuildIndexResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rag:retrieval-request",
+      "version": "1.0",
+      "path": "rag/retrieval-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "RetrievalRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:review:review-apply-request",
+      "version": "1.0",
+      "path": "review/review-apply-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ReviewApplyRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:review:review-apply-result",
+      "version": "1.0",
+      "path": "review/review-apply-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ReviewApplyResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:review:review-proposal-request",
+      "version": "1.0",
+      "path": "review/review-proposal-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ReviewProposalRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:review:review-proposal-result",
+      "version": "1.0",
+      "path": "review/review-proposal-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ReviewProposalResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:review:review-restore-request",
+      "version": "1.0",
+      "path": "review/review-restore-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ReviewRestoreRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:review:review-restore-result",
+      "version": "1.0",
+      "path": "review/review-restore-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ReviewRestoreResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rpc:cancel-payload",
+      "version": "1.0",
+      "path": "rpc/cancel-payload.schema.json",
+      "category": "rpc",
+      "stability": "stable",
+      "owners": [
+        "AIWorkerClient",
+        "AIWorker"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "CancelPayload",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rpc:cancel-result",
+      "version": "1.0",
+      "path": "rpc/cancel-result.schema.json",
+      "category": "rpc",
+      "stability": "stable",
+      "owners": [
+        "AIWorkerClient",
+        "AIWorker"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "CancelResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rpc:context",
+      "version": "1.0",
+      "path": "rpc/context.schema.json",
+      "category": "rpc",
+      "stability": "stable",
+      "owners": [
+        "AIWorkerClient",
+        "AIWorker"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "RpcContext",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rpc:error",
+      "version": "1.0",
+      "path": "rpc/error.schema.json",
+      "category": "rpc",
+      "stability": "stable",
+      "owners": [
+        "AIWorkerClient",
+        "AIWorker"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "RpcError",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rpc:event",
+      "version": "1.0",
+      "path": "rpc/event.schema.json",
+      "category": "rpc",
+      "stability": "stable",
+      "owners": [
+        "AIWorkerClient",
+        "AIWorker"
+      ],
+      "used_by": [
+        "behavior:B-IPC-001"
+      ],
+      "parity_behavior_ids": [
+        "B-IPC-001"
+      ],
+      "title": "RpcEvent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rpc:health-result",
+      "version": "1.0",
+      "path": "rpc/health-result.schema.json",
+      "category": "rpc",
+      "stability": "stable",
+      "owners": [
+        "AIWorkerClient",
+        "AIWorker"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "HealthResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rpc:protocol-error-payload",
+      "version": "1.0",
+      "path": "rpc/protocol-error-payload.schema.json",
+      "category": "rpc",
+      "stability": "stable",
+      "owners": [
+        "AIWorkerClient",
+        "AIWorker"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ProtocolErrorPayload",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rpc:request",
+      "version": "1.0",
+      "path": "rpc/request.schema.json",
+      "category": "rpc",
+      "stability": "stable",
+      "owners": [
+        "AIWorkerClient",
+        "AIWorker"
+      ],
+      "used_by": [
+        "behavior:B-CONV-001",
+        "behavior:B-IPC-001"
+      ],
+      "parity_behavior_ids": [
+        "B-CONV-001",
+        "B-IPC-001"
+      ],
+      "title": "RpcRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rpc:response",
+      "version": "1.0",
+      "path": "rpc/response.schema.json",
+      "category": "rpc",
+      "stability": "stable",
+      "owners": [
+        "AIWorkerClient",
+        "AIWorker"
+      ],
+      "used_by": [
+        "behavior:B-IPC-001"
+      ],
+      "parity_behavior_ids": [
+        "B-IPC-001"
+      ],
+      "title": "RpcResponse",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rpc:shutdown-result",
+      "version": "1.0",
+      "path": "rpc/shutdown-result.schema.json",
+      "category": "rpc",
+      "stability": "stable",
+      "owners": [
+        "AIWorkerClient",
+        "AIWorker"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ShutdownResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:rpc:worker-ready-payload",
+      "version": "1.0",
+      "path": "rpc/worker-ready-payload.schema.json",
+      "category": "rpc",
+      "stability": "stable",
+      "owners": [
+        "AIWorkerClient",
+        "AIWorker"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "WorkerReadyPayload",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:tools:agent-run-request",
+      "version": "1.0",
+      "path": "tools/agent-run-request.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "AgentRunRequest",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:tools:agent-run-result",
+      "version": "1.0",
+      "path": "tools/agent-run-result.schema.json",
+      "category": "other",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "AgentRunResult",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:config:feature-flags",
+  "$title": "FeatureFlags",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "enable_learning": {
+      "type": "boolean",
+      "default": true
+    },
+    "enable_review": {
+      "type": "boolean",
+      "default": true
+    },
+    "enable_optimization": {
+      "type": "boolean",
+      "default": true
+    },
+    "enable_cloud_sync": {
+      "type": "boolean",
+      "default": false
+    },
+    "enable_daily_optimization": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:providers:provider-route-result",
+  "$title": "ProviderRouteResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "provider"
+  ],
+  "properties": {
+    "provider": {
+      "type": "string"
+    },
+    "protocol": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "model_ref": {
+      "type": "string"
+    },
+    "multiplier": {
+      "type": "number"
+    },
+    "tools": {
+      "type": "boolean"
+    },
+    "downgrade": {
+      "type": "string"
+    },
+    "selected": {
+      "type": "string"
+    },
+    "fallback": {
+      "type": "string"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "fastwork:error"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "trace": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  }
+}

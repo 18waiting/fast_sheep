@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:learning:learning-run-request",
+  "$title": "LearningRunRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "import_source"
+  ],
+  "properties": {
+    "import_source": {
+      "type": "string"
+    },
+    "chat": {
+      "type": "string"
+    },
+    "qa": {
+      "type": "array"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "segment": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "batch_id": {
+      "type": "string"
+    },
+    "command": {
+      "type": "string"
+    },
+    "config": {
+      "type": "object"
+    }
+  }
+}

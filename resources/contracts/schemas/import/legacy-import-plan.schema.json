@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:import:legacy-import-plan",
+  "$title": "LegacyImportPlan",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "plan_id",
+    "selection_id",
+    "plan_sha256",
+    "items",
+    "options"
+  ],
+  "properties": {
+    "plan_id": {
+      "type": "string"
+    },
+    "selection_id": {
+      "type": "string"
+    },
+    "plan_sha256": {
+      "type": "string"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "fastwork:import:legacy-import-manifest"
+      }
+    },
+    "options": {
+      "$ref": "fastwork:import:legacy-import-options"
+    },
+    "timestamps": {
+      "type": "array"
+    },
+    "warnings": {
+      "type": "array"
+    },
+    "conflicts": {
+      "type": "array"
+    },
+    "secret_fields_detected": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "created_at": {
+      "type": "string"
+    }
+  }
+}

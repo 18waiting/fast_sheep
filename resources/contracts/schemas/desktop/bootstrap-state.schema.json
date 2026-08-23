@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:bootstrap-state",
+  "$title": "BootstrapState",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "worker_status",
+    "shops",
+    "view_model"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer"
+    },
+    "worker_status": {
+      "$ref": "fastwork:desktop:worker-status"
+    },
+    "shops": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "view_model": {
+      "$ref": "fastwork:desktop:workbench-view-model"
+    }
+  }
+}

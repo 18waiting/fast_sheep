@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:jobs:background-job-status",
+  "$title": "BackgroundJobStatus",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "job_id",
+    "state"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "progress": {
+      "type": "number"
+    },
+    "message": {
+      "type": "string"
+    }
+  }
+}

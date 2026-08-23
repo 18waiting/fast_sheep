@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:learning:learning-candidate",
+  "$title": "LearningCandidate",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "question",
+    "answer"
+  ],
+  "properties": {
+    "question": {
+      "type": "string"
+    },
+    "answer": {
+      "type": "string"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "origin": {
+      "type": "string"
+    }
+  }
+}

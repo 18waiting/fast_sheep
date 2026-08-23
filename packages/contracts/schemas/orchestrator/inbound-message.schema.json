@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:orchestrator:inbound-message",
+  "$title": "InboundMessage",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "message_id",
+    "content"
+  ],
+  "properties": {
+    "message_id": {
+      "type": "string"
+    },
+    "buyer": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "shop_id": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "sent_at": {
+      "type": "string"
+    }
+  }
+}

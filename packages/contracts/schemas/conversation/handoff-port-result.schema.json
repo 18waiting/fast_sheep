@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:conversation:handoff-port-result",
+  "$title": "HandoffPortResult",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "decision": {
+      "$ref": "fastwork:domain:transfer-decision"
+    },
+    "evaluated": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

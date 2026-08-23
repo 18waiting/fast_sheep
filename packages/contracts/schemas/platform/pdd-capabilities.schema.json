@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:platform:pdd-capabilities",
+  "$title": "PddCapabilities",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["receive_text", "send_text", "send_image", "manual_takeover_detection", "conversation_selection", "transfer"],
+  "properties": {
+    "receive_text": { "type": "boolean" },
+    "send_text": { "type": "boolean" },
+    "send_image": { "type": "boolean" },
+    "manual_takeover_detection": { "type": "boolean" },
+    "conversation_selection": { "type": "boolean" },
+    "transfer": { "type": "boolean" },
+    "product_context": { "type": "boolean" },
+    "order_context": { "type": "boolean" },
+    "desktop_helper": { "type": "boolean" }
+  }
+}

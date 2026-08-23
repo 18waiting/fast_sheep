@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>synthetic transfer target missing</title></head>
+<body>
+  <div data-fw-pdd-chat-list>
+    <div data-fw-pdd-conversation data-conversation-id="c1" data-active="true" data-buyer-id="buyer-1" data-buyer="测试买家A">测试买家A</div>
+  </div>
+  <div data-fw-pdd-messages>
+    <div data-fw-pdd-message data-message-id="m1" data-direction="inbound" data-ts="2026-08-16T00:00:00Z">
+      <span data-fw-pdd-buyer-name>测试买家A</span><span data-fw-pdd-msg-content>有货吗</span>
+    </div>
+  </div>
+  <textarea data-fw-pdd-composer-input></textarea>
+  <button data-fw-pdd-send-btn>发送</button>
+  <input data-fw-pdd-image-input type="file" />
+  <button data-fw-pdd-transfer-open>转接</button>
+  <div data-fw-pdd-transfer-targets><div data-fw-pdd-transfer-target data-target="其他">其他</div></div>
+  <button data-fw-pdd-transfer-confirm>确认转接</button>
+  <div data-fw-pdd-send-ack data-message-id="ack-1"></div>
+  <script>
+    // Clean-room synthetic behavior: clicking the send control appends exactly one
+    // outbound row to the transcript (the M7 page runtime observes this mutation).
+    document.addEventListener("click", function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest("[data-fw-pdd-send-btn]") : null;
+      if (!btn) return;
+      var input = document.querySelector("[data-fw-pdd-composer-input]");
+      var messages = document.querySelector("[data-fw-pdd-messages]");
+      var ack = document.querySelector("[data-fw-pdd-send-ack]");
+      if (!input || !messages) return;
+      var value = input.getAttribute("value") || input.value || "";
+      if (!value) return;
+      var mid = (ack && ack.getAttribute("data-message-id")) || "ack-" + Date.now();
+      var row = document.createElement("div");
+      row.setAttribute("data-fw-pdd-message", "");
+      row.setAttribute("data-direction", "outbound");
+      row.setAttribute("data-message-id", mid);
+      var content = document.createElement("span");
+      content.setAttribute("data-fw-pdd-msg-content", "");
+      content.textContent = value;
+      row.appendChild(content);
+      messages.appendChild(row);
+    });
+  </script>
+</body></html>

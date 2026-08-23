@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:common:send-state",
+  "$title": "SendState",
+  "type": "string",
+  "enum": [
+    "queued",
+    "sending",
+    "sent",
+    "failed",
+    "cancelled",
+    "superseded"
+  ]
+}

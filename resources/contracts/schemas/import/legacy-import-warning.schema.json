@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:import:legacy-import-warning",
+  "$title": "LegacyImportWarning",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "message"
+  ],
+  "properties": {
+    "item_id": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    }
+  }
+}

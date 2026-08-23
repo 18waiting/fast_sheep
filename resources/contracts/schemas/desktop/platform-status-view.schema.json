@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:platform-status-view",
+  "$title": "PlatformStatusView",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["shop_id", "platform", "session_status", "view_visible"],
+  "properties": {
+    "shop_id": { "type": "string", "minLength": 1 },
+    "platform": { "type": "string" },
+    "session_status": { "type": "string", "enum": ["STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "ERROR", "DISPOSED"] },
+    "view_visible": { "type": "boolean" },
+    "last_error": { "type": "string" },
+    "capabilities": { "type": "object", "additionalProperties": true }
+  }
+}

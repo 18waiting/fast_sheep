@@ -1,0 +1,16 @@
+[
+  {
+    "id": "shop-f1",
+    "type": "pdd",
+    "name": "店铺一",
+    "enabled": true,
+    "order": 1
+  },
+  {
+    "id": "shop-f2",
+    "type": "jd",
+    "name": "店铺二",
+    "enabled": false,
+    "order": 2
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:handoff:work-hours",
+  "$title": "WorkHours",
+  "description": "HH:MM-HH:MM window with inclusive boundaries and overnight support; empty = all day.",
+  "type": "string",
+  "pattern": "^([0-2]?[0-9]:[0-5][0-9]-[0-2]?[0-9]:[0-5][0-9])?$"
+}

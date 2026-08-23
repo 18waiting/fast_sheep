@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:conversation:conversation-engine-result",
+  "$title": "ConversationEngineResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "trace"
+  ],
+  "properties": {
+    "reply": {
+      "type": "string"
+    },
+    "fast_return": {
+      "type": "boolean",
+      "default": false
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "segments": {
+      "type": "integer"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "fastwork:error"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "trace": {
+      "type": "array",
+      "items": {
+        "$ref": "fastwork:conversation:conversation-trace-entry"
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "suggestion": {
+      "$ref": "fastwork:domain:suggestion"
+    }
+  }
+}

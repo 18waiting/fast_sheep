@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:knowledge-candidate",
+  "$title": "KnowledgeCandidate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidate_id",
+    "question",
+    "answer",
+    "product_id",
+    "origin",
+    "status"
+  ],
+  "properties": {
+    "candidate_id": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "question": {
+      "type": "string"
+    },
+    "answer": {
+      "type": "string"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "origin": {
+      "type": "string",
+      "enum": [
+        "LEARNED",
+        "GENERATED",
+        "CORRECTION",
+        "AUTO_INGEST",
+        "REVIEW",
+        "RESTORE"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PENDING_REVIEW",
+        "APPROVED",
+        "REJECTED",
+        "PENDING_REAUDIT",
+        "COMMITTED"
+      ]
+    },
+    "frequency": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

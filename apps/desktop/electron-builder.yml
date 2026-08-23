@@ -1,0 +1,62 @@
+# PACK-004: electron-builder Windows x64 packaging foundation (clean-room).
+# Produces ONLY the unpacked app dir (dist/packaging/win-unpacked) via --dir.
+# No installer, no portable archive, no signing.
+appId: com.fastwork.rebuild
+electronVersion: 43.4.0
+# Use the locally installed Electron dist (reproducible, offline; no re-download).
+electronDist: node_modules/electron/dist
+productName: FastWork Rebuild
+executableName: FastWork-Rebuild
+
+directories:
+  output: ../../dist/packaging
+  buildResources: buildResources
+
+# Application code: built desktop artifacts only (no source maps, no .d.ts).
+files:
+  - dist/**/*
+  - package.json
+  - "!**/*.js.map"
+  - "!**/*.d.ts"
+  - "!**/node_modules/**/*.map"
+
+asar: true
+
+# Packaged-mode runtime resources (PACK-002/PACK-003 contract):
+#   <resourcesPath>\worker\fastwork-ai-worker.exe
+#   <resourcesPath>\contracts\schemas\
+#   <resourcesPath>\persistence\migrations\*.sql
+extraResources:
+  - from: ../../resources/worker
+    to: worker
+  - from: ../../resources/contracts
+    to: contracts
+  - from: ../../resources/persistence
+    to: persistence
+
+win:
+  target:
+    - dir
+    - nsis
+  executableName: FastWork-Rebuild
+
+# PACK-006: unsigned Windows release installer (per-user, standard NSIS assisted).
+# oneClick: false -> standard assisted installer (user can choose install dir);
+# perMachine: false -> per-user install, no admin requirement.
+# artifactName fixes the exact output contract FastWork-Rebuild-<version>-Setup.exe.
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  artifactName: FastWork-Rebuild-${version}-Setup.exe
+
+electronLanguages:
+  - en-US
+  - zh-CN
+
+npmRebuild: false
+nodeGypRebuild: false
+
+

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:rpc:health-result",
+  "$title": "HealthResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "worker_version",
+    "protocol_version",
+    "pid",
+    "uptime_ms"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "degraded",
+        "unhealthy"
+      ]
+    },
+    "worker_version": {
+      "type": "string"
+    },
+    "protocol_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "pid": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "uptime_ms": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

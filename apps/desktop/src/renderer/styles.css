@@ -1,0 +1,62 @@
+/* FastWork M6 workbench — plain local CSS. No remote assets, no proprietary assets. */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body { font-family: system-ui, "Microsoft YaHei", sans-serif; color: #1f2328; background: #f6f8fa; }
+#app { height: 100%; }
+
+.app-shell { display: flex; flex-direction: column; height: 100%; }
+.error-banner { background: #fff1f0; color: #b3261e; border-bottom: 1px solid #ffccc7; padding: 8px 16px; font-size: 13px; }
+.error-label { font-weight: 600; margin-right: 8px; }
+.app-body { display: flex; flex: 1; min-height: 0; }
+
+.shop-sidebar { width: 220px; background: #fff; border-right: 1px solid #d8dee4; padding: 12px; overflow: auto; }
+.shop-sidebar-title { font-size: 14px; margin: 0 0 8px; }
+.shop-list { list-style: none; margin: 0; padding: 0; }
+.shop-item { margin-bottom: 4px; }
+.shop-button { width: 100%; text-align: left; padding: 8px; border: 1px solid #d8dee4; border-radius: 6px; background: #fff; cursor: pointer; font-size: 13px; }
+.shop-button.selected { background: #ddf4ff; border-color: #54aeff; }
+
+.workbench-main { flex: 1; padding: 16px; overflow: auto; display: flex; flex-direction: column; gap: 12px; }
+.workbench-header { display: flex; gap: 16px; align-items: baseline; font-size: 14px; }
+.header-shop { font-weight: 600; font-size: 16px; }
+.status-row { display: flex; gap: 16px; align-items: center; }
+.worker-badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; background: #eaeef2; }
+.worker-ready { background: #dafbe1; color: #1a7f37; }
+.worker-restarting, .worker-starting { background: #fff8c5; color: #7a5901; }
+.worker-error, .worker-stopped { background: #ffebe9; color: #cf222e; }
+
+.mode-toggle { display: flex; gap: 8px; align-items: center; font-size: 13px; }
+.mode-label { margin-right: 4px; }
+.mode-btn { padding: 4px 10px; border: 1px solid #d8dee4; border-radius: 6px; background: #fff; cursor: pointer; }
+.mode-btn.selected { background: #0969da; color: #fff; border-color: #0969da; }
+.mode-btn:disabled { opacity: 0.5; cursor: default; }
+
+.countdown-view { display: flex; gap: 8px; align-items: center; font-size: 13px; color: #57606a; }
+.countdown-value { font-variant-numeric: tabular-nums; font-weight: 600; color: #1f2328; }
+.countdown-note { color: #8c959f; }
+
+.panels { display: flex; gap: 16px; flex-wrap: wrap; }
+.conversation-panel, .suggestion-panel, .empty-platform-panel { background: #fff; border: 1px solid #d8dee4; border-radius: 8px; padding: 12px; min-width: 280px; }
+.panel-title { margin: 0 0 8px; font-size: 14px; }
+.conversation-facts { margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.fact { display: flex; gap: 8px; }
+.fact-label { font-weight: 600; }
+.suggestion-text { white-space: pre-wrap; font-size: 14px; }
+.suggestion-meta { color: #8c959f; font-size: 12px; }
+.suggestion-controls { display: flex; gap: 8px; margin-top: 10px; }
+.btn { padding: 6px 12px; border-radius: 6px; border: 1px solid #d8dee4; background: #fff; cursor: pointer; font-size: 13px; }
+.btn-manual { border-color: #1a7f37; color: #1a7f37; }
+.btn-no-save { border-color: #9a6700; color: #9a6700; }
+.btn-cancel { border-color: #cf222e; color: #cf222e; }
+.btn:disabled { opacity: 0.5; cursor: default; }
+.empty-platform-text { color: #57606a; font-size: 13px; }
+/* M7 platform surface */
+.platform-host { min-height: 260px; }
+.platform-surface { position: relative; width: 100%; height: 100%; min-height: 260px; background: #fff; border: 1px solid #d8dee4; border-radius: 8px; overflow: hidden; }
+.platform-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #f6f8fa; color: #57606a; font-size: 13px; z-index: 2; }
+.platform-overlay-label { padding: 8px 12px; border-radius: 6px; background: #fff; border: 1px solid #d8dee4; }
+/* M8 capability chips */
+.platform-capabilities { position: absolute; right: 8px; bottom: 8px; display: flex; gap: 6px; flex-wrap: wrap; z-index: 3; }
+.cap-chip { font-size: 11px; padding: 2px 8px; border-radius: 999px; }
+.cap-chip.supported { background: #dafbe1; color: #1a7f37; }
+.cap-chip.unsupported { background: #eaeef2; color: #8c959f; }

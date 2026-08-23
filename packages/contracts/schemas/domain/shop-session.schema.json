@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:shop-session",
+  "$title": "ShopSession",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "shop_id",
+    "partition"
+  ],
+  "properties": {
+    "shop_id": {
+      "type": "string"
+    },
+    "partition": {
+      "type": "string",
+      "description": "persist:shop-* Chromium partition"
+    },
+    "listener_state": {
+      "type": "string",
+      "enum": [
+        "stopped",
+        "listening",
+        "error"
+      ]
+    },
+    "login_state": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "logged_in",
+        "logged_out"
+      ]
+    },
+    "adapter_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

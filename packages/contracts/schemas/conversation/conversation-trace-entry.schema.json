@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:conversation:conversation-trace-entry",
+  "$title": "ConversationTraceEntry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sequence",
+    "component",
+    "operation"
+  ],
+  "properties": {
+    "sequence": {
+      "type": "integer"
+    },
+    "component": {
+      "type": "string"
+    },
+    "operation": {
+      "type": "string"
+    },
+    "decision": {
+      "type": "string"
+    },
+    "state_before": {
+      "type": "string"
+    },
+    "state_after": {
+      "type": "string"
+    },
+    "correlation_id": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

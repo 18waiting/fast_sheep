@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:handoff:handoff-trace-entry",
+  "$title": "HandoffTraceEntry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["step"],
+  "properties": {
+    "step": { "type": "string" },
+    "detail": { "type": "string" },
+    "matched": { "type": "boolean" }
+  }
+}

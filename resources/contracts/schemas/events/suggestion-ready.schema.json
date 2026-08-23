@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:event:suggestion-ready",
+  "$title": "Event suggestion-ready",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event",
+    "payload"
+  ],
+  "properties": {
+    "event": {
+      "const": "suggestion-ready"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "suggestion_id": {
+          "type": "string"
+        },
+        "conversation_id": {
+          "type": "string"
+        },
+        "generation": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "suggestion_id",
+        "conversation_id"
+      ]
+    },
+    "correlation_id": {
+      "type": "string"
+    }
+  }
+}

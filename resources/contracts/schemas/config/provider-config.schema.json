@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:config:provider-config",
+  "$title": "ProviderConfig",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "display_name",
+    "provider",
+    "protocol"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "protocol": {
+      "type": "string",
+      "enum": [
+        "chat_completions",
+        "responses",
+        "anthropic_messages",
+        "doubao_ark",
+        "siliconflow"
+      ]
+    },
+    "base_url": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "credential_ref": {
+      "type": "string",
+      "description": "credential_ref, never credential_value (ADR-004)"
+    },
+    "temperature": {
+      "type": "number"
+    },
+    "max_output": {
+      "type": "integer"
+    },
+    "thinking": {
+      "type": "boolean",
+      "default": false
+    },
+    "supports_tools": {
+      "type": "boolean",
+      "default": false
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

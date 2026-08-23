@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:import:legacy-import-manifest",
+  "$title": "LegacyImportManifest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "item_id",
+    "selection_id",
+    "display_name",
+    "source_type",
+    "source_fingerprint",
+    "parser_version",
+    "target_aggregate",
+    "target_writer",
+    "record_count"
+  ],
+  "properties": {
+    "item_id": {
+      "type": "string"
+    },
+    "selection_id": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "source_type": {
+      "type": "string"
+    },
+    "source_fingerprint": {
+      "type": "object"
+    },
+    "parser_version": {
+      "type": "string"
+    },
+    "target_aggregate": {
+      "type": "string"
+    },
+    "target_writer": {
+      "type": "string"
+    },
+    "record_count": {
+      "type": "integer"
+    },
+    "warnings": {
+      "type": "array"
+    },
+    "conflicts": {
+      "type": "array"
+    },
+    "secret_fields_detected": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "apply_action": {
+      "type": "string"
+    },
+    "provenance": {
+      "type": "string"
+    }
+  }
+}

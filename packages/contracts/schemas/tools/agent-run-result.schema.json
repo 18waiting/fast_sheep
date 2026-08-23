@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:tools:agent-run-result",
+  "$title": "AgentRunResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rounds",
+    "text"
+  ],
+  "properties": {
+    "rounds": {
+      "type": "integer"
+    },
+    "text": {
+      "type": "string"
+    },
+    "terminated": {
+      "type": "string"
+    },
+    "tool_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "dead_loop_guard": {
+      "type": "boolean"
+    },
+    "action": {
+      "type": "string"
+    }
+  }
+}

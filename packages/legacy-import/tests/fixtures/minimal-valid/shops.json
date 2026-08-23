@@ -1,0 +1,8 @@
+[
+  {
+    "id": "shop-import-1",
+    "type": "pdd",
+    "name": "导入店铺",
+    "enabled": true
+  }
+]

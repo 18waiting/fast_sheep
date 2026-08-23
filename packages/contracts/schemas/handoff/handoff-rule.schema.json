@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:handoff:handoff-rule",
+  "$title": "HandoffRule",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["keyword"],
+  "properties": {
+    "keyword": { "type": "string" },
+    "transfer_to": { "type": "string" },
+    "transfer_message": { "type": "string" },
+    "work_hours": { "type": "string" },
+    "source_agent": { "type": "string" },
+    "status": { "type": "string" },
+    "order_state": { "type": "string" },
+    "applicable_shops": { "type": "string" },
+    "sort_order": { "type": "integer" },
+    "enabled": { "type": "boolean" }
+  }
+}

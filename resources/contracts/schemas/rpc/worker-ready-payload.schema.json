@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:rpc:worker-ready-payload",
+  "$title": "WorkerReadyPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "worker_version",
+    "protocol_versions",
+    "pid",
+    "python_version",
+    "capabilities"
+  ],
+  "properties": {
+    "worker_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "protocol_versions": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 1
+    },
+    "pid": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "python_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "description": "protocol version (GF-RPC-001 payload_subset.version)"
+    }
+  }
+}

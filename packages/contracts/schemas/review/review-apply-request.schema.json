@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:review:review-apply-request",
+  "$title": "ReviewApplyRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [],
+  "properties": {
+    "delete_list": {
+      "type": "array"
+    },
+    "kb_rows": {
+      "type": "array"
+    },
+    "kb": {
+      "type": "string"
+    }
+  }
+}

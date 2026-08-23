@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>synthetic jd login</title></head>
+<body data-fw-jd-login>
+  <div data-fw-jd-login>请登录</div>
+  <div data-fw-jd-chat-list>
+    <div data-fw-jd-conversation data-conversation-id="c1" data-active="true" data-buyer-id="buyer-1" data-buyer="测试买家A">测试买家A</div>
+  </div>
+  <textarea data-fw-jd-composer-input></textarea>
+  <button data-fw-jd-send-btn>发送</button>
+  <script>
+    document.addEventListener("click", function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest("[data-fw-jd-send-btn]") : null;
+      if (!btn) return;
+      var input = document.querySelector("[data-fw-jd-composer-input]");
+      var messages = document.querySelector("[data-fw-jd-messages]");
+      var ack = document.querySelector("[data-fw-jd-send-ack]");
+      if (!input || !messages) return;
+      var value = input.getAttribute("value") || input.value || "";
+      if (!value) return;
+      var mid = (ack && ack.getAttribute("data-message-id")) || "ack-" + Date.now();
+      var row = document.createElement("div");
+      row.setAttribute("data-fw-jd-message", "");
+      row.setAttribute("data-direction", "outbound");
+      row.setAttribute("data-message-id", mid);
+      var content = document.createElement("span");
+      content.setAttribute("data-fw-jd-msg-content", "");
+      content.textContent = value;
+      row.appendChild(content);
+      messages.appendChild(row);
+    });
+  </script>
+</body>

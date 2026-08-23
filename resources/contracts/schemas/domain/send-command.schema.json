@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:send-command",
+  "$title": "SendCommand",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "send_id",
+    "conversation_id",
+    "shop_id",
+    "platform",
+    "segments"
+  ],
+  "properties": {
+    "send_id": {
+      "type": "string"
+    },
+    "conversation_id": {
+      "type": "string"
+    },
+    "shop_id": {
+      "type": "string"
+    },
+    "platform": {
+      "$ref": "fastwork:common:platform"
+    },
+    "segments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "fastwork:domain:send-segment"
+      }
+    },
+    "transfer": {
+      "$ref": "fastwork:domain:transfer-decision"
+    },
+    "idempotency_key": {
+      "type": "string"
+    }
+  }
+}

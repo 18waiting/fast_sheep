@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:prompt:prompt-assembly-request",
+  "$title": "PromptAssemblyRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profile_id"
+  ],
+  "properties": {
+    "profile_id": {
+      "type": "string"
+    },
+    "order_state": {
+      "type": "string",
+      "enum": [
+        "未下单",
+        "已下单"
+      ]
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "product_info": {
+      "type": "string"
+    },
+    "history": {
+      "type": "string"
+    },
+    "reference_content": {
+      "type": "string"
+    },
+    "message_has_image": {
+      "type": "boolean"
+    },
+    "skip_skill_context": {
+      "type": "boolean"
+    }
+  }
+}

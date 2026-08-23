@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:platform-reload-request",
+  "$title": "PlatformReloadRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["shop_id"],
+  "properties": {
+    "shop_id": { "type": "string", "minLength": 1 }
+  }
+}

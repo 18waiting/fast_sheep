@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:feedback:feedback-retry-request",
+  "$title": "FeedbackRetryRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_id"],
+  "properties": {
+    "record_id": { "type": "string", "minLength": 1 },
+    "conversation_id": { "type": "string" },
+    "class": { "type": "string", "enum": ["AUTO", "MANUAL", "NO_SAVE", "CORRECTION", "AUDIT_APPROVE", "RESTORE"] },
+    "trust_level": { "type": "string" },
+    "question": { "type": "string" },
+    "answer": { "type": "string" },
+    "product_id": { "type": "string" },
+    "entry": { "type": "object", "additionalProperties": true },
+    "created_at": { "type": "string" },
+    "retry": { "type": "boolean" }
+  }
+}

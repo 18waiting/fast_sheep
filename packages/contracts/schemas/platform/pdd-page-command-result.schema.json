@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:platform:pdd-page-command-result",
+  "$title": "PddPageCommandResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["command_id", "ok"],
+  "properties": {
+    "command_id": { "type": "string", "minLength": 1 },
+    "ok": { "type": "boolean" },
+    "result": { "type": "object", "additionalProperties": true },
+    "error": { "type": "string" }
+  }
+}

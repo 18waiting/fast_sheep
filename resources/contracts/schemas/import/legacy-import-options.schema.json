@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:import:legacy-import-options",
+  "$title": "LegacyImportOptions",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [],
+  "properties": {
+    "conflict_policy": {
+      "type": "string",
+      "enum": [
+        "PRESERVE_EXISTING",
+        "INSERT_MISSING",
+        "MERGE_SAFE_FIELDS",
+        "REPLACE_SELECTED"
+      ]
+    },
+    "legacy_timezone": {
+      "type": "string"
+    },
+    "import_provider_secret": {
+      "type": "boolean"
+    },
+    "rebuild_rag": {
+      "type": "boolean"
+    }
+  }
+}

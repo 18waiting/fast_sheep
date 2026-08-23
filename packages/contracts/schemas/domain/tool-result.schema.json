@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:tool-result",
+  "$title": "ToolResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tool_call_id",
+    "ok"
+  ],
+  "properties": {
+    "tool_call_id": {
+      "type": "string"
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "text": {
+      "type": "string"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "fastwork:error"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "remark": {
+      "type": "string"
+    }
+  }
+}

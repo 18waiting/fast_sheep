@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:conversation:conversation-engine-request",
+  "$title": "ConversationEngineRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "question"
+  ],
+  "properties": {
+    "question": {
+      "type": "string",
+      "minLength": 1
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "order_state": {
+      "type": "string",
+      "enum": [
+        "未下单",
+        "已下单"
+      ]
+    },
+    "chat_history": {
+      "type": "array",
+      "items": {
+        "$ref": "fastwork:domain:conversation-message"
+      }
+    },
+    "completed_question": {
+      "type": "string"
+    },
+    "product_info": {
+      "type": "string"
+    },
+    "buyer": {
+      "type": "string"
+    },
+    "shop_id": {
+      "type": "string"
+    },
+    "correlation_id": {
+      "type": "string"
+    },
+    "context": {
+      "$ref": "fastwork:domain:conversation-context"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+[project]
+name = "fastwork-ai-worker"
+version = "0.0.0"
+description = "Clean-room AI worker (M3: stdio JSONL RPC + persistence + deterministic RAG). No live provider calls."
+requires-python = ">=3.11"
+dependencies = [
+  "faiss-cpu>=1.9,<2",
+  "numpy>=1.24,<3",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

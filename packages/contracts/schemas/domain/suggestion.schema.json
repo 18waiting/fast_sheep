@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:suggestion",
+  "$title": "Suggestion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "suggestion_id",
+    "conversation_id",
+    "generation",
+    "reply",
+    "mode",
+    "created_at"
+  ],
+  "properties": {
+    "suggestion_id": {
+      "type": "string"
+    },
+    "conversation_id": {
+      "type": "string"
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reply": {
+      "type": "string"
+    },
+    "referenced_knowledge": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question",
+          "answer",
+          "similarity",
+          "source"
+        ],
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          },
+          "similarity": {
+            "type": "number"
+          },
+          "source": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "decision": {
+      "$ref": "fastwork:domain:transfer-decision"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "human_review",
+        "full_auto"
+      ]
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

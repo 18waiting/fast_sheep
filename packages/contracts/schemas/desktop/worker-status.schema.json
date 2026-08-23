@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:worker-status",
+  "$title": "WorkerStatus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "starting",
+        "ready",
+        "restarting",
+        "stopped",
+        "error"
+      ]
+    },
+    "worker_version": {
+      "type": "string"
+    },
+    "protocol_version": {
+      "type": "integer"
+    },
+    "last_error": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:config:storage-config",
+  "$title": "StorageConfig",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "data_root": {
+      "type": "string"
+    },
+    "seed_source": {
+      "type": "string"
+    },
+    "backup_dir": {
+      "type": "string"
+    }
+  }
+}

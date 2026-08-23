@@ -1,0 +1,596 @@
+{
+  "schema_version": "1.0",
+  "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+  "contracts": [
+    {
+      "id": "fastwork:common:conversation-role",
+      "version": "1.0",
+      "schema": "schemas/common/conversation-role.schema.json",
+      "direction": "shared",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:common:job-state",
+      "version": "1.0",
+      "schema": "schemas/common/job-state.schema.json",
+      "direction": "shared",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:common:parity-level",
+      "version": "1.0",
+      "schema": "schemas/common/parity-level.schema.json",
+      "direction": "shared",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:common:platform",
+      "version": "1.0",
+      "schema": "schemas/common/platform.schema.json",
+      "direction": "shared",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:common:send-state",
+      "version": "1.0",
+      "schema": "schemas/common/send-state.schema.json",
+      "direction": "shared",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:common:test-class",
+      "version": "1.0",
+      "schema": "schemas/common/test-class.schema.json",
+      "direction": "shared",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:common:trust-level",
+      "version": "1.0",
+      "schema": "schemas/common/trust-level.schema.json",
+      "direction": "shared",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:config:ai-config",
+      "version": "1.0",
+      "schema": "schemas/config/ai-config.schema.json",
+      "direction": "config",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:config:collaboration-config",
+      "version": "1.0",
+      "schema": "schemas/config/collaboration-config.schema.json",
+      "direction": "config",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:config:conversation-policy-config",
+      "version": "1.0",
+      "schema": "schemas/config/conversation-policy-config.schema.json",
+      "direction": "config",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:config:feature-flags",
+      "version": "1.0",
+      "schema": "schemas/config/feature-flags.schema.json",
+      "direction": "config",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:config:handoff-config",
+      "version": "1.0",
+      "schema": "schemas/config/handoff-config.schema.json",
+      "direction": "config",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:config:learning-config",
+      "version": "1.0",
+      "schema": "schemas/config/learning-config.schema.json",
+      "direction": "config",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:config:optimization-config",
+      "version": "1.0",
+      "schema": "schemas/config/optimization-config.schema.json",
+      "direction": "config",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:config:platform-config",
+      "version": "1.0",
+      "schema": "schemas/config/platform-config.schema.json",
+      "direction": "config",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:config:provider-config",
+      "version": "1.0",
+      "schema": "schemas/config/provider-config.schema.json",
+      "direction": "config",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:config:rag-config",
+      "version": "1.0",
+      "schema": "schemas/config/rag-config.schema.json",
+      "direction": "config",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:config:storage-config",
+      "version": "1.0",
+      "schema": "schemas/config/storage-config.schema.json",
+      "direction": "config",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:background-job",
+      "version": "1.0",
+      "schema": "schemas/domain/background-job.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:conversation-context",
+      "version": "1.0",
+      "schema": "schemas/domain/conversation-context.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:conversation-message",
+      "version": "1.0",
+      "schema": "schemas/domain/conversation-message.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:conversation",
+      "version": "1.0",
+      "schema": "schemas/domain/conversation.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:feedback-record",
+      "version": "1.0",
+      "schema": "schemas/domain/feedback-record.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:generation-request",
+      "version": "1.0",
+      "schema": "schemas/domain/generation-request.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:generation-result",
+      "version": "1.0",
+      "schema": "schemas/domain/generation-result.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:knowledge-candidate",
+      "version": "1.0",
+      "schema": "schemas/domain/knowledge-candidate.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:knowledge-entry",
+      "version": "1.0",
+      "schema": "schemas/domain/knowledge-entry.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:prompt-profile",
+      "version": "1.0",
+      "schema": "schemas/domain/prompt-profile.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:retrieval-result",
+      "version": "1.0",
+      "schema": "schemas/domain/retrieval-result.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:send-command",
+      "version": "1.0",
+      "schema": "schemas/domain/send-command.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:send-result",
+      "version": "1.0",
+      "schema": "schemas/domain/send-result.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:send-segment",
+      "version": "1.0",
+      "schema": "schemas/domain/send-segment.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:shop-session",
+      "version": "1.0",
+      "schema": "schemas/domain/shop-session.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:shop",
+      "version": "1.0",
+      "schema": "schemas/domain/shop.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:skill-definition",
+      "version": "1.0",
+      "schema": "schemas/domain/skill-definition.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:suggestion",
+      "version": "1.0",
+      "schema": "schemas/domain/suggestion.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:tool-call",
+      "version": "1.0",
+      "schema": "schemas/domain/tool-call.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:tool-result",
+      "version": "1.0",
+      "schema": "schemas/domain/tool-result.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:transfer-decision",
+      "version": "1.0",
+      "schema": "schemas/domain/transfer-decision.schema.json",
+      "direction": "domain",
+      "owner": "worker",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:error",
+      "version": "1.0",
+      "schema": "schemas/errors/error.schema.json",
+      "direction": "shared",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:buyer-message-received",
+      "version": "1.0",
+      "schema": "schemas/events/buyer-message-received.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:conversation-state-changed",
+      "version": "1.0",
+      "schema": "schemas/events/conversation-state-changed.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:envelope",
+      "version": "1.0",
+      "schema": "schemas/events/event-envelope.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:human-takeover",
+      "version": "1.0",
+      "schema": "schemas/events/human-takeover.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:index-rebuild-completed",
+      "version": "1.0",
+      "schema": "schemas/events/index-rebuild-completed.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:index-rebuild-started",
+      "version": "1.0",
+      "schema": "schemas/events/index-rebuild-started.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:job-state-changed",
+      "version": "1.0",
+      "schema": "schemas/events/job-state-changed.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:knowledge-updated",
+      "version": "1.0",
+      "schema": "schemas/events/knowledge-updated.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:learning-progress",
+      "version": "1.0",
+      "schema": "schemas/events/learning-progress.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:optimization-progress",
+      "version": "1.0",
+      "schema": "schemas/events/optimization-progress.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:send-completed",
+      "version": "1.0",
+      "schema": "schemas/events/send-completed.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:send-started",
+      "version": "1.0",
+      "schema": "schemas/events/send-started.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:suggestion-ready",
+      "version": "1.0",
+      "schema": "schemas/events/suggestion-ready.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:event:transfer-requested",
+      "version": "1.0",
+      "schema": "schemas/events/transfer-requested.schema.json",
+      "direction": "event",
+      "owner": "main",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:rpc:context",
+      "version": "1.0",
+      "schema": "schemas/rpc/context.schema.json",
+      "direction": "worker_rpc",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:rpc:error",
+      "version": "1.0",
+      "schema": "schemas/rpc/error.schema.json",
+      "direction": "worker_rpc",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:rpc:event",
+      "version": "1.0",
+      "schema": "schemas/rpc/event.schema.json",
+      "direction": "worker_rpc",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:rpc:request",
+      "version": "1.0",
+      "schema": "schemas/rpc/request.schema.json",
+      "direction": "worker_rpc",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:rpc:response",
+      "version": "1.0",
+      "schema": "schemas/rpc/response.schema.json",
+      "direction": "worker_rpc",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "spec/rebuild/domain-contracts.md",
+      "behavior_ids": []
+    }
+  ]
+}

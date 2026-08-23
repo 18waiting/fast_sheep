@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:rpc:cancel-result",
+  "$title": "CancelResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "cancelled"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cancelled": {
+      "type": "boolean"
+    },
+    "already_completed": {
+      "type": "boolean"
+    }
+  }
+}

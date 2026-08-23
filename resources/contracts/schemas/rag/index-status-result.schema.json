@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:rag:index-status-result",
+  "$title": "IndexStatusResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ready",
+    "dimension",
+    "metric"
+  ],
+  "properties": {
+    "ready": {
+      "type": "boolean"
+    },
+    "dimension": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "metric": {
+      "type": "string"
+    },
+    "global_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "product_index_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "common_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "last_build_at": {
+      "type": "string"
+    },
+    "index_schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "derived_root": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:platform:pdd-session-status",
+  "$title": "PddSessionStatus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status"],
+  "properties": {
+    "status": { "type": "string", "enum": ["STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "ERROR", "DISPOSED"] },
+    "session_id": { "type": "string" },
+    "shop_id": { "type": "string" },
+    "last_error": { "type": "string" }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:job-get-request",
+  "$title": "JobGetRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "job_id"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string"
+    }
+  }
+}

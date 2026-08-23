@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:focus-request",
+  "$title": "FocusRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "shop_id"
+  ],
+  "properties": {
+    "shop_id": {
+      "type": "string"
+    }
+  }
+}

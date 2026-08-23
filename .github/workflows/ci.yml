@@ -1,0 +1,230 @@
+# Clean-room M0 + M1 + M2 + M3 + M4 + M5 + M6 + M7 + M8 + M9 CI baseline. No live API/platform/auth calls; no FastWork execution.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  m0-gates:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Install Python deps (faiss-cpu, numpy)
+        run: py -3.12 -m pip install faiss-cpu numpy
+      - name: Typecheck
+        run: pnpm run typecheck
+      - name: Tests
+        run: pnpm run test
+      - name: Contract tests
+        run: pnpm run test:contracts
+      - name: Golden fixture schema validation
+        run: pnpm run test:golden-schema
+      - name: Frozen manifest verification
+        run: pnpm run verify:frozen
+      - name: Behavior coverage verification
+        run: pnpm run verify:coverage
+      - name: Secret scanner
+        run: pnpm run scan:secrets
+      - name: Clean-room boundary checker
+        run: pnpm run check:boundary
+      - name: Python worker import/compile
+        run: pnpm run python:check
+      - name: M1 Python runtime check
+        run: pnpm run check:python-runtime
+      - name: M1 Node persistence typecheck/build/tests
+        run: pnpm run test:m1
+      - name: M1 Python persistence tests
+        run: pnpm run python:m1
+      - name: M1 cross-process SQLite
+        run: pnpm run test:cross-process
+      - name: M1 report & parity-subset verification
+        run: pnpm run verify:m1-reports
+      - name: M2 worker-rpc typecheck/build/tests
+        run: pnpm run test:m2
+      - name: M2 real-worker smoke
+        run: pnpm run rpc:smoke
+      - name: M2 golden RPC fixture execution (12 GF-RPC)
+        run: pnpm run verify:m2-goldens
+      - name: M2 no-listening-port security check (GF-SEC-007)
+        run: pnpm run check:rpc-no-listener
+      - name: M2 report verification
+        run: pnpm run verify:m2-reports
+      - name: M3 Python RAG tests
+        run: pnpm run rag:python-tests
+      - name: M3 golden RAG fixture execution (26 GF-RAG)
+        run: pnpm run verify:m3-goldens
+      - name: M3 real-worker RAG smoke
+        run: pnpm run rag:smoke
+      - name: M3 no-network check
+        run: pnpm run check:rag-no-network
+      - name: M3 report verification
+        run: pnpm run verify:m3-reports
+      - name: M4 Python prompt/tool/provider/security tests
+        run: pnpm run m4:python-tests
+      - name: M4 golden fixture execution (12+12+14+6)
+        run: pnpm run verify:m4-goldens
+      - name: M4 real-worker smoke + tool sandbox + no-network
+        run: pnpm run m4:smoke && pnpm run tool:sandbox-smoke && pnpm run check:m4-no-network
+      - name: M4 report verification
+        run: pnpm run verify:m4-reports
+      - name: M5 ConversationEngine Python tests
+        run: pnpm run m5:conversation-tests
+      - name: M5 conversation golden execution (16 GF-CONV)
+        run: pnpm run verify:m5-conversation-goldens
+      - name: M5 Orchestrator TypeScript tests
+        run: pnpm run m5:orchestrator-tests
+      - name: M5 orchestrator golden execution (22 GF-ORCH)
+        run: pnpm run verify:m5-orchestrator-goldens
+      - name: M5 real-worker conversation smoke + orchestrator smoke
+        run: pnpm run m5:conversation-smoke && pnpm run m5:orchestrator-smoke
+      - name: M5 no-network check
+        run: pnpm run check:m5-no-network
+      - name: M5 report verification
+        run: pnpm run verify:m5-reports
+      - name: M6 desktop-ipc + desktop build/tests
+        run: pnpm run test:m6
+      - name: M6 typed-IPC verification
+        run: pnpm run verify:m6-typed-ipc
+      - name: M6 no-network check
+        run: pnpm run check:m6-no-network
+      - name: M6 workbench projection verification
+        run: pnpm run verify:m6-workbench-projection
+      - name: M6 real-Electron smoke (Main+Preload+Renderer)
+        run: pnpm run m6:electron-smoke
+      - name: M6 desktop security check
+        run: pnpm run check:m6-desktop-security
+      - name: M6 report verification
+        run: pnpm run verify:m6-reports
+      - name: M7 platform-pdd typecheck/build/tests
+        run: pnpm run test:m7
+      - name: M7 synthetic DOM fixture validation
+        run: pnpm run verify:m7-dom-fixtures
+      - name: M7 PDD platform golden execution
+        run: pnpm run verify:m7-goldens
+      - name: M7 PDD security scan
+        run: pnpm run check:m7-pdd-security
+      - name: M7 no-network check
+        run: pnpm run check:m7-no-network
+      - name: M7 real-Electron PDD WebContentsView smoke
+        run: pnpm run m7:pdd-smoke
+      - name: M7 PDD session isolation (real Electron)
+        run: pnpm run verify:m7-session-isolation
+      - name: M7 full PDD vertical offline smoke (real worker)
+        run: pnpm run m7:pdd-vertical
+      - name: M7 report verification
+        run: pnpm run verify:m7-reports
+      - name: M8 platform packages typecheck/build/tests
+        run: pnpm run test:m8-platforms
+      - name: M8 synthetic DOM fixture validation
+        run: pnpm run verify:m8-dom-fixtures
+      - name: M8 platform golden execution
+        run: pnpm run verify:m8-goldens
+      - name: M8 platform security scan
+        run: pnpm run check:m8-platform-security
+      - name: M8 no-network check
+        run: pnpm run check:m8-no-network
+      - name: M8 five per-platform Electron smokes
+        run: pnpm run m8:platform-smokes
+      - name: M8 six-platform isolation smoke
+        run: pnpm run m8:multi-platform-smoke
+      - name: M8 five-platform vertical offline smoke (real worker)
+        run: pnpm run m8:vertical-smoke
+      - name: M8 report verification
+        run: pnpm run verify:m8-reports
+      - name: M9 handoff Python tests
+        run: pnpm run test:m9-handoff
+      - name: M9 feedback Python tests
+        run: pnpm run test:m9-feedback-py
+      - name: M9 feedback TS + platform-web-common tests
+        run: pnpm run test:m9-feedback-ts
+      - name: M9 handoff golden execution
+        run: pnpm run verify:m9-handoff-goldens
+      - name: M9 feedback golden execution
+        run: pnpm run verify:m9-feedback-goldens
+      - name: M9 handoff vertical smoke
+        run: pnpm run m9:handoff-vertical
+      - name: M9 feedback vertical smoke
+        run: pnpm run m9:feedback-vertical
+      - name: M9 handoff security + feedback ownership + no-network
+        run: pnpm run check:m9-handoff-security && pnpm run check:m9-feedback-ownership && pnpm run check:m9-no-network
+      - name: M9 report verification
+        run: pnpm run verify:m9-reports
+      - name: M10 learning Python tests (37)
+        run: pnpm run test:m10-learning
+      - name: M10 review Python tests (18)
+        run: pnpm run test:m10-review
+      - name: M10 audit Python tests (13)
+        run: pnpm run test:m10-audit
+      - name: M10 optimization Python tests (14)
+        run: pnpm run test:m10-optimization
+      - name: M10 background-jobs TS tests
+        run: pnpm run test:m10-bg-jobs
+      - name: M10 product-optimization TS tests
+        run: pnpm run test:m10-product-opt
+      - name: M10 learning golden execution (11 GF-LEARN)
+        run: pnpm run verify:m10-learning-goldens
+      - name: M10 review golden execution (8 GF-REV)
+        run: pnpm run verify:m10-review-goldens
+      - name: M10 audit golden execution (5 GF-AUDIT)
+        run: pnpm run verify:m10-audit-goldens
+      - name: M10 optimization golden execution + TS parity (12 GF-OPT)
+        run: pnpm run verify:m10-optimization-goldens
+      - name: M10 learning vertical smoke (real worker)
+        run: pnpm run run:m10-learning-vertical
+      - name: M10 review/audit vertical smoke (real worker)
+        run: pnpm run run:m10-review-audit-vertical
+      - name: M10 optimization vertical smoke (real worker + Main apply)
+        run: pnpm run run:m10-optimization-vertical
+      - name: M10 job recovery smoke + M9 crash-window idempotency preflight
+        run: pnpm run run:m10-job-recovery
+      - name: M10 no-network check
+        run: pnpm run check:m10-no-network
+      - name: M10 data-ownership check
+        run: pnpm run check:m10-data-ownership
+      - name: M10 reports verification (17 reports)
+        run: pnpm run verify:m10-reports
+      - name: M11 fixture-count preflight
+        run: node -e "const r=require('./rebuild/reports/m11-m10-fixture-count-preflight-report.json'); if(r.result!=='PASS') process.exit(1)"
+      - name: M11 legacy-import TS tests
+        run: pnpm run test:m11-legacy-ts
+      - name: M11 legacy-import Python tests
+        run: pnpm run test:m11-legacy-py
+      - name: M11 STORE golden execution (15 GF-STORE)
+        run: pnpm run verify:m11-store-goldens
+      - name: M11 legacy fixture safety
+        run: pnpm run verify:m11-legacy-fixtures
+      - name: M11 import ownership check
+        run: pnpm run check:m11-import-ownership
+      - name: M11 import secret-safety check
+        run: pnpm run check:m11-import-secret-safety
+      - name: M11 no-network check
+        run: pnpm run check:m11-no-network
+      - name: M11 import vertical smoke (real worker)
+        run: pnpm run run:m11-import-vertical
+      - name: M11 import recovery smoke
+        run: pnpm run run:m11-import-recovery
+      - name: M11 secret migration smoke
+        run: pnpm run run:m11-secret-migration
+      - name: M11 desktop import IPC tests
+        run: pnpm run test:m6
+      - name: M11 reports verification (12 reports)
+        run: pnpm run verify:m11-reports
+      - name: M12 final RC gate (all frozen goldens + matrices + verticals + security + build + profiles)
+        run: pnpm run run:m12-rc-gate
+
+
+
+

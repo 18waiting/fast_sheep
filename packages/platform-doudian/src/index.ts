@@ -1,0 +1,23 @@
+// @fastwork/platform-doudian public surface (M8 clean-room).
+export { DOUDIAN_ERROR_CODES, DoudianError, doudianError, type DoudianErrorCode } from "./errors.js";
+export { DOUDIAN_CAPABILITIES, DOUDIAN_CAPABILITY_CERTAINTY, capabilities } from "./capabilities.js";
+export { normalizeDoudianMessage, normalizeMessage, fallbackFingerprint, type NormalizeInput } from "./message-normalizer.js";
+export { MessageDeduplicator as DoudianMessageDeduplicator, type DedupStats } from "./message-deduplicator.js";
+export { DoudianSessionState, DOUDIAN_SESSION_STATES, type DoudianSessionStateView } from "./session-state.js";
+export { createDoudianPlatformAdapter, type DoudianPlatformAdapter } from "./platform-adapter.js";
+export { DOUDIAN_SELECTOR_PROFILE, doudianProfile } from "./dom/selector-registry.js";
+export type { DomHealthResult } from "@fastwork/platform-web-common";
+export { doudianDomHealth } from "./dom/dom-health.js";
+export type { ConversationRead } from "@fastwork/platform-web-common";
+export { readDoudianConversation, listDoudianConversations } from "./dom/conversation-reader.js";
+export { readDoudianMessages } from "./dom/message-reader.js";
+export { doudianComposerState, doudianSendText, doudianSendImage } from "./dom/composer-driver.js";
+export { detectDoudianHumanReply } from "./dom/takeover-detector.js";
+export { doudianExecuteTransfer } from "./dom/transfer-driver.js";
+export type { SendResult } from "@fastwork/platform-web-common";
+export { doudianImageDriver } from "./dom/image-driver.js";
+export { DoudianPageRuntime, type PageTransport, type DoudianPageRuntimeOptions, type PageObserverLike } from "./page/page-runtime.js";
+export { DoudianObserver } from "./page/page-observer.js";
+export type { DoudianPageBridge } from "./page/page-bridge.js";
+export { buildDoudianPageReady, buildDoudianLoginRequired, buildDoudianDomUnsupported, buildDoudianConversationChanged, buildDoudianMessageReceived, buildDoudianHumanReplyDetected, buildDoudianSendAck, buildDoudianTransferAck } from "./page/page-events.js";
+export { dispatchDoudianCommand, isDoudianCommandAllowed, DOUDIAN_COMMAND_ALLOWLIST, FORBIDDEN_COMMAND_TYPES, type DoudianCommandHandlers } from "./page/page-commands.js";

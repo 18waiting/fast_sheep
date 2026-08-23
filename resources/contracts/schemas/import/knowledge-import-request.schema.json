@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:import:knowledge-import-request",
+  "$title": "KnowledgeImportRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "item_id"
+  ],
+  "properties": {
+    "selection_id": {
+      "type": "string"
+    },
+    "item_id": {
+      "type": "string"
+    },
+    "library": {
+      "type": "string"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          },
+          "product_id": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "library": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

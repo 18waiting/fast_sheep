@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:review:review-proposal-request",
+  "$title": "ReviewProposalRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [],
+  "properties": {
+    "candidates": {
+      "type": "array"
+    },
+    "b_library": {
+      "type": "array"
+    },
+    "delete_list": {
+      "type": "array"
+    },
+    "ai_output": {
+      "type": "string"
+    },
+    "kb": {
+      "type": "string"
+    },
+    "config": {
+      "type": "object"
+    }
+  }
+}

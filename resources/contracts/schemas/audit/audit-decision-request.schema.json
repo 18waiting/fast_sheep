@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:audit:audit-decision-request",
+  "$title": "AuditDecisionRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "action"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "保留",
+        "丢弃",
+        "待定"
+      ]
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "command": {
+      "type": "string"
+    }
+  }
+}

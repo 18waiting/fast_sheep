@@ -1,0 +1,26 @@
+// @fastwork/legacy-import public surface (M11 clean-room).
+export { LegacyImportError, IMPORT_ERROR_CODES, type ImportErrorCode } from "./errors.js";
+export { createSelection, selectionFromRefs, sourceTypeForPath } from "./source-selection.js";
+export { fingerprintFile, fingerprintString } from "./source-fingerprint.js";
+export { scanSelection } from "./source-scanner.js";
+export { buildItemManifest } from "./import-manifest.js";
+export { buildPlan, planFingerprint } from "./import-plan.js";
+export { planImport } from "./import-planner.js";
+export { DEFAULT_CONFLICT_POLICY, CONFLICT_POLICIES, isConflictPolicy, resolveConflict } from "./conflict-policy.js";
+export { convertLegacyTimestamp } from "./timestamp-converter.js";
+export { detectSecrets, providerSecretDecision, SELLER_SECRET_FIELDS, PROVIDER_SECRET_FIELDS } from "./secret-policy.js";
+export { assertInsideRoot, assertNoSymlinkEscape, rejectTraversal, isDevicePath, DEFAULT_SAFETY_LIMITS, type PathSafetyLimits } from "./path-safety.js";
+export { createSession, SqliteImportSessionStore, type ImportSessionStorePort } from "./import-session.js";
+export { verifyImport, type VerificationDeps } from "./import-verifier.js";
+export { ImportOrchestrator, type ImportOrchestratorOptions } from "./import-orchestrator.js";
+export type * from "./types.js";
+export type { MainImportWriterPort, MainWriteResult } from "./ports/main-import-writer.js";
+export type { WorkerImportClientPort } from "./ports/worker-import-client.js";
+export type { DatabaseBackupPort } from "./ports/database-backup-port.js";
+export type { SecretStorePort } from "./ports/secret-store-port.js";
+export type { Clock } from "./ports/clock.js";
+export type { ImportEventBus } from "./ports/event-bus.js";
+export { PersistenceMainImportWriter } from "./adapters/persistence-main-import-writer.js";
+export { WorkerLegacyImportClient } from "./adapters/worker-legacy-import-client.js";
+export { PersistenceBackupAdapter } from "./adapters/persistence-backup-adapter.js";
+export { SecretStoreAdapter } from "./adapters/secret-store-adapter.js";

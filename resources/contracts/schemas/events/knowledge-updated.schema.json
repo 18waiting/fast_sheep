@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:event:knowledge-updated",
+  "$title": "Event knowledge-updated",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event",
+    "payload"
+  ],
+  "properties": {
+    "event": {
+      "const": "knowledge-updated"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "entry_id": {
+          "type": "string"
+        },
+        "trust_level": {
+          "$ref": "fastwork:common:trust-level"
+        }
+      },
+      "required": [
+        "entry_id",
+        "trust_level"
+      ]
+    },
+    "correlation_id": {
+      "type": "string"
+    }
+  }
+}

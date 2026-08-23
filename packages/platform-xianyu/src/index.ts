@@ -1,0 +1,23 @@
+// @fastwork/platform-xianyu public surface (M8 clean-room).
+export { XIANYU_ERROR_CODES, XianyuError, xianyuError, type XianyuErrorCode } from "./errors.js";
+export { XIANYU_CAPABILITIES, XIANYU_CAPABILITY_CERTAINTY, capabilities } from "./capabilities.js";
+export { normalizeXianyuMessage, normalizeMessage, fallbackFingerprint, type NormalizeInput } from "./message-normalizer.js";
+export { MessageDeduplicator as XianyuMessageDeduplicator, type DedupStats } from "./message-deduplicator.js";
+export { XianyuSessionState, XIANYU_SESSION_STATES, type XianyuSessionStateView } from "./session-state.js";
+export { createXianyuPlatformAdapter, type XianyuPlatformAdapter } from "./platform-adapter.js";
+export { XIANYU_SELECTOR_PROFILE, xianyuProfile } from "./dom/selector-registry.js";
+export type { DomHealthResult } from "@fastwork/platform-web-common";
+export { xianyuDomHealth } from "./dom/dom-health.js";
+export type { ConversationRead } from "@fastwork/platform-web-common";
+export { readXianyuConversation, listXianyuConversations } from "./dom/conversation-reader.js";
+export { readXianyuMessages } from "./dom/message-reader.js";
+export { xianyuComposerState, xianyuSendText, xianyuSendImage } from "./dom/composer-driver.js";
+export { detectXianyuHumanReply } from "./dom/takeover-detector.js";
+export { xianyuExecuteTransfer } from "./dom/transfer-driver.js";
+export type { SendResult } from "@fastwork/platform-web-common";
+export { xianyuImageDriver } from "./dom/image-driver.js";
+export { XianyuPageRuntime, type PageTransport, type XianyuPageRuntimeOptions, type PageObserverLike } from "./page/page-runtime.js";
+export { XianyuObserver } from "./page/page-observer.js";
+export type { XianyuPageBridge } from "./page/page-bridge.js";
+export { buildXianyuPageReady, buildXianyuLoginRequired, buildXianyuDomUnsupported, buildXianyuConversationChanged, buildXianyuMessageReceived, buildXianyuHumanReplyDetected, buildXianyuSendAck, buildXianyuTransferAck } from "./page/page-events.js";
+export { dispatchXianyuCommand, isXianyuCommandAllowed, XIANYU_COMMAND_ALLOWLIST, FORBIDDEN_COMMAND_TYPES, type XianyuCommandHandlers } from "./page/page-commands.js";

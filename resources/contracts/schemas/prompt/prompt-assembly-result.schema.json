@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:prompt:prompt-assembly-result",
+  "$title": "PromptAssemblyResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profile_id",
+    "slots"
+  ],
+  "properties": {
+    "profile_id": {
+      "type": "string"
+    },
+    "slots": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "order": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mounted_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "skill_context_included": {
+      "type": "boolean"
+    },
+    "image_rule": {
+      "type": "string"
+    },
+    "prompt": {
+      "type": "string"
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "truncation": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

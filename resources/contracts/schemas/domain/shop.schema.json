@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:shop",
+  "$title": "Shop",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "type",
+    "name",
+    "enabled"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "shop-<epochMs>-<4digit> (DESIGN)"
+    },
+    "type": {
+      "$ref": "fastwork:common:platform"
+    },
+    "name": {
+      "type": "string"
+    },
+    "created_time": {
+      "type": "string",
+      "description": "YYYY-MM-DD (optional)"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "order": {
+      "type": "integer",
+      "description": "sort order (DESIGN)"
+    }
+  }
+}

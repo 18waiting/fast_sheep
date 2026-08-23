@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:config:learning-config",
+  "$title": "LearningConfig",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "freq_threshold": {
+      "type": "number",
+      "default": 0.9
+    },
+    "top_n": {
+      "type": "integer",
+      "default": 100
+    },
+    "min_chars": {
+      "type": "integer",
+      "default": 5
+    },
+    "qa_cap": {
+      "type": "integer",
+      "default": 2000
+    },
+    "device_cap": {
+      "type": "integer",
+      "default": 2000
+    }
+  }
+}

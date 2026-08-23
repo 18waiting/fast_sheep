@@ -1,0 +1,23 @@
+// @fastwork/platform-jd public surface (M8 clean-room).
+export { JD_ERROR_CODES, JDError, jdError, type JDErrorCode } from "./errors.js";
+export { JD_CAPABILITIES, JD_CAPABILITY_CERTAINTY, capabilities } from "./capabilities.js";
+export { normalizeJDMessage, normalizeMessage, fallbackFingerprint, type NormalizeInput } from "./message-normalizer.js";
+export { MessageDeduplicator as JDMessageDeduplicator, type DedupStats } from "./message-deduplicator.js";
+export { JDSessionState, JD_SESSION_STATES, type JDSessionStateView } from "./session-state.js";
+export { createJDPlatformAdapter, type JDPlatformAdapter } from "./platform-adapter.js";
+export { JD_SELECTOR_PROFILE, jdProfile } from "./dom/selector-registry.js";
+export type { DomHealthResult } from "@fastwork/platform-web-common";
+export { jdDomHealth } from "./dom/dom-health.js";
+export type { ConversationRead } from "@fastwork/platform-web-common";
+export { readJDConversation, listJDConversations } from "./dom/conversation-reader.js";
+export { readJDMessages } from "./dom/message-reader.js";
+export { jdComposerState, jdSendText, jdSendImage } from "./dom/composer-driver.js";
+export { detectJDHumanReply } from "./dom/takeover-detector.js";
+export { jdExecuteTransfer } from "./dom/transfer-driver.js";
+export type { SendResult } from "@fastwork/platform-web-common";
+export { jdImageDriver } from "./dom/image-driver.js";
+export { JDPageRuntime, type PageTransport, type JDPageRuntimeOptions, type PageObserverLike } from "./page/page-runtime.js";
+export { JDObserver } from "./page/page-observer.js";
+export type { JDPageBridge } from "./page/page-bridge.js";
+export { buildJDPageReady, buildJDLoginRequired, buildJDDomUnsupported, buildJDConversationChanged, buildJDMessageReceived, buildJDHumanReplyDetected, buildJDSendAck, buildJDTransferAck } from "./page/page-events.js";
+export { dispatchJDCommand, isJDCommandAllowed, JD_COMMAND_ALLOWLIST, FORBIDDEN_COMMAND_TYPES, type JDCommandHandlers } from "./page/page-commands.js";

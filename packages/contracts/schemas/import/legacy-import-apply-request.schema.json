@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:import:legacy-import-apply-request",
+  "$title": "LegacyImportApplyRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "plan_sha256"
+  ],
+  "properties": {
+    "plan_sha256": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    }
+  }
+}

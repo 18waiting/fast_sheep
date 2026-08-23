@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:conversation-context",
+  "$title": "ConversationContext",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conversation_id",
+    "shop_id",
+    "buyer",
+    "question"
+  ],
+  "properties": {
+    "conversation_id": {
+      "type": "string"
+    },
+    "shop_id": {
+      "type": "string"
+    },
+    "buyer": {
+      "type": "string"
+    },
+    "question": {
+      "type": "string"
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "$ref": "fastwork:domain:conversation-message"
+      }
+    },
+    "product": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "{id,title,detail,shop}"
+    },
+    "order": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "{state,tags[],data{}}"
+    },
+    "mounted_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "config_snapshot": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "retrieval": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

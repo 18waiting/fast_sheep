@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:import:legacy-source-selection",
+  "$title": "LegacySourceSelection",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "selection_id",
+    "root",
+    "items"
+  ],
+  "properties": {
+    "selection_id": {
+      "type": "string"
+    },
+    "root": {
+      "type": "string"
+    },
+    "selected_at": {
+      "type": "string"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "fastwork:import:legacy-source-item"
+      }
+    }
+  }
+}

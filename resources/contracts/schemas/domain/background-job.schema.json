@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:background-job",
+  "$title": "BackgroundJob",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job_id",
+    "type",
+    "state"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "learning",
+        "index_rebuild",
+        "knowledge_review",
+        "product_optimization",
+        "cloud_sync"
+      ]
+    },
+    "state": {
+      "$ref": "fastwork:common:job-state"
+    },
+    "progress": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "message": {
+      "type": "string"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finished_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cancellation_token": {
+      "type": "string"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "fastwork:error"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

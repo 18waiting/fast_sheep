@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:event:index-rebuild-started",
+  "$title": "Event index-rebuild-started",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event",
+    "payload"
+  ],
+  "properties": {
+    "event": {
+      "const": "index-rebuild-started"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "full",
+            "incremental",
+            "precise"
+          ]
+        }
+      },
+      "required": [
+        "mode"
+      ]
+    },
+    "correlation_id": {
+      "type": "string"
+    }
+  }
+}

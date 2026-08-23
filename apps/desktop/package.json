@@ -1,0 +1,45 @@
+{
+  "name": "@fastwork/desktop",
+  "version": "0.1.0-rc.1",
+  "private": true,
+  "type": "module",
+  "main": "dist/main/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.preload.json && node ../../scripts/copy-renderer-assets.mjs && node scripts/build-pdd-preload.mjs",
+    "start": "electron .",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.preload.json",
+    "test": "pnpm run build && node --test \"tests/*.test.ts\""
+  },
+  "dependencies": {
+    "@fastwork/contracts": "workspace:*",
+    "@fastwork/desktop-ipc": "workspace:*",
+    "@fastwork/orchestrator": "workspace:*",
+    "@fastwork/persistence": "workspace:*",
+    "@fastwork/worker-rpc": "workspace:*",
+    "@fastwork/platform-pdd": "workspace:*",
+    "@fastwork/platform-web-common": "workspace:*",
+    "@fastwork/platform-doudian": "workspace:*",
+    "@fastwork/platform-jd": "workspace:*",
+    "@fastwork/platform-kuaishou": "workspace:*",
+    "@fastwork/platform-qianniu": "workspace:*",
+    "@fastwork/platform-xianyu": "workspace:*",
+    "@fastwork/feedback": "workspace:*",
+    "@fastwork/background-jobs": "workspace:*",
+    "@fastwork/product-optimization": "workspace:*",
+    "@fastwork/legacy-import": "workspace:*",
+    "@fastwork/test-kit": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "electron": "43.4.0",
+    "typescript": "^5.5.0",
+    "esbuild": "^0.24.0",
+    "electron-builder": "26.15.3",
+    "@electron/asar": "3.4.1"
+  }
+}
+
+
+
+
+

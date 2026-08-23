@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:send-result",
+  "$title": "SendResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "send_id",
+    "ok",
+    "state",
+    "at"
+  ],
+  "properties": {
+    "send_id": {
+      "type": "string"
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "platform_message_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "fastwork:error"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "state": {
+      "$ref": "fastwork:common:send-state"
+    },
+    "at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

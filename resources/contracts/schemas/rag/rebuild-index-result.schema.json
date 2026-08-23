@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:rag:rebuild-index-result",
+  "$title": "RebuildIndexResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "mode",
+    "ok"
+  ],
+  "properties": {
+    "mode": {
+      "type": "string"
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "entry_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "product_index_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "global_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "built_at": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,350 @@
+{
+  "map": {
+    "B-CONV-001": [
+      [
+        "fastwork:domain:conversation-context",
+        "fastwork:rpc:request"
+      ],
+      "M5"
+    ],
+    "B-CONV-004": [
+      [
+        "fastwork:domain:conversation-context",
+        "fastwork:config:conversation-policy-config"
+      ],
+      "M5"
+    ],
+    "B-CONV-005": [
+      [
+        "fastwork:domain:suggestion",
+        "fastwork:event:conversation-state-changed"
+      ],
+      "M5"
+    ],
+    "B-CONV-006": [
+      [
+        "fastwork:domain:suggestion",
+        "fastwork:config:collaboration-config"
+      ],
+      "M5"
+    ],
+    "B-CONV-007": [
+      [
+        "fastwork:domain:suggestion",
+        "fastwork:config:collaboration-config"
+      ],
+      "M5"
+    ],
+    "B-CONV-008": [
+      [
+        "fastwork:domain:send-command",
+        "fastwork:domain:send-result",
+        "fastwork:domain:send-segment"
+      ],
+      "M7"
+    ],
+    "B-RAG-001": [
+      [
+        "fastwork:domain:retrieval-result",
+        "fastwork:config:rag-config"
+      ],
+      "M3"
+    ],
+    "B-RAG-002": [
+      [
+        "fastwork:domain:retrieval-result",
+        "fastwork:config:rag-config"
+      ],
+      "M3"
+    ],
+    "B-RAG-003": [
+      [
+        "fastwork:domain:retrieval-result",
+        "fastwork:config:rag-config"
+      ],
+      "M3"
+    ],
+    "B-RAG-004": [
+      [
+        "fastwork:domain:retrieval-result",
+        "fastwork:config:rag-config"
+      ],
+      "M3"
+    ],
+    "B-RAG-005": [
+      [
+        "fastwork:domain:retrieval-result",
+        "fastwork:config:rag-config"
+      ],
+      "M3"
+    ],
+    "B-PROMPT-001": [
+      [
+        "fastwork:domain:prompt-profile",
+        "fastwork:config:ai-config"
+      ],
+      "M4"
+    ],
+    "B-PROMPT-002": [
+      [
+        "fastwork:domain:prompt-profile",
+        "fastwork:domain:skill-definition"
+      ],
+      "M4"
+    ],
+    "B-PROMPT-003": [
+      [
+        "fastwork:domain:prompt-profile",
+        "fastwork:config:rag-config"
+      ],
+      "M4"
+    ],
+    "B-PROMPT-004": [
+      [
+        "fastwork:domain:conversation-context"
+      ],
+      "M4"
+    ],
+    "B-TOOL-001": [
+      [
+        "fastwork:domain:skill-definition",
+        "fastwork:domain:tool-call"
+      ],
+      "M4"
+    ],
+    "B-TOOL-002": [
+      [
+        "fastwork:domain:tool-call",
+        "fastwork:domain:tool-result"
+      ],
+      "M4"
+    ],
+    "B-TOOL-003": [
+      [
+        "fastwork:domain:tool-call",
+        "fastwork:domain:generation-result"
+      ],
+      "M4"
+    ],
+    "B-TOOL-004": [
+      [
+        "fastwork:domain:tool-result"
+      ],
+      "M4"
+    ],
+    "B-TOOL-005": [
+      [
+        "fastwork:domain:generation-result",
+        "fastwork:error"
+      ],
+      "M4"
+    ],
+    "B-HANDOFF-001": [
+      [
+        "fastwork:domain:transfer-decision",
+        "fastwork:config:handoff-config"
+      ],
+      "M9"
+    ],
+    "B-HANDOFF-002": [
+      [
+        "fastwork:domain:transfer-decision",
+        "fastwork:config:handoff-config"
+      ],
+      "M9"
+    ],
+    "B-HANDOFF-003": [
+      [
+        "fastwork:domain:transfer-decision",
+        "fastwork:config:handoff-config"
+      ],
+      "M9"
+    ],
+    "B-HANDOFF-004": [
+      [
+        "fastwork:domain:transfer-decision"
+      ],
+      "M9"
+    ],
+    "B-STORE-001": [
+      [
+        "fastwork:domain:knowledge-entry",
+        "fastwork:domain:knowledge-candidate"
+      ],
+      "M1"
+    ],
+    "B-STORE-002": [
+      [
+        "fastwork:domain:shop"
+      ],
+      "M1"
+    ],
+    "B-STORE-003": [
+      [
+        "fastwork:config:collaboration-config",
+        "fastwork:config:ai-config"
+      ],
+      "M1"
+    ],
+    "B-STORE-004": [
+      [
+        "fastwork:domain:prompt-profile"
+      ],
+      "M1"
+    ],
+    "B-STORE-005": [
+      [
+        "fastwork:config:conversation-policy-config"
+      ],
+      "M1"
+    ],
+    "B-STORE-006": [
+      [
+        "fastwork:domain:conversation-message",
+        "fastwork:domain:conversation"
+      ],
+      "M1"
+    ],
+    "B-FEEDBACK-001": [
+      [
+        "fastwork:domain:feedback-record",
+        "fastwork:domain:knowledge-entry"
+      ],
+      "M9"
+    ],
+    "B-FEEDBACK-002": [
+      [
+        "fastwork:domain:feedback-record",
+        "fastwork:domain:knowledge-entry"
+      ],
+      "M9"
+    ],
+    "B-JOB-001": [
+      [
+        "fastwork:domain:background-job",
+        "fastwork:event:learning-progress"
+      ],
+      "M10"
+    ],
+    "B-JOB-002": [
+      [
+        "fastwork:config:learning-config"
+      ],
+      "M10"
+    ],
+    "B-JOB-003": [
+      [
+        "fastwork:domain:knowledge-candidate",
+        "fastwork:event:knowledge-updated"
+      ],
+      "M10"
+    ],
+    "B-JOB-004": [
+      [
+        "fastwork:domain:knowledge-candidate",
+        "fastwork:event:knowledge-updated"
+      ],
+      "M10"
+    ],
+    "B-JOB-005": [
+      [
+        "fastwork:config:optimization-config"
+      ],
+      "M10"
+    ],
+    "B-JOB-006": [
+      [
+        "fastwork:event:index-rebuild-started",
+        "fastwork:event:index-rebuild-completed"
+      ],
+      "M3/M10"
+    ],
+    "B-PLATFORM-001": [
+      [
+        "fastwork:domain:shop-session",
+        "fastwork:domain:conversation-message"
+      ],
+      "M7"
+    ],
+    "B-PLATFORM-002": [
+      [
+        "fastwork:config:platform-config",
+        "fastwork:domain:conversation-message"
+      ],
+      "M7"
+    ],
+    "B-PLATFORM-003": [
+      [
+        "fastwork:domain:send-command",
+        "fastwork:domain:send-result"
+      ],
+      "M7"
+    ],
+    "B-IPC-001": [
+      [
+        "fastwork:rpc:request",
+        "fastwork:rpc:response",
+        "fastwork:rpc:event",
+        "fastwork:error"
+      ],
+      "M2"
+    ],
+    "B-SEC-001": [
+      [
+        "fastwork:domain:skill-definition",
+        "fastwork:domain:tool-result"
+      ],
+      "M4"
+    ],
+    "B-SEC-002": [
+      [
+        "fastwork:config:provider-config",
+        "fastwork:error"
+      ],
+      "M1"
+    ],
+    "B-PROV-001": [
+      [
+        "fastwork:config:provider-config",
+        "fastwork:domain:generation-result"
+      ],
+      "M4"
+    ],
+    "B-PROV-002": [
+      [
+        "fastwork:config:provider-config",
+        "fastwork:domain:generation-request"
+      ],
+      "M4"
+    ],
+    "B-PROV-003": [
+      [
+        "fastwork:config:provider-config",
+        "fastwork:domain:generation-request"
+      ],
+      "M4"
+    ],
+    "B-PROV-004": [
+      [
+        "fastwork:config:provider-config",
+        "fastwork:domain:generation-request"
+      ],
+      "M4"
+    ],
+    "B-PROV-005": [
+      [
+        "fastwork:config:provider-config",
+        "fastwork:domain:generation-result",
+        "fastwork:error"
+      ],
+      "M4"
+    ],
+    "B-RAG-006": [
+      [
+        "fastwork:domain:retrieval-result",
+        "fastwork:config:rag-config"
+      ],
+      "M3"
+    ]
+  }
+}

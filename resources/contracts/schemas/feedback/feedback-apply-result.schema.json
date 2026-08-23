@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:feedback:feedback-apply-result",
+  "$title": "FeedbackApplyResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_id", "ok"],
+  "properties": {
+    "record_id": { "type": "string" },
+    "ok": { "type": "boolean" },
+    "knowledge_op": { "type": "string", "enum": ["none", "append", "insert"] },
+    "entry_id": { "type": "string" },
+    "index_refresh": { "type": "string", "enum": ["none", "incremental", "deferred"] },
+    "applied": { "type": "boolean" },
+    "error": { "type": "string" }
+  }
+}

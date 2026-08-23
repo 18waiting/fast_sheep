@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:event:send-started",
+  "$title": "Event send-started",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event",
+    "payload"
+  ],
+  "properties": {
+    "event": {
+      "const": "send-started"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "send_id": {
+          "type": "string"
+        },
+        "conversation_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "send_id",
+        "conversation_id"
+      ]
+    },
+    "correlation_id": {
+      "type": "string"
+    }
+  }
+}

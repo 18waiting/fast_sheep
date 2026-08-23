@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "src/main",
+    "src/renderer",
+    "src/preload/api.ts",
+    "src/preload/subscriptions.ts",
+    "src/preload/global.d.ts",
+    "src/platforms"
+  ]
+}

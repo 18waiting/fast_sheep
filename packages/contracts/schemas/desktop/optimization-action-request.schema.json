@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:optimization-action-request",
+  "$title": "OptimizationActionRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "action"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "propose",
+        "apply"
+      ]
+    },
+    "request": {
+      "type": "object"
+    }
+  }
+}

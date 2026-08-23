@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:feedback-record",
+  "$title": "FeedbackRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_id",
+    "conversation_id",
+    "class",
+    "trust_level"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string"
+    },
+    "conversation_id": {
+      "type": "string"
+    },
+    "class": {
+      "type": "string",
+      "enum": [
+        "AUTO",
+        "MANUAL",
+        "NO_SAVE",
+        "CORRECTION",
+        "AUDIT_APPROVE",
+        "RESTORE"
+      ]
+    },
+    "trust_level": {
+      "$ref": "fastwork:common:trust-level"
+    },
+    "target_ref": {
+      "type": "string"
+    },
+    "message_ref": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

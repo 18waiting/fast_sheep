@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:event:job-state-changed",
+  "$title": "Event job-state-changed",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event",
+    "payload"
+  ],
+  "properties": {
+    "event": {
+      "const": "job-state-changed"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "job_id": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "fastwork:common:job-state"
+        }
+      },
+      "required": [
+        "job_id",
+        "state"
+      ]
+    },
+    "correlation_id": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>synthetic doudian fixture</title></head>
+<body>
+  <div data-fw-doudian-chat-list>
+    <div data-fw-doudian-conversation data-conversation-id="c1" data-active="true" data-buyer-id="buyer-1" data-buyer="测试买家A">测试买家A</div>
+  </div>
+  <div data-fw-doudian-messages>
+    <div data-fw-doudian-message data-message-id="m1" data-direction="inbound" data-ts="2026-08-16T00:00:00Z">
+      <span data-fw-doudian-buyer-name>测试买家A</span><span data-fw-doudian-msg-content>有货吗</span>
+    </div>
+  </div>
+  <textarea data-fw-doudian-composer-input></textarea>
+  <button data-fw-doudian-send-btn>发送</button>
+  <input data-fw-doudian-image-input type="file" />
+  <div data-fw-doudian-send-ack data-message-id="ack-1"></div>
+  <script>
+    document.addEventListener("click", function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest("[data-fw-doudian-send-btn]") : null;
+      if (!btn) return;
+      var input = document.querySelector("[data-fw-doudian-composer-input]");
+      var messages = document.querySelector("[data-fw-doudian-messages]");
+      var ack = document.querySelector("[data-fw-doudian-send-ack]");
+      if (!input || !messages) return;
+      var value = input.getAttribute("value") || input.value || "";
+      if (!value) return;
+      var mid = (ack && ack.getAttribute("data-message-id")) || "ack-" + Date.now();
+      var row = document.createElement("div");
+      row.setAttribute("data-fw-doudian-message", "");
+      row.setAttribute("data-direction", "outbound");
+      row.setAttribute("data-message-id", mid);
+      var content = document.createElement("span");
+      content.setAttribute("data-fw-doudian-msg-content", "");
+      content.textContent = value;
+      row.appendChild(content);
+      messages.appendChild(row);
+    });
+  </script>
+</body>

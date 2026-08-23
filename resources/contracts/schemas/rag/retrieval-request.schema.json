@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:rag:retrieval-request",
+  "$title": "RetrievalRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "query"
+  ],
+  "properties": {
+    "query": {
+      "type": "string",
+      "minLength": 1
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "order_state": {
+      "type": "string",
+      "enum": [
+        "未下单",
+        "已下单"
+      ]
+    },
+    "knowledge_isolation": {
+      "type": "boolean",
+      "description": "DESIGN: disable global fill"
+    },
+    "top_k": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    }
+  }
+}

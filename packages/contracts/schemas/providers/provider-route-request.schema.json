@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:providers:provider-route-request",
+  "$title": "ProviderRouteRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "快答专家",
+        "X5",
+        "X10",
+        "custom"
+      ]
+    },
+    "daily_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "points": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "custom": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

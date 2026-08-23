@@ -1,0 +1,23 @@
+// @fastwork/platform-qianniu public surface (M8 clean-room).
+export { QIANNIU_ERROR_CODES, QianniuError, qianniuError, type QianniuErrorCode } from "./errors.js";
+export { QIANNIU_CAPABILITIES, QIANNIU_CAPABILITY_CERTAINTY, capabilities } from "./capabilities.js";
+export { normalizeQianniuMessage, normalizeMessage, fallbackFingerprint, type NormalizeInput } from "./message-normalizer.js";
+export { MessageDeduplicator as QianniuMessageDeduplicator, type DedupStats } from "./message-deduplicator.js";
+export { QianniuSessionState, QIANNIU_SESSION_STATES, type QianniuSessionStateView } from "./session-state.js";
+export { createQianniuPlatformAdapter, type QianniuPlatformAdapter } from "./platform-adapter.js";
+export { QIANNIU_SELECTOR_PROFILE, qianniuProfile } from "./dom/selector-registry.js";
+export type { DomHealthResult } from "@fastwork/platform-web-common";
+export { qianniuDomHealth } from "./dom/dom-health.js";
+export type { ConversationRead } from "@fastwork/platform-web-common";
+export { readQianniuConversation, listQianniuConversations } from "./dom/conversation-reader.js";
+export { readQianniuMessages } from "./dom/message-reader.js";
+export { qianniuComposerState, qianniuSendText, qianniuSendImage } from "./dom/composer-driver.js";
+export { detectQianniuHumanReply } from "./dom/takeover-detector.js";
+export { qianniuExecuteTransfer } from "./dom/transfer-driver.js";
+export type { SendResult } from "@fastwork/platform-web-common";
+export { qianniuImageDriver } from "./dom/image-driver.js";
+export { QianniuPageRuntime, type PageTransport, type QianniuPageRuntimeOptions, type PageObserverLike } from "./page/page-runtime.js";
+export { QianniuObserver } from "./page/page-observer.js";
+export type { QianniuPageBridge } from "./page/page-bridge.js";
+export { buildQianniuPageReady, buildQianniuLoginRequired, buildQianniuDomUnsupported, buildQianniuConversationChanged, buildQianniuMessageReceived, buildQianniuHumanReplyDetected, buildQianniuSendAck, buildQianniuTransferAck } from "./page/page-events.js";
+export { dispatchQianniuCommand, isQianniuCommandAllowed, QIANNIU_COMMAND_ALLOWLIST, FORBIDDEN_COMMAND_TYPES, type QianniuCommandHandlers } from "./page/page-commands.js";

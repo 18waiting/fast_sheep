@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:legacy-import-apply-action",
+  "$title": "LegacyImportApplyAction",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "selection_token"
+  ],
+  "properties": {
+    "selection_token": {
+      "type": "string"
+    },
+    "plan_sha256": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "legacy_timezone": {
+      "type": "string"
+    },
+    "import_provider_secret": {
+      "type": "boolean"
+    }
+  }
+}

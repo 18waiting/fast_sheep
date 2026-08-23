@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:providers:provider-normalization-request",
+  "$title": "ProviderNormalizationRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "raw"
+  ],
+  "properties": {
+    "protocol": {
+      "type": "string"
+    },
+    "raw": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "request_id": {
+      "type": "string"
+    }
+  }
+}

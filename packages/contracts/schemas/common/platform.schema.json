@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:common:platform",
+  "$title": "Platform",
+  "type": "string",
+  "enum": [
+    "pdd",
+    "doudian",
+    "jd",
+    "kuaishou",
+    "qianniu",
+    "xianyu"
+  ]
+}

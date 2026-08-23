@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:rpc:context",
+  "$title": "RpcContext",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "shop_id",
+    "correlation_id"
+  ],
+  "properties": {
+    "shop_id": {
+      "type": "string"
+    },
+    "correlation_id": {
+      "type": "string"
+    },
+    "cancellation_token": {
+      "type": "string"
+    }
+  }
+}

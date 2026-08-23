@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:optimization:product-optimization-request",
+  "$title": "ProductOptimizationRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [],
+  "properties": {
+    "product_id": {
+      "type": "string"
+    },
+    "candidate": {
+      "type": "string"
+    },
+    "last_optimized_at": {
+      "type": "string"
+    },
+    "config": {
+      "type": "object"
+    }
+  }
+}

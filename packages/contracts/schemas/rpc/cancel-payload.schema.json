@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:rpc:cancel-payload",
+  "$title": "CancelPayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "target_request_id"
+  ],
+  "properties": {
+    "target_request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reason": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:learning-start-request",
+  "$title": "LearningStartRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [],
+  "properties": {
+    "import_source": {
+      "type": "string"
+    },
+    "config": {
+      "type": "object"
+    }
+  }
+}

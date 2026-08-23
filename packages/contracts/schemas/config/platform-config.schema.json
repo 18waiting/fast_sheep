@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:config:platform-config",
+  "$title": "PlatformConfig",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "platform"
+  ],
+  "properties": {
+    "platform": {
+      "$ref": "fastwork:common:platform"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "partition_prefix": {
+      "type": "string",
+      "default": "persist:shop-"
+    }
+  }
+}

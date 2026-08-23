@@ -1,0 +1,14 @@
+{
+  "prompts": [
+    {
+      "id": "p1",
+      "title": "默认",
+      "content": "<PROMPT_CONTENT>",
+      "mounted_skills": []
+    }
+  ],
+  "运行时状态": {
+    "未下单ID": "p1",
+    "已下单ID": "p1"
+  }
+}

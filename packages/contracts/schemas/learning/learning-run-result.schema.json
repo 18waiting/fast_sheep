@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:learning:learning-run-result",
+  "$title": "LearningRunResult",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [],
+  "properties": {
+    "trace": {
+      "type": "array"
+    },
+    "events": {
+      "type": "array"
+    },
+    "products": {
+      "type": "array"
+    },
+    "inserted": {
+      "type": "integer"
+    },
+    "job_state": {
+      "type": "string"
+    }
+  }
+}

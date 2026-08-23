@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:error",
+  "$title": "Error",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "code",
+    "category",
+    "message",
+    "retryable"
+  ],
+  "properties": {
+    "code": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "validation",
+        "config",
+        "credentials",
+        "provider",
+        "retrieval",
+        "tool",
+        "timeout",
+        "network",
+        "internal",
+        "cancelled",
+        "unknown"
+      ]
+    },
+    "message": {
+      "type": "string"
+    },
+    "retryable": {
+      "type": "boolean"
+    },
+    "details": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "structured extension; MUST NOT carry secrets or stack traces"
+    },
+    "correlation_id": {
+      "type": "string"
+    }
+  }
+}

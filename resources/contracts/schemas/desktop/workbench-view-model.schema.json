@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:workbench-view-model",
+  "$title": "WorkbenchViewModel",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "shop_summaries",
+    "worker_status",
+    "platform_capability"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer"
+    },
+    "shop_summaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "selected_shop_id": {
+      "type": "string"
+    },
+    "conversation": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "suggestion": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "human_review",
+        "full_auto"
+      ]
+    },
+    "countdown": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "send_status": {
+      "type": "string"
+    },
+    "takeover_status": {
+      "type": "string"
+    },
+    "worker_status": {
+      "$ref": "fastwork:desktop:worker-status"
+    },
+    "last_error": {
+      "type": "string"
+    },
+    "platform_capability": {
+      "type": "string",
+      "enum": [
+        "none",
+        "pdd"
+      ]
+    }
+  }
+}

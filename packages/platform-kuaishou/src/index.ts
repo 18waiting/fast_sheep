@@ -1,0 +1,23 @@
+// @fastwork/platform-kuaishou public surface (M8 clean-room).
+export { KUAISHOU_ERROR_CODES, KuaishouError, kuaishouError, type KuaishouErrorCode } from "./errors.js";
+export { KUAISHOU_CAPABILITIES, KUAISHOU_CAPABILITY_CERTAINTY, capabilities } from "./capabilities.js";
+export { normalizeKuaishouMessage, normalizeMessage, fallbackFingerprint, type NormalizeInput } from "./message-normalizer.js";
+export { MessageDeduplicator as KuaishouMessageDeduplicator, type DedupStats } from "./message-deduplicator.js";
+export { KuaishouSessionState, KUAISHOU_SESSION_STATES, type KuaishouSessionStateView } from "./session-state.js";
+export { createKuaishouPlatformAdapter, type KuaishouPlatformAdapter } from "./platform-adapter.js";
+export { KUAISHOU_SELECTOR_PROFILE, kuaishouProfile } from "./dom/selector-registry.js";
+export type { DomHealthResult } from "@fastwork/platform-web-common";
+export { kuaishouDomHealth } from "./dom/dom-health.js";
+export type { ConversationRead } from "@fastwork/platform-web-common";
+export { readKuaishouConversation, listKuaishouConversations } from "./dom/conversation-reader.js";
+export { readKuaishouMessages } from "./dom/message-reader.js";
+export { kuaishouComposerState, kuaishouSendText, kuaishouSendImage } from "./dom/composer-driver.js";
+export { detectKuaishouHumanReply } from "./dom/takeover-detector.js";
+export { kuaishouExecuteTransfer } from "./dom/transfer-driver.js";
+export type { SendResult } from "@fastwork/platform-web-common";
+export { kuaishouImageDriver } from "./dom/image-driver.js";
+export { KuaishouPageRuntime, type PageTransport, type KuaishouPageRuntimeOptions, type PageObserverLike } from "./page/page-runtime.js";
+export { KuaishouObserver } from "./page/page-observer.js";
+export type { KuaishouPageBridge } from "./page/page-bridge.js";
+export { buildKuaishouPageReady, buildKuaishouLoginRequired, buildKuaishouDomUnsupported, buildKuaishouConversationChanged, buildKuaishouMessageReceived, buildKuaishouHumanReplyDetected, buildKuaishouSendAck, buildKuaishouTransferAck } from "./page/page-events.js";
+export { dispatchKuaishouCommand, isKuaishouCommandAllowed, KUAISHOU_COMMAND_ALLOWLIST, FORBIDDEN_COMMAND_TYPES, type KuaishouCommandHandlers } from "./page/page-commands.js";

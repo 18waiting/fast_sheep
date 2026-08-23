@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:import:legacy-source-item",
+  "$title": "LegacySourceItem",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "item_id",
+    "display_name",
+    "path",
+    "source_type"
+  ],
+  "properties": {
+    "item_id": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "shops",
+        "settings",
+        "fastkey",
+        "ai_settings",
+        "products",
+        "knowledge",
+        "candidates",
+        "prompts",
+        "skills",
+        "skill_mounts",
+        "transfer_rules",
+        "forbidden_words",
+        "messages"
+      ]
+    }
+  }
+}

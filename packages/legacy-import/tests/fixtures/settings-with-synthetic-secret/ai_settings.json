@@ -1,0 +1,11 @@
+{
+  "current_model": "deepseek",
+  "custom_models": [
+    {
+      "model_name": "m1",
+      "api_key": "fake-super-secret-value",
+      "api_url": "https://example.invalid/v1"
+    }
+  ],
+  "max_tokens": "20个字以内"
+}

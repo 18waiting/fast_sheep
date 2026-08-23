@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:shops-changed-event",
+  "$title": "ShopsChangedEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event", "revision"],
+  "properties": {
+    "event": { "type": "string", "const": "shops_changed" },
+    "revision": { "type": "integer", "minimum": 0 }
+  }
+}

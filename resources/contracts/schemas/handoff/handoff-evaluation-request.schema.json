@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:handoff:handoff-evaluation-request",
+  "$title": "HandoffEvaluationRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["question"],
+  "properties": {
+    "question": { "type": "string" },
+    "ai_reply": { "type": "string" },
+    "agent": { "type": "string" },
+    "shop": { "type": "string" },
+    "order_state": { "type": "string" },
+    "highest_sim": { "type": "number" },
+    "time_ms": { "type": "integer" },
+    "platform": { "type": "string" },
+    "enabled": { "type": "boolean" },
+    "capabilities": { "type": "object", "additionalProperties": true },
+    "rules": { "type": "array", "items": { "$ref": "fastwork:handoff:handoff-rule" } }
+  }
+}

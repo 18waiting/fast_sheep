@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:config:handoff-config",
+  "$title": "HandoffConfig",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "master_switch": {
+      "type": "boolean",
+      "default": true
+    },
+    "working_hours": {
+      "type": "string"
+    },
+    "rules_ref": {
+      "type": "string"
+    }
+  }
+}

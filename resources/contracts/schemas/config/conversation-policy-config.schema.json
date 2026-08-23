@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:config:conversation-policy-config",
+  "$title": "ConversationPolicyConfig",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "countdown_seconds": {
+      "type": "integer",
+      "default": 5
+    },
+    "countdown_action": {
+      "type": "string",
+      "enum": [
+        "reply",
+        "auto"
+      ]
+    },
+    "similarity_threshold": {
+      "type": "number"
+    },
+    "welcome_message": {
+      "type": "boolean",
+      "default": true
+    },
+    "send_interval_ms": {
+      "type": "integer",
+      "default": 800,
+      "description": "PARTIAL provenance (comment-derived)"
+    }
+  }
+}

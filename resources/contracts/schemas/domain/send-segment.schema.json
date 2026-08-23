@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:send-segment",
+  "$title": "SendSegment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "type",
+    "content"
+  ],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "image",
+        "video"
+      ]
+    },
+    "content": {
+      "type": "string"
+    },
+    "delay_ms": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:job-list-result",
+  "$title": "JobListResult",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "jobs"
+  ],
+  "properties": {
+    "jobs": {
+      "type": "array"
+    }
+  }
+}

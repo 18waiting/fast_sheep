@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:common:parity-level",
+  "$title": "ParityLevel",
+  "type": "string",
+  "enum": [
+    "P0",
+    "P1",
+    "P2",
+    "P3"
+  ]
+}

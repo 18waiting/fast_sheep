@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:review:review-restore-request",
+  "$title": "ReviewRestoreRequest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "record"
+  ],
+  "properties": {
+    "record": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

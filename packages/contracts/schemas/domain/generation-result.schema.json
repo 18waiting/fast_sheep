@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:generation-result",
+  "$title": "GenerationResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "text",
+    "finish_reason"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "tool_calls": {
+      "type": "array",
+      "items": {
+        "$ref": "fastwork:domain:tool-call"
+      }
+    },
+    "finish_reason": {
+      "type": "string",
+      "enum": [
+        "stop",
+        "length",
+        "tool_calls",
+        "content_filter",
+        "error"
+      ]
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "{input_chars,output_chars,tokens{}}"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    }
+  }
+}

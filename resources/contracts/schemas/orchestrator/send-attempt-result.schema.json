@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:orchestrator:send-attempt-result",
+  "$title": "SendAttemptResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ok"
+  ],
+  "properties": {
+    "ok": {
+      "type": "boolean"
+    },
+    "error": {
+      "type": "string"
+    },
+    "sent_segments": {
+      "type": "integer"
+    },
+    "virtual_time_ms": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    }
+  }
+}

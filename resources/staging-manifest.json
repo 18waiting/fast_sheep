@@ -1,0 +1,30 @@
+{
+  "staged_at": "2026-08-18T18:50:20.452Z",
+  "worker": {
+    "executable": "worker/fastwork-ai-worker.exe",
+    "sha256": "d0df3c206700fe73b9e6e784d527e76465b0440b57f5e7e5bfe9761d8e8c485e"
+  },
+  "contracts": {
+    "schemas_dir": "contracts/schemas",
+    "registry": "contracts/contract-registry.json",
+    "schema_count": 183
+  },
+  "migrations": [
+    {
+      "file": "persistence/migrations/0001_initial.sql",
+      "sha256": {}
+    },
+    {
+      "file": "persistence/migrations/0002_feedback_effect_tracking.sql",
+      "sha256": {}
+    },
+    {
+      "file": "persistence/migrations/0003_learning_review_audit_optimization.sql",
+      "sha256": {}
+    },
+    {
+      "file": "persistence/migrations/0004_legacy_import_tracking.sql",
+      "sha256": {}
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:retrieval-result",
+  "$title": "RetrievalResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "query",
+    "hits"
+  ],
+  "properties": {
+    "query": {
+      "type": "string"
+    },
+    "hits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question",
+          "answer",
+          "source",
+          "raw_similarity",
+          "composite"
+        ],
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          },
+          "product_id": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "raw_similarity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "rerank_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "composite": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "fast_return": {
+      "type": "boolean",
+      "default": false
+    },
+    "tier_used": {
+      "type": "string",
+      "enum": [
+        "product",
+        "global",
+        "common"
+      ]
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "description": "Domain result; does not encode implementation-specific FAISS object types."
+}

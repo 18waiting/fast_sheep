@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:feedback:feedback-effect-status",
+  "$title": "FeedbackEffectStatus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_id", "effect_status"],
+  "properties": {
+    "record_id": { "type": "string" },
+    "effect_status": { "type": "string", "enum": ["PENDING", "APPLIED", "FAILED_RETRYABLE", "FAILED_FINAL"] },
+    "attempts": { "type": "integer" },
+    "last_error": { "type": "string" },
+    "applied_at": { "type": "string" }
+  }
+}

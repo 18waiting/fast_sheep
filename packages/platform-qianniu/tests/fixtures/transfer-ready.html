@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>synthetic qianniu fixture</title></head>
+<body>
+  <div data-fw-qianniu-chat-list>
+    <div data-fw-qianniu-conversation data-conversation-id="c1" data-active="true" data-buyer-id="buyer-1" data-buyer="测试买家A">测试买家A</div>
+  </div>
+  <div data-fw-qianniu-messages>
+    <div data-fw-qianniu-message data-message-id="m1" data-direction="inbound" data-ts="2026-08-16T00:00:00Z">
+      <span data-fw-qianniu-buyer-name>测试买家A</span><span data-fw-qianniu-msg-content>有货吗</span>
+    </div>
+  </div>
+  <textarea data-fw-qianniu-composer-input></textarea>
+  <button data-fw-qianniu-send-btn>发送</button>
+  <input data-fw-qianniu-image-input type="file" />
+  <button data-fw-qianniu-transfer-open>转接</button>
+  <div data-fw-qianniu-transfer-targets><div data-fw-qianniu-transfer-target data-target="售后">售后</div></div>
+  <button data-fw-qianniu-transfer-confirm>确认转接</button>
+  <div data-fw-qianniu-send-ack data-message-id="ack-1"></div>
+  <script>
+    document.addEventListener("click", function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest("[data-fw-qianniu-send-btn]") : null;
+      if (!btn) return;
+      var input = document.querySelector("[data-fw-qianniu-composer-input]");
+      var messages = document.querySelector("[data-fw-qianniu-messages]");
+      var ack = document.querySelector("[data-fw-qianniu-send-ack]");
+      if (!input || !messages) return;
+      var value = input.getAttribute("value") || input.value || "";
+      if (!value) return;
+      var mid = (ack && ack.getAttribute("data-message-id")) || "ack-" + Date.now();
+      var row = document.createElement("div");
+      row.setAttribute("data-fw-qianniu-message", "");
+      row.setAttribute("data-direction", "outbound");
+      row.setAttribute("data-message-id", mid);
+      var content = document.createElement("span");
+      content.setAttribute("data-fw-qianniu-msg-content", "");
+      content.textContent = value;
+      row.appendChild(content);
+      messages.appendChild(row);
+    });
+  </script>
+</body>

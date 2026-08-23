@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:orchestrator:feedback-intent",
+  "$title": "FeedbackIntent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "class"
+  ],
+  "properties": {
+    "class": {
+      "type": "string",
+      "enum": [
+        "MANUAL",
+        "AUTO",
+        "NO_SAVE"
+      ]
+    },
+    "trust": {
+      "type": "string"
+    },
+    "conversation_id": {
+      "type": "string"
+    },
+    "reply": {
+      "type": "string"
+    }
+  }
+}

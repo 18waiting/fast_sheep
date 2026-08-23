@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:legacy-import-select-result",
+  "$title": "LegacyImportSelectResult",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "selection_token"
+  ],
+  "properties": {
+    "selection_token": {
+      "type": "string"
+    },
+    "item_count": {
+      "type": "integer"
+    }
+  }
+}

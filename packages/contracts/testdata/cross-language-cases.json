@@ -1,0 +1,28 @@
+{
+  "corpus_version": "1.0",
+  "schemas_root": "../schemas",
+  "description": "Synthetic M0 cross-language contract corpus. Pure data; no business logic. Frozen parity fixtures are NOT part of this corpus.",
+  "cases": [
+    { "case_id": "XL-RPC-001", "schema_id": "fastwork:rpc:request", "expected_valid": true, "payload": { "version": 1, "request_id": "r1", "method": "ping", "payload": {} } },
+    { "case_id": "XL-RPC-002", "schema_id": "fastwork:rpc:request", "expected_valid": false, "payload": { "version": 1, "method": "ping", "payload": {} } },
+    { "case_id": "XL-RPC-003", "schema_id": "fastwork:rpc:request", "expected_valid": false, "payload": { "version": 2, "request_id": "r1", "method": "ping", "payload": {} } },
+    { "case_id": "XL-RPC-004", "schema_id": "fastwork:rpc:request", "expected_valid": true, "payload": { "version": 1, "request_id": "r2", "method": "queryKnowledge", "payload": {}, "context": { "shop_id": "shop-1", "correlation_id": "c1" } } },
+    { "case_id": "XL-RPC-005", "schema_id": "fastwork:rpc:response", "expected_valid": true, "payload": { "request_id": "r1", "ok": true, "result": {}, "error": null, "metadata": {} } },
+    { "case_id": "XL-RPC-006", "schema_id": "fastwork:rpc:response", "expected_valid": true, "payload": { "request_id": "r1", "ok": false, "result": null, "error": { "code": "e1", "category": "provider", "message": "m", "retryable": true } } },
+    { "case_id": "XL-RPC-007", "schema_id": "fastwork:rpc:response", "expected_valid": false, "payload": { "request_id": "r1", "ok": true, "result": {}, "error": "oops" } },
+    { "case_id": "XL-RPC-008", "schema_id": "fastwork:rpc:error", "expected_valid": true, "payload": { "code": "e1", "category": "internal", "message": "m", "retryable": false } },
+    { "case_id": "XL-RPC-009", "schema_id": "fastwork:rpc:error", "expected_valid": false, "payload": { "code": "e1", "category": "bogus", "message": "m", "retryable": false } },
+    { "case_id": "XL-RPC-010", "schema_id": "fastwork:rpc:event", "expected_valid": true, "payload": { "event": "learning-progress", "payload": { "job_id": "j1" } } },
+    { "case_id": "XL-RPC-011", "schema_id": "fastwork:rpc:event", "expected_valid": false, "payload": { "event": "e1" } },
+    { "case_id": "XL-DOM-001", "schema_id": "fastwork:domain:suggestion", "expected_valid": true, "payload": { "suggestion_id": "s1", "conversation_id": "c1", "generation": 1, "reply": "hi", "mode": "human_review", "created_at": "2026-08-15T00:00:00Z", "decision": { "requested": true, "target": "售后" } } },
+    { "case_id": "XL-DOM-002", "schema_id": "fastwork:domain:suggestion", "expected_valid": false, "payload": { "suggestion_id": "s1", "conversation_id": "c1", "generation": 1, "reply": "hi", "mode": "bogus", "created_at": "2026-08-15T00:00:00Z" } },
+    { "case_id": "XL-DOM-003", "schema_id": "fastwork:domain:send-command", "expected_valid": true, "payload": { "send_id": "s1", "conversation_id": "c1", "shop_id": "shop-1", "platform": "pdd", "segments": [ { "type": "text", "content": "hi" } ], "transfer": { "requested": false } } },
+    { "case_id": "XL-DOM-004", "schema_id": "fastwork:domain:send-command", "expected_valid": false, "payload": { "send_id": "s1", "conversation_id": "c1", "shop_id": "shop-1", "platform": "pdd", "segments": [] } },
+    { "case_id": "XL-DOM-005", "schema_id": "fastwork:domain:knowledge-entry", "expected_valid": true, "payload": { "id": "h1", "question": "q", "answer": "a", "product_id": "", "trust_level": "HUMAN_CONFIRMED", "created_at": "2026-08-15T00:00:00Z", "updated_at": "2026-08-15T00:00:00Z" } },
+    { "case_id": "XL-DOM-006", "schema_id": "fastwork:domain:knowledge-entry", "expected_valid": false, "payload": { "id": "h1", "question": "q", "answer": "a", "product_id": "", "trust_level": "WEIRD", "created_at": "2026-08-15T00:00:00Z", "updated_at": "2026-08-15T00:00:00Z" } },
+    { "case_id": "XL-DOM-007", "schema_id": "fastwork:domain:shop", "expected_valid": true, "payload": { "id": "shop-1-0001", "type": "pdd", "name": "店", "enabled": true } },
+    { "case_id": "XL-DOM-008", "schema_id": "fastwork:domain:shop", "expected_valid": false, "payload": { "id": "shop-1-0001", "type": "taobao", "name": "店", "enabled": true } },
+    { "case_id": "XL-DOM-009", "schema_id": "fastwork:domain:retrieval-result", "expected_valid": true, "payload": { "query": "q", "hits": [ { "question": "q1", "answer": "a1", "source": "s", "raw_similarity": 0.8, "composite": 0.7 } ] } },
+    { "case_id": "XL-DOM-010", "schema_id": "fastwork:domain:retrieval-result", "expected_valid": false, "payload": { "query": "q", "hits": [ { "question": "q1", "answer": "a1", "source": "s", "raw_similarity": 0.8, "composite": 1.5 } ] } }
+  ]
+}

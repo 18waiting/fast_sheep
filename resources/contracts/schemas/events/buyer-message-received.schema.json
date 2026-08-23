@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:event:buyer-message-received",
+  "$title": "Event buyer-message-received",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event",
+    "payload"
+  ],
+  "properties": {
+    "event": {
+      "const": "buyer-message-received"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "message_id": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string"
+        },
+        "buyer": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "message_id",
+        "shop_id"
+      ]
+    },
+    "correlation_id": {
+      "type": "string"
+    }
+  }
+}

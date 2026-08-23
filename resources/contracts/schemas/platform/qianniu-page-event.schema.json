@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:platform:Qianniu-page-event",
+  "$title": "QianniuPageEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event",
+    "session_id"
+  ],
+  "properties": {
+    "event": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "shop_id": {
+      "type": "string"
+    },
+    "conversation_id": {
+      "type": "string"
+    },
+    "buyer_id": {
+      "type": "string"
+    },
+    "buyer": {
+      "type": "string"
+    },
+    "platform_message_id": {
+      "type": "string"
+    },
+    "message_type": {
+      "type": "string"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound"
+      ]
+    },
+    "content": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "command_id": {
+      "type": "string"
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "error": {
+      "type": "string"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "event": {
+            "const": "message_received"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "shop_id",
+          "conversation_id",
+          "direction",
+          "content"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event": {
+            "const": "send_ack"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "shop_id",
+          "conversation_id",
+          "command_id",
+          "ok"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event": {
+            "const": "transfer_ack"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "shop_id",
+          "conversation_id",
+          "command_id",
+          "ok"
+        ]
+      }
+    }
+  ]
+}

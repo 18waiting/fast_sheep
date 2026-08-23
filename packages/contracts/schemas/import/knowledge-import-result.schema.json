@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:import:knowledge-import-result",
+  "$title": "KnowledgeImportResult",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [],
+  "properties": {
+    "inserted": {
+      "type": "integer"
+    },
+    "skipped_duplicates": {
+      "type": "integer"
+    },
+    "candidates": {
+      "type": "integer"
+    },
+    "trust_map": {
+      "type": "object"
+    },
+    "ok": {
+      "type": "boolean"
+    }
+  }
+}

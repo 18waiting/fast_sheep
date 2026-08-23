@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:config:ai-config",
+  "$title": "AIConfig",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "current_model"
+  ],
+  "properties": {
+    "current_model": {
+      "type": "string"
+    },
+    "providers": {
+      "type": "array",
+      "items": {
+        "$ref": "fastwork:config:provider-config"
+      }
+    },
+    "max_tokens": {
+      "type": "string"
+    },
+    "image_recognition": {
+      "type": "boolean",
+      "default": true
+    },
+    "question_completion": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

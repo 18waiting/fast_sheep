@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:platform-status-changed-event",
+  "$title": "PlatformStatusChangedEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["shop_id", "session_status", "revision"],
+  "properties": {
+    "shop_id": { "type": "string", "minLength": 1 },
+    "session_status": { "type": "string", "enum": ["STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "ERROR", "DISPOSED"] },
+    "revision": { "type": "integer", "minimum": 0 },
+    "last_error": { "type": "string" }
+  }
+}

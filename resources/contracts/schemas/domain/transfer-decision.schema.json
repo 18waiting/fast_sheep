@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:transfer-decision",
+  "$title": "TransferDecision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requested"
+  ],
+  "properties": {
+    "requested": {
+      "type": "boolean"
+    },
+    "target": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "buyer_message": {
+      "type": "string"
+    }
+  }
+}

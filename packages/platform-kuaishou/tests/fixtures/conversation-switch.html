@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>synthetic kuaishou fixture</title></head>
+<body>
+  <div data-fw-kuaishou-chat-list>
+    <div data-fw-kuaishou-conversation data-conversation-id="c1" data-active="false" data-buyer-id="buyer-1" data-buyer="测试买家A">测试买家A</div>,    <div data-fw-kuaishou-conversation data-conversation-id="c2" data-active="true" data-buyer-id="buyer-2" data-buyer="测试买家B">测试买家B</div>
+  </div>
+  <div data-fw-kuaishou-messages>
+    <div data-fw-kuaishou-message data-message-id="m1" data-direction="inbound" data-ts="2026-08-16T00:00:00Z">
+      <span data-fw-kuaishou-buyer-name>测试买家B</span><span data-fw-kuaishou-msg-content>你好</span>
+    </div>
+  </div>
+  <textarea data-fw-kuaishou-composer-input></textarea>
+  <button data-fw-kuaishou-send-btn>发送</button>
+  <input data-fw-kuaishou-image-input type="file" />
+  <div data-fw-kuaishou-send-ack data-message-id="ack-1"></div>
+  <script>
+    document.addEventListener("click", function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest("[data-fw-kuaishou-send-btn]") : null;
+      if (!btn) return;
+      var input = document.querySelector("[data-fw-kuaishou-composer-input]");
+      var messages = document.querySelector("[data-fw-kuaishou-messages]");
+      var ack = document.querySelector("[data-fw-kuaishou-send-ack]");
+      if (!input || !messages) return;
+      var value = input.getAttribute("value") || input.value || "";
+      if (!value) return;
+      var mid = (ack && ack.getAttribute("data-message-id")) || "ack-" + Date.now();
+      var row = document.createElement("div");
+      row.setAttribute("data-fw-kuaishou-message", "");
+      row.setAttribute("data-direction", "outbound");
+      row.setAttribute("data-message-id", mid);
+      var content = document.createElement("span");
+      content.setAttribute("data-fw-kuaishou-msg-content", "");
+      content.textContent = value;
+      row.appendChild(content);
+      messages.appendChild(row);
+    });
+  </script>
+</body>

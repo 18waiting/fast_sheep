@@ -1,0 +1,191 @@
+{
+  "schema_version": "1.0",
+  "project": "fast_sheep",
+  "product_name": "快羊客服",
+  "project_root": "E:\\fast_sheep",
+  "governance_status": "GOVERNANCE_FROZEN",
+  "master_prompt": {
+    "path": "project\\FAST_SHEEP_MASTER_PROMPT.md",
+    "version": "1.0",
+    "status": "APPROVED",
+    "approved": true,
+    "owner_approved": true,
+    "approval_date": "2026-08-22"
+  },
+  "task_template": {
+    "path": "project\\FAST_SHEEP_CODEX_TASK_TEMPLATE.md",
+    "review_status": "PASS_REVIEW_3",
+    "reviewed_version": "V1.0_REVIEWED",
+    "reviewed_path": "project\\FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.0_REVIEWED.md"
+  },
+  "roadmap": {
+    "path": "project\\FAST_SHEEP_CODING_ROADMAP.md",
+    "version": "1.0",
+    "review_status": "PASS_REVIEW_2",
+    "phase_count": 15,
+    "total_weight": 1.0,
+    "reviewed_path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
+    "reviewed_version": "V1.0_REVIEWED"
+  },
+  "current_phase": "PHASE_0",
+  "current_milestone": "M0.1",
+  "last_closed_task": null,
+  "current_task": null,
+  "next_action": "SHEEP-001",
+  "next_sheep_task_after_governance": "SHEEP-001",
+  "implementation_started": false,
+  "implementation_progress": 0.0,
+  "product_definition_progress": 1.0,
+  "architecture_direction_progress": 1.0,
+  "engineering_governance_progress": 1.0,
+  "overall_roadmap_progress": 0.0,
+  "controller": {
+    "task_close_decisions": [
+      "PASS",
+      "REPAIR"
+    ],
+    "codex_task_results": [
+      "COMPLETE",
+      "PARTIAL",
+      "FAIL",
+      "NOT_RUN"
+    ],
+    "exactly_one_next_task": true
+  },
+  "locked_decision_count": 22,
+  "open_blockers": [],
+  "open_decisions": [],
+  "deferred_items": [
+    "TRUE_CLEAN_MACHINE_VALIDATION_FOR_FUTURE_COMMERCIAL_RELEASE",
+    "CODE_SIGNING_FOR_FUTURE_COMMERCIAL_RELEASE",
+    "PDD_PLATFORM_COMMERCIAL_COMPLIANCE_REVIEW",
+    "DOUDIAN_PLATFORM_COMMERCIAL_COMPLIANCE_REVIEW",
+    "UI_AND_THIRD_PARTY_ASSET_LICENSE_INVENTORY",
+    "FINAL_HOSTING_PROVIDER_DECISION",
+    "FINAL_RETENTION_DURATIONS",
+    "FINAL_CLOUD_SYNC_DATA_SCOPE"
+  ],
+  "external_reference_sources": [
+    {
+      "path": "E:\\ai客服数据\\FastWork\\rebuild",
+      "classification": "READ_ONLY_VALIDATED_TECHNICAL_BASELINE"
+    },
+    {
+      "path": "E:\\ai客服数据\\FastWork_asar_extracted\\dist\\renderer",
+      "classification": "READ_ONLY_OWNER_AUTHORIZED_UI_REFERENCE"
+    },
+    {
+      "path": "E:\\nixiang",
+      "classification": "READ_ONLY_POTENTIAL_REVERSE_ENGINEERING_EVIDENCE_NOT_YET_CLASSIFIED"
+    }
+  ],
+  "write_boundary": {
+    "project_controlled_root": "E:\\fast_sheep",
+    "old_rebuild_writable": false,
+    "renderer_reference_writable": false,
+    "reverse_engineering_evidence_writable": false
+  },
+  "governance_dry_run": {
+    "required": true,
+    "executed": true,
+    "result": "PASS",
+    "controller_decision": "PASS",
+    "files_read": 6,
+    "files_modified": 0,
+    "files_created": 0,
+    "external_reference_trees_inspected": 0,
+    "nixiang_inspected": false,
+    "true_contradictions": 0,
+    "material_ambiguities": 2,
+    "roadmap_dependency_risks": 7
+  },
+  "review_sequence": [
+    "REVIEW_1_MASTER_PROMPT:PASS_CLOSED",
+    "GOVERNANCE_DRY_RUN:PASS",
+    "MASTER_PROMPT_V1_APPROVAL:PASS",
+    "REVIEW_2_CODING_ROADMAP:PASS_CLOSED_V1.0_REVIEWED",
+    "REVIEW_3_CODEX_TASK_TEMPLATE:PASS_CLOSED_V1.0_REVIEWED",
+    "FINAL_GOVERNANCE_FREEZE:PASS_CLOSED",
+    "PHASE_0_START:APPROVED_OWNER_GO"
+  ],
+  "next_stage_not_executed": true,
+  "lifecycle_stage": "PHASE_0",
+  "roadmap_phase_started": true,
+  "review_2_inputs_from_dry_run": [
+    "R-01 SecretStore dependency ordering",
+    "R-02 Conversation ownership cloud-authority ordering",
+    "R-03 Entitlement dependency ordering",
+    "R-04 Platform/UI commercial compliance gates before RC",
+    "R-05 Code signing and clean-machine validation placement",
+    "R-06 Retention/cloud-sync DATA decisions before dependent gates",
+    "R-07 Sync/version metadata earlier in local domain schema"
+  ],
+  "progress_semantics": {
+    "product_definition_progress": "direction/decision completion; not implementation progress",
+    "architecture_direction_progress": "architecture decision completion; not implementation progress",
+    "engineering_governance_progress": "governance preparation/review completion; not implementation progress",
+    "implementation_progress": "actual implementation progress",
+    "overall_roadmap_progress": "Controller-managed weighted implementation roadmap progress"
+  },
+  "governance_approval": {
+    "review_1_master_prompt": "PASS_CLOSED",
+    "governance_dry_run_001": "PASS",
+    "gov_repair_001": "PASS_CLOSED",
+    "gov_repair_verification_001": "PASS",
+    "gov_repair_002": "APPLIED_CLOSED",
+    "owner_master_v1_approval": "PASS",
+    "review_2_roadmap": "PASS_CLOSED",
+    "review_3_task_template": "PASS_CLOSED",
+    "final_governance_freeze": "PASS_CLOSED"
+  },
+  "review_2": {
+    "status": "PASS_CLOSED",
+    "closed_date": "2026-08-23",
+    "codex_result": "COMPLETE",
+    "reviewed_roadmap_path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
+    "audits": {
+      "R-01": "PASS",
+      "R-02": "PASS",
+      "R-03": "PASS",
+      "R-04": "PASS",
+      "R-05": "PASS",
+      "R-06": "PASS",
+      "R-07": "PASS"
+    },
+    "next_stage_not_executed": true
+  },
+  "review_3": {
+    "status": "PASS_CLOSED",
+    "closed_date": "2026-08-23",
+    "codex_result": "COMPLETE",
+    "reviewed_template_path": "project\\FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.0_REVIEWED.md",
+    "next_stage_not_executed": true
+  },
+  "final_governance_freeze": {
+    "status": "PASS_CLOSED",
+    "closed_date": "2026-08-23",
+    "codex_result": "COMPLETE",
+    "verified_governance_files": [
+      "AGENTS.md",
+      "project\\FAST_SHEEP_MASTER_PROMPT.md",
+      "project\\DECISIONS.md",
+      "project\\FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
+      "project\\FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.0_REVIEWED.md",
+      "project\\PROJECT_STATE.json"
+    ],
+    "locked_decisions_verified": 22,
+    "true_contradictions": 0,
+    "open_findings": [
+      "AGENTS.md read-order items 5/6 still name the v1.0 Roadmap/Template files; recommended Controller-approved alignment to reviewed files (or handle in Phase 0 SHEEP-002)"
+    ],
+    "next_stage_not_executed": true
+  },
+  "phase_0_entry": {
+    "status": "APPROVED",
+    "approved_date": "2026-08-23",
+    "current_milestone": "M0.1",
+    "first_acceptance_unit": "SHEEP-001",
+    "sheep_001_approved": false
+  },
+  "next_task": "SHEEP-001"
+}

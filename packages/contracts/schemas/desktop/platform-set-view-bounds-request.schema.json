@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:desktop:platform-set-view-bounds-request",
+  "$title": "PlatformSetViewBoundsRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["shop_id", "x", "y", "width", "height", "visible"],
+  "properties": {
+    "shop_id": { "type": "string", "minLength": 1 },
+    "x": { "type": "integer", "minimum": 0 },
+    "y": { "type": "integer", "minimum": 0 },
+    "width": { "type": "integer", "minimum": 0 },
+    "height": { "type": "integer", "minimum": 0 },
+    "visible": { "type": "boolean" }
+  }
+}

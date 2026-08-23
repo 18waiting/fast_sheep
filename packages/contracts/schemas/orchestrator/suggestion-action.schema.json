@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:orchestrator:suggestion-action",
+  "$title": "SuggestionAction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "command"
+  ],
+  "properties": {
+    "command": {
+      "type": "string",
+      "enum": [
+        "manual_send",
+        "cancel",
+        "set_mode",
+        "human_takeover",
+        "focus_shop"
+      ]
+    },
+    "key": {
+      "type": "string",
+      "enum": [
+        "Enter",
+        "Alt+Enter"
+      ]
+    },
+    "mode": {
+      "type": "string"
+    },
+    "shop_id": {
+      "type": "string"
+    }
+  }
+}
