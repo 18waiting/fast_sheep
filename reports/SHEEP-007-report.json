@@ -1,0 +1,56 @@
+{
+  "task": "SHEEP-007",
+  "result": "PARTIAL",
+  "phase": "Phase 0",
+  "milestone": "M0.3",
+  "objective": "Baseline Typecheck / Tests: typecheck, desktop tests, Worker integration, renderer smoke",
+  "completed_requirements": 3,
+  "total_requirements": 4,
+  "evidence": {
+    "confirmed": [
+      "typecheck：全部 20 个 workspace 包 PASS（先 pnpm -r run build 生成 dist 类型，再 typecheck）",
+      "desktop tests：171/171 PASS（node --test，exit=0）",
+      "Worker integration：462/473 PASS（py -3.12 unittest；numpy 1.26.4 / faiss 1.15.0）",
+      "renderer smoke（M6 Electron）：PASS（app/renderer/preload/IPC/manual round-trip/network=0；electron 43.4.0；需沙箱外运行）",
+      "userData 隔离生效证据：Electron 日志显示 C:\\Users\\13937\\AppData\\Roaming\\fast_sheep（SHEEP-004 成果验证）"
+    ],
+    "blocked": [
+      "11 个 golden 夹具测试 BLOCKED：parity-tests/fixtures/{audit,conversation,feedback,handoff,learning,optimization,prompt,provider,rag,review,tool} 在 rebuild 基线中不存在（全树搜索确认）",
+      "这些夹具是冻结 golden 证据（GF-*），无法从当前基线生成；需 Controller/Owner 决策：定位/恢复夹具（REPAIR）或记录缺口接受 DEFERRED"
+    ]
+  },
+  "blockers": [
+    "parity-tests/fixtures golden 证据缺失（不在可用基线内）"
+  ],
+  "decisions_required": [
+    "golden 夹具来源决策：从何处恢复 parity-tests/fixtures（如原始机/受权证据源），或接受缺口的后续处理"
+  ],
+  "deferred_items": [
+    "构建顺序说明：typecheck 前需先 pnpm -r run build（因 SHEEP-001 排除 dist）——建议后续加入 README/CI 文档",
+    "m6:electron-smoke 需在非沙箱环境运行（沙箱 AppData/GPU 受限）"
+  ],
+  "tests": [
+    "typecheck exit=0",
+    "desktop test exit=0 (171 pass)",
+    "worker unittest 462 pass / 11 fail（均 golden fixtures 缺失）",
+    "m6:electron-smoke result=PASS"
+  ],
+  "smokes": [
+    "M6 Electron renderer smoke PASS"
+  ],
+  "negative_tests": [
+    "renderer smoke external_network_calls=0",
+    "desktop 安全/无 raw ipc 测试通过"
+  ],
+  "modified_files": [
+    "project/PROJECT_STATE.json (SHEEP-007 记录)",
+    "reports/SHEEP-007-report.json (新建)"
+  ],
+  "architecture_changes": [],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

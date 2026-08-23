@@ -1,0 +1,18 @@
+{
+  "electron_version": "43.4.0",
+  "test_mode": true,
+  "app_started": true,
+  "browser_window_created": true,
+  "preload_loaded": true,
+  "renderer_loaded": true,
+  "bootstrap_ipc": true,
+  "worker_status": "ready",
+  "synthetic_shop": true,
+  "snapshot_rendered": true,
+  "manual_command_round_trip": true,
+  "shutdown_clean": true,
+  "external_network_calls": 0,
+  "persistence_runtime_compatibility": true,
+  "result": "PASS",
+  "errors": []
+}
