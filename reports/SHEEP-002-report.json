@@ -1,0 +1,50 @@
+{
+  "task": "SHEEP-002",
+  "result": "COMPLETE",
+  "phase": "Phase 0",
+  "milestone": "M0.1",
+  "objective": "验证并固化已批准治理文件集（不凭 Roadmap 重建/覆盖），修正 AGENTS.md 必读顺序以指向 active Reviewed 文件，落盘验证记录",
+  "completed_requirements": 8,
+  "total_requirements": 8,
+  "evidence": {
+    "confirmed": [
+      "治理文件集 18/18 核对 PASS：root AGENTS.md、project 下 7 个治理文件（含 Reviewed Roadmap/Template）全部存在",
+      "active Master 路径经 PROJECT_STATE master_prompt.path 解析 = project\\FAST_SHEEP_MASTER_PROMPT.md（APPROVED V1.0），无重复 Master 于 project 根（reviewed 候选仅存 history\\）",
+      "Reviewed Roadmap（1012 行，Review 2 关闭记录）与 Reviewed Template（751 行，Review 3 关闭记录）齐备",
+      "PROJECT_STATE：GOVERNANCE_FROZEN；review_sequence 全部 PASS_CLOSED；freeze 记录 contradictions=0；SHEEP-001 PASS 已记录",
+      "DECISIONS.md 22 项 LOCKED 决策",
+      "AGENTS.md 必读顺序第 5/6 项已对齐到 active Reviewed 文件（freeze open finding 方案 B 关闭）"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "AGENTS.md 中其它引用（如 §12/§13 对旧文件的一般描述）未逐条核对；如后续发现过时引用，记录并另行处理"
+  ],
+  "tests": [
+    "治理文件存在性 8 项",
+    "active Master 路径解析",
+    "Reviewed 关闭记录",
+    "PROJECT_STATE 一致性",
+    "DECISIONS 计数 22"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "未凭 Roadmap 重建/覆盖任何治理文件",
+    "未在 project 根创建重复 Master",
+    "未改动 DECISIONS/Reviewed Roadmap/Reviewed Template/Master"
+  ],
+  "modified_files": [
+    "AGENTS.md（必读顺序第 5/6 项对齐到 active Reviewed 文件）",
+    "project/PROJECT_STATE.json（SHEEP-002 记录）",
+    "reports/SHEEP-002-report.json（新建）"
+  ],
+  "architecture_changes": [],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

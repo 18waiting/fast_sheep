@@ -19,11 +19,11 @@ Before doing any project task, read:
 
 When planning phase/milestone dependencies, also read:
 
-5. `project/FAST_SHEEP_CODING_ROADMAP.md`
+5. the active Coding Roadmap — exact path per `project/PROJECT_STATE.json` `roadmap.path` / `roadmap.reviewed_path`; currently `project/FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md` (Review 2 approved; `project/FAST_SHEEP_CODING_ROADMAP.md` = v1.0 historical baseline)
 
 All SHEEP task prompts must follow:
 
-6. `project/FAST_SHEEP_CODEX_TASK_TEMPLATE.md`
+6. the active Codex Task Template — exact path per `project/PROJECT_STATE.json` `task_template.path` / `task_template.reviewed_path`; currently `project/FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.0_REVIEWED.md` (Review 3 approved; `project/FAST_SHEEP_CODEX_TASK_TEMPLATE.md` = v1.0 historical baseline)
 
 Current active Master is:
 
