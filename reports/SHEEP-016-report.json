@@ -1,0 +1,60 @@
+{
+  "task": "SHEEP-016",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.3",
+  "objective": "Product / SKU Domain: Product/Sku 身份核心（D1 无 storeId；D2 Sku.productId 最小归属；独立 opaque 外部引用）",
+  "completed_requirements": 6,
+  "total_requirements": 6,
+  "owner_decisions_tightening": {
+    "d1_no_storeId": "遵守：Product 无 storeId；Product<->Store identity/scope semantics 明确 DEFERRED",
+    "d2_sku_product_id": "遵守：Sku.productId 仅最小 SKU->Product 归属；无 price/stock/spec/status/lifecycle（测试断言）",
+    "t1_independent_refs": "遵守：ProductExternalRef 与 SkuExternalRef 独立专属 opaque，不合并、不复用 AccountRef（测试断言）",
+    "t2_no_business_rules": "遵守：不规定 SKU 数量/lifecycle/variant/price/stock/status（测试断言无业务字段与函数）",
+    "t3_product_domain_not_knowledge": "遵守：Product 身份核心无 knowledge-scope 字段；DEC-008 Product Knowledge 不用于决定 identity Store 切分（测试断言）"
+  },
+  "evidence": {
+    "confirmed": [
+      "packages/domain/src/product.ts：ProductId/SkuId/ProductExternalRef/SkuExternalRef/Product{id,merchantId,platformAccountId,externalRef?}/Sku{id,productId,externalRef?}",
+      "单元测试 49/49 PASS（含 6 个 product 测试：D1/D2/T1/T2/T3 + T1/T3/T6）",
+      "全 workspace typecheck exit=0；build exit=0"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "Product<->Store identity/scope semantics（是否按 Store 分割商品身份）—— DEFERRED",
+    "商品目录/上下文字段（title/price/stock 等；Phase 4 Product Context）",
+    "SKU lifecycle / variant options / 平台 SPU/SKU 同步语义（Phase 5/6 + 后续）",
+    "cloud authoritative product identity（Phase 12）"
+  ],
+  "tests": [
+    "domain build=0 / typecheck=0 / test=49/49",
+    "全 workspace typecheck=0 / build=0"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "Product 无 storeId；无 knowledge-scope 字段",
+    "Sku 仅 {id, productId}（+可选 externalRef）",
+    "ProductExternalRef/SkuExternalRef 独立 opaque，无 AccountRef kind",
+    "无 price/stock/status/variant/lifecycle/title/skuCount 字段与业务函数",
+    "无 status/sync 字段"
+  ],
+  "modified_files": [
+    "packages/domain/src/product.ts (新建)",
+    "packages/domain/src/index.ts (re-export)",
+    "packages/domain/tests/product.test.mjs (新建)",
+    "project/PROJECT_STATE.json (SHEEP-016 记录)",
+    "reports/SHEEP-016-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Phase 1 M1.3 商品/SKU 身份核心域模型建立"
+  ],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

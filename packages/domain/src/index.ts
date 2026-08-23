@@ -86,3 +86,7 @@ export * from "./conversation-ownership.js";
 
 // SHEEP-015: Customer Domain (M1.3 Product/Customer/Order Context).
 export * from "./customer.js";
+
+
+// SHEEP-016: Product / SKU Domain (M1.3 Product/Customer/Order Context).
+export * from "./product.js";
