@@ -1,0 +1,60 @@
+{
+  "task": "SHEEP-004",
+  "result": "COMPLETE",
+  "phase": "Phase 0",
+  "milestone": "M0.2",
+  "objective": "Product Identity Migration: productName=快羊客服, slug=fast_sheep (userData), appId, executable identity, userData isolation",
+  "completed_requirements": 5,
+  "total_requirements": 5,
+  "evidence": {
+    "confirmed": [
+      "productName = 快羊客服（electron-builder.yml + package.json）",
+      "slug fast_sheep：app.setName(\"fast_sheep\") + userData = %APPDATA%\\fast_sheep（显式隔离，独立于中文显示名）",
+      "appId = com.fastsheep.desktop",
+      "executable identity：executableName=FastSheep（win + 顶层），nsis artifactName=FastSheep-<version>-Setup.exe",
+      "旧身份已从身份文件清除：com.fastwork.rebuild / FastWork Rebuild / FastWork-Rebuild 残留=0；yml 结构完整"
+    ],
+    "inferred": [
+      "appId com.fastsheep.desktop 为工程选择，发布前可改（低风险可逆）"
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "@fastwork/* npm workspace scope 全库重命名（涉及全部 import，需 SHEEP-006 install 后验证；建议后续专门任务）",
+    "window.fastworkDesktop preload API 名 / fastwork:* schema id（内部 API 面，UI/重构阶段处理）",
+    "FASTWORK_* env 变量名（内部测试/打包管道，暂保留）",
+    "fastwork-ai-worker.exe 打包 Worker 名（需重建 Worker，Phase 打包阶段处理）",
+    "业务数据根 %LOCALAPPDATA%\\FastWorkRebuild\\data -> fast_sheep 迁移 = SHEEP-005 范围"
+  ],
+  "tests": [
+    "electron-builder.yml 结构键完整；package.json 有效 JSON",
+    "旧身份字符串残留=0；新身份字段齐备",
+    "index.ts 身份块存在且语法合理（tsc 验证留 SHEEP-007）"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "未改 @fastwork/* 作用域（避免破坏 workspace 解析）",
+    "未改 FASTWORK_* env / worker exe 名（避免破坏现有管道）",
+    "未动数据根逻辑（SHEEP-005 范围）"
+  ],
+  "modified_files": [
+    "apps/desktop/electron-builder.yml",
+    "apps/desktop/package.json",
+    "apps/desktop/src/main/index.ts",
+    "project/PROJECT_STATE.json (SHEEP-004 记录)",
+    "reports/SHEEP-004-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "桌面应用产品身份从 FastWork Rebuild 迁移为 Fast Sheep（快羊客服）"
+  ],
+  "security_changes": [
+    "无安全边界变更；userData 隔离路径更稳定"
+  ],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "tests_status": "typecheck/build NOT_RUN（依赖 SHEEP-006 pnpm install；SHEEP-007 baseline 验证）"
+}

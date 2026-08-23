@@ -28,6 +28,10 @@ const PRELOAD = join(HERE, "..", "preload", "index.js");
 const RENDERER_HTML = join(HERE, "..", "renderer", "index.html");
 const FILE_ORIGIN = "file://";
 
+// Fast Sheep product identity: stable ASCII userData path (display name is Chinese).
+app.setName("fast_sheep");
+app.setPath("userData", join(app.getPath("appData"), "fast_sheep"));
+
 let mainWindow: BrowserWindow | null = null;
 let context: ReturnType<typeof createMainContext> | null = null;
 let bridges: Array<{ stop(): void }> = [];

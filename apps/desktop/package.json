@@ -36,10 +36,6 @@
     "esbuild": "^0.24.0",
     "electron-builder": "26.15.3",
     "@electron/asar": "3.4.1"
-  }
+  },
+  "productName": "快羊客服"
 }
-
-
-
-
-

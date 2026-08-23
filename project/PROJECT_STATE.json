@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_0",
   "current_milestone": "M0.1",
-  "last_closed_task": "SHEEP-003",
+  "last_closed_task": "SHEEP-004",
   "current_task": null,
-  "next_action": "SHEEP-004",
+  "next_action": "SHEEP-005",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-004",
+  "next_task": "SHEEP-005",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -232,6 +232,20 @@
     "baselines_record": "reports\\SHEEP-003-baselines.json",
     "report": "reports\\SHEEP-003-report.json",
     "nixiang_inspected": false,
+    "next_stage_not_executed": true
+  },
+  "sheep_004": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-23",
+    "identity": {
+      "productName": "快羊客服",
+      "slug": "fast_sheep",
+      "appId": "com.fastsheep.desktop",
+      "executableName": "FastSheep",
+      "userData": "%APPDATA%\\fast_sheep"
+    },
+    "report": "reports\\SHEEP-004-report.json",
     "next_stage_not_executed": true
   }
 }
