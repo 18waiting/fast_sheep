@@ -66,3 +66,7 @@ export interface BackgroundJob {
 
 // SHEEP-010: Merchant Domain Model (M1.1 Core Identity Domain).
 export * from "./merchant-domain.js";
+
+
+// SHEEP-011: Membership / Seat Domain (M1.1 Core Identity Domain).
+export * from "./membership-domain.js";

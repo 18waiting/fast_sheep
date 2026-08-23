@@ -1,0 +1,56 @@
+{
+  "task": "SHEEP-011",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.1",
+  "objective": "Membership / Seat Domain: Member / Membership / Seat / default roles（遵守 Owner 三项收紧 + T1~T5）",
+  "completed_requirements": 6,
+  "total_requirements": 6,
+  "owner_tightening": {
+    "t_a_single_ownership_source": "遵守：精读 Master §7（Account->Merchant->Membership）；Membership 为 Member<->Merchant 唯一归属事实源；Member 不持有 merchantId（测试断言）",
+    "t_b_seat_not_quota": "遵守：Seat 仅为 Merchant-scoped identity placeholder {id, merchantId}；无 maxSeats/quota/allocation/occupied/capacity（测试断言）；DEC-012/Phase 11 不做",
+    "t_c_roled_extensible_not_custom_capability": "遵守：DEFAULT_ROLES 恰为 owner/admin/supervisor/agent（DEC-011）；RoleId=string 仅类型层不封死；未声明/测试 v1 支持任意自定义角色；授权归 SHEEP-012"
+  },
+  "evidence": {
+    "confirmed": [
+      "packages/domain/src/membership-domain.ts：Member{id,accountRef} / Membership{id,merchantId,memberId,role} / Seat{id,merchantId} / RoleId+DEFAULT_ROLES(4)",
+      "单元测试 13/13 PASS（含 6 个 membership 测试：T-A/T-B/T-C/T1/T3）",
+      "全 workspace typecheck exit=0；build exit=0"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "Seat 配额/占用/分配（MAX_SEATS 等）= DEC-012 Entitlement / Phase 11，不在本任务",
+    "自定义角色产品能力未批准；授权逻辑 = SHEEP-012 Capability + Resource Scope",
+    "Member 与 Account 的最终合并/分离关系（当前：Member.accountRef 引用 Account）留待治理证据"
+  ],
+  "tests": [
+    "domain build=0 / typecheck=0 / test=13/13",
+    "全 workspace typecheck=0 / build=0"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "Member 无 merchantId（单一归属事实源）",
+    "Seat 无 quota/capacity/allocation/occupation",
+    "Member/Membership/Seat 无 status/enabled/sync/revision/outbox 字段",
+    "DEFAULT_ROLES 恰为 4 个 DEC-011 角色"
+  ],
+  "modified_files": [
+    "packages/domain/src/membership-domain.ts (新建)",
+    "packages/domain/src/index.ts (re-export)",
+    "packages/domain/tests/membership-domain.test.mjs (新建)",
+    "project/PROJECT_STATE.json (SHEEP-011 记录)",
+    "reports/SHEEP-011-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Phase 1 M1.1 Membership/Seat 域模型建立（Membership=唯一归属事实源）"
+  ],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
