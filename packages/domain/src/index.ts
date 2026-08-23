@@ -74,3 +74,7 @@ export * from "./membership-domain.js";
 
 // SHEEP-012: Capability & Resource Scope Model (M1.1 Core Identity Domain).
 export * from "./authorization-domain.js";
+
+
+// SHEEP-013: Normalized Conversation Identity (M1.2 Conversation Domain).
+export * from "./conversation-identity.js";

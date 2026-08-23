@@ -1,0 +1,57 @@
+{
+  "task": "SHEEP-013",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.2",
+  "objective": "Normalized Conversation Identity: 会话/消息归一化身份契约（遵守 Owner 4 项收紧 + T1~T6）",
+  "completed_requirements": 6,
+  "total_requirements": 6,
+  "owner_tightening": {
+    "t1_store_scope_retained": "遵守：NormalizedConversationIdentity 含 storeId（治理确认 Store scope，不因可推导而省略；测试断言 keys）",
+    "t2_no_uniform_external_conversation_id": "遵守：外部引用为不透明 AccountRef{kind,value}，不固化 externalConversationId 形态；可扩展、无平台业务逻辑（测试断言 keys）",
+    "t3_single_platform_fact_source": "遵守：平台事实源=platformAccountId；externalRef 无冗余 platform 字段（测试断言），无 authoritative lookup",
+    "t4_message_external_ref_optional_only_identity": "遵守：消息 externalRef 可选且仅身份引用；缺平台 message id 不使身份无效；无 delivery/status/time/direction/sender（测试断言）"
+  },
+  "evidence": {
+    "confirmed": [
+      "packages/domain/src/conversation-identity.ts：ConversationId/MessageId/NormalizedConversationIdentity(含 storeId)/NormalizedMessageIdentity",
+      "单元测试 27/27 PASS（含 6 个 conversation-identity 测试：4 收紧 + T1/T3）",
+      "全 workspace typecheck exit=0；build exit=0"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "cloud authoritative conversation identity（Phase 12）",
+    "会话/消息业务逻辑与状态机（Ownership=SHEEP-014；业务=Phase 4）",
+    "平台外部消息 ID 的统一抽象（按平台适配，Phase 5/6）"
+  ],
+  "tests": [
+    "domain build=0 / typecheck=0 / test=27/27",
+    "全 workspace typecheck=0 / build=0"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "Conversation 身份含 storeId；无冗余 platform 字段",
+    "externalRef 为不透明 AccountRef（无固定 externalConversationId）",
+    "消息无平台 id 仍为有效身份；无 delivery/status/time/direction/sender",
+    "无 status/sync/revision/outbox 字段"
+  ],
+  "modified_files": [
+    "packages/domain/src/conversation-identity.ts (新建)",
+    "packages/domain/src/index.ts (re-export)",
+    "packages/domain/tests/conversation-identity.test.mjs (新建)",
+    "project/PROJECT_STATE.json (SHEEP-013 记录)",
+    "reports/SHEEP-013-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Phase 1 M1.2 归一化会话/消息身份契约建立"
+  ],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
