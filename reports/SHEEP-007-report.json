@@ -15,15 +15,15 @@
       "userData 隔离生效证据：Electron 日志显示 C:\\Users\\13937\\AppData\\Roaming\\fast_sheep（SHEEP-004 成果验证）"
     ],
     "blocked": [
-      "11 个 golden 夹具测试 BLOCKED：parity-tests/fixtures/{audit,conversation,feedback,handoff,learning,optimization,prompt,provider,rag,review,tool} 在 rebuild 基线中不存在（全树搜索确认）",
-      "这些夹具是冻结 golden 证据（GF-*），无法从当前基线生成；需 Controller/Owner 决策：定位/恢复夹具（REPAIR）或记录缺口接受 DEFERRED"
+      "11 个 golden 夹具测试 BLOCKED：parity-tests/fixtures 不在 rebuild 基线内；后经更广只读搜索确认位于 E:\\ai客服数据\\FastWork\\parity-tests（原 FastWork 产品树内，非已声明参考源）",
+      "parity-tests 已完成只读 classification（见 parity_tests_classification）；是否复制进 E:\\fast_sheep\\parity-tests 待 Owner 授权"
     ]
   },
   "blockers": [
     "parity-tests/fixtures golden 证据缺失（不在可用基线内）"
   ],
   "decisions_required": [
-    "golden 夹具来源决策：从何处恢复 parity-tests/fixtures（如原始机/受权证据源），或接受缺口的后续处理"
+    "Owner 决策：是否授权将 E:\\ai客服数据\\FastWork\\parity-tests 复制进 E:\\fast_sheep\\parity-tests（分类已完成；复制需明确授权 + provenance 记录）"
   ],
   "deferred_items": [
     "构建顺序说明：typecheck 前需先 pnpm -r run build（因 SHEEP-001 排除 dist）——建议后续加入 README/CI 文档",
@@ -52,5 +52,29 @@
   "old_rebuild_modified": false,
   "original_reference_modified": false,
   "secrets_detected": false,
-  "next_stage_not_executed": true
+  "next_stage_not_executed": true,
+  "external_reference_access": {
+    "summary": "SHEEP-007 及后续分类过程对外部 FastWork 路径进行了只读目录/证据访问（非 0）",
+    "accesses": [
+      "2026-08-23 SHEEP-007 调查：E:\\ai客服数据\\FastWork\\rebuild 递归目录名搜索（parity-tests/fixtures 存在性；结果=无）",
+      "2026-08-23 更广搜索：E:\\ai客服数据 递归目录名搜索（发现 E:\\ai客服数据\\FastWork\\parity-tests）",
+      "2026-08-23 分类：E:\\ai客服数据\\FastWork\\parity-tests 只读 inventory/文档读取/凭据与 PII 模式扫描（未读 FastWork 产品树其它目录；未修改/复制/生成任何外部文件）"
+    ],
+    "renderer_reference_inspected": false,
+    "nixiang_inspected": false
+  },
+  "parity_tests_classification": {
+    "path": "E:\\ai客服数据\\FastWork\\parity-tests",
+    "classification_date": "2026-08-23",
+    "status": "CLASSIFIED_READONLY",
+    "content_type": "纯数据/文档：fixtures(242 JSON+13 CSV+1 stub bin) + contracts(2 schema) + manifests(2) + README + evidence-ledger",
+    "source_code": "NONE",
+    "real_binaries": "NONE（唯一 .bin 内容为 \\\\x00\\\\x01\\\\x02not-real，合成 stub）",
+    "secrets": "NONE（21 处模式命中均为 SEC 安全夹具占位/断言；唯一 token 命中为 mock cancel_token=t1）",
+    "pii": "NONE（手机/邮箱/身份证模式命中=0）",
+    "golden_evidence": "YES（SPEC_DERIVED、FROZEN、222 cases/174 P0；GF-* golden fixtures）",
+    "source_purpose": "2026-08-15 TASK-014 产物：clean-room 行为对等验证 oracle；全 mock、不联网、无真实数据",
+    "suitability": "INFERRED：适合作为 Fast Sheep 内部 non-distributable test evidence（纯数据/无凭据/PII；商业分发包不含，需 Owner 记录）",
+    "copy_pending_owner_authorization": true
+  }
 }
