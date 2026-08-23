@@ -28,10 +28,10 @@
     "reviewed_version": "V1.0_REVIEWED"
   },
   "current_phase": "PHASE_0",
-  "current_milestone": "M0.1",
+  "current_milestone": "GATE-P0-PASS / PHASE_1_ENTRY_PENDING_OWNER_GO",
   "last_closed_task": "SHEEP-008",
   "current_task": null,
-  "next_action": "GATE-P0-GOVERNANCE",
+  "next_action": "PHASE_1_ENTRY",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "GATE-P0-GOVERNANCE (Phase 0 gate review)",
+  "next_task": "SHEEP-010 (Phase 1 M1.1, pending Owner GO)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -315,5 +315,13 @@
     "guard": "PASS (calibrated)",
     "report": "reports\\SHEEP-008-report.json",
     "next_stage_not_executed": true
+  },
+  "gate_p0": {
+    "status": "PASS",
+    "reviewed_date": "2026-08-24",
+    "codex_controller_self_review": "PASS",
+    "ready_to_enter_phase_1": true,
+    "requires_owner_approval": true,
+    "report": "reports\\GATE-P0-review.json"
   }
 }
