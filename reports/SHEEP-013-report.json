@@ -16,7 +16,8 @@
     "confirmed": [
       "packages/domain/src/conversation-identity.ts：ConversationId/MessageId/NormalizedConversationIdentity(含 storeId)/NormalizedMessageIdentity",
       "单元测试 27/27 PASS（含 6 个 conversation-identity 测试：4 收紧 + T1/T3）",
-      "全 workspace typecheck exit=0；build exit=0"
+      "全 workspace typecheck exit=0；build exit=0",
+      "REPAIR：externalRef 改为 ConversationExternalRef/MessageExternalRef（不透明 {value}），不再复用 AccountRef"
     ],
     "inferred": []
   },
@@ -43,7 +44,8 @@
     "packages/domain/src/index.ts (re-export)",
     "packages/domain/tests/conversation-identity.test.mjs (新建)",
     "project/PROJECT_STATE.json (SHEEP-013 记录)",
-    "reports/SHEEP-013-report.json (新建)"
+    "reports/SHEEP-013-report.json (新建)",
+    "packages/domain/src/conversation-identity.ts (REPAIR: AccountRef -> ConversationExternalRef/MessageExternalRef)"
   ],
   "architecture_changes": [
     "Phase 1 M1.2 归一化会话/消息身份契约建立"
@@ -53,5 +55,19 @@
   "old_rebuild_modified": false,
   "original_reference_modified": false,
   "secrets_detected": false,
-  "next_stage_not_executed": true
+  "next_stage_not_executed": true,
+  "repair_record": {
+    "controller_conclusion": "REPAIR (2026-08-24)",
+    "issue": "AccountRef（SHEEP-010 账号/身份引用）被直接复用于 Conversation/Message 的 external reference，语义不匹配",
+    "fix": "为 Conversation / Message 建立各自语义明确的 opaque external reference 类型：ConversationExternalRef / MessageExternalRef（均仅 { value }）；不再复用 AccountRef",
+    "preserved_principles": [
+      "opaque external reference（不固化 externalConversationId 形态）",
+      "不重复 platform（单一平台事实源 = platformAccountId）",
+      "无 sync/revision/cloud 语义",
+      "Message external reference 继续可选且仅身份引用",
+      "不引入平台业务逻辑"
+    ],
+    "verification": "domain build=0 / typecheck=0 / test=29/29（新增 2 个 REPAIR 测试）/ 全 workspace typecheck=0 / build=0",
+    "scope": "仅修正领域类型语义；未扩大任务范围"
+  }
 }

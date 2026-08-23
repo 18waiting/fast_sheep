@@ -9,27 +9,39 @@ test("NormalizedConversationIdentity retains storeId (not omitted as derivable)"
     merchantId: "m-1",
     storeId: "s-1",
     platformAccountId: "pa-1",
-    externalRef: { kind: "platform", value: "ext-conv-1" },
+    externalRef: { value: "ext-conv-1" },
   };
   assert.equal(id.storeId, "s-1");
   assert.deepEqual(Object.keys(id).sort(), ["externalRef", "localId", "merchantId", "platformAccountId", "storeId"]);
 });
 
-// --- tightening 2: external ref is an opaque identity capability, not a fixed shape ---
-test("externalRef is an opaque AccountRef (kind/value) — no fixed externalConversationId field", () => {
-  const ref = { kind: "platform", value: "any-platform-specific-key" };
-  assert.deepEqual(Object.keys(ref).sort(), ["kind", "value"]);
-  assert.equal(ref.kind, "platform");
+// --- tightening 2: external ref is opaque, no fixed externalConversationId shape ---
+test("ConversationExternalRef is opaque {value} — no fixed externalConversationId field", () => {
+  const ref = { value: "any-platform-specific-key" };
+  assert.deepEqual(Object.keys(ref).sort(), ["value"]);
 });
 
-// --- tightening 3: single platform fact source = platformAccountId; no redundant platform in externalRef ---
+// --- REPAIR: AccountRef not reused; dedicated Conversation/Message external refs ---
+test("ConversationExternalRef is NOT AccountRef (no kind field; dedicated conversation type)", () => {
+  const ref = ci.ConversationExternalRef ? {} : { value: "x" };
+  assert.deepEqual(Object.keys(ref).sort(), ["value"]);
+  assert.equal(Object.hasOwn(ref, "kind"), false, "no AccountRef identity-kind reuse");
+});
+
+test("MessageExternalRef is a dedicated message external reference (opaque {value})", () => {
+  const ref = { value: "pmsg-1" };
+  assert.deepEqual(Object.keys(ref).sort(), ["value"]);
+  assert.equal(Object.hasOwn(ref, "kind"), false);
+});
+
+// --- tightening 3: single platform fact source = platformAccountId ---
 test("Conversation identity has no separate platform field (platform fact source = platformAccountId)", () => {
   const id = {
     localId: "c-1",
     merchantId: "m-1",
     storeId: "s-1",
     platformAccountId: "pa-1",
-    externalRef: { kind: "platform", value: "x" },
+    externalRef: { value: "x" },
   };
   assert.equal(Object.hasOwn(id, "platform"), false, "platform must not be duplicated");
   assert.equal(Object.hasOwn(id.externalRef, "platform"), false, "externalRef must not carry a second platform fact");
@@ -42,8 +54,8 @@ test("Message without a platform message id is still a valid identity (externalR
 });
 
 test("Message with externalRef carries only an identity reference (no delivery/status/time/direction/sender)", () => {
-  const msg = { localMessageId: "msg-1", conversationId: "c-1", externalRef: { kind: "platform", value: "pmsg-1" } };
-  assert.equal(msg.externalRef.kind, "platform");
+  const msg = { localMessageId: "msg-1", conversationId: "c-1", externalRef: { value: "pmsg-1" } };
+  assert.equal(msg.externalRef.value, "pmsg-1");
   for (const forbidden of ["delivery", "status", "time", "direction", "sender", "sentAt", "readAt"]) {
     assert.equal(Object.hasOwn(msg, forbidden), false, `no message business field: ${forbidden}`);
   }
@@ -52,7 +64,7 @@ test("Message with externalRef carries only an identity reference (no delivery/s
 // --- T1 / T3: no status / no sync semantics ---
 test("Conversation/message identities carry no status or sync fields (T1/T3)", () => {
   const objs = [
-    { localId: "c", merchantId: "m", storeId: "s", platformAccountId: "p", externalRef: { kind: "platform", value: "x" } },
+    { localId: "c", merchantId: "m", storeId: "s", platformAccountId: "p", externalRef: { value: "x" } },
     { localMessageId: "m", conversationId: "c" },
   ];
   for (const obj of objs) {
