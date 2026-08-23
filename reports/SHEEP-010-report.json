@@ -1,0 +1,62 @@
+{
+  "task": "SHEEP-010",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.1",
+  "objective": "Merchant Domain Model: AccountRef / Merchant / Store / PlatformAccount（稳定身份契约，遵守 Owner 5 项收紧项）",
+  "completed_requirements": 5,
+  "total_requirements": 5,
+  "owner_tightening": {
+    "no_invented_status": "遵守：Merchant/Store/PlatformAccount 无 status/enabled 字段（无治理证据）",
+    "platform_extensible": "遵守：PlatformId = string（可扩展），已知平台为常量；未封死为仅 PDD/DouDian",
+    "account_ref_no_sync": "遵守：AccountRef 仅 {kind, value}，无 remote sync id/revision/outbox/同步语义（测试断言 Object.keys == [kind,value]）",
+    "scope_only_confirmed": "遵守：仅 Merchant->Store 与 Merchant->PlatformAccount；无额外强层级规则",
+    "domain_build": "遵守：@fastwork/domain 新增 build 脚本并独立产出 dist（index.js/merchant-domain.js/.d.ts）"
+  },
+  "evidence": {
+    "confirmed": [
+      "packages/domain/src/merchant-domain.ts：PlatformId(可扩展) + IdentityKind(local/platform/cloud) + AccountRef + Merchant/Store/PlatformAccount",
+      "packages/domain 新增 build 脚本，独立产出 dist（owner 收紧项 #5）",
+      "单元测试 7/7 PASS（身份边界/无 sync 字段/scope/无状态字段/平台可扩展）",
+      "全 workspace typecheck exit=0；全 workspace build exit=0（domain 纳入递归构建）"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "Merchant/Store/PlatformAccount 的状态词表（如启用/停用）留待治理证据出现后补",
+    "PlatformAccount 与 Store 的关联基数未定（未实现，避免发明规则）",
+    "M1.5 早期基础（SecretStore/Entitlement/Sync-Ready Contract）属后续 SHEEP 任务，不在本任务"
+  ],
+  "tests": [
+    "pnpm --filter @fastwork/domain run build = 0",
+    "pnpm --filter @fastwork/domain run typecheck = 0",
+    "pnpm --filter @fastwork/domain run test = 7/7",
+    "pnpm -r run typecheck = 0",
+    "pnpm -r run build = 0"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "AccountRef 无 sync/revision/outbox 字段",
+    "Merchant/Store/PlatformAccount 无 status/enabled 字段",
+    "平台标识接受未来平台字符串"
+  ],
+  "modified_files": [
+    "packages/domain/src/merchant-domain.ts (新建)",
+    "packages/domain/src/index.ts (re-export)",
+    "packages/domain/tests/merchant-domain.test.mjs (新建)",
+    "packages/domain/package.json (新增 build 脚本)",
+    "project/PROJECT_STATE.json (SHEEP-010 记录)",
+    "reports/SHEEP-010-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Phase 1 M1.1 Merchant 域模型（AccountRef/Merchant/Store/PlatformAccount）建立"
+  ],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

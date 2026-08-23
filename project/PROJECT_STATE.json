@@ -27,11 +27,11 @@
     "reviewed_path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
     "reviewed_version": "V1.0_REVIEWED"
   },
-  "current_phase": "PHASE_0",
-  "current_milestone": "GATE-P0-PASS / PHASE_1_ENTRY_PENDING_OWNER_GO",
-  "last_closed_task": "SHEEP-008",
+  "current_phase": "PHASE_1",
+  "current_milestone": "M1.1",
+  "last_closed_task": "SHEEP-010",
   "current_task": null,
-  "next_action": "PHASE_1_ENTRY",
+  "next_action": "SHEEP-011",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -109,7 +109,7 @@
     "PHASE_0_START:APPROVED_OWNER_GO"
   ],
   "next_stage_not_executed": true,
-  "lifecycle_stage": "PHASE_0",
+  "lifecycle_stage": "PHASE_1",
   "roadmap_phase_started": true,
   "review_2_inputs_from_dry_run": [
     "R-01 SecretStore dependency ordering",
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-010 (Phase 1 M1.1, pending Owner GO)",
+  "next_task": "SHEEP-011",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -323,5 +323,18 @@
     "ready_to_enter_phase_1": true,
     "requires_owner_approval": true,
     "report": "reports\\GATE-P0-review.json"
+  },
+  "phase_1_entry": {
+    "status": "APPROVED",
+    "approved_date": "2026-08-24",
+    "first_acceptance_unit": "SHEEP-010",
+    "sheep_010_approved": false
+  },
+  "sheep_010": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-24",
+    "report": "reports\\SHEEP-010-report.json",
+    "next_stage_not_executed": true
   }
 }

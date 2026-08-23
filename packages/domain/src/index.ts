@@ -62,3 +62,7 @@ export interface BackgroundJob {
   state: JobState; progress?: number; message?: string; started_at?: string; finished_at?: string;
   cancellation_token?: string; error?: unknown | null; result?: Record<string, unknown>;
 }
+
+
+// SHEEP-010: Merchant Domain Model (M1.1 Core Identity Domain).
+export * from "./merchant-domain.js";
