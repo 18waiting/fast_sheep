@@ -1,0 +1,61 @@
+{
+  "task": "SHEEP-015",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.3",
+  "objective": "Customer Domain: 归一化客户身份核心（merchant+platformAccount 作用域 + 专属 opaque 外部引用；无 storeId、无 PII）",
+  "completed_requirements": 6,
+  "total_requirements": 6,
+  "owner_tightening": {
+    "t1_no_storeId": "遵守：Customer 无 storeId；Customer<->Store identity/scope semantics 明确 DEFERRED（'现在不加' ≠ '未来永无 Store 关联'）",
+    "t2_externalRef_no_inference": "遵守：externalRef 可选；缺失仅表示当前无平台外部引用；不实现/暗示 dedup/merge/matching/cross-store resolution（测试断言无 resolveCustomer/mergeCustomers/dedup 等导出）",
+    "t3_identity_vs_profile": "遵守：身份核心无 name/nickname/phone/address 等 PII；注释明确这不是永久禁止 PII，未来 Privacy/Data 治理批准的 Customer Context/Profile 可独立承载",
+    "governance_reference_fix": "遵守：客户隐私依据改为 Master §15(Data Classification)/§25(Merchant Data Governance)/§26(Minimum Necessary Context)/§19(Privacy)；不再以 DEC-016(Telemetry/Logs/Diagnostics) 作为 PII 决策依据"
+  },
+  "evidence": {
+    "confirmed": [
+      "packages/domain/src/customer.ts：CustomerId/CustomerExternalRef/Customer{id,merchantId,platformAccountId,externalRef?}",
+      "单元测试 43/43 PASS（含 6 个 customer 测试：3 收紧 + 无推断/无 PII/无 sync）",
+      "全 workspace typecheck exit=0；build exit=0"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "Customer<->Store identity/scope semantics（是否按 Store 分割客户身份）—— 明确 DEFERRED，未来经治理证据决定",
+    "Customer Context/Profile（PII/展示字段，需 Privacy/Data governance 批准；Phase 4 Customer Context）",
+    "客户 dedup/merge/cross-store identity resolution（未经治理，不得实现）",
+    "cloud authoritative customer identity（Phase 12）"
+  ],
+  "tests": [
+    "domain build=0 / typecheck=0 / test=43/43",
+    "全 workspace typecheck=0 / build=0"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "Customer 无 storeId（deferred）",
+    "CustomerExternalRef 专属 opaque，无 AccountRef kind",
+    "无 resolveCustomer/mergeCustomers/dedup/match 导出",
+    "无 name/nickname/phone/address 字段",
+    "无 status/sync 字段"
+  ],
+  "modified_files": [
+    "packages/domain/src/customer.ts (新建)",
+    "packages/domain/src/index.ts (re-export)",
+    "packages/domain/tests/customer.test.mjs (新建)",
+    "project/PROJECT_STATE.json (SHEEP-015 记录)",
+    "reports/SHEEP-015-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Phase 1 M1.3 客户身份核心域模型建立"
+  ],
+  "security_changes": [
+    "客户身份核心不含 PII（隐私最小化）"
+  ],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

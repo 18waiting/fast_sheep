@@ -82,3 +82,7 @@ export * from "./conversation-identity.js";
 
 // SHEEP-014: Conversation Ownership Domain (M1.2 Conversation Domain).
 export * from "./conversation-ownership.js";
+
+
+// SHEEP-015: Customer Domain (M1.3 Product/Customer/Order Context).
+export * from "./customer.js";
