@@ -1,0 +1,88 @@
+{
+  "task": "SHEEP-003",
+  "created_at": "2026-08-23",
+  "purpose": "Fork provenance & read-only baselines: record reference-tree snapshots and write-boundary audit so future changes are detectable",
+  "baselines": [
+    {
+      "id": "REF-A_REBUILD",
+      "path": "E:\\ai客服数据\\FastWork\\rebuild",
+      "classification": "READ_ONLY_VALIDATED_TECHNICAL_BASELINE",
+      "snapshot": {
+        "file_count": 21614,
+        "size_mb": 2232.3,
+        "last_write": "2026-08-19 03:05:53",
+        "top_level": [
+          ".github",
+          ".packaging-build",
+          ".tmp-wd",
+          "apps",
+          "dist",
+          "node_modules",
+          "packages",
+          "reports",
+          "resources",
+          "scripts",
+          "services",
+          "tests",
+          ".editorconfig",
+          ".gitignore",
+          ".validate-electron.mjs",
+          "build-release.cmd",
+          "package.json",
+          "pnpm-lock.yaml",
+          "pnpm-workspace.yaml",
+          "pyproject.toml",
+          "README.md",
+          "tsconfig.base.json"
+        ]
+      },
+      "write_allowed": false,
+      "note": "SHEEP-001 copied source subset into E:\\fast_sheep; this tree remains read-only and must never be modified/built/written"
+    },
+    {
+      "id": "REF-B_RENDERER",
+      "path": "E:\\ai客服数据\\FastWork_asar_extracted\\dist\\renderer",
+      "classification": "READ_ONLY_OWNER_AUTHORIZED_UI_REFERENCE",
+      "snapshot": {
+        "file_count": 5,
+        "size_mb": 0.5,
+        "last_write": "2026-08-13 23:33:14",
+        "top_level": [
+          "account.js",
+          "ai.js",
+          "knowledge.js",
+          "navbar.js",
+          "sidebar.js"
+        ]
+      },
+      "write_allowed": false,
+      "note": "UI reference only; owner authorization != commercial redistribution license; deep inspection only in UI restoration tasks (Phase 2)"
+    },
+    {
+      "id": "REF-C_NIXIANG",
+      "path": "E:\\nixiang",
+      "classification": "READ_ONLY_POTENTIAL_EVIDENCE_SOURCE_NOT_YET_CLASSIFIED",
+      "snapshot": {
+        "inspected": false,
+        "note": "existence confirmed only; contents not inspected in SHEEP-003"
+      },
+      "write_allowed": false,
+      "note": "Do not modify/rename/delete/regenerate; do not copy arbitrary content into production; classification requires dedicated inventory task"
+    }
+  ],
+  "write_boundary": {
+    "project_controlled_root": "E:\\fast_sheep",
+    "policy": {
+      "old_rebuild_writable": false,
+      "renderer_reference_writable": false,
+      "reverse_engineering_evidence_writable": false,
+      "project_writes_outside_root": "forbidden (except OS/tool-managed caches, never source-of-truth)"
+    },
+    "audit": {
+      "symlinks_or_junctions_in_project": 0,
+      "reference_trees_modified_by_project": false,
+      "nixiang_inspected": false,
+      "git_remote": "git@github.com:18waiting/fast_sheep.git (private, main)"
+    }
+  }
+}

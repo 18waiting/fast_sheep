@@ -1,0 +1,47 @@
+{
+  "task": "SHEEP-003",
+  "result": "COMPLETE",
+  "phase": "Phase 0",
+  "milestone": "M0.1",
+  "objective": "建立 fork provenance 与只读基线记录（old rebuild / authorized renderer / nixiang）+ write-boundary audit",
+  "completed_requirements": 4,
+  "total_requirements": 4,
+  "evidence": {
+    "confirmed": [
+      "rebuild 基线快照已记录（21614 文件 / 2232.3 MB / 顶层结构 / 最近写入 2026-08-19）",
+      "renderer 参考基线已记录（5 文件 / 0.5 MB / account.js,ai.js,knowledge.js,navbar.js,sidebar.js / 2026-08-13）",
+      "E:\\nixiang 存在性确认；内容未检查（nixiang_inspected=false）",
+      "write-boundary audit：E:\\fast_sheep 零 symlink/junction；三类外部树均为只读；项目写入仅限 E:\\fast_sheep"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "E:\\nixiang 内容 inventory/classification 需要专门任务（本任务仅确认存在性）",
+    "renderer 深读/资产清单属 Phase 2 UI restoration 任务（SHEEP-021+）"
+  ],
+  "tests": [
+    "快照采集（rebuild/renderer）",
+    "nixiang 存在性",
+    "symlink 扫描=0"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "未读取 E:\\nixiang 内容",
+    "未修改任何外部 reference tree",
+    "未在项目中创建指向外部的链接"
+  ],
+  "modified_files": [
+    "reports/SHEEP-003-baselines.json (新建)",
+    "reports/SHEEP-003-report.json (新建)",
+    "project/PROJECT_STATE.json (SHEEP-003 记录)"
+  ],
+  "architecture_changes": [],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
