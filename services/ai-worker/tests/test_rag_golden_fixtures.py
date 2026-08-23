@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from rag_helpers import run_all_golden_fixtures
 
-_FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "parity-tests", "fixtures", "rag")
+_FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "parity-tests", "fixtures", "rag")
 
 
 class TestRagGoldenFixtures(unittest.TestCase):

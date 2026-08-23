@@ -1,0 +1,45 @@
+{
+  "case_id": "GF-OPT-009",
+  "title": "cooldown exact 3600 boundary",
+  "behavior_ids": [
+    "B-JOB-005"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/product-optimization-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T01:00:00Z",
+    "advance": 3600
+  },
+  "config": {
+    "optimization": {
+      "cooldown_seconds": 3600
+    }
+  },
+  "input": {
+    "product_id": "10001",
+    "last_optimized_at": "2026-08-15T00:00:00Z"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "cooldown": false,
+        "operator": "gte"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

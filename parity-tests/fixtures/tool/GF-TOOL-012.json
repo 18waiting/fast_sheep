@@ -1,0 +1,47 @@
+{
+  "case_id": "GF-TOOL-012",
+  "title": "transfer_to_human skill",
+  "behavior_ids": [
+    "B-HANDOFF-001",
+    "B-TOOL-002"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/skill-tool-engine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "tool_call": {
+      "name": "转接人工客服",
+      "arguments": {
+        "reason": "售后"
+      }
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "result": {
+      "decision": {
+        "requested": true,
+        "target": "人工",
+        "reason": "售后"
+      }
+    }
+  },
+  "comparison": {
+    "mode": "SUBSET"
+  },
+  "tags": [],
+  "notes": ""
+}

@@ -1,0 +1,43 @@
+{
+  "case_id": "GF-JOB-003",
+  "title": "job RUNNING→CANCELLING→CANCELLED",
+  "behavior_ids": [
+    "B-JOB-001"
+  ],
+  "test_class": "DESIGN_CONFORMANCE",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/states/knowledge-improvement-state-machine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "command": "cancel"
+  },
+  "mocks": {},
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "job",
+        "state": [
+          "CANCELLING",
+          "CANCELLED"
+        ]
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

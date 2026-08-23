@@ -1,0 +1,44 @@
+{
+  "case_id": "GF-CONV-ORD-002",
+  "title": "order-state 未下单 context",
+  "behavior_ids": [
+    "B-CONV-004"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/prompt-assembly.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "question": "多少钱",
+    "order_state": "未下单"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "stage": "ORDER_CONTEXT",
+        "order_state": "未下单",
+        "tags": [
+          "#未下单"
+        ]
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

@@ -1,0 +1,48 @@
+{
+  "case_id": "GF-CONV-003",
+  "title": "welcome early behavior",
+  "behavior_ids": [
+    "B-CONV-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "你好",
+    "is_first_in_period": true
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "welcome_enabled": true,
+    "welcome_text": "亲,欢迎光临~"
+  },
+  "input": {},
+  "mocks": {},
+  "expected": {
+    "result": {
+      "reply": "亲,欢迎光临~"
+    },
+    "decisions": [
+      {
+        "stage": "WELCOME_CHECK",
+        "decision": "early-return"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

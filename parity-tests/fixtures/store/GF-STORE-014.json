@@ -1,0 +1,53 @@
+{
+  "case_id": "GF-STORE-014",
+  "title": "message record CSV import to structured",
+  "behavior_ids": [
+    "B-STORE-006"
+  ],
+  "test_class": "COMPATIBILITY",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/data/local-data-model.md",
+      "spec/data/clean-room-persistence-parity.md",
+      "spec/contracts/local-storage-io-contract.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "package": "legacy/messages",
+    "file": "消息记录.csv"
+  },
+  "mocks": {},
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "conversation",
+        "op": "import",
+        "rows": 3,
+        "fields": [
+          "商品ID",
+          "时间",
+          "买家名称",
+          "问题",
+          "AI回复",
+          "最高相似度",
+          "客服名称"
+        ]
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

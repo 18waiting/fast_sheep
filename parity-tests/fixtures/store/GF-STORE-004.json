@@ -1,0 +1,59 @@
+{
+  "case_id": "GF-STORE-004",
+  "title": "prompt store schema + 运行时状态",
+  "behavior_ids": [
+    "B-STORE-004"
+  ],
+  "test_class": "COMPATIBILITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/data/local-data-model.md",
+      "spec/data/clean-room-persistence-parity.md",
+      "spec/contracts/local-storage-io-contract.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "legacy": {
+      "prompts": [
+        {
+          "id": "p1",
+          "title": "默认",
+          "content": "<PROMPT_CONTENT>",
+          "mounted_skills": []
+        }
+      ],
+      "运行时状态": {
+        "未下单ID": "p1",
+        "已下单ID": "p1"
+      }
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "prompt",
+        "op": "import",
+        "active_ids": {
+          "未下单": "p1",
+          "已下单": "p1"
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

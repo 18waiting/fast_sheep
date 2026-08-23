@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from m5_conversation_helpers import run_all_conversation_goldens
 
-_FIXTURES = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "parity-tests", "fixtures", "conv")
+_FIXTURES = os.path.join(os.path.dirname(__file__), "..", "..", "..", "parity-tests", "fixtures", "conv")
 
 
 class TestConversationGoldenFixtures(unittest.TestCase):

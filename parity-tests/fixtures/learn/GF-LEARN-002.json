@@ -1,0 +1,41 @@
+{
+  "case_id": "GF-LEARN-002",
+  "title": "product ID extraction from chat",
+  "behavior_ids": [
+    "B-JOB-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/learning-optimization-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "chat": "===商品id10001===\n[买家]这个多少钱\n[客服]99元"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "products": [
+          "10001"
+        ]
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

@@ -1,0 +1,43 @@
+{
+  "case_id": "GF-CONV-014",
+  "title": "dup-cache expiry",
+  "behavior_ids": [
+    "B-CONV-002"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "这个多少钱"
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 61000
+  },
+  "config": {
+    "dup_cache_ttl_ms": 60000
+  },
+  "input": {},
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "stage": "DUP_CHECK",
+        "decision": "miss-expired"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

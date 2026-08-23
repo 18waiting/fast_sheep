@@ -1,0 +1,48 @@
+{
+  "case_id": "GF-RAG-ORD-004",
+  "title": "relaxed branch <10 is DESIGN",
+  "behavior_ids": [
+    "B-RAG-006"
+  ],
+  "test_class": "DESIGN_CONFORMANCE",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/ai/rag-pipeline.md",
+      "spec/ai/rag-retrieval-decision-table.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "order_state": "未下单"
+  },
+  "mocks": {
+    "results": [
+      {
+        "q": "a",
+        "tags": [
+          "#已下单"
+        ]
+      }
+    ]
+  },
+  "expected": {
+    "result": {
+      "strict_mode": false,
+      "decision": "relaxed_branch"
+    }
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

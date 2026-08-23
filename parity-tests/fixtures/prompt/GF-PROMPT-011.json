@@ -1,0 +1,49 @@
+{
+  "case_id": "GF-PROMPT-011",
+  "title": "budget: reference+history overage",
+  "behavior_ids": [
+    "B-PROMPT-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/prompt-assembly.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "prompt_budget": {
+      "total_chars": 1000,
+      "reference_chars": 300,
+      "history_chars": 400,
+      "product_chars": 200,
+      "head_chars": 100
+    }
+  },
+  "input": {},
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "truncate": [
+          "reference",
+          "history"
+        ],
+        "cut": 300
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

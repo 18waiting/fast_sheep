@@ -1,0 +1,52 @@
+{
+  "case_id": "GF-ORCH-009",
+  "title": "pre-send regenerated result",
+  "behavior_ids": [
+    "B-CONV-005"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/architecture/multi-shop-orchestration.md",
+      "spec/architecture/node-send-pipeline.md",
+      "spec/states/conversation-orchestration-state-machine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "mode": "human_review",
+    "suggestion": {
+      "generation": 1
+    }
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {},
+  "mocks": {
+    "worker": {
+      "generateReply": {
+        "reply": "<regenerated>",
+        "generation": 2
+      }
+    }
+  },
+  "expected": {
+    "decisions": [
+      {
+        "decision": "regenerate_before_send",
+        "generation": 2
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

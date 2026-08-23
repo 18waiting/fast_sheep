@@ -1,0 +1,67 @@
+{
+  "case_id": "GF-PDD-003",
+  "title": "segmented text send",
+  "behavior_ids": [
+    "B-PLATFORM-003",
+    "B-CONV-008"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/platforms/platform-adapter-matrix.md",
+      "spec/contracts/platform-adapter-contract.md",
+      "docs/adr/ADR-007-reference-platform.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "send": {
+      "segment_interval_ms": 800
+    }
+  },
+  "input": {
+    "send": {
+      "segments": [
+        "A",
+        "B",
+        "C"
+      ]
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "external_calls": [
+      {
+        "mock": "pdd_sender",
+        "call": "sendText",
+        "segment": 1,
+        "virtual_time_ms": 0
+      },
+      {
+        "mock": "pdd_sender",
+        "call": "sendText",
+        "segment": 2,
+        "virtual_time_ms": 800
+      },
+      {
+        "mock": "pdd_sender",
+        "call": "sendText",
+        "segment": 3,
+        "virtual_time_ms": 1600
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "CALL_SEQUENCE"
+  },
+  "tags": [],
+  "notes": ""
+}

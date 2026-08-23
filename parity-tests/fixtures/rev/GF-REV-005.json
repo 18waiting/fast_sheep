@@ -1,0 +1,40 @@
+{
+  "case_id": "GF-REV-005",
+  "title": "invalid JSON repair (4-layer)",
+  "behavior_ids": [
+    "B-JOB-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/review-audit-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "ai_output": "```json\n[{...}]```"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "parse_strategy": "markdown_strip",
+        "entries": 1
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

@@ -1,0 +1,51 @@
+{
+  "case_id": "GF-STORE-008",
+  "title": "legacy import minimal-valid",
+  "behavior_ids": [
+    "B-STORE-001",
+    "B-STORE-003"
+  ],
+  "test_class": "COMPATIBILITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/data/local-data-model.md",
+      "spec/data/clean-room-persistence-parity.md",
+      "spec/contracts/local-storage-io-contract.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "package": "legacy/minimal-valid"
+  },
+  "mocks": {},
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "shops",
+        "rows": 1
+      },
+      {
+        "aggregate": "knowledge",
+        "rows": 2
+      },
+      {
+        "aggregate": "settings",
+        "mapped": true
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

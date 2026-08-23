@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { spawnFakeClient, stopIfRunning, waitForState } from "./helpers/harness.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const RPC_FIXTURES = join(HERE, "..", "..", "..", "..", "parity-tests", "fixtures", "rpc");
+const RPC_FIXTURES = join(HERE, "..", "..", "..", "parity-tests", "fixtures", "rpc");
 
 interface Fixture {
   case_id: string;

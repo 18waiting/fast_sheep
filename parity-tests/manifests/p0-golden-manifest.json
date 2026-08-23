@@ -1,0 +1,1934 @@
+{
+  "fixture_version": "2026-08-15.1",
+  "p0_count": 174,
+  "cases": [
+    {
+      "case_id": "GF-AUDIT-001",
+      "behavior_ids": [
+        "B-JOB-004"
+      ],
+      "fixture": "parity-tests/fixtures/audit/GF-AUDIT-001.json",
+      "oracle": {
+        "统计": {
+          "保留": 1,
+          "丢弃": 0,
+          "待定": 0
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "67ae3c3c81dc40a07600e4cd1af8e68b92b76bc6adc4247a6456fc8c2eb696e9"
+    },
+    {
+      "case_id": "GF-AUDIT-002",
+      "behavior_ids": [
+        "B-JOB-004"
+      ],
+      "fixture": "parity-tests/fixtures/audit/GF-AUDIT-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "d4ebd4dc0d0197b5585d26892cb12adbb34e2a475ebe0b2737d466af5c3b8a84"
+    },
+    {
+      "case_id": "GF-AUDIT-003",
+      "behavior_ids": [
+        "B-JOB-004"
+      ],
+      "fixture": "parity-tests/fixtures/audit/GF-AUDIT-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "78f74b6f4b38c273f193aaf11804c44f1fc61320e7da80b2492c41002eab7998"
+    },
+    {
+      "case_id": "GF-AUDIT-004",
+      "behavior_ids": [
+        "B-JOB-004"
+      ],
+      "fixture": "parity-tests/fixtures/audit/GF-AUDIT-004.json",
+      "oracle": {
+        "统计": {
+          "保留": 0,
+          "丢弃": 0,
+          "待定": 1
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "f631d2734ed3d6a71d2b84a9a92381e597199e998a21edb1c7a1cf87b0d0bc1e"
+    },
+    {
+      "case_id": "GF-AUDIT-005",
+      "behavior_ids": [
+        "B-JOB-004"
+      ],
+      "fixture": "parity-tests/fixtures/audit/GF-AUDIT-005.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "b72f29d0ebb5a9ccafcf29e7708a596a7832ed0b17f0ef19160019ba2c12dfb7"
+    },
+    {
+      "case_id": "GF-CONV-001",
+      "behavior_ids": [
+        "B-CONV-001",
+        "B-PROMPT-001"
+      ],
+      "fixture": "parity-tests/fixtures/conv/GF-CONV-001.json",
+      "oracle": {
+        "reply": "亲,有XL码的哦~"
+      },
+      "status": "FROZEN",
+      "sha256": "f95ff92692da4dd393c8bdd842f8bad79d01b501cb563446bf4fb8f12daa24bd"
+    },
+    {
+      "case_id": "GF-CONV-004",
+      "behavior_ids": [
+        "B-RAG-005",
+        "B-CONV-001"
+      ],
+      "fixture": "parity-tests/fixtures/conv/GF-CONV-004.json",
+      "oracle": {
+        "fast_return": true
+      },
+      "status": "FROZEN",
+      "sha256": "d49128fb8f317e493261337ed709c21049593f3e07829c5c43dfa7c6ea623a5d"
+    },
+    {
+      "case_id": "GF-CONV-005",
+      "behavior_ids": [
+        "B-RAG-005"
+      ],
+      "fixture": "parity-tests/fixtures/conv/GF-CONV-005.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "cf594fd5d93f7c40c9984265b4d2ac301127a1b29b0dee867f2efe71d673e29a"
+    },
+    {
+      "case_id": "GF-CONV-006",
+      "behavior_ids": [
+        "B-CONV-001",
+        "B-RAG-003"
+      ],
+      "fixture": "parity-tests/fixtures/conv/GF-CONV-006.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "1f21dcbd5daf1548a56c15920f7adb87ba3608653d89fa88c3cf8cdfe51afcd4"
+    },
+    {
+      "case_id": "GF-CONV-007",
+      "behavior_ids": [
+        "B-TOOL-003",
+        "B-CONV-001"
+      ],
+      "fixture": "parity-tests/fixtures/conv/GF-CONV-007.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "27fdac576ceacf6c45dc3726782218d5eb75af00e600dee7c0d528ffe853995f"
+    },
+    {
+      "case_id": "GF-CONV-008",
+      "behavior_ids": [
+        "B-HANDOFF-001",
+        "B-CONV-001"
+      ],
+      "fixture": "parity-tests/fixtures/conv/GF-CONV-008.json",
+      "oracle": {
+        "decision": {
+          "requested": true,
+          "target": "售后"
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "8833513ff0a8b91a07fadd2b3bb4959c53f8aef3f26263a1e5e139009eeeb1d2"
+    },
+    {
+      "case_id": "GF-CONV-012",
+      "behavior_ids": [
+        "B-RAG-001",
+        "B-CONV-001"
+      ],
+      "fixture": "parity-tests/fixtures/conv/GF-CONV-012.json",
+      "oracle": {
+        "error": {
+          "category": "retrieval",
+          "retryable": true
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "e415c1f2616387a78eafd1cfd19b91cb16f5bada4d7b419c564e0db0c5402717"
+    },
+    {
+      "case_id": "GF-CONV-013",
+      "behavior_ids": [
+        "B-CONV-001"
+      ],
+      "fixture": "parity-tests/fixtures/conv/GF-CONV-013.json",
+      "oracle": {
+        "error": {
+          "category": "provider",
+          "retryable": true
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "9233eb78d4a686ea32506c70131ff19dff96493d8fa8512dd855e76dfebe67e7"
+    },
+    {
+      "case_id": "GF-CONV-ORD-001",
+      "behavior_ids": [
+        "B-CONV-004"
+      ],
+      "fixture": "parity-tests/fixtures/conv/GF-CONV-ORD-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "27c4763b1d659505b8fc76aa8b79be52af454e82f8f6e60dd432604889bf46af"
+    },
+    {
+      "case_id": "GF-CONV-ORD-002",
+      "behavior_ids": [
+        "B-CONV-004"
+      ],
+      "fixture": "parity-tests/fixtures/conv/GF-CONV-ORD-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "055480351575f56961ab09cb4b29c8d58bb24176a7c755a1b70c0789a3c00eb9"
+    },
+    {
+      "case_id": "GF-FB-001",
+      "behavior_ids": [
+        "B-FEEDBACK-001"
+      ],
+      "fixture": "parity-tests/fixtures/fb/GF-FB-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "6c00229c10d700174aebfe21832813550dfbe106ab04aae24b8bd00c64a1b910"
+    },
+    {
+      "case_id": "GF-FB-002",
+      "behavior_ids": [
+        "B-FEEDBACK-001"
+      ],
+      "fixture": "parity-tests/fixtures/fb/GF-FB-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "daa15f807c43de3bb9881cc1a162892170a1443be30d376ee7a3cd061b92c28c"
+    },
+    {
+      "case_id": "GF-FB-003",
+      "behavior_ids": [
+        "B-FEEDBACK-001"
+      ],
+      "fixture": "parity-tests/fixtures/fb/GF-FB-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "5df47297df0a47df7f562fe62e55e861dd6a07a14d16544a1b60b301af8c2360"
+    },
+    {
+      "case_id": "GF-FB-004",
+      "behavior_ids": [
+        "B-FEEDBACK-002"
+      ],
+      "fixture": "parity-tests/fixtures/fb/GF-FB-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "b3e4c99b34a2791e7012b1f7aa27018f4824cc47cf34289ac685ea8eab85505d"
+    },
+    {
+      "case_id": "GF-FB-005",
+      "behavior_ids": [
+        "B-FEEDBACK-002"
+      ],
+      "fixture": "parity-tests/fixtures/fb/GF-FB-005.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "5ea3d584fbb6c0e160ff6cb4d5820e51e02bf6e3db38e3b133aa1f100932bbf2"
+    },
+    {
+      "case_id": "GF-FB-006",
+      "behavior_ids": [
+        "B-FEEDBACK-002"
+      ],
+      "fixture": "parity-tests/fixtures/fb/GF-FB-006.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "38e894d3c7e2f809b0db4943c1fed7e21d88fb29e8ee7ea0d8ab7e574a825022"
+    },
+    {
+      "case_id": "GF-HANDOFF-001",
+      "behavior_ids": [
+        "B-HANDOFF-001"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "6e540a10a8ac5ff32907c64a54513586094423f2975283ac3ee7956d38d5adba"
+    },
+    {
+      "case_id": "GF-HANDOFF-002",
+      "behavior_ids": [
+        "B-HANDOFF-001"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "f03faff9acac53db90c8b4d5dd699ab1ddee9ff9aa6631da59e5004460e108b2"
+    },
+    {
+      "case_id": "GF-HANDOFF-003",
+      "behavior_ids": [
+        "B-HANDOFF-001"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "3d67d6318aa1229b128c03ef1871f90c1e60078a437abd3a6d2c21ae0be81c55"
+    },
+    {
+      "case_id": "GF-HANDOFF-004",
+      "behavior_ids": [
+        "B-HANDOFF-001"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "a5447fe99f9451537e29e51057a427a2cd052a2b08018f2878154605657a8026"
+    },
+    {
+      "case_id": "GF-HANDOFF-005",
+      "behavior_ids": [
+        "B-HANDOFF-001"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-005.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "0394abfdd41557a02e46b701bc2291a867d755b332785c268a6f19a151d0ac56"
+    },
+    {
+      "case_id": "GF-HANDOFF-006",
+      "behavior_ids": [
+        "B-HANDOFF-001"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-006.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "a769bdac61e04258194af267b3b9299e1cbcb360bc3b0c0c59373a9296266c02"
+    },
+    {
+      "case_id": "GF-HANDOFF-007",
+      "behavior_ids": [
+        "B-HANDOFF-003"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-007.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "a83564b7345bc4d91b6f683e614b052efed41153f49314ffc78255a0fedb94e2"
+    },
+    {
+      "case_id": "GF-HANDOFF-008",
+      "behavior_ids": [
+        "B-HANDOFF-003"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-008.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "b7874e8e4203487616162a85e1554a5ba86b9e5fdb4a3439b93552963cca7af0"
+    },
+    {
+      "case_id": "GF-HANDOFF-009",
+      "behavior_ids": [
+        "B-HANDOFF-003"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-009.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "6dcf502b1a4bc94e0bbdf8803758597f4770c595587c4ca9085bfad5fd73c017"
+    },
+    {
+      "case_id": "GF-HANDOFF-010",
+      "behavior_ids": [
+        "B-HANDOFF-001"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-010.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "d9e07840ceb31d5194fc8c431bfaf380f0335cd669c3b5e705f15a77b79da5d5"
+    },
+    {
+      "case_id": "GF-HANDOFF-011",
+      "behavior_ids": [
+        "B-HANDOFF-002"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-011.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "11738a36a47681936fdcaabdc58b88c809ddd85861157e71b449b64b501f7a43"
+    },
+    {
+      "case_id": "GF-HANDOFF-012",
+      "behavior_ids": [
+        "B-HANDOFF-002"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-012.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "c5093009e81820ca33372769ae41e5a3ac303c9d16f12963a5b3b31bc4d4c499"
+    },
+    {
+      "case_id": "GF-HANDOFF-013",
+      "behavior_ids": [
+        "B-HANDOFF-002"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-013.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "8e2118aa7f1f758b56d3d66576654e855b7bc5e2d5b8be400ebe463e004b7a63"
+    },
+    {
+      "case_id": "GF-HANDOFF-014",
+      "behavior_ids": [
+        "B-HANDOFF-002"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-014.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "a81cc008094405def7c06e1793a11ea28d6b3e50c4570f66f60ee26db152ba62"
+    },
+    {
+      "case_id": "GF-HANDOFF-015",
+      "behavior_ids": [
+        "B-HANDOFF-002"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-015.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "c09bfb2528d548f9170d2e5af8f991badf5cabbf98e7c47f8d4cd4ce1d2bc8a0"
+    },
+    {
+      "case_id": "GF-HANDOFF-016",
+      "behavior_ids": [
+        "B-HANDOFF-001"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-016.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "e0964344b281f8f75045c5e69d7de68c39270554ab28cdc382e9f5445ecdc4e5"
+    },
+    {
+      "case_id": "GF-HANDOFF-017",
+      "behavior_ids": [
+        "B-HANDOFF-002"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-017.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "d42b3108f98553c92beecedf4b90411af5dc39bc3c1eca3c2bb67073a65178d9"
+    },
+    {
+      "case_id": "GF-HANDOFF-018",
+      "behavior_ids": [
+        "B-HANDOFF-003"
+      ],
+      "fixture": "parity-tests/fixtures/handoff/GF-HANDOFF-018.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "5553a0cae2fc170f754976feab75847a50bda6666142f17ea3fbf83835bad45e"
+    },
+    {
+      "case_id": "GF-JOB-INDEX-001",
+      "behavior_ids": [
+        "B-JOB-006"
+      ],
+      "fixture": "parity-tests/fixtures/job/GF-JOB-INDEX-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "f88c04d9b37efece8e0b2ebab02c6598c30ce253844ac74c1bf318094fc63ad7"
+    },
+    {
+      "case_id": "GF-JOB-INDEX-002",
+      "behavior_ids": [
+        "B-JOB-006"
+      ],
+      "fixture": "parity-tests/fixtures/job/GF-JOB-INDEX-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "4dbc1e67a10653189eeacd20ba1575f5d9bdd8045c63c676d88edc8b42cc1119"
+    },
+    {
+      "case_id": "GF-JOB-INDEX-003",
+      "behavior_ids": [
+        "B-JOB-006"
+      ],
+      "fixture": "parity-tests/fixtures/job/GF-JOB-INDEX-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "5e6d06690d95397ffe7c48917f7c7e01f1ee85699b217cec0a5a319d51eb7f6f"
+    },
+    {
+      "case_id": "GF-JOB-INDEX-004",
+      "behavior_ids": [
+        "B-JOB-006"
+      ],
+      "fixture": "parity-tests/fixtures/job/GF-JOB-INDEX-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "612d9a38a14b2e0ccb82daa9e282223115c7aea811c89ffcbe2c74549bd7625f"
+    },
+    {
+      "case_id": "GF-LEARN-001",
+      "behavior_ids": [
+        "B-JOB-001"
+      ],
+      "fixture": "parity-tests/fixtures/learn/GF-LEARN-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "10a999487bed67f0c92e8534850e59adbab062c17ba0f458202a317eb87e73fb"
+    },
+    {
+      "case_id": "GF-LEARN-002",
+      "behavior_ids": [
+        "B-JOB-001"
+      ],
+      "fixture": "parity-tests/fixtures/learn/GF-LEARN-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "7334e25a8c5eebaed009d94c24a7988ed5c1f204d6d64f126aa3cd3a377959f5"
+    },
+    {
+      "case_id": "GF-LEARN-003",
+      "behavior_ids": [
+        "B-JOB-001"
+      ],
+      "fixture": "parity-tests/fixtures/learn/GF-LEARN-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "45c08cea7cc6db93f34a1ebbb1e6948611b6a7b90a67a456273dc3f1e94c1c88"
+    },
+    {
+      "case_id": "GF-LEARN-004",
+      "behavior_ids": [
+        "B-JOB-002"
+      ],
+      "fixture": "parity-tests/fixtures/learn/GF-LEARN-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "0db8617572c2a615f777172e1e4802bad487fb00acba13953ce8acbefc479d39"
+    },
+    {
+      "case_id": "GF-LEARN-005",
+      "behavior_ids": [
+        "B-JOB-002"
+      ],
+      "fixture": "parity-tests/fixtures/learn/GF-LEARN-005.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "a4df6466cd4f7875a222339372f453e9c7ebca6368e5d21bab213073692ff84b"
+    },
+    {
+      "case_id": "GF-LEARN-006",
+      "behavior_ids": [
+        "B-JOB-002"
+      ],
+      "fixture": "parity-tests/fixtures/learn/GF-LEARN-006.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "b5bdf448cea93039f217a422d239b4069e5f98f0343f057fdf8c6ad23a3fa954"
+    },
+    {
+      "case_id": "GF-LEARN-007",
+      "behavior_ids": [
+        "B-JOB-002"
+      ],
+      "fixture": "parity-tests/fixtures/learn/GF-LEARN-007.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "4680e1ba5ae2a09074e7870cf83e6570cf8fa939b030e12afefa9de1ca89a7d5"
+    },
+    {
+      "case_id": "GF-LEARN-008",
+      "behavior_ids": [
+        "B-JOB-001"
+      ],
+      "fixture": "parity-tests/fixtures/learn/GF-LEARN-008.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "ce9ab84f115830f26c9642bc71f912f134447ad2b69b1f664e00620f9f42f682"
+    },
+    {
+      "case_id": "GF-LEARN-009",
+      "behavior_ids": [
+        "B-JOB-001"
+      ],
+      "fixture": "parity-tests/fixtures/learn/GF-LEARN-009.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "9ed1cff1e2ac0b1d64befeeb004a27361f2697e80b5c05fe33766d57dca603cc"
+    },
+    {
+      "case_id": "GF-LEARN-010",
+      "behavior_ids": [
+        "B-JOB-001"
+      ],
+      "fixture": "parity-tests/fixtures/learn/GF-LEARN-010.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "a646f7aa1418f49c0dbcc4580b6c7f76db1635fa221ae8885fae915dafe8445d"
+    },
+    {
+      "case_id": "GF-LEARN-011",
+      "behavior_ids": [
+        "B-JOB-001"
+      ],
+      "fixture": "parity-tests/fixtures/learn/GF-LEARN-011.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "28efc8d40624b8b0fc35c76b7478888855aeb70bb79b13921fbbfb34c06714f2"
+    },
+    {
+      "case_id": "GF-OPT-001",
+      "behavior_ids": [
+        "B-JOB-005"
+      ],
+      "fixture": "parity-tests/fixtures/opt/GF-OPT-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "a15164ed472dfa1b6d4605d5de29d3e3715b763494be95c94c6b164dcbb3c534"
+    },
+    {
+      "case_id": "GF-OPT-002",
+      "behavior_ids": [
+        "B-JOB-005"
+      ],
+      "fixture": "parity-tests/fixtures/opt/GF-OPT-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "cc8ab7501f1408d0211ad165ebc625dc40b522b41efa6ff9a1e87160284b36c6"
+    },
+    {
+      "case_id": "GF-OPT-003",
+      "behavior_ids": [
+        "B-JOB-005"
+      ],
+      "fixture": "parity-tests/fixtures/opt/GF-OPT-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "e880f893edac3cc6c97c774df758a5f6e9a21a7990d19e6a1786c918d69738f4"
+    },
+    {
+      "case_id": "GF-OPT-004",
+      "behavior_ids": [
+        "B-JOB-005"
+      ],
+      "fixture": "parity-tests/fixtures/opt/GF-OPT-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "66c9fd83de20fb8d35f62032a3051ac7da53645f0758ee73893f7e776718d4f1"
+    },
+    {
+      "case_id": "GF-OPT-005",
+      "behavior_ids": [
+        "B-JOB-005"
+      ],
+      "fixture": "parity-tests/fixtures/opt/GF-OPT-005.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "34f06fe60dcf7744dc32ab8b6b733e3adbcce1ed87d10b2bc3689e93bb6c029b"
+    },
+    {
+      "case_id": "GF-OPT-006",
+      "behavior_ids": [
+        "B-JOB-005"
+      ],
+      "fixture": "parity-tests/fixtures/opt/GF-OPT-006.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "8f5ea2e6327ce0cc19a68627dc911bbb8d0bcda241b1ec5b503f62628ceb7eff"
+    },
+    {
+      "case_id": "GF-OPT-007",
+      "behavior_ids": [
+        "B-JOB-005"
+      ],
+      "fixture": "parity-tests/fixtures/opt/GF-OPT-007.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "fc9ec5a563126f6add1251c142e5254a16ccde5012418440583de6a5ac0a81cb"
+    },
+    {
+      "case_id": "GF-OPT-008",
+      "behavior_ids": [
+        "B-JOB-005"
+      ],
+      "fixture": "parity-tests/fixtures/opt/GF-OPT-008.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "d7df09ea398813e6c92152d44ab3c4144f058e87cf0399c5a7e1d44c59e89868"
+    },
+    {
+      "case_id": "GF-OPT-009",
+      "behavior_ids": [
+        "B-JOB-005"
+      ],
+      "fixture": "parity-tests/fixtures/opt/GF-OPT-009.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "495049128dac6c9b8331f45c8dcce97f3d6c98dcc87a982acffa99839081a27f"
+    },
+    {
+      "case_id": "GF-OPT-010",
+      "behavior_ids": [
+        "B-JOB-005"
+      ],
+      "fixture": "parity-tests/fixtures/opt/GF-OPT-010.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "9fb1f97eb0b99d70f3f9572de171949d729bc3e9b48afac8b7fc490651fb37c9"
+    },
+    {
+      "case_id": "GF-OPT-011",
+      "behavior_ids": [
+        "B-JOB-005"
+      ],
+      "fixture": "parity-tests/fixtures/opt/GF-OPT-011.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "253a65942aaa44297716b72e1907b648a4a23e42f4db551d83b4429627073f84"
+    },
+    {
+      "case_id": "GF-OPT-012",
+      "behavior_ids": [
+        "B-JOB-005"
+      ],
+      "fixture": "parity-tests/fixtures/opt/GF-OPT-012.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "fdd908b55556de6a19586c3d99752364cc46dea268b9cfd451bf7808f009de33"
+    },
+    {
+      "case_id": "GF-ORCH-001",
+      "behavior_ids": [
+        "B-CONV-006",
+        "B-IPC-001"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "6ed27de9023e9a031c37edba6fe1edc882868606f900fde68ae47f2ef19cab56"
+    },
+    {
+      "case_id": "GF-ORCH-002",
+      "behavior_ids": [
+        "B-CONV-006"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "eb66fd5d3410038d9df9fffa5415212935eaa67799fb424765b6989030326d0a"
+    },
+    {
+      "case_id": "GF-ORCH-003",
+      "behavior_ids": [
+        "B-CONV-006"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "6bc651987af5375759cbf909c5f28c448a11704616ff62d489eba3f886ce714e"
+    },
+    {
+      "case_id": "GF-ORCH-004",
+      "behavior_ids": [
+        "B-FEEDBACK-001",
+        "B-ORCH"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "8ccb64d7a6bd6dc95325af57c388addb7ddf6f6f086083c2e2ec7d77c92cb1c0"
+    },
+    {
+      "case_id": "GF-ORCH-005",
+      "behavior_ids": [
+        "B-FEEDBACK-001"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-005.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "4a4e6b4baefad0886edce43fe1c67d66830163704ef00fcc770ecca52159a039"
+    },
+    {
+      "case_id": "GF-ORCH-006",
+      "behavior_ids": [
+        "B-FEEDBACK-001",
+        "B-CONV-006"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-006.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "b2249d79b105cd86a5e0a0d9e982f854aeedf586ca8522a8d90b63ca62d86c6e"
+    },
+    {
+      "case_id": "GF-ORCH-007",
+      "behavior_ids": [
+        "B-CONV-006"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-007.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "1f70957d50f0cc6dfe560d46f74b32c8347e2d3924edadefa10668f45f345108"
+    },
+    {
+      "case_id": "GF-ORCH-008",
+      "behavior_ids": [
+        "B-CONV-008"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-008.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "5d303b743d4ad925eb6ac00be3190fce060dd3f4a7189e5c9bc60106840f8772"
+    },
+    {
+      "case_id": "GF-ORCH-009",
+      "behavior_ids": [
+        "B-CONV-005"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-009.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "f8b5e503c765f847dab7cc6c45372742c02aef59550a35d21b5a97453a923b43"
+    },
+    {
+      "case_id": "GF-ORCH-010",
+      "behavior_ids": [
+        "B-CONV-007"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-010.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "cb860bf26a65987a81e1e9334029fbbaed7d472fcd8385531995f9b720c60892"
+    },
+    {
+      "case_id": "GF-ORCH-011",
+      "behavior_ids": [
+        "B-CONV-005"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-011.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "afddec9130f78fd9c833c0d59f17f188e7b5d9ad752d303d17dbd8592776b701"
+    },
+    {
+      "case_id": "GF-ORCH-012",
+      "behavior_ids": [
+        "B-CONV-005"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-012.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "65efa248d17fcaf3b982867f316cc8863a1b7076ff997d629378c00333c27570"
+    },
+    {
+      "case_id": "GF-ORCH-013",
+      "behavior_ids": [
+        "B-PLATFORM-001",
+        "B-CONV-007"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-013.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "2f65261de80a50e9b3a57db42c61c822ec27bb732c09c3046db4aaa2ffed2c1f"
+    },
+    {
+      "case_id": "GF-ORCH-015",
+      "behavior_ids": [
+        "B-CONV-008"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-015.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "9388e2ec07af5569a1b3bb260623a708093a39d385b12bb26dc8ea6d0dd9b1d6"
+    },
+    {
+      "case_id": "GF-ORCH-BRK-001",
+      "behavior_ids": [
+        "B-CONV-007"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-BRK-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "f869b8462edf2c89c3037f15ea4e6592d6bd50da1afa0b7e0949f394732b7a1d"
+    },
+    {
+      "case_id": "GF-ORCH-BRK-002",
+      "behavior_ids": [
+        "B-CONV-007"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-BRK-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "ac37f37009b836f61ffcd467228cd4b19240096323780e6f5f518a992e132d73"
+    },
+    {
+      "case_id": "GF-ORCH-BRK-003",
+      "behavior_ids": [
+        "B-CONV-007"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-BRK-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "30db4589809b57a30ce05b850c8e56169b189b716546917ffcf9621892f06c51"
+    },
+    {
+      "case_id": "GF-ORCH-BRK-004",
+      "behavior_ids": [
+        "B-CONV-007"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-BRK-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "126b2f5966caa0f43b31c390f0e1bf55ef8bd16e09c39d015a9429b4cf0689f5"
+    },
+    {
+      "case_id": "GF-ORCH-SEG-001",
+      "behavior_ids": [
+        "B-CONV-008"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-SEG-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "5b26266939f6a806bb496cb760cff8b076e0df3933ca7373312b31c4f895dd5b"
+    },
+    {
+      "case_id": "GF-ORCH-SEG-002",
+      "behavior_ids": [
+        "B-CONV-008"
+      ],
+      "fixture": "parity-tests/fixtures/orch/GF-ORCH-SEG-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "f11795abb21d196a7541176a9819e9f93b9addd7cea8660d81428e9cb1f08eb9"
+    },
+    {
+      "case_id": "GF-PDD-001",
+      "behavior_ids": [
+        "B-PLATFORM-001",
+        "B-PLATFORM-003"
+      ],
+      "fixture": "parity-tests/fixtures/pdd/GF-PDD-001.json",
+      "oracle": {
+        "normalized": {
+          "platform": "pdd",
+          "buyer": "张三",
+          "content": "有货吗"
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "0ccb78d8c93e3da107c55aeb8b1a40bb608a3fc0224ffcd53b3586416d32240f"
+    },
+    {
+      "case_id": "GF-PDD-002",
+      "behavior_ids": [
+        "B-PLATFORM-003"
+      ],
+      "fixture": "parity-tests/fixtures/pdd/GF-PDD-002.json",
+      "oracle": {
+        "SendResult": {
+          "ok": true
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "08c2d71acae5a8a5241433b47798492e810c32e0c2e17154b6283cc9e66ae005"
+    },
+    {
+      "case_id": "GF-PDD-003",
+      "behavior_ids": [
+        "B-PLATFORM-003",
+        "B-CONV-008"
+      ],
+      "fixture": "parity-tests/fixtures/pdd/GF-PDD-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "2c0c482a2117ad24f2849367c3ca840027ef8f09a1a98c081a06dfdd3a129a6e"
+    },
+    {
+      "case_id": "GF-PDD-004",
+      "behavior_ids": [
+        "B-PLATFORM-002"
+      ],
+      "fixture": "parity-tests/fixtures/pdd/GF-PDD-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "96fde9b8efdf221d39c343cf182a685dade13b1534a50b157569513fc7a9091e"
+    },
+    {
+      "case_id": "GF-PDD-005",
+      "behavior_ids": [
+        "B-PLATFORM-003",
+        "B-HANDOFF-001"
+      ],
+      "fixture": "parity-tests/fixtures/pdd/GF-PDD-005.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "3073c4d572e333fd0c4c8141bb88e1486cf177918f28a8d4e83ce64e773f95f8"
+    },
+    {
+      "case_id": "GF-PDD-006",
+      "behavior_ids": [
+        "B-PLATFORM-003"
+      ],
+      "fixture": "parity-tests/fixtures/pdd/GF-PDD-006.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "c5d8db66e90b57b8dc7ef770c7d559acdf7900fe604c2a1c9fb6350c3d63c87c"
+    },
+    {
+      "case_id": "GF-PDD-007",
+      "behavior_ids": [
+        "B-PLATFORM-003"
+      ],
+      "fixture": "parity-tests/fixtures/pdd/GF-PDD-007.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "589d41bdf98bb051e69c563e5980a06796eb3c2c7234b22662130fc6cec82b29"
+    },
+    {
+      "case_id": "GF-PDD-008",
+      "behavior_ids": [
+        "B-PLATFORM-003"
+      ],
+      "fixture": "parity-tests/fixtures/pdd/GF-PDD-008.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "0351cf22328ed43f5cf256954d666006f336c61617541841b090dfda87eab4c0"
+    },
+    {
+      "case_id": "GF-PDD-009",
+      "behavior_ids": [
+        "B-PLATFORM-003"
+      ],
+      "fixture": "parity-tests/fixtures/pdd/GF-PDD-009.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "ff4a72a68686b3154cfe775a832e45c8fc9c9ebf52aaf731281eac69ff716074"
+    },
+    {
+      "case_id": "GF-PLAT-002",
+      "behavior_ids": [
+        "B-PLATFORM-002",
+        "B-HANDOFF-002"
+      ],
+      "fixture": "parity-tests/fixtures/plat/GF-PLAT-002.json",
+      "oracle": {
+        "capabilities": [
+          "textSend",
+          "imageSend"
+        ],
+        "auto_transfer": false
+      },
+      "status": "FROZEN",
+      "sha256": "c89e162a26969320058e7dbe2d49ee9c8eaa2c9717a230e207648dba7b82393f"
+    },
+    {
+      "case_id": "GF-PROMPT-001",
+      "behavior_ids": [
+        "B-PROMPT-001"
+      ],
+      "fixture": "parity-tests/fixtures/prompt/GF-PROMPT-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "eaf3b85f3450f02c9d1b3c275d3e640fb5c6fe2d472ed460136c77c76594f3e1"
+    },
+    {
+      "case_id": "GF-PROMPT-002",
+      "behavior_ids": [
+        "B-PROMPT-001"
+      ],
+      "fixture": "parity-tests/fixtures/prompt/GF-PROMPT-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "a855e1f7952f28ea4544d7e5a5606a2b63247446141064c7404f2ead88014332"
+    },
+    {
+      "case_id": "GF-PROMPT-003",
+      "behavior_ids": [
+        "B-PROMPT-002"
+      ],
+      "fixture": "parity-tests/fixtures/prompt/GF-PROMPT-003.json",
+      "oracle": {
+        "mounted_skills": [
+          "skill-a"
+        ]
+      },
+      "status": "FROZEN",
+      "sha256": "9d6ba5faac45c9c17f90c95b9f14108eafea7b6e0b8e69a32ab5512cf12c46a6"
+    },
+    {
+      "case_id": "GF-PROMPT-004",
+      "behavior_ids": [
+        "B-PROMPT-002"
+      ],
+      "fixture": "parity-tests/fixtures/prompt/GF-PROMPT-004.json",
+      "oracle": {
+        "mounted_skills": [
+          "skill-b"
+        ]
+      },
+      "status": "FROZEN",
+      "sha256": "a2e066295692fbce760d8b1cfb9f28f08f4d90cdb2c55c1717eb0586f1cb3743"
+    },
+    {
+      "case_id": "GF-PROMPT-005",
+      "behavior_ids": [
+        "B-PROMPT-002"
+      ],
+      "fixture": "parity-tests/fixtures/prompt/GF-PROMPT-005.json",
+      "oracle": {
+        "mounted_skills": [
+          "skill-a",
+          "skill-c",
+          "skill-b"
+        ]
+      },
+      "status": "FROZEN",
+      "sha256": "0e5aa6a14da2473618e5c5e08655bd831b0190bb135cdd092c5755693ae5f268"
+    },
+    {
+      "case_id": "GF-PROMPT-008",
+      "behavior_ids": [
+        "B-PROMPT-002",
+        "B-PROMPT-003"
+      ],
+      "fixture": "parity-tests/fixtures/prompt/GF-PROMPT-008.json",
+      "oracle": {
+        "slots": [
+          "head",
+          "product",
+          "history",
+          "reference"
+        ],
+        "order": [
+          "head",
+          "product",
+          "history",
+          "reference"
+        ]
+      },
+      "status": "FROZEN",
+      "sha256": "eb0f68afd1fbfae3347a10fd95ac9792a210ba398273636fd543ee5cb95f35e8"
+    },
+    {
+      "case_id": "GF-PROMPT-009",
+      "behavior_ids": [
+        "B-PROMPT-003"
+      ],
+      "fixture": "parity-tests/fixtures/prompt/GF-PROMPT-009.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "de65bd2a95536a85760133013756e21d5cb632c5d78eddc9dae8a9ca8fbfe5d9"
+    },
+    {
+      "case_id": "GF-PROMPT-010",
+      "behavior_ids": [
+        "B-PROMPT-003"
+      ],
+      "fixture": "parity-tests/fixtures/prompt/GF-PROMPT-010.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "496ebcb689fd5655d304d60112ce2319509204d9aa513ee52efa8fdfc02d3e53"
+    },
+    {
+      "case_id": "GF-PROMPT-011",
+      "behavior_ids": [
+        "B-PROMPT-003"
+      ],
+      "fixture": "parity-tests/fixtures/prompt/GF-PROMPT-011.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "a7385fe6499bf623f5d7f52d0bee3f7fcd6a42e9e85c9d7387acb3b0bc5ac925"
+    },
+    {
+      "case_id": "GF-PROMPT-012",
+      "behavior_ids": [
+        "B-PROMPT-003"
+      ],
+      "fixture": "parity-tests/fixtures/prompt/GF-PROMPT-012.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "8304ed4ddaa04ce691ebc51ff0cc8383043c784e1f71282ca901f97cbcf7bab7"
+    },
+    {
+      "case_id": "GF-PROV-001",
+      "behavior_ids": [
+        "B-PROV-001"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "f79ed9d74dda6bd10ec1fda13784b32e75b072c72ee9338674d48f06863e2440"
+    },
+    {
+      "case_id": "GF-PROV-002",
+      "behavior_ids": [
+        "B-PROV-001"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "39d9d41e0ae56b660e480afaeaca0c0a503962a5374c0e7adbf70cf9e624c30d"
+    },
+    {
+      "case_id": "GF-PROV-003",
+      "behavior_ids": [
+        "B-PROV-001"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "ed5a781589699878fd4cff0c8a2702f6698da1b6a7c4df9546189661e80c206b"
+    },
+    {
+      "case_id": "GF-PROV-004",
+      "behavior_ids": [
+        "B-PROV-001"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "6242b23ed3fddc7d083e7821fdae5351009067067b82134b2f5abfa9afb240d7"
+    },
+    {
+      "case_id": "GF-PROV-005",
+      "behavior_ids": [
+        "B-PROV-001"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-005.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "ea310f38b422e9bc64ba6aa462b05e8ef8c0b39546ee792898fd801a43357ebe"
+    },
+    {
+      "case_id": "GF-PROV-006",
+      "behavior_ids": [
+        "B-PROV-002"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-006.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "be3f5b82011a33a4b93c4de1ba252901a657e16028aa8e01129b2bf537cf8a46"
+    },
+    {
+      "case_id": "GF-PROV-007",
+      "behavior_ids": [
+        "B-PROV-003"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-007.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "73146df4bf8379cb8183751c8c92f23a0e8cf77afc5efa236d26e0920e785fdc"
+    },
+    {
+      "case_id": "GF-PROV-008",
+      "behavior_ids": [
+        "B-PROV-003"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-008.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "fd9fafa29ae5f596cf4af56a7c49f9c5bc3ff71158c7c18befac20792b068aa3"
+    },
+    {
+      "case_id": "GF-PROV-009",
+      "behavior_ids": [
+        "B-PROV-003"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-009.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "de68527b3c03cf8430627031314e58c4e02c9cd9b7e00002902fcfa3225c12ad"
+    },
+    {
+      "case_id": "GF-PROV-010",
+      "behavior_ids": [
+        "B-PROV-004"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-010.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "4781283ea9813acfd8ef1c68ae5ba816f6264402b2929c3e0893f1abc061486b"
+    },
+    {
+      "case_id": "GF-PROV-011",
+      "behavior_ids": [
+        "B-PROV-004"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-011.json",
+      "oracle": {
+        "error": {
+          "category": "config",
+          "retryable": false
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "68bd117d4ed5886a8f7b86a7c8ad15c6b9b36db7c07bd5c0b86a0961528e4abf"
+    },
+    {
+      "case_id": "GF-PROV-012",
+      "behavior_ids": [
+        "B-PROV-005"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-012.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "fb8e95c2d934a0dcd4cdedafec108c276fbf1027b71314fae4c751e8849c8dcd"
+    },
+    {
+      "case_id": "GF-PROV-013",
+      "behavior_ids": [
+        "B-PROV-005"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-013.json",
+      "oracle": {
+        "error": {
+          "category": "credentials",
+          "retryable": false
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "747c4ac66020ab8d340d8e73f6999d3a09750ee975faddd9558dd3aa2fd52a5c"
+    },
+    {
+      "case_id": "GF-PROV-014",
+      "behavior_ids": [
+        "B-PROV-005"
+      ],
+      "fixture": "parity-tests/fixtures/prov/GF-PROV-014.json",
+      "oracle": {
+        "error": {
+          "category": "config",
+          "code": "unknown_api_format"
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "08b0a2250ed3008d38f4cdab226e61f0830cb64bf229dedd14dd93d99642f446"
+    },
+    {
+      "case_id": "GF-RAG-COMP-001",
+      "behavior_ids": [
+        "B-RAG-004"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-COMP-001.json",
+      "oracle": {
+        "composite": 0.62
+      },
+      "status": "FROZEN",
+      "sha256": "3ffb3f2c05d7eb3b18a59b49f93a4c81402d256af31ed556866c30594cd898a7"
+    },
+    {
+      "case_id": "GF-RAG-COMP-002",
+      "behavior_ids": [
+        "B-RAG-004"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-COMP-002.json",
+      "oracle": {
+        "composite": 0.6499999999999999
+      },
+      "status": "FROZEN",
+      "sha256": "adb84040b745e83b563cd2fefb1a15a1f1594c53d45f6520f25942255b5deeff"
+    },
+    {
+      "case_id": "GF-RAG-COMP-003",
+      "behavior_ids": [
+        "B-RAG-004"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-COMP-003.json",
+      "oracle": {
+        "composite": 0.23952
+      },
+      "status": "FROZEN",
+      "sha256": "2d4d23c64cff71435936e2f9e81a951c035bb3e9c00bf377e90193c17be79440"
+    },
+    {
+      "case_id": "GF-RAG-COMP-004",
+      "behavior_ids": [
+        "B-RAG-004"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-COMP-004.json",
+      "oracle": {
+        "composite": 1.0
+      },
+      "status": "FROZEN",
+      "sha256": "7633e8eab1772af61ca15ece5b5d88c2780376cd7bc2f8fd402d7e82aaf67605"
+    },
+    {
+      "case_id": "GF-RAG-DEDUP-001",
+      "behavior_ids": [
+        "B-RAG-003"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-DEDUP-001.json",
+      "oracle": {
+        "count": 1
+      },
+      "status": "FROZEN",
+      "sha256": "6d339600589882545a35591c56f16abb45251db2b3648a8fa1bff8d292e191d1"
+    },
+    {
+      "case_id": "GF-RAG-DEDUP-002",
+      "behavior_ids": [
+        "B-RAG-003"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-DEDUP-002.json",
+      "oracle": {
+        "count": 3
+      },
+      "status": "FROZEN",
+      "sha256": "755554bd941caaacb49148b20e4dbdc0f1e9b8870d06f6ed0563eed7ecb55580"
+    },
+    {
+      "case_id": "GF-RAG-DEDUP-003",
+      "behavior_ids": [
+        "B-RAG-003"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-DEDUP-003.json",
+      "oracle": {
+        "count": 2
+      },
+      "status": "FROZEN",
+      "sha256": "0e712a240e5dae475226e6b2ddb2b1b692cdee7a2f8c5e6ff64b9a81ce4e42b7"
+    },
+    {
+      "case_id": "GF-RAG-FR-001",
+      "behavior_ids": [
+        "B-RAG-005"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-FR-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "f937dd530f0fbbc88928607c1f2deea346c54694d075d87793e5e337a74b75de"
+    },
+    {
+      "case_id": "GF-RAG-FR-002",
+      "behavior_ids": [
+        "B-RAG-005"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-FR-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "371ef368b9bbd1ea4c3568a0f0f3ef2a0af1ae61526ba2a176af6f60439ae91b"
+    },
+    {
+      "case_id": "GF-RAG-FR-003",
+      "behavior_ids": [
+        "B-RAG-005"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-FR-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "8a58b1dd6e8cf210a143793b1ffdf5de4d7d57a99f00429a9de71d52a5103822"
+    },
+    {
+      "case_id": "GF-RAG-FR-004",
+      "behavior_ids": [
+        "B-RAG-005"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-FR-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "60ae4966af5f8f7aeb5f907d244ba13848b3e66a6b6d4fde0faf7cdf6a3b1370"
+    },
+    {
+      "case_id": "GF-RAG-INDEX-001",
+      "behavior_ids": [
+        "B-RAG-002"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-INDEX-001.json",
+      "oracle": {
+        "metric": "cosine_after_l2",
+        "dimension": 1024,
+        "hit": true
+      },
+      "status": "FROZEN",
+      "sha256": "b4eef5210ac7d4f42c6cada31bbb1de93afd715ab16291369a273b5ee552a6d5"
+    },
+    {
+      "case_id": "GF-RAG-ORD-001",
+      "behavior_ids": [
+        "B-RAG-006"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-ORD-001.json",
+      "oracle": {
+        "kept": [
+          "b"
+        ]
+      },
+      "status": "FROZEN",
+      "sha256": "228758781122a67db31d5b69c50515ae7607560adab13b7eca52aecf6c781611"
+    },
+    {
+      "case_id": "GF-RAG-ORD-002",
+      "behavior_ids": [
+        "B-RAG-006"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-ORD-002.json",
+      "oracle": {
+        "kept": [
+          "b"
+        ]
+      },
+      "status": "FROZEN",
+      "sha256": "d8004ce98348169c33e84627cad01ecc66cf0ac5414de285dd21dcc68344f9dc"
+    },
+    {
+      "case_id": "GF-RAG-ORD-003",
+      "behavior_ids": [
+        "B-RAG-006"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-ORD-003.json",
+      "oracle": {
+        "strict_mode": true,
+        "top_n": 10
+      },
+      "status": "FROZEN",
+      "sha256": "f8389431447d5addd2210a2433be68d5412d8e70423787618ee64c63fa0bd169"
+    },
+    {
+      "case_id": "GF-RAG-QTH-001",
+      "behavior_ids": [
+        "B-RAG-003"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-QTH-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "682fbc61ad8c1ee9d68099a0b1c6ba92c4aa35e7edb01479794064f6ef94bca0"
+    },
+    {
+      "case_id": "GF-RAG-QTH-002",
+      "behavior_ids": [
+        "B-RAG-003"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-QTH-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "57e8448e27e7c9960bb2e6e10b59bc8aa4fb6cabe9cd049e7b9e54bfe7d6c12b"
+    },
+    {
+      "case_id": "GF-RAG-QTH-003",
+      "behavior_ids": [
+        "B-RAG-003"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-QTH-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "fd514167e728999a94f5f71a019a76add5979a201170a83437e1b30168a9a533"
+    },
+    {
+      "case_id": "GF-RAG-RSKIP-001",
+      "behavior_ids": [
+        "B-RAG-004"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-RSKIP-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "5f0b8adae6fb11824ba4ecd68e3682cc89b49d20e5fa7fbcea6d531649b9b6ec"
+    },
+    {
+      "case_id": "GF-RAG-RSKIP-002",
+      "behavior_ids": [
+        "B-RAG-004"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-RSKIP-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "44ce0d98a6f8ee06604d6ddf4705f5d2ac5cf631f49572e4487fee90e54da5a8"
+    },
+    {
+      "case_id": "GF-RAG-RSKIP-003",
+      "behavior_ids": [
+        "B-RAG-004"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-RSKIP-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "54dafd8328fe8704168b5b56a82e2774c61446c4622d751489c1b80f0a6719e2"
+    },
+    {
+      "case_id": "GF-RAG-TIER-001",
+      "behavior_ids": [
+        "B-RAG-003"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-TIER-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "c72beaebe58cb64faa5ae1f49fdd64fe47feae717d37d64ecf9233b8ee151b41"
+    },
+    {
+      "case_id": "GF-RAG-TIER-002",
+      "behavior_ids": [
+        "B-RAG-003"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-TIER-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "5294d6a68de687f1606ad820030f52c31fdcdcde86b543b40f9ac82435509865"
+    },
+    {
+      "case_id": "GF-RAG-TIER-003",
+      "behavior_ids": [
+        "B-RAG-003"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-TIER-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "8acb2ccbdfbaa1549688e15a37002ed55221df664b3c246bfbe364c69ea86ddd"
+    },
+    {
+      "case_id": "GF-RAG-TIER-004",
+      "behavior_ids": [
+        "B-RAG-003"
+      ],
+      "fixture": "parity-tests/fixtures/rag/GF-RAG-TIER-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "c17a6e668b21528252d61f6d249602aefe2309da088d4c9730f2568c0a8afb08"
+    },
+    {
+      "case_id": "GF-REV-001",
+      "behavior_ids": [
+        "B-JOB-003"
+      ],
+      "fixture": "parity-tests/fixtures/rev/GF-REV-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "8655636ec99ba7fb3f7c94e35948eec6351d5bf68b1f762a3520b9b68f2ae200"
+    },
+    {
+      "case_id": "GF-REV-002",
+      "behavior_ids": [
+        "B-JOB-003"
+      ],
+      "fixture": "parity-tests/fixtures/rev/GF-REV-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "27d22f6252ce64f8c5060ba48c3bc5707e156a5a7f859ea276a9dc3e235d1f63"
+    },
+    {
+      "case_id": "GF-REV-003",
+      "behavior_ids": [
+        "B-JOB-003"
+      ],
+      "fixture": "parity-tests/fixtures/rev/GF-REV-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "f33fafc30cfa69ac7c85c9854ed616f9181b42493d1b15adbf0ccaa828122008"
+    },
+    {
+      "case_id": "GF-REV-004",
+      "behavior_ids": [
+        "B-JOB-003"
+      ],
+      "fixture": "parity-tests/fixtures/rev/GF-REV-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "b980e31d1b116036fff42b85c41ec2c7c8f39111e2210e6daad1772e9a698c8f"
+    },
+    {
+      "case_id": "GF-REV-005",
+      "behavior_ids": [
+        "B-JOB-003"
+      ],
+      "fixture": "parity-tests/fixtures/rev/GF-REV-005.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "c81d68a294dbc1427f06df2ff40000f9a0f357de4d288bba84a8c8d3e562a6ac"
+    },
+    {
+      "case_id": "GF-REV-006",
+      "behavior_ids": [
+        "B-JOB-003"
+      ],
+      "fixture": "parity-tests/fixtures/rev/GF-REV-006.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "97d7ec34a926a76ed7223429daab3236237ec8599f2e9ded6a8bc0e5350623f4"
+    },
+    {
+      "case_id": "GF-REV-007",
+      "behavior_ids": [
+        "B-JOB-003"
+      ],
+      "fixture": "parity-tests/fixtures/rev/GF-REV-007.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "86fe0fb41d8a6b1d46167bce27411e108d4805a20dc0d8fda4232c51c6a041e4"
+    },
+    {
+      "case_id": "GF-REV-008",
+      "behavior_ids": [
+        "B-JOB-003"
+      ],
+      "fixture": "parity-tests/fixtures/rev/GF-REV-008.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "68b903e2426aa7c7122a51aea86f05db57714f74490062efa2a7b4a6b28d4f20"
+    },
+    {
+      "case_id": "GF-STORE-001",
+      "behavior_ids": [
+        "B-STORE-001"
+      ],
+      "fixture": "parity-tests/fixtures/store/GF-STORE-001.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "45303b4238505f18a7cb81844c7cebc38b0ef72f651abf33fc29f28cea00b00c"
+    },
+    {
+      "case_id": "GF-STORE-002",
+      "behavior_ids": [
+        "B-STORE-002"
+      ],
+      "fixture": "parity-tests/fixtures/store/GF-STORE-002.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "59f4a663c896caeeb0e270792fe07e7c9ecc98cd408a96573f2fd8bc9a017491"
+    },
+    {
+      "case_id": "GF-STORE-003",
+      "behavior_ids": [
+        "B-STORE-003"
+      ],
+      "fixture": "parity-tests/fixtures/store/GF-STORE-003.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "40f8dfefd874fedeedf704086b01a6f8ead310a4b3541595582916d029b7fa85"
+    },
+    {
+      "case_id": "GF-STORE-004",
+      "behavior_ids": [
+        "B-STORE-004"
+      ],
+      "fixture": "parity-tests/fixtures/store/GF-STORE-004.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "d328e16d688f380b722b2359dd5eca54f2d010a351e9222d71cdb8aadc3d2ea5"
+    },
+    {
+      "case_id": "GF-STORE-005",
+      "behavior_ids": [
+        "B-STORE-001"
+      ],
+      "fixture": "parity-tests/fixtures/store/GF-STORE-005.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "d10286787e4357d642e580b5fca7cbf7147c63aa56284422f0530f7a2a2185a8"
+    },
+    {
+      "case_id": "GF-STORE-008",
+      "behavior_ids": [
+        "B-STORE-001",
+        "B-STORE-003"
+      ],
+      "fixture": "parity-tests/fixtures/store/GF-STORE-008.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "fe9c887b91c18f2ba7c8189a8fd0642f5378a7e9a7edaa677c61a7b1d15f1b32"
+    },
+    {
+      "case_id": "GF-STORE-009",
+      "behavior_ids": [
+        "B-STORE-003"
+      ],
+      "fixture": "parity-tests/fixtures/store/GF-STORE-009.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "c6ee83ea37f010ab50700c628457669f6c375474e8379722365b2e2d56da7a5f"
+    },
+    {
+      "case_id": "GF-STORE-010",
+      "behavior_ids": [
+        "B-STORE-001"
+      ],
+      "fixture": "parity-tests/fixtures/store/GF-STORE-010.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "65dfaf15fa63653efe6ae27c638c3e8ceaa94c82364e85f4d17cec7b40a041d4"
+    },
+    {
+      "case_id": "GF-STORE-012",
+      "behavior_ids": [
+        "B-STORE-001"
+      ],
+      "fixture": "parity-tests/fixtures/store/GF-STORE-012.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "c4ba00b8c9f3d209993ebb847539c21d9896618872dcad0401bbbfc2e1e4206d"
+    },
+    {
+      "case_id": "GF-STORE-FORBID-001",
+      "behavior_ids": [
+        "B-STORE-005"
+      ],
+      "fixture": "parity-tests/fixtures/store/GF-STORE-FORBID-001.json",
+      "oracle": {
+        "filtered": "加我吧"
+      },
+      "status": "FROZEN",
+      "sha256": "be1103702861bc75a4693445e4ea37d2afbbe75dfc48a52ef5fc1ec2cd9bdfb4"
+    },
+    {
+      "case_id": "GF-TOOL-001",
+      "behavior_ids": [
+        "B-TOOL-001",
+        "B-TOOL-002"
+      ],
+      "fixture": "parity-tests/fixtures/tool/GF-TOOL-001.json",
+      "oracle": {
+        "tool_result": {
+          "ok": true
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "455bff5c49681ad2aad3444137aba05292905e7880dc95ad857b602300dd6138"
+    },
+    {
+      "case_id": "GF-TOOL-002",
+      "behavior_ids": [
+        "B-TOOL-001",
+        "B-TOOL-002"
+      ],
+      "fixture": "parity-tests/fixtures/tool/GF-TOOL-002.json",
+      "oracle": {
+        "tool_result": {
+          "ok": true,
+          "text": "<recommendation>"
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "1c2a59a28e1ef6a74c62c336810c1e57b0c1efc025dc425076f4a730c4cfb058"
+    },
+    {
+      "case_id": "GF-TOOL-003",
+      "behavior_ids": [
+        "B-TOOL-001"
+      ],
+      "fixture": "parity-tests/fixtures/tool/GF-TOOL-003.json",
+      "oracle": {
+        "tool_result": {
+          "ok": false,
+          "error": {
+            "code": "tool.unknown"
+          }
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "de394b1a57408655d7a6b3ac9bc7109bd8155a432ce74a4ebac8ccdcfdf3ce69"
+    },
+    {
+      "case_id": "GF-TOOL-004",
+      "behavior_ids": [
+        "B-TOOL-001"
+      ],
+      "fixture": "parity-tests/fixtures/tool/GF-TOOL-004.json",
+      "oracle": {
+        "tool_result": {
+          "ok": false,
+          "error": {
+            "code": "tool.bad_arguments"
+          }
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "56b9277915df4c6d9f4e0f88ef4e2a0ac2f9cb61f58f1f131489f418f91ad0e4"
+    },
+    {
+      "case_id": "GF-TOOL-005",
+      "behavior_ids": [
+        "B-TOOL-001",
+        "B-TOOL-002"
+      ],
+      "fixture": "parity-tests/fixtures/tool/GF-TOOL-005.json",
+      "oracle": {
+        "tool_result": {
+          "ok": true,
+          "rows": 2
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "a42f26f521474d77733ac78392868582d1034d65bab3de02851ceaed126de867"
+    },
+    {
+      "case_id": "GF-TOOL-006",
+      "behavior_ids": [
+        "B-TOOL-001"
+      ],
+      "fixture": "parity-tests/fixtures/tool/GF-TOOL-006.json",
+      "oracle": {
+        "tool_result": {
+          "ok": false,
+          "error": {
+            "code": "tool.timeout"
+          }
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "6ab45aa31d832addd310b4c07e7f4b72a970e525760bc4a98da6319950ba6d96"
+    },
+    {
+      "case_id": "GF-TOOL-007",
+      "behavior_ids": [
+        "B-TOOL-001"
+      ],
+      "fixture": "parity-tests/fixtures/tool/GF-TOOL-007.json",
+      "oracle": {
+        "tool_result": {
+          "ok": false,
+          "error": {
+            "code": "tool.crashed"
+          }
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "6ac2dbf3e370cd9884b135f69aeae0845651623bee60c70cf44314630c264807"
+    },
+    {
+      "case_id": "GF-TOOL-009",
+      "behavior_ids": [
+        "B-TOOL-004"
+      ],
+      "fixture": "parity-tests/fixtures/tool/GF-TOOL-009.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "273c772680a0bedf7067da89608335d56ec8c321ea49d8025bf7ff8ffe30befe"
+    },
+    {
+      "case_id": "GF-TOOL-010",
+      "behavior_ids": [
+        "B-TOOL-003"
+      ],
+      "fixture": "parity-tests/fixtures/tool/GF-TOOL-010.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "e9a6e287ac34b380e75bf34ddec9aa090a1cf82d577e99875a8b810d507a4675"
+    },
+    {
+      "case_id": "GF-TOOL-011",
+      "behavior_ids": [
+        "B-TOOL-003"
+      ],
+      "fixture": "parity-tests/fixtures/tool/GF-TOOL-011.json",
+      "oracle": {},
+      "status": "FROZEN",
+      "sha256": "4aec4fc969ec424c68e2808d0352a8b3508ac267eb7a2511aa4cfc46cdb03e40"
+    },
+    {
+      "case_id": "GF-TOOL-012",
+      "behavior_ids": [
+        "B-HANDOFF-001",
+        "B-TOOL-002"
+      ],
+      "fixture": "parity-tests/fixtures/tool/GF-TOOL-012.json",
+      "oracle": {
+        "decision": {
+          "requested": true,
+          "target": "人工",
+          "reason": "售后"
+        }
+      },
+      "status": "FROZEN",
+      "sha256": "7494dadd592c772815570a7e2f239422d65b29ca59043feb1c9c97c2352d09b9"
+    }
+  ]
+}

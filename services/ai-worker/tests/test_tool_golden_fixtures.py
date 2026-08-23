@@ -15,7 +15,7 @@ from fastwork_ai_worker.tools.tool_executor import ToolExecutor
 from fastwork_ai_worker.tools.tool_registry import ToolRegistry
 
 _FIXTURES_DIR = os.path.join(
-    os.path.dirname(__file__), "..", "..", "..", "..", "parity-tests", "fixtures", "tool"
+    os.path.dirname(__file__), "..", "..", "..", "parity-tests", "fixtures", "tool"
 )
 
 

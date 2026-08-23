@@ -1,0 +1,48 @@
+{
+  "case_id": "GF-RAG-COMP-002",
+  "title": "raw protection branch raw>=0.7",
+  "behavior_ids": [
+    "B-RAG-004"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/rag-pipeline.md",
+      "spec/ai/rag-retrieval-decision-table.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "rag": {
+      "similarity_weight": 0.4,
+      "rerank_weight": 0.6,
+      "raw_protection_threshold": 0.7
+    }
+  },
+  "input": {},
+  "mocks": {
+    "candidate": {
+      "raw": 0.7,
+      "rerank": 0.5
+    }
+  },
+  "expected": {
+    "result": {
+      "composite": 0.6499999999999999
+    }
+  },
+  "comparison": {
+    "mode": "NUMERIC_TOLERANCE",
+    "float_tolerance": 1e-06
+  },
+  "tags": [],
+  "notes": ""
+}

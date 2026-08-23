@@ -1,0 +1,49 @@
+{
+  "case_id": "GF-LEARN-009",
+  "title": "learning cancel",
+  "behavior_ids": [
+    "B-JOB-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/learning-optimization-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "command": "cancel"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "job_state": "CANCELLED"
+      }
+    ],
+    "persistence": [
+      {
+        "aggregate": "job",
+        "state": "CANCELLED"
+      },
+      {
+        "aggregate": "pending_knowledge",
+        "partial_retained": true
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

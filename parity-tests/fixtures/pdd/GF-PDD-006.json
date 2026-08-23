@@ -1,0 +1,49 @@
+{
+  "case_id": "GF-PDD-006",
+  "title": "no available agent → fallback message",
+  "behavior_ids": [
+    "B-PLATFORM-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/platforms/platform-adapter-matrix.md",
+      "spec/contracts/platform-adapter-contract.md",
+      "docs/adr/ADR-007-reference-platform.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "transfer": {
+      "requested": true,
+      "target": "售后"
+    }
+  },
+  "mocks": {
+    "pdd_transfer": {
+      "available": false
+    }
+  },
+  "expected": {
+    "decisions": [
+      {
+        "transfer": "fallback_message",
+        "text": "<转接放弃话术>"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

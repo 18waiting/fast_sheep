@@ -1,0 +1,53 @@
+{
+  "case_id": "GF-RAG-ORD-002",
+  "title": "已下单 removes #未下单",
+  "behavior_ids": [
+    "B-RAG-006"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/rag-pipeline.md",
+      "spec/ai/rag-retrieval-decision-table.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "order_state": "已下单"
+  },
+  "mocks": {
+    "results": [
+      {
+        "q": "a",
+        "tags": [
+          "#未下单"
+        ]
+      },
+      {
+        "q": "b",
+        "tags": []
+      }
+    ]
+  },
+  "expected": {
+    "result": {
+      "kept": [
+        "b"
+      ]
+    }
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

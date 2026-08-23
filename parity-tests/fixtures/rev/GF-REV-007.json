@@ -1,0 +1,57 @@
+{
+  "case_id": "GF-REV-007",
+  "title": "protected library not deleted",
+  "behavior_ids": [
+    "B-JOB-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/review-audit-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "review": {
+      "protected_kbs": [
+        "无商品ID知识库",
+        "已学习",
+        "待审核知识",
+        "B库人工确认过",
+        "通用知识库"
+      ]
+    }
+  },
+  "input": {
+    "delete_list": [
+      {
+        "商品ID": "",
+        "问题": "q",
+        "答案": "a"
+      }
+    ],
+    "kb": "B库人工确认过"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "deleted": 0,
+        "protected": true
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

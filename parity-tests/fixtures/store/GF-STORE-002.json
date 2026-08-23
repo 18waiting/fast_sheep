@@ -1,0 +1,55 @@
+{
+  "case_id": "GF-STORE-002",
+  "title": "product row atomic write + 5-col",
+  "behavior_ids": [
+    "B-STORE-002"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/data/local-data-model.md",
+      "spec/data/clean-room-persistence-parity.md",
+      "spec/contracts/local-storage-io-contract.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "row": {
+      "商品Id": "10001",
+      "宝贝标题": "T恤",
+      "商品详情": "详情",
+      "所属店铺": "pdd",
+      "备注": ""
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "product",
+        "op": "atomic_write",
+        "cols": [
+          "商品Id",
+          "宝贝标题",
+          "商品详情",
+          "所属店铺",
+          "备注"
+        ]
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

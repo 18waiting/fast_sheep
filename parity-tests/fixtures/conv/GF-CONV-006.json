@@ -1,0 +1,108 @@
+{
+  "case_id": "GF-CONV-006",
+  "title": "normal RAG→prompt→generation",
+  "behavior_ids": [
+    "B-CONV-001",
+    "B-RAG-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "发货多久",
+    "order_state": "已下单"
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "rag": {
+      "product_quality_threshold": 0.6
+    }
+  },
+  "input": {},
+  "mocks": {
+    "generation": {
+      "text": "亲,下单后48小时内发货~"
+    }
+  },
+  "expected": {
+    "trace": [
+      {
+        "sequence": 1,
+        "component": "ConversationEngine",
+        "operation": "DUP_CHECK"
+      },
+      {
+        "sequence": 2,
+        "component": "ConversationEngine",
+        "operation": "ORDER_CONTEXT"
+      },
+      {
+        "sequence": 3,
+        "component": "RAGEngine",
+        "operation": "PRODUCT_RETRIEVAL"
+      },
+      {
+        "sequence": 4,
+        "component": "RAGEngine",
+        "operation": "FAST_RETURN_CHECK"
+      },
+      {
+        "sequence": 5,
+        "component": "RAGEngine",
+        "operation": "GLOBAL_RETRIEVAL"
+      },
+      {
+        "sequence": 6,
+        "component": "RAGEngine",
+        "operation": "MERGE_DEDUPE"
+      },
+      {
+        "sequence": 7,
+        "component": "RAGEngine",
+        "operation": "RERANK"
+      },
+      {
+        "sequence": 8,
+        "component": "PromptEngine",
+        "operation": "PROMPT_ASSEMBLY"
+      },
+      {
+        "sequence": 9,
+        "component": "GenerationProviderRouter",
+        "operation": "MODEL_ROUTE"
+      },
+      {
+        "sequence": 10,
+        "component": "ConversationEngine",
+        "operation": "HANDOFF"
+      },
+      {
+        "sequence": 11,
+        "component": "ConversationEngine",
+        "operation": "POST_PROCESS"
+      }
+    ],
+    "external_calls": [
+      {
+        "mock": "generation",
+        "call": 1
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "ORDERED_TRACE"
+  },
+  "tags": [],
+  "notes": ""
+}

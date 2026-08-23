@@ -1,0 +1,52 @@
+{
+  "case_id": "GF-LEARN-005",
+  "title": "frequency analyzer below 0.9 separate",
+  "behavior_ids": [
+    "B-JOB-002"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/learning-optimization-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "learning": {
+      "freq_threshold": 0.9,
+      "top_n": 100
+    }
+  },
+  "input": {},
+  "mocks": {
+    "embedding": {
+      "directive": [
+        {
+          "type": "controlled_cosine",
+          "cosine_to": "q0",
+          "score": 0.899
+        }
+      ]
+    }
+  },
+  "expected": {
+    "decisions": [
+      {
+        "groups": 2
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

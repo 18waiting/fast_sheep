@@ -1,0 +1,73 @@
+{
+  "case_id": "GF-CONV-004",
+  "title": "product fast return (秒回)",
+  "behavior_ids": [
+    "B-RAG-005",
+    "B-CONV-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "有没有XL码"
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "rag": {
+      "product_fast_return_threshold": 0.9,
+      "welcome_enabled": false
+    }
+  },
+  "input": {},
+  "mocks": {
+    "retrieval": {
+      "top_sim": 0.95
+    }
+  },
+  "expected": {
+    "result": {
+      "fast_return": true
+    },
+    "decisions": [
+      {
+        "stage": "FAST_RETURN_CHECK",
+        "decision": "fast-return"
+      }
+    ],
+    "trace": [
+      {
+        "sequence": 1,
+        "component": "RAGEngine",
+        "operation": "PRODUCT_RETRIEVAL"
+      },
+      {
+        "sequence": 2,
+        "component": "RAGEngine",
+        "operation": "FAST_RETURN_CHECK",
+        "decision": "fast-return"
+      },
+      {
+        "sequence": 3,
+        "component": "RAGEngine",
+        "operation": "FAST_RETURN_HANDLER"
+      }
+    ],
+    "external_calls": []
+  },
+  "comparison": {
+    "mode": "ORDERED_TRACE"
+  },
+  "tags": [],
+  "notes": ""
+}

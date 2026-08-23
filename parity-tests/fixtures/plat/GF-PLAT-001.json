@@ -1,0 +1,45 @@
+{
+  "case_id": "GF-PLAT-001",
+  "title": "capability declaration pdd",
+  "behavior_ids": [
+    "B-PLATFORM-002"
+  ],
+  "test_class": "DESIGN_CONFORMANCE",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/platforms/platform-adapter-matrix.md",
+      "spec/contracts/platform-adapter-contract.md",
+      "docs/adr/ADR-007-reference-platform.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "platform": "pdd"
+  },
+  "mocks": {},
+  "expected": {
+    "result": {
+      "capabilities": [
+        "textSend",
+        "imageSend",
+        "transfer",
+        "productContext",
+        "orderContext"
+      ]
+    }
+  },
+  "comparison": {
+    "mode": "UNORDERED_SET"
+  },
+  "tags": [],
+  "notes": ""
+}

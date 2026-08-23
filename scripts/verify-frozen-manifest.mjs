@@ -8,7 +8,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const PROJECT = join(HERE, "..", "..");
+const PROJECT = join(HERE, "..");
 const MANIFEST = join(PROJECT, "parity-tests", "manifests", "p0-golden-manifest.json");
 const FIXTURES = join(PROJECT, "parity-tests", "fixtures");
 

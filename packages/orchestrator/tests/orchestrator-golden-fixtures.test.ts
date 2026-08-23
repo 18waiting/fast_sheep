@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { buildHarness, decisions, lastDecision } from "./helpers.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const FIXTURES = join(HERE, "..", "..", "..", "..", "parity-tests", "fixtures", "orch");
+const FIXTURES = join(HERE, "..", "..", "..", "parity-tests", "fixtures", "orch");
 
 function orderedSubsequence(expected: unknown[], actual: unknown[]): boolean {
   let i = 0;

@@ -1,0 +1,46 @@
+{
+  "case_id": "GF-AUDIT-002",
+  "title": "empty product_id fallback '1'",
+  "behavior_ids": [
+    "B-JOB-004"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/review-audit-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "action": "保留",
+    "entry": {
+      "问题": "q",
+      "答案": "a",
+      "商品ID": ""
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "knowledge",
+        "op": "commit",
+        "product_id": "1"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

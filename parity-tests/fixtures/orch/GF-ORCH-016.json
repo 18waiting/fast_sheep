@@ -1,0 +1,43 @@
+{
+  "case_id": "GF-ORCH-016",
+  "title": "queue next conversation",
+  "behavior_ids": [
+    "B-ORCH"
+  ],
+  "test_class": "DESIGN_CONFORMANCE",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/architecture/multi-shop-orchestration.md",
+      "spec/architecture/node-send-pipeline.md",
+      "spec/states/conversation-orchestration-state-machine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "queue": [
+      "c2"
+    ]
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {},
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "decision": "dequeue_next"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

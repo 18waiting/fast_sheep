@@ -1,0 +1,52 @@
+{
+  "case_id": "GF-CONV-012",
+  "title": "embedding failure",
+  "behavior_ids": [
+    "B-RAG-001",
+    "B-CONV-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "测试"
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {},
+  "mocks": {
+    "embedding": {
+      "error": "provider_unavailable"
+    }
+  },
+  "expected": {
+    "result": {
+      "error": {
+        "category": "retrieval",
+        "retryable": true
+      }
+    },
+    "decisions": [
+      {
+        "stage": "PRODUCT_RETRIEVAL",
+        "decision": "degraded"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "SUBSET"
+  },
+  "tags": [],
+  "notes": ""
+}

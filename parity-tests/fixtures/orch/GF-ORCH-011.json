@@ -1,0 +1,50 @@
+{
+  "case_id": "GF-ORCH-011",
+  "title": "new message invalidates suggestion",
+  "behavior_ids": [
+    "B-CONV-005"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/architecture/multi-shop-orchestration.md",
+      "spec/architecture/node-send-pipeline.md",
+      "spec/states/conversation-orchestration-state-machine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "suggestion": {
+      "generation": 1
+    }
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "message": {
+      "message_id": "m2",
+      "content": "再问一个"
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "decision": "invalidate_suggestion",
+        "generation": 2
+      }
+    ],
+    "external_calls": []
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

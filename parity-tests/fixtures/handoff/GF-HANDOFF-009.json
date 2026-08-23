@@ -1,0 +1,46 @@
+{
+  "case_id": "GF-HANDOFF-009",
+  "title": "cross-midnight working hours",
+  "behavior_ids": [
+    "B-HANDOFF-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/handoff-decision-table.md",
+      "spec/ai/handoff-engine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T01:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "rules": [
+      {
+        "keyword": "退款",
+        "target": "售后",
+        "工作时间": "22:00-06:00"
+      }
+    ]
+  },
+  "input": {},
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "transfer": true
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

@@ -9,7 +9,7 @@ import os
 import unittest
 from m10_helpers import run_optimization_case
 
-FIXTURES = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "parity-tests", "fixtures", "opt")
+FIXTURES = os.path.join(os.path.dirname(__file__), "..", "..", "..", "parity-tests", "fixtures", "opt")
 
 
 def discover() -> list:

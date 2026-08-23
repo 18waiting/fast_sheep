@@ -1,0 +1,102 @@
+{
+  "case_id": "GF-RAG-ORD-003",
+  "title": "strict mode >=10 non-mutually-exclusive",
+  "behavior_ids": [
+    "B-RAG-006"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/rag-pipeline.md",
+      "spec/ai/rag-retrieval-decision-table.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "order_state": "未下单"
+  },
+  "mocks": {
+    "results": [
+      {
+        "q": "q0",
+        "tags": [
+          "#已下单"
+        ]
+      },
+      {
+        "q": "q1",
+        "tags": [
+          "#已下单"
+        ]
+      },
+      {
+        "q": "q2",
+        "tags": [
+          "#已下单"
+        ]
+      },
+      {
+        "q": "q3",
+        "tags": [
+          "#已下单"
+        ]
+      },
+      {
+        "q": "q4",
+        "tags": [
+          "#已下单"
+        ]
+      },
+      {
+        "q": "q5",
+        "tags": [
+          "#未下单"
+        ]
+      },
+      {
+        "q": "q6",
+        "tags": [
+          "#未下单"
+        ]
+      },
+      {
+        "q": "q7",
+        "tags": [
+          "#未下单"
+        ]
+      },
+      {
+        "q": "q8",
+        "tags": [
+          "#未下单"
+        ]
+      },
+      {
+        "q": "q9",
+        "tags": [
+          "#未下单"
+        ]
+      }
+    ]
+  },
+  "expected": {
+    "result": {
+      "strict_mode": true,
+      "top_n": 10
+    }
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

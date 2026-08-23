@@ -1,0 +1,54 @@
+{
+  "case_id": "GF-CONV-013",
+  "title": "provider failure",
+  "behavior_ids": [
+    "B-CONV-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "测试"
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {},
+  "mocks": {
+    "generation": {
+      "error": {
+        "category": "provider",
+        "retryable": true
+      }
+    }
+  },
+  "expected": {
+    "result": {
+      "error": {
+        "category": "provider",
+        "retryable": true
+      }
+    },
+    "decisions": [
+      {
+        "stage": "MODEL_ROUTE",
+        "decision": "fallback"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "SUBSET"
+  },
+  "tags": [],
+  "notes": ""
+}

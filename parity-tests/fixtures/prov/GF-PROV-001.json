@@ -1,0 +1,42 @@
+{
+  "case_id": "GF-PROV-001",
+  "title": "快答 daily <20000 → 豆包",
+  "behavior_ids": [
+    "B-PROV-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/model-routing-decision-table.md",
+      "spec/ai/model-provider-contracts.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "mode": "快答专家",
+    "daily_count": 19999
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "provider": "doubao",
+        "model": "<fixture-doubao>"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

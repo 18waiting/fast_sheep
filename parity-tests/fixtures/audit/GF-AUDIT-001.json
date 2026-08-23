@@ -1,0 +1,58 @@
+{
+  "case_id": "GF-AUDIT-001",
+  "title": "保留 → B/HUMAN_CONFIRMED",
+  "behavior_ids": [
+    "B-JOB-004"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/review-audit-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "action": "保留",
+    "entry": {
+      "问题": "q",
+      "答案": "a",
+      "商品ID": "10001"
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "knowledge",
+        "op": "commit",
+        "trust": "HUMAN_CONFIRMED"
+      },
+      {
+        "aggregate": "index",
+        "op": "refresh",
+        "mode": "incremental"
+      }
+    ],
+    "result": {
+      "统计": {
+        "保留": 1,
+        "丢弃": 0,
+        "待定": 0
+      }
+    }
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

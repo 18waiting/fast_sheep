@@ -1,0 +1,60 @@
+{
+  "case_id": "GF-TOOL-001",
+  "title": "instruction skill executes",
+  "behavior_ids": [
+    "B-TOOL-001",
+    "B-TOOL-002"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/skill-tool-engine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "tool_call": {
+      "name": "自动备注",
+      "arguments": {
+        "text": "已发货"
+      }
+    }
+  },
+  "mocks": {
+    "tool": {
+      "自动备注": {
+        "result": {
+          "ok": true,
+          "remark": "已备注"
+        }
+      }
+    }
+  },
+  "expected": {
+    "result": {
+      "tool_result": {
+        "ok": true
+      }
+    },
+    "external_calls": [
+      {
+        "mock": "tool",
+        "call": 1
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "CALL_SEQUENCE"
+  },
+  "tags": [],
+  "notes": ""
+}

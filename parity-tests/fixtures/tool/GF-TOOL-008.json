@@ -1,0 +1,51 @@
+{
+  "case_id": "GF-TOOL-008",
+  "title": "tool disabled / insufficient points",
+  "behavior_ids": [
+    "B-TOOL-005"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/ai/skill-tool-engine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "tool_call": {
+      "name": "尺码推荐"
+    }
+  },
+  "mocks": {
+    "entitlement": {
+      "disabled": [
+        "尺码推荐"
+      ]
+    }
+  },
+  "expected": {
+    "result": {
+      "tool_result": {
+        "ok": false,
+        "error": {
+          "code": "tool.disabled"
+        }
+      }
+    },
+    "external_calls": []
+  },
+  "comparison": {
+    "mode": "NO_CALL"
+  },
+  "tags": [],
+  "notes": ""
+}

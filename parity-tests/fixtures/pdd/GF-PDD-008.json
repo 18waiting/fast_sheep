@@ -1,0 +1,44 @@
+{
+  "case_id": "GF-PDD-008",
+  "title": "DOM unavailable → safe failure",
+  "behavior_ids": [
+    "B-PLATFORM-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/platforms/platform-adapter-matrix.md",
+      "spec/contracts/platform-adapter-contract.md",
+      "docs/adr/ADR-007-reference-platform.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {},
+  "mocks": {
+    "pdd": {
+      "dom_unavailable": true
+    }
+  },
+  "expected": {
+    "decisions": [
+      {
+        "safe_fail": true,
+        "no_bypass": true
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

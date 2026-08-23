@@ -1,0 +1,69 @@
+{
+  "case_id": "GF-LEARN-001",
+  "title": "learning pipeline stage order",
+  "behavior_ids": [
+    "B-JOB-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/learning-optimization-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "import_source": "synthetic_chat.txt"
+  },
+  "mocks": {},
+  "expected": {
+    "trace": [
+      {
+        "sequence": 1,
+        "component": "LearningEngine",
+        "operation": "CONVERSATION_IMPORT"
+      },
+      {
+        "sequence": 2,
+        "component": "LearningEngine",
+        "operation": "PRODUCT_EXTRACTION"
+      },
+      {
+        "sequence": 3,
+        "component": "LearningEngine",
+        "operation": "CANDIDATE_EXTRACT"
+      },
+      {
+        "sequence": 4,
+        "component": "LearningEngine",
+        "operation": "PENDING_WRITE"
+      },
+      {
+        "sequence": 5,
+        "component": "LearningEngine",
+        "operation": "INDEX_SIGNAL"
+      }
+    ],
+    "events": [
+      {
+        "event": "LearningProgress",
+        "payload_subset": {
+          "progress": 100
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "ORDERED_TRACE"
+  },
+  "tags": [],
+  "notes": ""
+}

@@ -1,0 +1,43 @@
+{
+  "case_id": "GF-STORE-006",
+  "title": "single-writer enforcement",
+  "behavior_ids": [
+    "B-STORE-002"
+  ],
+  "test_class": "DESIGN_CONFORMANCE",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/data/local-data-model.md",
+      "spec/data/clean-room-persistence-parity.md",
+      "spec/contracts/local-storage-io-contract.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "attempted_writer": "worker",
+    "aggregate": "products"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "deny": true,
+        "reason": "single_writer"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

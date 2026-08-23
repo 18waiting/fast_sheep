@@ -1,0 +1,42 @@
+{
+  "case_id": "GF-SEC-008",
+  "title": "legacy import no auto-secrets",
+  "behavior_ids": [
+    "B-SEC-002"
+  ],
+  "test_class": "SECURITY_IMPROVEMENT",
+  "parity_level": "P3",
+  "provenance": {
+    "sources": [
+      "docs/adr/ADR-003-tool-execution-sandbox.md",
+      "docs/adr/ADR-004-secret-storage.md",
+      "spec/rebuild/security-model.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "package": "legacy/custom-model-redacted",
+    "consent": false
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "secrets_imported": false
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

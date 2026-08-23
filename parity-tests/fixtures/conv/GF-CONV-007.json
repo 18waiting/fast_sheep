@@ -1,0 +1,76 @@
+{
+  "case_id": "GF-CONV-007",
+  "title": "tool-call route",
+  "behavior_ids": [
+    "B-TOOL-003",
+    "B-CONV-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "帮我查一下这款手机库存"
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {},
+  "mocks": {
+    "generation": {
+      "tool_calls": [
+        {
+          "name": "stock_query",
+          "arguments": {
+            "sku": "A1"
+          }
+        }
+      ]
+    }
+  },
+  "expected": {
+    "decisions": [
+      {
+        "stage": "AGENT_LOOP",
+        "decision": "tool-call"
+      }
+    ],
+    "trace": [
+      {
+        "sequence": 1,
+        "component": "AgentLoop",
+        "operation": "TOOL_CALL"
+      },
+      {
+        "sequence": 2,
+        "component": "ToolExecutor",
+        "operation": "EXECUTE"
+      },
+      {
+        "sequence": 3,
+        "component": "AgentLoop",
+        "operation": "CONTINUE"
+      }
+    ],
+    "external_calls": [
+      {
+        "mock": "tool",
+        "call": 1
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "ORDERED_TRACE"
+  },
+  "tags": [],
+  "notes": ""
+}

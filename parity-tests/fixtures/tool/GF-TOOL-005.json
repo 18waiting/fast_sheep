@@ -1,0 +1,55 @@
+{
+  "case_id": "GF-TOOL-005",
+  "title": "script success",
+  "behavior_ids": [
+    "B-TOOL-001",
+    "B-TOOL-002"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/skill-tool-engine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "tool_call": {
+      "name": "快递表格查价",
+      "arguments": {
+        "region": "上海"
+      }
+    }
+  },
+  "mocks": {
+    "tool": {
+      "快递表格查价": {
+        "result": {
+          "ok": true,
+          "rows": 2
+        }
+      }
+    }
+  },
+  "expected": {
+    "result": {
+      "tool_result": {
+        "ok": true,
+        "rows": 2
+      }
+    }
+  },
+  "comparison": {
+    "mode": "SUBSET"
+  },
+  "tags": [],
+  "notes": ""
+}

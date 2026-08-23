@@ -1,0 +1,53 @@
+{
+  "case_id": "GF-PDD-002",
+  "title": "text send success",
+  "behavior_ids": [
+    "B-PLATFORM-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/platforms/platform-adapter-matrix.md",
+      "spec/contracts/platform-adapter-contract.md",
+      "docs/adr/ADR-007-reference-platform.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "send": {
+      "conversation_id": "c1",
+      "content": "亲,有的~"
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "external_calls": [
+      {
+        "mock": "pdd_sender",
+        "call": "sendText",
+        "payload": {
+          "content": "亲,有的~"
+        }
+      }
+    ],
+    "result": {
+      "SendResult": {
+        "ok": true
+      }
+    }
+  },
+  "comparison": {
+    "mode": "CALL_SEQUENCE"
+  },
+  "tags": [],
+  "notes": ""
+}

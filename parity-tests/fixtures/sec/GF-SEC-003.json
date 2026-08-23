@@ -1,0 +1,47 @@
+{
+  "case_id": "GF-SEC-003",
+  "title": "tool sandbox no network",
+  "behavior_ids": [
+    "B-SEC-001"
+  ],
+  "test_class": "SECURITY_IMPROVEMENT",
+  "parity_level": "P3",
+  "provenance": {
+    "sources": [
+      "docs/adr/ADR-003-tool-execution-sandbox.md",
+      "docs/adr/ADR-004-secret-storage.md",
+      "spec/rebuild/security-model.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "tool": {
+      "run": {
+        "network": false
+      }
+    },
+    "attempt": "socket"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "blocked": true,
+        "reason": "network_disabled"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

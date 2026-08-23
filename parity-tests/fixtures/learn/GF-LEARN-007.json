@@ -1,0 +1,44 @@
+{
+  "case_id": "GF-LEARN-007",
+  "title": "image placeholder excluded",
+  "behavior_ids": [
+    "B-JOB-002"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/learning-optimization-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "questions": [
+      "【图片消息】【图片消息，】",
+      "正常问题"
+    ]
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "excluded": [
+          "【图片消息】【图片消息，】"
+        ]
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

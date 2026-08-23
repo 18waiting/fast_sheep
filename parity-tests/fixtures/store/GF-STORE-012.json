@@ -1,0 +1,48 @@
+{
+  "case_id": "GF-STORE-012",
+  "title": "old index artifacts not imported (rebuilt)",
+  "behavior_ids": [
+    "B-STORE-001"
+  ],
+  "test_class": "COMPATIBILITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/data/local-data-model.md",
+      "spec/data/clean-room-persistence-parity.md",
+      "spec/contracts/local-storage-io-contract.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "package": "legacy/old-index-artifacts"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "faiss_import": "REBUILD",
+        "derived": true
+      }
+    ],
+    "persistence": [
+      {
+        "aggregate": "index",
+        "op": "rebuild_requested"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

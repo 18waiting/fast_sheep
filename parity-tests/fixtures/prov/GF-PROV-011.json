@@ -1,0 +1,46 @@
+{
+  "case_id": "GF-PROV-011",
+  "title": "invalid custom config",
+  "behavior_ids": [
+    "B-PROV-004"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/model-routing-decision-table.md",
+      "spec/ai/model-provider-contracts.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "mode": "custom",
+    "custom": {
+      "id": "bad",
+      "api_url": "",
+      "model_name": ""
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "result": {
+      "error": {
+        "category": "config",
+        "retryable": false
+      }
+    }
+  },
+  "comparison": {
+    "mode": "SUBSET"
+  },
+  "tags": [],
+  "notes": ""
+}

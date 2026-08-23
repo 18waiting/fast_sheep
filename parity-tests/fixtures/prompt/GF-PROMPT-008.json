@@ -1,0 +1,52 @@
+{
+  "case_id": "GF-PROMPT-008",
+  "title": "four-slot assembly presence",
+  "behavior_ids": [
+    "B-PROMPT-002",
+    "B-PROMPT-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/prompt-assembly.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "order_state": "未下单",
+    "has_product": true,
+    "has_history": true,
+    "has_reference": true
+  },
+  "mocks": {},
+  "expected": {
+    "result": {
+      "slots": [
+        "head",
+        "product",
+        "history",
+        "reference"
+      ],
+      "order": [
+        "head",
+        "product",
+        "history",
+        "reference"
+      ]
+    }
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

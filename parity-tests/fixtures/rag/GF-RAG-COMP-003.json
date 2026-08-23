@@ -1,0 +1,48 @@
+{
+  "case_id": "GF-RAG-COMP-003",
+  "title": "low-rerank penalty rerank<0.1",
+  "behavior_ids": [
+    "B-RAG-004"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/rag-pipeline.md",
+      "spec/ai/rag-retrieval-decision-table.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "rag": {
+      "similarity_weight": 0.4,
+      "rerank_weight": 0.6,
+      "low_rerank_penalty": 0.1
+    }
+  },
+  "input": {},
+  "mocks": {
+    "candidate": {
+      "raw": 0.6,
+      "rerank": 0.099
+    }
+  },
+  "expected": {
+    "result": {
+      "composite": 0.23952
+    }
+  },
+  "comparison": {
+    "mode": "NUMERIC_TOLERANCE",
+    "float_tolerance": 1e-06
+  },
+  "tags": [],
+  "notes": ""
+}

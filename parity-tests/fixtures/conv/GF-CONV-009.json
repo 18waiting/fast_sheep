@@ -1,0 +1,47 @@
+{
+  "case_id": "GF-CONV-009",
+  "title": "long-answer wrap",
+  "behavior_ids": [
+    "B-CONV-008"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "介绍下这款产品"
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "long_answer_wrap": true,
+    "max_segments": 3
+  },
+  "input": {},
+  "mocks": {},
+  "expected": {
+    "result": {
+      "segments": 3
+    },
+    "decisions": [
+      {
+        "stage": "POST_PROCESS",
+        "decision": "wrap-3-segments"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

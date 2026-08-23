@@ -1,0 +1,42 @@
+{
+  "case_id": "GF-RPC-002",
+  "title": "request/response correlation",
+  "behavior_ids": [
+    "B-IPC-001"
+  ],
+  "test_class": "DESIGN_CONFORMANCE",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "docs/adr/ADR-002-local-worker-rpc.md",
+      "spec/rebuild/domain-contracts.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "request": {
+      "request_id": "r1",
+      "method": "ping"
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "result": {
+      "request_id": "r1",
+      "ok": true
+    }
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

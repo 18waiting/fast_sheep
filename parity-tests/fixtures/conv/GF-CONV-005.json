@@ -1,0 +1,53 @@
+{
+  "case_id": "GF-CONV-005",
+  "title": "completed-question fast return",
+  "behavior_ids": [
+    "B-RAG-005"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "这个衣服多少钱",
+    "completed_question": "这件衣服多少钱"
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "rag": {
+      "completed_fast_return_sim": 0.9,
+      "completed_fast_return_len_diff": 3
+    }
+  },
+  "input": {},
+  "mocks": {
+    "retrieval": {
+      "completed_sim": 0.95,
+      "len_diff": 2
+    }
+  },
+  "expected": {
+    "decisions": [
+      {
+        "stage": "COMPLETED_RETRIEVAL",
+        "decision": "fast-return"
+      }
+    ],
+    "external_calls": []
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

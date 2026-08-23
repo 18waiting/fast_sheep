@@ -17,7 +17,6 @@ _FIXTURES_DIR = os.path.join(
     "..",
     "..",
     "..",
-    "..",
     "parity-tests",
     "fixtures",
     "prompt",

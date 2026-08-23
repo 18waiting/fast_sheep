@@ -1,0 +1,46 @@
+{
+  "case_id": "GF-ORCH-BRK-002",
+  "title": "takeover breaker at threshold",
+  "behavior_ids": [
+    "B-CONV-007"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/architecture/multi-shop-orchestration.md",
+      "spec/architecture/node-send-pipeline.md",
+      "spec/states/conversation-orchestration-state-machine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "consecutive_replies": 2
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "collab": {
+      "breaker_threshold": 2,
+      "breaker_window_ms": 60000
+    }
+  },
+  "input": {},
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "decision": "takeover_breaker_triggered"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

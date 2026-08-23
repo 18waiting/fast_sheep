@@ -1,0 +1,48 @@
+{
+  "case_id": "GF-RAG-RSKIP-001",
+  "title": "rerank skip top-sim >=0.85",
+  "behavior_ids": [
+    "B-RAG-004"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/rag-pipeline.md",
+      "spec/ai/rag-retrieval-decision-table.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "rag": {
+      "rerank_high_similarity_skip": 0.85
+    }
+  },
+  "input": {},
+  "mocks": {
+    "index": {
+      "top_sim": 0.85
+    }
+  },
+  "expected": {
+    "decisions": [
+      {
+        "rerank": false,
+        "reason": "top_sim_high"
+      }
+    ],
+    "external_calls": []
+  },
+  "comparison": {
+    "mode": "NO_CALL"
+  },
+  "tags": [],
+  "notes": ""
+}

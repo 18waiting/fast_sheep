@@ -1,0 +1,16 @@
+[
+ {
+  "id": "shop-1",
+  "type": "pdd",
+  "name": "拼多多-店",
+  "created_time": "2026-07-01",
+  "启用": true
+ },
+ {
+  "id": "shop-2",
+  "type": "xianyu",
+  "name": "闲鱼-店",
+  "created_time": "2026-07-02",
+  "启用": false
+ }
+]

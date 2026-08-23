@@ -1,0 +1,48 @@
+{
+  "case_id": "GF-CONV-010",
+  "title": "duplicate/rephrase path",
+  "behavior_ids": [
+    "B-CONV-008"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "这个多少钱",
+    "history_contains_reply": true
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {},
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "stage": "POST_PROCESS",
+        "decision": "rephrase"
+      }
+    ],
+    "external_calls": [
+      {
+        "mock": "generation",
+        "call": 1
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

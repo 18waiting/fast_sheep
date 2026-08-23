@@ -1,0 +1,53 @@
+{
+  "case_id": "GF-LEARN-008",
+  "title": "QA generation candidate",
+  "behavior_ids": [
+    "B-JOB-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/learning-optimization-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "segment": {
+      "商品ID": "10001",
+      "content": "[买家]有XL吗\n[客服]有的"
+    }
+  },
+  "mocks": {
+    "generation": {
+      "qa": [
+        {
+          "q": "<标签>有XL吗",
+          "a": "有的"
+        }
+      ]
+    }
+  },
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "knowledge_candidate",
+        "op": "insert",
+        "origin": "GENERATED"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

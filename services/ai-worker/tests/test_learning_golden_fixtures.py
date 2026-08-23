@@ -9,7 +9,7 @@ import os
 import unittest
 from m10_helpers import run_learning_case
 
-FIXTURES = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "parity-tests", "fixtures", "learn")
+FIXTURES = os.path.join(os.path.dirname(__file__), "..", "..", "..", "parity-tests", "fixtures", "learn")
 
 
 def discover() -> list:

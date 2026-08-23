@@ -1,0 +1,41 @@
+{
+  "case_id": "GF-AUDIT-005",
+  "title": "再审核待定 re-audit round",
+  "behavior_ids": [
+    "B-JOB-004"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/review-audit-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "command": "review_pending"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "re_audit": true,
+        "human_round": true,
+        "provider_calls": 0
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

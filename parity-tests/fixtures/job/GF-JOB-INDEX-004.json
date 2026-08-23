@@ -1,0 +1,43 @@
+{
+  "case_id": "GF-JOB-INDEX-004",
+  "title": "precise delete failure → full rebuild",
+  "behavior_ids": [
+    "B-JOB-006"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/data/faiss-index-catalog.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {},
+  "mocks": {
+    "index": {
+      "precise_delete": {
+        "error": "no_faiss"
+      }
+    }
+  },
+  "expected": {
+    "decisions": [
+      {
+        "refresh": "full_fallback"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

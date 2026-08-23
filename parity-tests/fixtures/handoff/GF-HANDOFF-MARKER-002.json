@@ -1,0 +1,41 @@
+{
+  "case_id": "GF-HANDOFF-MARKER-002",
+  "title": "malformed marker ignored",
+  "behavior_ids": [
+    "B-HANDOFF-004"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/contracts/transfer-marker-contract.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "reply": "###【转接】"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "transfer": {
+          "requested": false
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

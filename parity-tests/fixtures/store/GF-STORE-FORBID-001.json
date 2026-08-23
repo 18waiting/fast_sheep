@@ -1,0 +1,43 @@
+{
+  "case_id": "GF-STORE-FORBID-001",
+  "title": "forbidden DFA replace",
+  "behavior_ids": [
+    "B-STORE-005"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/data/local-data-model.md §18"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "text": "加我微信吧",
+    "words": [
+      {
+        "违禁词": "微信",
+        "替换为": ""
+      }
+    ]
+  },
+  "mocks": {},
+  "expected": {
+    "result": {
+      "filtered": "加我吧"
+    }
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

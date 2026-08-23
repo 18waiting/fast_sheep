@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import Ajv from "ajv";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const PROJECT = join(HERE, "..", "..");
+const PROJECT = join(HERE, "..");
 const FIXTURES = join(PROJECT, "parity-tests", "fixtures");
 const SCHEMA_PATH = join(PROJECT, "parity-tests", "contracts", "golden-fixture.schema.json");
 

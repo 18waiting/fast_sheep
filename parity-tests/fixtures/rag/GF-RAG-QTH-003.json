@@ -1,0 +1,48 @@
+{
+  "case_id": "GF-RAG-QTH-003",
+  "title": "product hit above 0.6 kept",
+  "behavior_ids": [
+    "B-RAG-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/rag-pipeline.md",
+      "spec/ai/rag-retrieval-decision-table.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "rag": {
+      "product_quality_threshold": 0.6
+    }
+  },
+  "input": {},
+  "mocks": {
+    "index": {
+      "product_hit": {
+        "sim": 0.61
+      }
+    }
+  },
+  "expected": {
+    "decisions": [
+      {
+        "product_used": true
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

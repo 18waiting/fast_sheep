@@ -1,0 +1,61 @@
+{
+  "case_id": "GF-CONV-002",
+  "title": "duplicate-cache early exit",
+  "behavior_ids": [
+    "B-CONV-002"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "这个多少钱",
+    "cache_key": "h1"
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "dup_cache_ttl_ms": 60000
+  },
+  "input": {},
+  "mocks": {
+    "dup_cache": {
+      "hit": true,
+      "cached_reply": "亲,页面有标价哦~"
+    }
+  },
+  "expected": {
+    "result": {
+      "reply": "亲,页面有标价哦~"
+    },
+    "decisions": [
+      {
+        "stage": "DUP_CHECK",
+        "decision": "hit"
+      }
+    ],
+    "trace": [
+      {
+        "sequence": 1,
+        "component": "ConversationEngine",
+        "operation": "DUP_CHECK",
+        "decision": "hit"
+      }
+    ],
+    "external_calls": []
+  },
+  "comparison": {
+    "mode": "ORDERED_TRACE"
+  },
+  "tags": [],
+  "notes": ""
+}

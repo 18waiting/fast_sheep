@@ -1,0 +1,21 @@
+{
+ "version": 2,
+ "current_model": "X5进阶版",
+ "preset_tiers": {
+  "X5进阶版": {
+   "api_key": "",
+   "api_key_built_in": true,
+   "color": "#3B82F6",
+   "description": "",
+   "icon": ""
+  }
+ },
+ "custom_models": [
+  {
+   "api_key": "",
+   "api_url": "https://example.com/v1",
+   "deep_thinking": false,
+   "model_name": "m1"
+  }
+ ]
+}

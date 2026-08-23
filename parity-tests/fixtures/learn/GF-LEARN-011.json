@@ -1,0 +1,49 @@
+{
+  "case_id": "GF-LEARN-011",
+  "title": "cleanup/archive + completion event",
+  "behavior_ids": [
+    "B-JOB-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/learning-optimization-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "command": "finish"
+  },
+  "mocks": {},
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "archive",
+        "op": "rename",
+        "suffix": "已学习_<ts>.txt"
+      }
+    ],
+    "events": [
+      {
+        "event": "LearningProgress",
+        "payload_subset": {
+          "completed": true
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EVENT_SEQUENCE"
+  },
+  "tags": [],
+  "notes": ""
+}

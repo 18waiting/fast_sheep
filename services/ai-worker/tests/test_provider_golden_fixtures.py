@@ -10,7 +10,7 @@ from fastwork_ai_worker.providers.provider_router import ProviderRouter
 from fastwork_ai_worker.providers.credential_resolver import CredentialResolver, FakeSecretStore
 
 _FIXTURES_DIR = os.path.join(
-    os.path.dirname(__file__), "..", "..", "..", "..", "parity-tests", "fixtures", "prov"
+    os.path.dirname(__file__), "..", "..", "..", "parity-tests", "fixtures", "prov"
 )
 
 

@@ -1,0 +1,141 @@
+{
+  "case_id": "GF-CONV-001",
+  "title": "normal full generation",
+  "behavior_ids": [
+    "B-CONV-001",
+    "B-PROMPT-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "这个有XL码吗",
+    "order_state": "未下单"
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "dup_cache_ttl_ms": 60000,
+    "welcome_enabled": false,
+    "rag": {
+      "product_quality_threshold": 0.6,
+      "product_fast_return_threshold": 0.9
+    }
+  },
+  "input": {},
+  "mocks": {
+    "generation": {
+      "fingerprint": "normal",
+      "text": "亲,有XL码的哦~",
+      "finish_reason": "stop"
+    }
+  },
+  "expected": {
+    "result": {
+      "reply": "亲,有XL码的哦~"
+    },
+    "decisions": [
+      {
+        "stage": "DUP_CHECK",
+        "decision": "miss"
+      },
+      {
+        "stage": "ORDER_CONTEXT",
+        "decision": "未下单"
+      },
+      {
+        "stage": "WELCOME_CHECK",
+        "decision": "skip"
+      },
+      {
+        "stage": "FAST_RETURN_CHECK",
+        "decision": "no"
+      },
+      {
+        "stage": "HANDOFF",
+        "decision": "no"
+      }
+    ],
+    "trace": [
+      {
+        "sequence": 1,
+        "component": "ConversationEngine",
+        "operation": "DUP_CHECK"
+      },
+      {
+        "sequence": 2,
+        "component": "ConversationEngine",
+        "operation": "ORDER_CONTEXT"
+      },
+      {
+        "sequence": 3,
+        "component": "ConversationEngine",
+        "operation": "WELCOME_CHECK"
+      },
+      {
+        "sequence": 4,
+        "component": "RAGEngine",
+        "operation": "PRODUCT_RETRIEVAL"
+      },
+      {
+        "sequence": 5,
+        "component": "RAGEngine",
+        "operation": "FAST_RETURN_CHECK"
+      },
+      {
+        "sequence": 6,
+        "component": "RAGEngine",
+        "operation": "RERANK"
+      },
+      {
+        "sequence": 7,
+        "component": "PromptEngine",
+        "operation": "PROMPT_ASSEMBLY"
+      },
+      {
+        "sequence": 8,
+        "component": "GenerationProviderRouter",
+        "operation": "MODEL_ROUTE"
+      },
+      {
+        "sequence": 9,
+        "component": "ConversationEngine",
+        "operation": "HANDOFF"
+      },
+      {
+        "sequence": 10,
+        "component": "ConversationEngine",
+        "operation": "POST_PROCESS"
+      }
+    ],
+    "events": [
+      {
+        "event": "SuggestionReady",
+        "payload_subset": {
+          "mode": "full_auto"
+        }
+      }
+    ],
+    "external_calls": [
+      {
+        "mock": "generation",
+        "call": 1
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "ORDERED_TRACE"
+  },
+  "tags": [],
+  "notes": ""
+}

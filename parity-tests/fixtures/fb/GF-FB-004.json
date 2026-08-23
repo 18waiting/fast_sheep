@@ -1,0 +1,51 @@
+{
+  "case_id": "GF-FB-004",
+  "title": "CORRECTION → B + index refresh",
+  "behavior_ids": [
+    "B-FEEDBACK-002"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/contracts/learning-feedback-contract.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "class": "CORRECTION",
+    "entry": {
+      "问题": "q",
+      "答案": "a",
+      "商品ID": "1"
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "knowledge",
+        "op": "insert",
+        "trust": "HUMAN_CONFIRMED"
+      },
+      {
+        "aggregate": "index",
+        "op": "refresh",
+        "mode": "incremental"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

@@ -1,0 +1,46 @@
+{
+  "case_id": "GF-ORCH-007",
+  "title": "cancel",
+  "behavior_ids": [
+    "B-CONV-006"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/architecture/multi-shop-orchestration.md",
+      "spec/architecture/node-send-pipeline.md",
+      "spec/states/conversation-orchestration-state-machine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "suggestion": {
+      "reply": "亲,有的~"
+    }
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "command": "cancel"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "decision": "cancelled"
+      }
+    ],
+    "external_calls": []
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

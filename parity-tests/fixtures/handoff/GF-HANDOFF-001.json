@@ -1,0 +1,52 @@
+{
+  "case_id": "GF-HANDOFF-001",
+  "title": "literal keyword match",
+  "behavior_ids": [
+    "B-HANDOFF-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/handoff-decision-table.md",
+      "spec/ai/handoff-engine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "rules": [
+      {
+        "keyword": "退款",
+        "target": "售后",
+        "status": "生效"
+      }
+    ]
+  },
+  "input": {
+    "question": "退款",
+    "order_state": "已下单",
+    "shop": "pdd-店",
+    "agent": "pdd-客服"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "transfer": true,
+        "target": "售后"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

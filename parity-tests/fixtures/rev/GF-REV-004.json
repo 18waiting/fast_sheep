@@ -1,0 +1,52 @@
+{
+  "case_id": "GF-REV-004",
+  "title": "AI delete list parse + triple-match",
+  "behavior_ids": [
+    "B-JOB-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/review-audit-pipeline.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "delete_list": [
+      {
+        "商品ID": "10001",
+        "问题": "q",
+        "答案": "a",
+        "删除理由": "事实错误"
+      }
+    ]
+  },
+  "mocks": {},
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "knowledge",
+        "op": "delete",
+        "rows": 1
+      },
+      {
+        "aggregate": "deletion_record",
+        "op": "append"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

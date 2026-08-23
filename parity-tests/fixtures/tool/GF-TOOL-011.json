@@ -1,0 +1,55 @@
+{
+  "case_id": "GF-TOOL-011",
+  "title": "tool result → next model turn",
+  "behavior_ids": [
+    "B-TOOL-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/skill-tool-engine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "tool_result": {
+      "ok": true,
+      "text": "库存充足"
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "trace": [
+      {
+        "sequence": 1,
+        "component": "AgentLoop",
+        "operation": "TOOL_RESULT_APPEND"
+      },
+      {
+        "sequence": 2,
+        "component": "AgentLoop",
+        "operation": "NEXT_MODEL_TURN"
+      }
+    ],
+    "external_calls": [
+      {
+        "mock": "generation",
+        "call": 2
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "ORDERED_TRACE"
+  },
+  "tags": [],
+  "notes": ""
+}

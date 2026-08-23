@@ -1,0 +1,50 @@
+{
+  "case_id": "GF-HANDOFF-017",
+  "title": "xianyu exclusion",
+  "behavior_ids": [
+    "B-HANDOFF-002"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/handoff-decision-table.md",
+      "spec/ai/handoff-engine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "rules": [
+      {
+        "keyword": "退款",
+        "target": "售后"
+      }
+    ]
+  },
+  "input": {
+    "question": "退款",
+    "agent": "闲鱼-小店"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "transfer": false,
+        "reason": "xianyu_excluded"
+      }
+    ],
+    "external_calls": []
+  },
+  "comparison": {
+    "mode": "NO_CALL"
+  },
+  "tags": [],
+  "notes": ""
+}

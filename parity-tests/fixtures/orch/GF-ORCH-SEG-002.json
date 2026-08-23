@@ -1,0 +1,37 @@
+{
+  "case_id": "GF-ORCH-SEG-002",
+  "title": "pure separator no send",
+  "behavior_ids": [
+    "B-CONV-008"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/architecture/multi-shop-orchestration.md",
+      "spec/architecture/node-send-pipeline.md",
+      "spec/states/conversation-orchestration-state-machine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "reply": "###"
+  },
+  "mocks": {},
+  "expected": {
+    "external_calls": []
+  },
+  "comparison": {
+    "mode": "NO_CALL"
+  },
+  "tags": [],
+  "notes": ""
+}

@@ -1,0 +1,46 @@
+{
+  "case_id": "GF-FB-001",
+  "title": "AUTO → A trust",
+  "behavior_ids": [
+    "B-FEEDBACK-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/contracts/learning-feedback-contract.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "class": "AUTO"
+  },
+  "mocks": {},
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "feedback",
+        "class": "AUTO",
+        "trust": "AUTO"
+      },
+      {
+        "aggregate": "knowledge",
+        "op": "append",
+        "trust": "AUTO"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

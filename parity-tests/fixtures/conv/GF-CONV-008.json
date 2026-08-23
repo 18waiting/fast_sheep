@@ -1,0 +1,57 @@
+{
+  "case_id": "GF-CONV-008",
+  "title": "handoff after generation",
+  "behavior_ids": [
+    "B-HANDOFF-001",
+    "B-CONV-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/conversation-pipeline.md",
+      "spec/rebuild/clean-room-architecture.md §15"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "question": "我要退款",
+    "order_state": "已下单"
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {},
+  "mocks": {
+    "handoff": {
+      "decision": {
+        "requested": true,
+        "target": "售后"
+      }
+    }
+  },
+  "expected": {
+    "decisions": [
+      {
+        "stage": "HANDOFF",
+        "decision": "transfer",
+        "target": "售后"
+      }
+    ],
+    "result": {
+      "decision": {
+        "requested": true,
+        "target": "售后"
+      }
+    }
+  },
+  "comparison": {
+    "mode": "SUBSET"
+  },
+  "tags": [],
+  "notes": ""
+}

@@ -9,7 +9,7 @@ import os
 import unittest
 from m10_helpers import run_audit_case
 
-FIXTURES = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "parity-tests", "fixtures", "audit")
+FIXTURES = os.path.join(os.path.dirname(__file__), "..", "..", "..", "parity-tests", "fixtures", "audit")
 
 
 def discover() -> list:

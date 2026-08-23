@@ -1,0 +1,42 @@
+{
+  "case_id": "GF-PLAT-004",
+  "title": "unsupported capability → explicit error",
+  "behavior_ids": [
+    "B-PLATFORM-002"
+  ],
+  "test_class": "DESIGN_CONFORMANCE",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/platforms/platform-adapter-matrix.md",
+      "spec/contracts/platform-adapter-contract.md",
+      "docs/adr/ADR-007-reference-platform.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "platform": "jd",
+    "capability": "videoSend"
+  },
+  "mocks": {},
+  "expected": {
+    "result": {
+      "error": {
+        "code": "capability.unsupported"
+      }
+    }
+  },
+  "comparison": {
+    "mode": "SUBSET"
+  },
+  "tags": [],
+  "notes": ""
+}

@@ -1,0 +1,50 @@
+{
+  "case_id": "GF-RAG-TIER-004",
+  "title": "product isolation disables global fill",
+  "behavior_ids": [
+    "B-RAG-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/rag-pipeline.md",
+      "spec/ai/rag-retrieval-decision-table.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "rag": {
+      "product_isolation": true
+    }
+  },
+  "input": {},
+  "mocks": {
+    "index": {
+      "product_hit": {
+        "sim": 0.5
+      }
+    }
+  },
+  "expected": {
+    "decisions": [
+      {
+        "tier": "global",
+        "used": false,
+        "reason": "product_isolation"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

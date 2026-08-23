@@ -1,0 +1,56 @@
+{
+  "case_id": "GF-ORCH-004",
+  "title": "Enter manual send → B trust",
+  "behavior_ids": [
+    "B-FEEDBACK-001",
+    "B-ORCH"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/architecture/multi-shop-orchestration.md",
+      "spec/architecture/node-send-pipeline.md",
+      "spec/states/conversation-orchestration-state-machine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "mode": "human_review",
+    "suggestion": {
+      "reply": "亲,有的~"
+    }
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "command": "manual_send",
+    "key": "Enter"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "decision": "send",
+        "trust": "HUMAN_CONFIRMED"
+      }
+    ],
+    "persistence": [
+      {
+        "aggregate": "feedback",
+        "class": "MANUAL",
+        "trust": "HUMAN_CONFIRMED"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

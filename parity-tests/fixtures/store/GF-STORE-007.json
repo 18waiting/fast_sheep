@@ -1,0 +1,42 @@
+{
+  "case_id": "GF-STORE-007",
+  "title": "atomic product write never truncated",
+  "behavior_ids": [
+    "B-STORE-002"
+  ],
+  "test_class": "SECURITY_IMPROVEMENT",
+  "parity_level": "P1",
+  "provenance": {
+    "sources": [
+      "spec/data/local-data-model.md",
+      "spec/data/clean-room-persistence-parity.md",
+      "spec/contracts/local-storage-io-contract.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "crash_mid_write": true
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "atomicity": "tmp+replace",
+        "file_intact": true
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

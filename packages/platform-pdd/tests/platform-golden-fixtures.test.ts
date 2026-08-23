@@ -16,7 +16,7 @@ import type { PddPageCommand, PddPageCommandResult } from "../dist/types.js";
 import { loadFixture } from "./helpers.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const FIXTURES_DIR = join(HERE, "..", "..", "..", "..", "parity-tests", "fixtures");
+const FIXTURES_DIR = join(HERE, "..", "..", "..", "parity-tests", "fixtures");
 
 function readFixture(rel: string): { case_id: string; input: Record<string, unknown>; expected: Record<string, unknown>; title: string; behavior_ids: string[] } {
   return JSON.parse(readFileSync(join(FIXTURES_DIR, rel), "utf-8"));

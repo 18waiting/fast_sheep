@@ -1,0 +1,47 @@
+{
+  "case_id": "GF-RAG-DEDUP-003",
+  "title": "different question same answer kept",
+  "behavior_ids": [
+    "B-RAG-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/rag-pipeline.md",
+      "spec/ai/rag-retrieval-decision-table.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {},
+  "mocks": {
+    "results": [
+      {
+        "q": "a",
+        "ans": "x"
+      },
+      {
+        "q": "b",
+        "ans": "x"
+      }
+    ]
+  },
+  "expected": {
+    "result": {
+      "count": 2
+    }
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

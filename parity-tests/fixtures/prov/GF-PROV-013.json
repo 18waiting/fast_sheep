@@ -1,0 +1,45 @@
+{
+  "case_id": "GF-PROV-013",
+  "title": "missing credential",
+  "behavior_ids": [
+    "B-PROV-005"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/model-routing-decision-table.md",
+      "spec/ai/model-provider-contracts.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {},
+  "mocks": {
+    "secrets": {
+      "resolve": {
+        "missing": true
+      }
+    }
+  },
+  "expected": {
+    "result": {
+      "error": {
+        "category": "credentials",
+        "retryable": false
+      }
+    }
+  },
+  "comparison": {
+    "mode": "SUBSET"
+  },
+  "tags": [],
+  "notes": ""
+}

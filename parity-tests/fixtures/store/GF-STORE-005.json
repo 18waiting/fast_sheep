@@ -1,0 +1,71 @@
+{
+  "case_id": "GF-STORE-005",
+  "title": "A/B/pending trust import",
+  "behavior_ids": [
+    "B-STORE-001"
+  ],
+  "test_class": "COMPATIBILITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/data/local-data-model.md",
+      "spec/data/clean-room-persistence-parity.md",
+      "spec/contracts/local-storage-io-contract.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "legacy": {
+      "A库": [
+        {
+          "问题": "a",
+          "答案": "x",
+          "商品ID": "",
+          "标签": ""
+        }
+      ],
+      "B库": [
+        {
+          "问题": "b",
+          "答案": "y",
+          "商品ID": "1",
+          "标签": ""
+        }
+      ],
+      "待审核": [
+        {
+          "问题": "c",
+          "答案": "z",
+          "商品ID": "",
+          "标签": ""
+        }
+      ]
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "persistence": [
+      {
+        "aggregate": "knowledge",
+        "trust_map": {
+          "A库": "AUTO",
+          "B库": "HUMAN_CONFIRMED",
+          "待审核": "PENDING"
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "PERSISTENCE_DIFF"
+  },
+  "tags": [],
+  "notes": ""
+}

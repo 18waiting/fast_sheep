@@ -1,0 +1,48 @@
+{
+  "case_id": "GF-HANDOFF-010",
+  "title": "any-message rule",
+  "behavior_ids": [
+    "B-HANDOFF-001"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/handoff-decision-table.md",
+      "spec/ai/handoff-engine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {
+    "rules": [
+      {
+        "keyword": "【任何消息都转接】",
+        "target": "值班"
+      }
+    ]
+  },
+  "input": {
+    "question": "在吗"
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "transfer": true,
+        "target": "值班"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}

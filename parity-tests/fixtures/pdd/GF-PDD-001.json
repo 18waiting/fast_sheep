@@ -1,0 +1,53 @@
+{
+  "case_id": "GF-PDD-001",
+  "title": "buyer unread message detected",
+  "behavior_ids": [
+    "B-PLATFORM-001",
+    "B-PLATFORM-003"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/platforms/platform-adapter-matrix.md",
+      "spec/contracts/platform-adapter-contract.md",
+      "docs/adr/ADR-007-reference-platform.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "dom_state": {
+      "unread": true,
+      "buyer": "张三",
+      "content": "有货吗"
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "result": {
+      "normalized": {
+        "platform": "pdd",
+        "buyer": "张三",
+        "content": "有货吗"
+      }
+    },
+    "events": [
+      {
+        "event": "BuyerMessageReceived"
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EVENT_SEQUENCE"
+  },
+  "tags": [],
+  "notes": ""
+}

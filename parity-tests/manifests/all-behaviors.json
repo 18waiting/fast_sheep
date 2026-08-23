@@ -1,0 +1,670 @@
+{
+  "behaviors": {
+    "B-CONV-001": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-CONV-001",
+        "GF-CONV-004",
+        "GF-CONV-006",
+        "GF-CONV-007",
+        "GF-CONV-008",
+        "GF-CONV-011",
+        "GF-CONV-012",
+        "GF-CONV-013"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-CONV-002": {
+      "parity": "P1",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-CONV-002",
+        "GF-CONV-014"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-CONV-003": {
+      "parity": "P1",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-CONV-003"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-CONV-004": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-CONV-ORD-001",
+        "GF-CONV-ORD-002"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-CONV-005": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-ORCH-009",
+        "GF-ORCH-011",
+        "GF-ORCH-012"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-CONV-006": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-ORCH-001",
+        "GF-ORCH-002",
+        "GF-ORCH-003",
+        "GF-ORCH-006",
+        "GF-ORCH-007"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-CONV-007": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-ORCH-010",
+        "GF-ORCH-013",
+        "GF-ORCH-BRK-001",
+        "GF-ORCH-BRK-002",
+        "GF-ORCH-BRK-003",
+        "GF-ORCH-BRK-004"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-CONV-008": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-CONV-009",
+        "GF-CONV-010",
+        "GF-ORCH-008",
+        "GF-ORCH-015",
+        "GF-ORCH-SEG-001",
+        "GF-ORCH-SEG-002",
+        "GF-PDD-003"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-RAG-001": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-CONV-012"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-RAG-002": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-RAG-INDEX-001"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-RAG-003": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-CONV-006",
+        "GF-RAG-DEDUP-001",
+        "GF-RAG-DEDUP-002",
+        "GF-RAG-DEDUP-003",
+        "GF-RAG-QTH-001",
+        "GF-RAG-QTH-002",
+        "GF-RAG-QTH-003",
+        "GF-RAG-TIER-001",
+        "GF-RAG-TIER-002",
+        "GF-RAG-TIER-003",
+        "GF-RAG-TIER-004"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-RAG-004": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-RAG-COMP-001",
+        "GF-RAG-COMP-002",
+        "GF-RAG-COMP-003",
+        "GF-RAG-COMP-004",
+        "GF-RAG-RSKIP-001",
+        "GF-RAG-RSKIP-002",
+        "GF-RAG-RSKIP-003"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-RAG-005": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-CONV-004",
+        "GF-CONV-005",
+        "GF-RAG-FR-001",
+        "GF-RAG-FR-002",
+        "GF-RAG-FR-003",
+        "GF-RAG-FR-004"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-PROMPT-001": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-CONV-001",
+        "GF-PROMPT-001",
+        "GF-PROMPT-002"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-PROMPT-002": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-PROMPT-003",
+        "GF-PROMPT-004",
+        "GF-PROMPT-005",
+        "GF-PROMPT-006",
+        "GF-PROMPT-008"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-PROMPT-003": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-PROMPT-008",
+        "GF-PROMPT-009",
+        "GF-PROMPT-010",
+        "GF-PROMPT-011",
+        "GF-PROMPT-012"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-PROMPT-004": {
+      "parity": "P1",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-PROMPT-007"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-TOOL-001": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-TOOL-001",
+        "GF-TOOL-002",
+        "GF-TOOL-003",
+        "GF-TOOL-004",
+        "GF-TOOL-005",
+        "GF-TOOL-006",
+        "GF-TOOL-007"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-TOOL-002": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-TOOL-001",
+        "GF-TOOL-002",
+        "GF-TOOL-005",
+        "GF-TOOL-012"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-TOOL-003": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-CONV-007",
+        "GF-TOOL-010",
+        "GF-TOOL-011"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-TOOL-004": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-TOOL-009"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-TOOL-005": {
+      "parity": "P1",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-TOOL-008"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-HANDOFF-001": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-CONV-008",
+        "GF-HANDOFF-001",
+        "GF-HANDOFF-002",
+        "GF-HANDOFF-003",
+        "GF-HANDOFF-004",
+        "GF-HANDOFF-005",
+        "GF-HANDOFF-006",
+        "GF-HANDOFF-010",
+        "GF-HANDOFF-016",
+        "GF-HANDOFF-019",
+        "GF-PDD-005",
+        "GF-TOOL-012"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-HANDOFF-002": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-HANDOFF-011",
+        "GF-HANDOFF-012",
+        "GF-HANDOFF-013",
+        "GF-HANDOFF-014",
+        "GF-HANDOFF-015",
+        "GF-HANDOFF-017",
+        "GF-PLAT-002"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-HANDOFF-003": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-HANDOFF-007",
+        "GF-HANDOFF-008",
+        "GF-HANDOFF-009",
+        "GF-HANDOFF-018"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-HANDOFF-004": {
+      "parity": "P1",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-HANDOFF-MARKER-001",
+        "GF-HANDOFF-MARKER-002"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-STORE-001": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-STORE-001",
+        "GF-STORE-005",
+        "GF-STORE-008",
+        "GF-STORE-010",
+        "GF-STORE-011",
+        "GF-STORE-012"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-STORE-002": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-STORE-002",
+        "GF-STORE-006",
+        "GF-STORE-007"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-STORE-003": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-STORE-003",
+        "GF-STORE-008",
+        "GF-STORE-009",
+        "GF-STORE-013"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-STORE-004": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-STORE-004"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-STORE-005": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-STORE-FORBID-001"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-STORE-006": {
+      "parity": "P1",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-STORE-014"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-FEEDBACK-001": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-FB-001",
+        "GF-FB-002",
+        "GF-FB-003",
+        "GF-FB-007",
+        "GF-ORCH-004",
+        "GF-ORCH-005",
+        "GF-ORCH-006"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-FEEDBACK-002": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-FB-004",
+        "GF-FB-005",
+        "GF-FB-006"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-JOB-001": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-JOB-001",
+        "GF-JOB-002",
+        "GF-JOB-003",
+        "GF-JOB-004",
+        "GF-LEARN-001",
+        "GF-LEARN-002",
+        "GF-LEARN-003",
+        "GF-LEARN-008",
+        "GF-LEARN-009",
+        "GF-LEARN-010",
+        "GF-LEARN-011"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-JOB-002": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-LEARN-004",
+        "GF-LEARN-005",
+        "GF-LEARN-006",
+        "GF-LEARN-007"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-JOB-003": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-REV-001",
+        "GF-REV-002",
+        "GF-REV-003",
+        "GF-REV-004",
+        "GF-REV-005",
+        "GF-REV-006",
+        "GF-REV-007",
+        "GF-REV-008"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-JOB-004": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-AUDIT-001",
+        "GF-AUDIT-002",
+        "GF-AUDIT-003",
+        "GF-AUDIT-004",
+        "GF-AUDIT-005"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-JOB-005": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-OPT-001",
+        "GF-OPT-002",
+        "GF-OPT-003",
+        "GF-OPT-004",
+        "GF-OPT-005",
+        "GF-OPT-006",
+        "GF-OPT-007",
+        "GF-OPT-008",
+        "GF-OPT-009",
+        "GF-OPT-010",
+        "GF-OPT-011",
+        "GF-OPT-012"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-JOB-006": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-JOB-INDEX-001",
+        "GF-JOB-INDEX-002",
+        "GF-JOB-INDEX-003",
+        "GF-JOB-INDEX-004"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-PLATFORM-001": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-ORCH-013",
+        "GF-PDD-001"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-PLATFORM-002": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-PDD-004",
+        "GF-PLAT-001",
+        "GF-PLAT-002",
+        "GF-PLAT-003",
+        "GF-PLAT-004"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-PLATFORM-003": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-PDD-001",
+        "GF-PDD-002",
+        "GF-PDD-003",
+        "GF-PDD-005",
+        "GF-PDD-006",
+        "GF-PDD-007",
+        "GF-PDD-008",
+        "GF-PDD-009"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-IPC-001": {
+      "parity": "P1",
+      "test_class": "DESIGN_CONFORMANCE",
+      "fixtures": [
+        "GF-ORCH-001",
+        "GF-RPC-001",
+        "GF-RPC-002",
+        "GF-RPC-003",
+        "GF-RPC-004",
+        "GF-RPC-005",
+        "GF-RPC-006",
+        "GF-RPC-007",
+        "GF-RPC-008",
+        "GF-RPC-009",
+        "GF-RPC-010",
+        "GF-RPC-011",
+        "GF-RPC-012"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-SEC-001": {
+      "parity": "P1",
+      "test_class": "SECURITY_IMPROVEMENT",
+      "fixtures": [
+        "GF-SEC-003",
+        "GF-SEC-004",
+        "GF-SEC-005",
+        "GF-SEC-006"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-SEC-002": {
+      "parity": "P1",
+      "test_class": "SECURITY_IMPROVEMENT",
+      "fixtures": [
+        "GF-SEC-001",
+        "GF-SEC-002",
+        "GF-SEC-007",
+        "GF-SEC-008"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-ORCH": {
+      "parity": "P1",
+      "test_class": "DESIGN_CONFORMANCE",
+      "fixtures": [
+        "GF-ORCH-004",
+        "GF-ORCH-014",
+        "GF-ORCH-016"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-PROV-001": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-PROV-001",
+        "GF-PROV-002",
+        "GF-PROV-003",
+        "GF-PROV-004",
+        "GF-PROV-005"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-PROV-002": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-PROV-006"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-PROV-003": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-PROV-007",
+        "GF-PROV-008",
+        "GF-PROV-009"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-PROV-004": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-PROV-010",
+        "GF-PROV-011"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-PROV-005": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-PROV-012",
+        "GF-PROV-013",
+        "GF-PROV-014"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    },
+    "B-RAG-006": {
+      "parity": "P0",
+      "test_class": "REFERENCE_PARITY",
+      "fixtures": [
+        "GF-RAG-ORD-001",
+        "GF-RAG-ORD-002",
+        "GF-RAG-ORD-003",
+        "GF-RAG-ORD-004"
+      ],
+      "coverage": "COVERED",
+      "status": "FROZEN"
+    }
+  }
+}

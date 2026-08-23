@@ -1,0 +1,200 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GoldenFixture",
+  "type": "object",
+  "required": [
+    "case_id",
+    "title",
+    "behavior_ids",
+    "test_class",
+    "parity_level",
+    "provenance",
+    "initial_state",
+    "clock",
+    "config",
+    "input",
+    "mocks",
+    "expected",
+    "comparison"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "pattern": "^GF-[A-Z]+(-[A-Z]+)?-[0-9]{3}$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "behavior_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "test_class": {
+      "enum": [
+        "REFERENCE_PARITY",
+        "DESIGN_CONFORMANCE",
+        "SECURITY_IMPROVEMENT",
+        "COMPATIBILITY"
+      ]
+    },
+    "parity_level": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "sources",
+        "status",
+        "confidence"
+      ],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "enum": [
+            "CONFIRMED",
+            "PARTIAL",
+            "INFERRED",
+            "DESIGN"
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
+        }
+      }
+    },
+    "initial_state": {
+      "type": "object"
+    },
+    "clock": {
+      "type": "object",
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "fake",
+            "real"
+          ]
+        },
+        "start": {
+          "type": "string"
+        },
+        "advance": {
+          "type": "integer"
+        }
+      }
+    },
+    "config": {
+      "type": "object"
+    },
+    "input": {
+      "type": "object"
+    },
+    "mocks": {
+      "type": "object"
+    },
+    "expected": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "object"
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "trace": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "persistence": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "external_calls": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "EXACT",
+            "SUBSET",
+            "ORDERED_TRACE",
+            "UNORDERED_SET",
+            "NUMERIC_TOLERANCE",
+            "SCHEMA_ONLY",
+            "SEMANTIC_INVARIANTS",
+            "NO_CALL",
+            "CALL_SEQUENCE",
+            "PERSISTENCE_DIFF",
+            "EVENT_SEQUENCE"
+          ]
+        },
+        "float_tolerance": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unordered_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ignored_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

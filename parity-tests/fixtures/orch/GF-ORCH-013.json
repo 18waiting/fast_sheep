@@ -1,0 +1,58 @@
+{
+  "case_id": "GF-ORCH-013",
+  "title": "two shops independent",
+  "behavior_ids": [
+    "B-PLATFORM-001",
+    "B-CONV-007"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/architecture/multi-shop-orchestration.md",
+      "spec/architecture/node-send-pipeline.md",
+      "spec/states/conversation-orchestration-state-machine.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {
+    "shops": [
+      "s1",
+      "s2"
+    ],
+    "busy": "s1"
+  },
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "message": {
+      "shop_id": "s2"
+    }
+  },
+  "mocks": {},
+  "expected": {
+    "decisions": [
+      {
+        "decision": "concurrent_ok"
+      }
+    ],
+    "events": [
+      {
+        "event": "BuyerMessageReceived",
+        "payload_subset": {
+          "shop_id": "s2"
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "mode": "EVENT_SEQUENCE"
+  },
+  "tags": [],
+  "notes": ""
+}

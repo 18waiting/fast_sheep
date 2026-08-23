@@ -1,0 +1,50 @@
+{
+  "case_id": "GF-RAG-INDEX-001",
+  "title": "IndexIDMap2(IndexFlatIP) cosine retrieval",
+  "behavior_ids": [
+    "B-RAG-002"
+  ],
+  "test_class": "REFERENCE_PARITY",
+  "parity_level": "P0",
+  "provenance": {
+    "sources": [
+      "spec/ai/rag-pipeline.md",
+      "spec/data/faiss-index-catalog.md"
+    ],
+    "status": "CONFIRMED",
+    "confidence": "HIGH"
+  },
+  "initial_state": {},
+  "clock": {
+    "mode": "fake",
+    "start": "2026-08-15T00:00:00Z",
+    "advance": 0
+  },
+  "config": {},
+  "input": {
+    "query": "这个多少钱"
+  },
+  "mocks": {
+    "embedding": {
+      "type": "basis",
+      "dimension": 1024,
+      "index": 0
+    },
+    "index": {
+      "type": "IndexIDMap2(IndexFlatIP)",
+      "metric": "INNER_PRODUCT"
+    }
+  },
+  "expected": {
+    "result": {
+      "metric": "cosine_after_l2",
+      "dimension": 1024,
+      "hit": true
+    }
+  },
+  "comparison": {
+    "mode": "EXACT"
+  },
+  "tags": [],
+  "notes": ""
+}
