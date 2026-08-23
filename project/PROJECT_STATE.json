@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_0",
   "current_milestone": "M0.1",
-  "last_closed_task": "SHEEP-007",
+  "last_closed_task": "SHEEP-008",
   "current_task": null,
-  "next_action": "SHEEP-008",
+  "next_action": "GATE-P0-GOVERNANCE",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-008 (pending Owner PASS)",
+  "next_task": "GATE-P0-GOVERNANCE (Phase 0 gate review)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -274,7 +274,7 @@
   },
   "sheep_007": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "typecheck": "PASS",
     "desktop_tests": "171/171 PASS",
     "worker_integration": "462/473 PASS",
@@ -303,6 +303,17 @@
     "worker_tests": "473/473 PASS (incl 11 golden)",
     "frozen_integrity": "PASS (174 P0 sha256)",
     "golden_schema": "PASS (222/222)",
-    "ts_package_tests": "pnpm -r run test exit=0"
+    "ts_package_tests": "pnpm -r run test exit=0",
+    "controller_pass_date": "2026-08-23"
+  },
+  "sheep_008": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-24",
+    "runtime_dependency_on_old_paths": false,
+    "project_writes_outside_root": false,
+    "guard": "PASS (calibrated)",
+    "report": "reports\\SHEEP-008-report.json",
+    "next_stage_not_executed": true
   }
 }

@@ -1,0 +1,54 @@
+{
+  "task": "SHEEP-008",
+  "result": "COMPLETE",
+  "phase": "Phase 0",
+  "milestone": "M0.3",
+  "objective": "Independent Runtime Path Audit: 无旧 rebuild 运行时依赖；无项目外写入",
+  "completed_requirements": 2,
+  "total_requirements": 2,
+  "evidence": {
+    "confirmed": [
+      "已提交文本文件 1998 个中 83 处外部路径引用全部位于治理/证据文档（AGENTS/DECISIONS/Master/Template/PROJECT_STATE/reports），为政策所需声明，非运行时依赖",
+      "源码/脚本/配置（排除治理与报告）中旧路径引用=0：FastWorkRebuild / %LOCALAPPDATA%\\\\FastWork / ai客服数据 / nixiang",
+      "源码/脚本中指向项目外部的绝对路径写入目标=0",
+      "symlink/junction 9311 条（pnpm 布局）：指向 ai客服数据/nixiang=0；指向项目内=853；.pnpm 内普通文件（空 Target）=8458；其它外部绝对路径=0",
+      "electron-builder extraResources 均解析到项目内（../../resources/{worker,contracts,persistence}）",
+      "clean-room boundary guard：初跑 8 处误报（治理文档声明参考树）→ 校准为豁免治理/证据文档后 PASS",
+      "数据根 %LOCALAPPDATA%\\\\fast_sheep\\\\data 与 userData fast_sheep 为 OS 运行时用户数据（Master 允许的运行时路径，非项目源/配置）"
+    ],
+    "inferred": [
+      "'无项目外写入'：构建/测试产物均写入 E:\\\\fast_sheep（dist/reports/.tmp）；运行时用户数据位于 OS app-data（允许）；静态审计无法穷举未来所有写入，以本次扫描+架构证据为准"
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "check-clean-room-boundary.mjs 已校准（豁免 AGENTS.md/project/reports/docs）；后续若新增治理文档引用参考树，同样豁免",
+    "运行时写入的全量动态监控（如需要）留待 Phase 13 Security/Diagnostics"
+  ],
+  "tests": [
+    "git ls-files 文本扫描（1998 文件）外部路径命中分类",
+    "源码旧路径扫描=0",
+    "绝对路径写入扫描=0",
+    "symlink/junction 目标分类",
+    "clean-room boundary guard：校准前 FAIL(8 治理文档引用) -> 校准后 PASS"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "无链接指向 E:\\\\ai客服数据 / E:\\\\nixiang",
+    "无源码/脚本引用旧数据根 FastWorkRebuild",
+    "无源码/脚本写入项目外绝对路径"
+  ],
+  "modified_files": [
+    "scripts/check-clean-room-boundary.mjs (守卫校准：豁免治理/证据文档)",
+    "reports/SHEEP-008-report.json (新建)",
+    "project/PROJECT_STATE.json (SHEEP-008 记录)"
+  ],
+  "architecture_changes": [],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
