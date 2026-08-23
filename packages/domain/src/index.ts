@@ -70,3 +70,7 @@ export * from "./merchant-domain.js";
 
 // SHEEP-011: Membership / Seat Domain (M1.1 Core Identity Domain).
 export * from "./membership-domain.js";
+
+
+// SHEEP-012: Capability & Resource Scope Model (M1.1 Core Identity Domain).
+export * from "./authorization-domain.js";

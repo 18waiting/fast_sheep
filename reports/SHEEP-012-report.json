@@ -1,0 +1,58 @@
+{
+  "task": "SHEEP-012",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.1",
+  "objective": "Capability & Resource Scope Model: CapabilityId 契约 / ResourceScope discriminated union / Role composition 输入结构（遵守 Owner 4 项收紧 + T1~T6）",
+  "completed_requirements": 6,
+  "total_requirements": 6,
+  "owner_tightening": {
+    "t1_platform_cap_not_auth_cap": "遵守：PlatformCapabilityId + PLATFORM_CAPABILITIES(13, Master §8) 为独立平台层概念；授权 CapabilityId registry 契约不预置任何能力（无治理枚举）；测试断言无 CAP_* 常量",
+    "t2_resource_scope_no_optional_combos": "遵守：ResourceScope 为 discriminated union（merchant/store/platformAccount 三类），每类保留显式 merchantId；测试断言 keys",
+    "t3_role_composition_input_only": "遵守：RoleCapabilitySet 仅组合输入结构；不填充具体角色映射；不导出 can/authorize/evaluate/allow（测试断言）",
+    "t4_separation_from_entitlement": "遵守：不导出 PDD_ENABLED / AI_AUTO_REPLY_ENABLED / MAX_STORES（测试断言）；Entitlement 属 Phase 11"
+  },
+  "evidence": {
+    "confirmed": [
+      "packages/domain/src/authorization-domain.ts：CapabilityId/CapabilityDescriptor/CapabilityRegistry(未预置) + PlatformCapabilityId/PLATFORM_CAPABILITIES(13) + ResourceScope(union) + RoleCapabilitySet",
+      "单元测试 21/21 PASS（含 8 个 authorization 测试：4 收紧 + T1/T3）",
+      "全 workspace typecheck exit=0；build exit=0"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "授权层 capability 清单（治理未枚举；待后续 Phase/task 提供证据后填充 registry）",
+    "具体角色->能力映射（无治理证据；属产品/配置决策）",
+    "权限引擎/工具风险/自动化策略（Phase 8）",
+    "Entitlement（PDD_ENABLED/MAX_STORES 等）= Phase 11 商业控制"
+  ],
+  "tests": [
+    "domain build=0 / typecheck=0 / test=21/21",
+    "全 workspace typecheck=0 / build=0"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "授权 registry 未预置能力常量（无 CAP_*）",
+    "无 can/authorize/evaluate/allow 最终授权函数",
+    "无 PDD_ENABLED/AI_AUTO_REPLY_ENABLED/MAX_STORES（Entitlement 分离）",
+    "ResourceScope 无任意 optional 组合（discriminated union）"
+  ],
+  "modified_files": [
+    "packages/domain/src/authorization-domain.ts (新建)",
+    "packages/domain/src/index.ts (re-export)",
+    "packages/domain/tests/authorization-domain.test.mjs (新建)",
+    "project/PROJECT_STATE.json (SHEEP-012 记录)",
+    "reports/SHEEP-012-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Phase 1 M1.1 授权域模型（Capability/ResourceScope/Role 组合结构）建立"
+  ],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
