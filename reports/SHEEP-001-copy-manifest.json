@@ -1,0 +1,56 @@
+{
+  "task": "SHEEP-001",
+  "phase": "Phase 0",
+  "milestone": "M0.1",
+  "description": "Project Workspace Bootstrap: copy rebuild technical baseline (source only) into E:\\fast_sheep, create project dirs, git init + first commit",
+  "source": "E:\\ai客服数据\\FastWork\\rebuild",
+  "destination": "E:\\fast_sheep",
+  "copied_at": "2026-08-23",
+  "included_top_level": {
+    "apps": 211,
+    "packages": 884,
+    "services": 348,
+    "tests": 1,
+    "scripts": 126,
+    "resources": 309,
+    "github": 1
+  },
+  "included_root_files": [
+    ".editorconfig",
+    "README.md",
+    "package.json",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "pyproject.toml",
+    "tsconfig.base.json"
+  ],
+  "exclusions": [
+    "node_modules (all depths)",
+    "dist (all depths, build outputs)",
+    ".packaging-build",
+    ".tmp-wd",
+    "reports (old release/report history)",
+    "secret file patterns: .env, *.env, *.pem, *.key, *.p12, *.pfx, id_rsa, id_rsa.pub"
+  ],
+  "excluded_release_tooling": [
+    "scripts/audit-final-release.mjs (hardcoded old rebuild path)",
+    "scripts/validate-release-on-clean-machine.ps1 (hardcoded old rebuild path)"
+  ],
+  "git": {
+    "init_branch": "main",
+    "first_commit": "2fbc059",
+    "first_commit_message": "SHEEP-001: Project workspace bootstrap - governance + rebuild technical baseline (source only)",
+    "committed_file_count_after_commit1": 1861,
+    "second_commit_purpose": "restore .pyd worker runtime files (gitignore fix) + add copy manifest and task report"
+  },
+  "verification": {
+    "excluded_dirs_remaining": 0,
+    "symlinks_found": 0,
+    "sensitive_filenames_found": 0,
+    "dot_env_files_found": 0,
+    "external_path_source_references": 0,
+    "git_status_clean": true,
+    "old_rebuild_modified": false,
+    "governance_files_modified": false
+  }
+}

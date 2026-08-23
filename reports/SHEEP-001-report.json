@@ -1,0 +1,57 @@
+{
+  "task": "SHEEP-001",
+  "result": "COMPLETE",
+  "phase": "Phase 0",
+  "milestone": "M0.1",
+  "objective": "建立独立物理项目结构并复制 rebuild 技术基线源码（排除依赖/构建产物/旧历史/凭据），建立 .tmp/docs/reports，git 初始化并首次提交",
+  "completed_requirements": 8,
+  "total_requirements": 8,
+  "evidence": {
+    "confirmed": [
+      "E:\\fast_sheep\\.tmp, docs, reports 已创建",
+      "基线源码已复制（apps/packages/services/tests/scripts/resources/.github + 根配置），node_modules/dist/构建产物/旧 reports 全排除",
+      "零 symlink",
+      "git 仓库 main 已初始化，首次提交 2fbc059（1861 文件）",
+      "无凭据文件（.env/.pem/.key 等），无 .env 文件",
+      "源码中无指向 E:\\ai客服数据 / E:\\nixiang 的引用（2 个旧发布脚本已排除）"
+    ],
+    "inferred": [
+      "resources/worker/_internal/*.pyd 为打包 AI Worker 运行时 DLL，属合法基线资源，已恢复提交"
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "旧发布脚本 audit-final-release.mjs / validate-release-on-clean-machine.ps1 排除出基线；后续 Phase 按新架构重构",
+    "rebuild 行尾 LF->CRLF 规范化警告（git autocrlf 默认行为，后续可用 .gitattributes 固化）"
+  ],
+  "tests": [
+    "复制完整性：robocopy 各目录 exit=1（成功）；排除项残留=0",
+    "symlink 扫描=0",
+    "安全扫描：敏感文件名=0 真实凭据；.env=0；外部路径源码引用=0",
+    "git 暂存/提交核验：1861 文件、0 违规模式"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "无 node_modules/dist/.packaging-build/.tmp-wd 残留",
+    "无 symlink/junction",
+    "无凭据文件",
+    "无旧外部路径引用进入提交"
+  ],
+  "modified_files": [
+    ".gitignore (新建)",
+    "reports/SHEEP-001-copy-manifest.json (新建)",
+    "reports/SHEEP-001-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "新项目物理基线建立：E:\\fast_sheep 从仅治理文件扩展为含 rebuild 技术基线源码"
+  ],
+  "security_changes": [
+    "无安全边界变更；凭据扫描通过；secret 文件模式在复制与 .gitignore 双保险排除"
+  ],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
