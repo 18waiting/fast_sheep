@@ -78,3 +78,7 @@ export * from "./authorization-domain.js";
 
 // SHEEP-013: Normalized Conversation Identity (M1.2 Conversation Domain).
 export * from "./conversation-identity.js";
+
+
+// SHEEP-014: Conversation Ownership Domain (M1.2 Conversation Domain).
+export * from "./conversation-ownership.js";

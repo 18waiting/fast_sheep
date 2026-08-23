@@ -1,0 +1,58 @@
+{
+  "task": "SHEEP-014",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.2",
+  "objective": "Conversation Ownership Domain: 8 状态词表 + 最小 owner/actor identity capability（遵守 Owner 3 项收紧 + T1~T6）",
+  "completed_requirements": 6,
+  "total_requirements": 6,
+  "owner_tightening": {
+    "t1_owner_identity_capability": "遵守：核对 Master §9/§15、DEC-014 —— 治理明确要求当前 owner identity；提供 OwnershipActorRef（member 复用 SHEEP-011 MemberId | ai），ownerRef 可选；无 assignedBy/claimedBy/handoffFrom/handoffTo/lease/authority lookup（测试断言）",
+    "t2_vocabulary_only_no_transitions": "遵守：8 状态仅词表；无 transition matrix/合法性（不导出 transitions/canTransition 等；测试断言）",
+    "t3_ai_active_no_auto_permission": "遵守：AI_ACTIVE 仅为 ownership state；不导出 AI_AUTO_REPLY/ALLOW_AUTO/automationLevel/entitlement（测试断言）"
+  },
+  "evidence": {
+    "confirmed": [
+      "packages/domain/src/conversation-ownership.ts：ConversationOwnershipState(8) + 8 常量 + OwnershipActorRef + ConversationOwnership{conversationId,state,ownerRef?}",
+      "单元测试 37/37 PASS（含 8 个 ownership 测试：3 收紧 + T3/T6）",
+      "全 workspace typecheck exit=0；build exit=0"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "owner/actor 的 authority lookup 与执行语义（assignedBy/claimedBy/handoff/lease）= M1.5 R-02 + Phase 4/12",
+    "状态转换矩阵/合法性（transition semantics）= M1.5/Phase 4/Phase 12",
+    "lease duration/refresh（R-02：DEFERRED）",
+    "AI 服从 ownership 的自动化策略实现（Phase 7 Automation Policy）"
+  ],
+  "tests": [
+    "domain build=0 / typecheck=0 / test=37/37",
+    "全 workspace typecheck=0 / build=0"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "8 状态恰为治理确认集合",
+    "无 transition matrix / canTransition",
+    "无 AI_AUTO_REPLY/ALLOW_AUTO/automation 泄漏",
+    "无 assignedBy/claimedBy/handoffFrom/handoffTo/leaseHolder 字段",
+    "无 status 额外词表 / sync 字段"
+  ],
+  "modified_files": [
+    "packages/domain/src/conversation-ownership.ts (新建)",
+    "packages/domain/src/index.ts (re-export)",
+    "packages/domain/tests/conversation-ownership.test.mjs (新建)",
+    "project/PROJECT_STATE.json (SHEEP-014 记录)",
+    "reports/SHEEP-014-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Phase 1 M1.2 Conversation Ownership 域模型（8 状态 + 最小 owner capability）建立"
+  ],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
