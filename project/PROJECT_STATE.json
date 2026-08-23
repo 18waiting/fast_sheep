@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_0",
   "current_milestone": "M0.1",
-  "last_closed_task": "SHEEP-005",
+  "last_closed_task": "SHEEP-006",
   "current_task": null,
-  "next_action": "SHEEP-006",
+  "next_action": "SHEEP-007",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-006",
+  "next_task": "SHEEP-007",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -256,6 +256,19 @@
     "db_filename": "fast_sheep.sqlite3",
     "legacy_env_policy": "FASTWORK_DATA_DIR retained as override (compat); rename deferred",
     "report": "reports\\SHEEP-005-report.json",
+    "next_stage_not_executed": true
+  },
+  "sheep_006": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-23",
+    "pnpm_version": "10.17.1",
+    "packages_installed": 309,
+    "lockfile_changed": false,
+    "electron_binary": true,
+    "esbuild_binary": true,
+    "outside_symlinks": 0,
+    "report": "reports\\SHEEP-006-report.json",
     "next_stage_not_executed": true
   }
 }

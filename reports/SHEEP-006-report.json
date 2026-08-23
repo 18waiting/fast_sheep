@@ -1,0 +1,49 @@
+{
+  "task": "SHEEP-006",
+  "result": "COMPLETE",
+  "phase": "Phase 0",
+  "milestone": "M0.3",
+  "objective": "Dependency Reproduction: pnpm lock-based install, native binaries, no old-workspace dependency",
+  "completed_requirements": 3,
+  "total_requirements": 3,
+  "evidence": {
+    "confirmed": [
+      "pnpm install --frozen-lockfile 成功：20 workspace 项目，309 包；pnpm-lock.yaml 未变更",
+      "原生二进制就位：electron.exe（43.4.0，dist/electron.exe）与 esbuild.exe（0.24.2）",
+      "无 old-workspace 依赖：node_modules 中指向 E:\\fast_sheep 之外的 symlink=0；workspace 链接均解析在项目内（如 @fastwork/persistence -> E:\\fast_sheep\\packages\\persistence）"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "根 package.json name 仍为 fastwork-rebuild（产品 identity 后续任务处理）",
+    "electron-winstaller 构建脚本已批准但未在本机验证（打包阶段验证）"
+  ],
+  "tests": [
+    "git status：仅 package.json 变更；pnpm-lock.yaml UNCHANGED",
+    "node_modules 外部 symlink 扫描=0",
+    "electron.exe / esbuild.exe 存在性"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "无旧 workspace/外部路径依赖",
+    "lockfile 未被修改",
+    "node_modules 未入库（gitignore）"
+  ],
+  "modified_files": [
+    "package.json (新增 pnpm.onlyBuiltDependencies: electron/electron-winstaller/esbuild)",
+    "project/PROJECT_STATE.json (SHEEP-006 记录)",
+    "reports/SHEEP-006-report.json (新建)"
+  ],
+  "architecture_changes": [],
+  "security_changes": [
+    "pnpm 默认忽略未批准构建脚本（安全默认）；已显式批准 electron/esbuild/electron-winstaller"
+  ],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "tests_status": "typecheck/tests 执行属 SHEEP-007；本任务验证 install + 二进制 + 无外部依赖"
+}
