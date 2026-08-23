@@ -83,7 +83,7 @@ export function createPackagedWorkerClient(resourcesPath: string, dataRoot: stri
 
 /**
  * Resolve the data root for packaged mode using the project's existing strategy:
- * FASTWORK_DATA_DIR override, else %LOCALAPPDATA%\FastWorkRebuild\data.
+ * FASTWORK_DATA_DIR override, else %LOCALAPPDATA%\fast_sheep\data.
  * Never resources, Program Files, or the packaged Electron application archive.
  */
 export function resolvePackagedDataRoot(): string {

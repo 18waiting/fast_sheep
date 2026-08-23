@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_0",
   "current_milestone": "M0.1",
-  "last_closed_task": "SHEEP-004",
+  "last_closed_task": "SHEEP-005",
   "current_task": null,
-  "next_action": "SHEEP-005",
+  "next_action": "SHEEP-006",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-005",
+  "next_task": "SHEEP-006",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -246,6 +246,16 @@
       "userData": "%APPDATA%\\fast_sheep"
     },
     "report": "reports\\SHEEP-004-report.json",
+    "next_stage_not_executed": true
+  },
+  "sheep_005": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-23",
+    "default_data_root": "%LOCALAPPDATA%\\fast_sheep\\data",
+    "db_filename": "fast_sheep.sqlite3",
+    "legacy_env_policy": "FASTWORK_DATA_DIR retained as override (compat); rename deferred",
+    "report": "reports\\SHEEP-005-report.json",
     "next_stage_not_executed": true
   }
 }

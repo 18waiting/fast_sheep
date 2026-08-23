@@ -1,7 +1,7 @@
 # @fastwork/persistence
 
 Clean-room M1 persistence package (TASK-016). Canonical business state lives in a single
-SQLite database at `<DATA_ROOT>/fastwork.sqlite3`.
+SQLite database at `<DATA_ROOT>/fast_sheep.sqlite3`.
 
 ## Scope
 
@@ -31,7 +31,7 @@ tests/             Node test suite (node --test)
 Resolution precedence: explicit runtime override > `FASTWORK_DATA_DIR` env >
 platform application-data default. `resolveDataRoot` normalizes to an absolute path,
 provisions required directories, and write-probes the root. Logical database file:
-`<DATA_ROOT>/fastwork.sqlite3`.
+`<DATA_ROOT>/fast_sheep.sqlite3`.
 
 ## PRAGMAs
 
@@ -46,7 +46,7 @@ Migrations are ordered by numeric prefix (`0001_initial.sql`). Each applied migr
 recorded in `schema_migrations` (version, name, checksum, applied_at). The runner
 supports fresh install, current-DB no-op, checksum validation, transactional
 apply/rollback, future-schema rejection, and backup-before-upgrade
-(`<DATA_ROOT>/backups/db/<timestamp>/fastwork.sqlite3`).
+(`<DATA_ROOT>/backups/db/<timestamp>/fast_sheep.sqlite3`).
 
 ## Single-Writer Ownership
 

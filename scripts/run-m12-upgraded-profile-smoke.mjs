@@ -15,10 +15,10 @@ for (const target of [1, 2, 3]) {
   const r = mkdtempSync(join(tmpdir(), "fw-m12-up-" + target));
   const migDir = join(r, "mig"); mkdirSync(migDir, { recursive: true });
   for (let v = 1; v <= target; v++) copyFileSync(join(MIGRATIONS_DIR, `000${v}_${NAMES[v]}.sql`), join(migDir, `000${v}_${NAMES[v]}.sql`));
-  const conn = new SqliteConnection(join(r, "fastwork.sqlite3"));
+  const conn = new SqliteConnection(join(r, "fast_sheep.sqlite3"));
   new MigrationRunner(migDir).migrate(conn, join(r, "backups", "db"));
   conn.close();
-  const conn2 = new SqliteConnection(join(r, "fastwork.sqlite3"));
+  const conn2 = new SqliteConnection(join(r, "fast_sheep.sqlite3"));
   new MigrationRunner().migrate(conn2, join(r, "backups", "db"));
   const v = Number(conn2.get("SELECT value FROM app_meta WHERE key = 'database_schema_version'").value);
   check("v" + target + " upgraded to v4", v === 4);

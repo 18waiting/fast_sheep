@@ -14,7 +14,7 @@ MIGRATIONS = (HERE / ".." / ".." / ".." / "packages" / "persistence" / "migratio
 
 def make_migrated_db() -> tuple[str, sqlite3.Connection]:
     tmp = tempfile.mkdtemp(prefix="fw-py-")
-    db_path = Path(tmp) / "fastwork.sqlite3"
+    db_path = Path(tmp) / "fast_sheep.sqlite3"
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     conn.executescript((MIGRATIONS / "0001_initial.sql").read_text(encoding="utf-8"))

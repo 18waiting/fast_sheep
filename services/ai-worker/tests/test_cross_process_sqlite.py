@@ -37,7 +37,7 @@ class TestCrossProcessSqlite(unittest.TestCase):
         wconn.commit()
         wconn.close()
         # A second connection (simulating Node) reads the worker-written knowledge row.
-        c2 = sqlite3.connect(str(Path(tmp) / "fastwork.sqlite3"))
+        c2 = sqlite3.connect(str(Path(tmp) / "fast_sheep.sqlite3"))
         c2.row_factory = sqlite3.Row
         self.assertEqual(c2.execute("SELECT COUNT(*) AS c FROM knowledge_entries").fetchone()["c"], 1)
         c2.close()
@@ -50,7 +50,7 @@ class TestCrossProcessSqlite(unittest.TestCase):
                                            "created_at": "t", "updated_at": "t"})
         wconn.commit()
         wconn.close()
-        check = sqlite3.connect(str(Path(tmp) / "fastwork.sqlite3"))
+        check = sqlite3.connect(str(Path(tmp) / "fast_sheep.sqlite3"))
         self.assertEqual(check.execute("PRAGMA quick_check").fetchone()[0], "ok")
         check.close()
 

@@ -18,7 +18,7 @@ test("resolveDataRoot: explicit override wins; invalid relative root rejected", 
 test("provisionDataRoot creates required directories and exposes DB at root", () => {
   const r = root();
   const dr = provisionDataRoot(r);
-  assert.equal(dr.databasePath, join(r, "fastwork.sqlite3"));
+  assert.equal(dr.databasePath, join(r, DB_FILENAME));
   for (const d of [dr.backupDir, dr.logsDir, dr.skillsDir, dr.derivedDir]) {
         assert.ok(existsSync(d));
   }

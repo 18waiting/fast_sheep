@@ -231,7 +231,7 @@ Requirements
 User data
 ---------
 - Business data is stored under:
-    %LOCALAPPDATA%\FastWorkRebuild\data
+    %LOCALAPPDATA%\fast_sheep\data
 - Advanced/test users may override the data location with the environment
   variable FASTWORK_DATA_DIR (set it to any writable folder before launch).
 

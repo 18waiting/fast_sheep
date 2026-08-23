@@ -46,7 +46,7 @@ class _PendingKnowledgeStore:
     def upsert(self, entry: Dict[str, Any]) -> None:
         import os
         import sqlite3
-        conn = sqlite3.connect(os.path.join(self._data_root, "fastwork.sqlite3"))
+        conn = sqlite3.connect(os.path.join(self._data_root, "fast_sheep.sqlite3"))
         try:
             conn.execute(
                 "INSERT OR REPLACE INTO pending_knowledge (id, question, answer, product_id, source, origin, batch_id, created_at) VALUES (?,?,?,?,?,?,?,?)",

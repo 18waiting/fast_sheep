@@ -142,9 +142,9 @@ try {
   const resolvedRoot = resolvePackagedDataRoot();
   check("data root honors FASTWORK_DATA_DIR", resolvedRoot === dataRoot, resolvedRoot);
   if (savedDataDir === undefined) delete process.env.FASTWORK_DATA_DIR; else process.env.FASTWORK_DATA_DIR = savedDataDir;
-  const expectedDefault = resolve(join(process.env.LOCALAPPDATA || join(tmpdir(), "AppData", "Local"), "FastWorkRebuild", "data"));
+  const expectedDefault = resolve(join(process.env.LOCALAPPDATA || join(tmpdir(), "AppData", "Local"), "fast_sheep", "data"));
   const defaultRoot = resolvePackagedDataRoot();
-  check("data root default = %LOCALAPPDATA%\\FastWorkRebuild\\data", defaultRoot === expectedDefault, defaultRoot);
+  check("data root default = %LOCALAPPDATA%\\fast_sheep\\data", defaultRoot === expectedDefault, defaultRoot);
 
   // ---- 3) launch the packaged worker through the PRODUCTION launcher ----
   client = createPackagedWorkerClient(resourcesPath, dataRoot);

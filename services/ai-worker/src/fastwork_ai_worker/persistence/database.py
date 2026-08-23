@@ -13,7 +13,11 @@ from typing import Optional
 from .errors import PersistenceError, ERROR_CODES
 from .schema import worker_schema_version, SUPPORTED_DB_SCHEMA_VERSION
 
-DB_FILENAME = "fastwork.sqlite3"
+# SHEEP-005 Business Data Root Isolation:
+# - Default data root: %LOCALAPPDATA%\fast_sheep\data (Windows), ~/.fast_sheep/data (other)
+# - Legacy compatibility: FASTWORK_DATA_DIR remains the supported override env var
+#   (kept for existing scripts/tests/tooling; renaming requires a dedicated migration task).
+DB_FILENAME = "fast_sheep.sqlite3"
 DATA_ROOT_ENV = "FASTWORK_DATA_DIR"
 
 
@@ -22,9 +26,9 @@ def resolve_data_root(override: Optional[str] = None) -> Path:
     if not chosen:
         if os.name == "nt":
             base = os.environ.get("LOCALAPPDATA") or str(Path.home() / "AppData" / "Local")
-            chosen = str(Path(base) / "FastWorkRebuild" / "data")
+            chosen = str(Path(base) / "fast_sheep" / "data")
         else:
-            chosen = str(Path.home() / ".fastwork-rebuild" / "data")
+            chosen = str(Path.home() / ".fast_sheep" / "data")
     p = Path(chosen).resolve()
     if not p.is_absolute():
         raise PersistenceError(ERROR_CODES["INVALID_DATA_ROOT"], f"data root must be absolute: {chosen}")

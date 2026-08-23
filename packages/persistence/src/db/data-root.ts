@@ -6,8 +6,12 @@ import { homedir } from "node:os";
 import { join, resolve, isAbsolute, normalize } from "node:path";
 import { PersistenceError, ERROR_CODES } from "./errors.js";
 
+// SHEEP-005 Business Data Root Isolation:
+// - Default data root: %LOCALAPPDATA%\fast_sheep\data (win32), ~/.fast_sheep/data (other)
+// - Legacy compatibility: FASTWORK_DATA_DIR remains the supported override env var
+//   (kept for existing scripts/tests/tooling; renaming requires a dedicated migration task).
 export const DATA_ROOT_ENV = "FASTWORK_DATA_DIR";
-export const DB_FILENAME = "fastwork.sqlite3";
+export const DB_FILENAME = "fast_sheep.sqlite3";
 
 export interface DataRoot {
   root: string;
@@ -29,9 +33,9 @@ export function resolveDataRoot(override?: string): string {
 function platformDefaultDataRoot(): string {
   if (process.platform === "win32") {
     const base = process.env.LOCALAPPDATA || join(homedir(), "AppData", "Local");
-    return join(base, "FastWorkRebuild", "data");
+    return join(base, "fast_sheep", "data");
   }
-  return join(homedir(), ".fastwork-rebuild", "data");
+  return join(homedir(), ".fast_sheep", "data");
 }
 
 /** Provision required directories and expose the canonical database + backup paths. */

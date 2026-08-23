@@ -36,11 +36,11 @@ for (const target of [1, 2, 3]) {
     const name = `000${v}_${["initial", "feedback_effect_tracking", "learning_review_audit_optimization"][v - 1]}.sql`;
     copyFileSync(pjoin(MIGRATIONS_DIR, name), pjoin(migDir, name));
   }
-  const conn = new SqliteConnection(pjoin(r, "fastwork.sqlite3"));
+  const conn = new SqliteConnection(pjoin(r, "fast_sheep.sqlite3"));
   const runner = new MigrationRunner(migDir);
   runner.migrate(conn, pjoin(r, "backups", "db"));
   // now upgrade to latest with the real migration dir
-  const conn2 = new SqliteConnection(pjoin(r, "fastwork.sqlite3"));
+  const conn2 = new SqliteConnection(pjoin(r, "fast_sheep.sqlite3"));
   const res = new MigrationRunner().migrate(conn2, pjoin(r, "backups", "db"));
   const version = conn2.get("SELECT value FROM app_meta WHERE key = 'database_schema_version'").value;
   check("v" + target + "->v4", Number(version) === 4 && res.migratedCount >= 0, "version=" + version);
@@ -52,7 +52,7 @@ for (const target of [1, 2, 3]) {
 {
   const r = tmpRoot();
   openDatabase(r).conn.close();
-  const conn = new SqliteConnection(join(r, "fastwork.sqlite3"));
+  const conn = new SqliteConnection(join(r, "fast_sheep.sqlite3"));
   const res = new MigrationRunner().migrate(conn, join(r, "backups", "db"));
   check("v4 no-op", res.migratedCount === 0, "count=" + res.migratedCount);
   conn.close();
@@ -68,7 +68,7 @@ for (const target of [1, 2, 3]) {
   const migDir = pjoin(r, "mig"); mkdirSync(migDir, { recursive: true });
   copyFileSync(pjoin(MIGRATIONS_DIR, "0001_initial.sql"), pjoin(migDir, "0001_initial.sql"));
   writeFileSync(pjoin(migDir, "0001_initial.sql"), readFileSync(pjoin(migDir, "0001_initial.sql"), "utf-8") + "\n-- altered\n");
-  const conn = new SqliteConnection(pjoin(r, "fastwork.sqlite3"));
+  const conn = new SqliteConnection(pjoin(r, "fast_sheep.sqlite3"));
   let rejected = false;
   try { new MigrationRunner(migDir).migrate(conn, pjoin(r, "backups", "db")); } catch (e) { rejected = e.code === ERROR_CODES.MIGRATION_CHECKSUM_MISMATCH; }
   check("checksum mismatch rejected", rejected);
@@ -82,7 +82,7 @@ for (const target of [1, 2, 3]) {
   const a = openDatabase(r);
   a.conn.run("INSERT OR REPLACE INTO app_meta (key, value) VALUES ('database_schema_version', '99')");
   a.conn.close();
-  const conn = new SqliteConnection(join(r, "fastwork.sqlite3"));
+  const conn = new SqliteConnection(join(r, "fast_sheep.sqlite3"));
   let rejected = false;
   try { new MigrationRunner().migrate(conn, join(r, "backups", "db")); } catch (e) { rejected = e.code === ERROR_CODES.SCHEMA_TOO_NEW; }
   check("future-version rejected", rejected);

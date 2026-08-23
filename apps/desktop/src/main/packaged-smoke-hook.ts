@@ -251,7 +251,7 @@ export async function runPackagedSmokeProbe(deps: PackagedSmokeDeps): Promise<Pa
   } catch { out.raw_ipc_renderer_exposed = true; }
 
   // SQLite + migrations (packaged runtime) — read the production DB under DATA_ROOT.
-  const dbPath = join(resolvePackagedDataRoot(), "fastwork.sqlite3");
+  const dbPath = join(resolvePackagedDataRoot(), "fast_sheep.sqlite3");
   out.sqlite_database_path = dbPath;
   out.sqlite_under_data_root = dbPath.startsWith(resolvePackagedDataRoot() + sep);
   out.sqlite_database_created = existsSync(dbPath);

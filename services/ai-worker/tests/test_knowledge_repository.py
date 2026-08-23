@@ -64,7 +64,7 @@ class TestKnowledgeRepository(unittest.TestCase):
         repo.upsert({"id": "h7", "question": "q", "answer": "a", "product_id": "", "trust_level": "PENDING", **BASE})
         self.conn.commit()
         self.conn.close()
-        conn2 = sqlite3.connect(str(Path(self.tmp) / "fastwork.sqlite3"))
+        conn2 = sqlite3.connect(str(Path(self.tmp) / "fast_sheep.sqlite3"))
         conn2.row_factory = sqlite3.Row
         self.assertEqual(KnowledgeRepository(conn2).get("h7")["answer"], "a")
         conn2.close()
