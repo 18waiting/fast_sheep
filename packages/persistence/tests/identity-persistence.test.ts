@@ -25,8 +25,8 @@ function copyRange(target: string, names: string[]): void {
 test("fresh DB: migrates to schema v5, new identity tables + legacy tables coexist", () => {
   const r = root();
   const { conn, schemaVersion } = openDatabase(r);
-  assert.equal(schemaVersion, 5);
-  assert.equal(conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 5);
+  assert.equal(schemaVersion, 6);
+  assert.equal(conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 6);
   for (const t of ["merchants","stores","platform_accounts","members","memberships","seats"]) {
     assert.ok(conn.get("SELECT name FROM sqlite_master WHERE type='table' AND name=?", t), `table ${t}`);
   }
@@ -48,7 +48,7 @@ test("upgrade path: 0001-0004 DB migrates to 0005; historical checksums unchange
 
   const runner = new MigrationRunner();
   const res = runner.migrate(conn, join(r, "backups", "db"));
-  assert.equal(res.migratedCount, 1);
+  assert.equal(res.migratedCount, 2);
   assert.equal(res.backedUp, true, "backup safety mechanism must run for pending migration");
 
   const applied = runner.applied(conn);

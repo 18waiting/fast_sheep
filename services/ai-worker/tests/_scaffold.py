@@ -17,6 +17,7 @@ _CANONICAL = [
     "0003_learning_review_audit_optimization.sql",
     "0004_legacy_import_tracking.sql",
     "0005_identity_domain.sql",
+    "0006_conversation_domain.sql",
 ]
 
 
@@ -27,6 +28,6 @@ def make_migrated_db() -> tuple[str, sqlite3.Connection]:
     conn.row_factory = sqlite3.Row
     for name in _CANONICAL:
         conn.executescript((MIGRATIONS / name).read_text(encoding="utf-8"))
-    conn.execute("INSERT OR REPLACE INTO app_meta (key, value) VALUES ('database_schema_version', '5')")
+    conn.execute("INSERT OR REPLACE INTO app_meta (key, value) VALUES ('database_schema_version', '6')")
     conn.commit()
     return tmp, conn

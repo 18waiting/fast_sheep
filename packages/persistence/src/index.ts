@@ -64,3 +64,7 @@ export { InMemoryJobRepository } from "./memory/memory-job-repository.js";
 // SHEEP-019-A: Phase 1 identity domain persistence.
 export type { MerchantRecord, StoreRecord, PlatformAccountRecord, MemberRecord, MembershipRecord, SeatRecord, MerchantRepository, StoreRepository, PlatformAccountRepository, MemberRepository, MembershipRepository, SeatRepository } from "./repositories/identity-repositories.js";
 export { SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteMemberRepository, SqliteMembershipRepository, SqliteSeatRepository } from "./sqlite/sqlite-identity-repositories.js";
+
+// SHEEP-019-B: conversation domain persistence.
+export type { NormalizedConversationRecord, MessageRecord, OwnershipRecord, NormalizedConversationRepository, MessageRepository, OwnershipRepository } from "./repositories/conversation-repositories.js";
+export { SqliteNormalizedConversationRepository, SqliteMessageRepository, SqliteOwnershipRepository } from "./sqlite/sqlite-conversation-repositories.js";

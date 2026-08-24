@@ -20,7 +20,7 @@ function tmpRoot() { return mkdtempSync(join(tmpdir(), "fw-m12-mig-")); }
 {
   const r = tmpRoot();
   const a = openDatabase(r);
-  check("fresh->v4", a.schemaVersion === 5, "got " + a.schemaVersion);
+  check("fresh->v4", a.schemaVersion === 6, "got " + a.schemaVersion);
   a.conn.close();
   rmSync(r, { recursive: true, force: true });
 }
@@ -43,7 +43,7 @@ for (const target of [1, 2, 3]) {
   const conn2 = new SqliteConnection(pjoin(r, "fast_sheep.sqlite3"));
   const res = new MigrationRunner().migrate(conn2, pjoin(r, "backups", "db"));
   const version = conn2.get("SELECT value FROM app_meta WHERE key = 'database_schema_version'").value;
-  check("v" + target + "->v4", Number(version) === 5 && res.migratedCount >= 0, "version=" + version);
+  check("v" + target + "->v4", Number(version) === 6 && res.migratedCount >= 0, "version=" + version);
   conn.close(); conn2.close();
   rmSync(r, { recursive: true, force: true });
 }
@@ -96,7 +96,7 @@ for (const target of [1, 2, 3]) {
   const a = openDatabase(r);
   a.conn.exec("PRAGMA quick_check");
   const b = openDatabase(r);
-  check("close/reopen integrity", b.schemaVersion === 5);
+  check("close/reopen integrity", b.schemaVersion === 6);
   b.conn.close(); a.conn.close();
   check("backup dir created", existsSync(join(r, "backups", "db")) || true);
   rmSync(r, { recursive: true, force: true });

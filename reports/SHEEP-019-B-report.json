@@ -1,0 +1,75 @@
+{
+  "task": "SHEEP-019-B",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.4",
+  "objective": "Conversation/Message/Ownership Persistence: 0006 + NormalizedConversation/Message/Ownership repository（SHEEP-013/014 落库）",
+  "completed_requirements": 9,
+  "total_requirements": 9,
+  "owner_tightening": {
+    "t1_ownership_structure_only": "遵守：ownership_records 仅 state + owner_kind/owner_member_id；无 SQL CHECK（测试断言 DDL 无 CHECK）；无 state<->owner 组合规则",
+    "t2_snapshot_not_transition": "遵守：OwnershipRepository.save 仅 INSERT OR REPLACE 快照；无 canTransition/claim/release/handoff/takeover（无这些方法）",
+    "t3_no_authority_validation": "遵守：owner_member_id 仅身份引用，无 Membership/Role/Seat/Capability 资格判断；无 FK 到 members（避免校验含义）",
+    "t4_external_ref_opaque": "遵守：external_ref 仅 TEXT 透传 opaque；无 externalConversationId/platformMessageId 语义",
+    "t5_legacy_collision_negative": "遵守：验证新 repo 只读写 normalized_*；legacy conversations/conversation_messages 不可见且不被触碰（测试断言）"
+  },
+  "evidence": {
+    "confirmed": [
+      "0006_conversation_domain.sql（两处目录字节一致）：normalized_conversations(store_id NOT NULL)/normalized_messages/ownership_records",
+      "3 个域 repository（接口 + Sqlite）：NormalizedConversation/Message/Ownership；命名避开 legacy ConversationRepository",
+      "schema 6：TS schema-version、Python schema.py、_scaffold(0006)、test_schema_version、m12 脚本、migrations.test.ts 同步",
+      "persistence 45/45；workspace typecheck/build/test=0；Worker 473/473"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "ownership 状态执行/转换语义（M1.5 / Phase 4 / Phase 12）",
+    "owner authority validation（Membership/Role/Seat/Capability 资格；后续）",
+    "SHEEP-019-C：Customer/Product/SKU/Order/Logistics 持久化（待 Owner 批准）"
+  ],
+  "tests": [
+    "persistence 45/45（含 7 个 conversation 新测试 + legacy collision）",
+    "workspace typecheck/build/test=0",
+    "Worker 473/473"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "legacy collision：新 repo 不读/不写 legacy conversations/conversation_messages",
+    "ownership_records 无 CHECK；任意 state+owner 组合可保存",
+    "messages/ownership 无 merchant_id；conversation 含 store_id",
+    "repository 无 delete/remove/tombstone；无 sync 字段",
+    "0001~0005 checksum 不变；失败回滚无部分应用；backup 未绕过"
+  ],
+  "modified_files": [
+    "packages/persistence/migrations/0006_conversation_domain.sql (新建)",
+    "resources/persistence/migrations/0006_conversation_domain.sql (新建)",
+    "packages/persistence/src/repositories/conversation-repositories.ts (新建)",
+    "packages/persistence/src/sqlite/sqlite-conversation-repositories.ts (新建)",
+    "packages/persistence/src/index.ts (导出)",
+    "packages/persistence/src/db/schema-version.ts (5->6)",
+    "packages/persistence/tests/conversation-persistence.test.ts (新建)",
+    "packages/persistence/tests/identity-persistence.test.ts (v5->v6)",
+    "packages/persistence/tests/migrations.test.ts (5->6)",
+    "services/ai-worker/src/fastwork_ai_worker/persistence/schema.py (5->6)",
+    "services/ai-worker/tests/_scaffold.py (0006 + v6)",
+    "services/ai-worker/tests/test_schema_version.py (5->6)",
+    "scripts/run-m12-{fresh-profile,imported-profile,migration-matrix,upgraded-profile}-smoke.mjs (5->6)",
+    "project/PROJECT_STATE.json",
+    "reports/SHEEP-019-B-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Phase 1 conversation 域持久化：0006 + 3 个域 repository；schema v6"
+  ],
+  "security_changes": [
+    "无安全边界变更"
+  ],
+  "data_model_changes": [
+    "新增 normalized_conversations/normalized_messages/ownership_records；无删除/同步语义"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

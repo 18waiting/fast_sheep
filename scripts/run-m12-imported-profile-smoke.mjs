@@ -45,7 +45,7 @@ try {
   await worker.stop(); worker = null;
   db.conn.close(); db = null;
   const b = openDatabase(dataRoot);
-  check("imported profile reopen v4", b.schemaVersion === 5);
+  check("imported profile reopen v4", b.schemaVersion === 6);
   const products = new SqliteProductRepository(b.conn).list();
   check("imported products usable after reopen", products.length >= 2);
   b.conn.close();
