@@ -63,8 +63,7 @@
     "UI_AND_THIRD_PARTY_ASSET_LICENSE_INVENTORY",
     "FINAL_HOSTING_PROVIDER_DECISION",
     "FINAL_RETENTION_DURATIONS",
-    "FINAL_CLOUD_SYNC_DATA_SCOPE",
-    "MigrationRunner backupDatabase WAL-consistency: 现有迁移前备份为裸复制（非 WAL 一致快照）；在未来高风险 migration / 对应 Gate 前必须重新验证或解决"
+    "FINAL_CLOUD_SYNC_DATA_SCOPE"
   ],
   "external_reference_sources": [
     {
