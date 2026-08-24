@@ -3,7 +3,7 @@
 // M1 (TASK-016) + M9 (TASK-024): supported DB schema version + compatibility checks (future-schema rejection).
 import { PersistenceError, ERROR_CODES } from "./errors.js";
 
-export const SUPPORTED_DB_SCHEMA_VERSION = 4;
+export const SUPPORTED_DB_SCHEMA_VERSION = 5;
 
 export function isSchemaSupported(version: number): boolean {
   return version === SUPPORTED_DB_SCHEMA_VERSION;

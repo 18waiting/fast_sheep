@@ -1,0 +1,76 @@
+{
+  "task": "SHEEP-019-A",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.4",
+  "objective": "Identity Persistence Integration: Merchant/Store/PlatformAccount/Member/Membership/Seat 落库（0005 + repository），不改 0001~0004",
+  "completed_requirements": 8,
+  "total_requirements": 8,
+  "owner_constraints": {
+    "c1_single_0005_identity_migration": "遵守：仅新增 0005_identity_domain.sql（两处迁移目录字节一致）；未建 conversation/commerce migration；0001~0004 未改",
+    "c2_no_symmetry_tables": "遵守：Capability/ResourceScope/RoleCapabilitySet 无持久化证据，未建表",
+    "c3_minimal_repo_ops": "遵守：repository 仅 save/findById/merchant-scoped list；无多余 CRUD",
+    "c4_no_delete_semantics": "遵守：无 delete/remove/hardDelete/tombstone（测试断言）",
+    "c5_merchant_scope_per_fact_source": "遵守：Member 表无 merchant_id（测试断言 PRAGMA）；Membership 为唯一归属事实源",
+    "c6_no_unnecessary_memory_impls": "遵守：仅 interface + Sqlite 实现；未生成 Memory 双实现（无测试需要）",
+    "c7_fresh_and_upgrade_paths": "遵守：验证 fresh(->v5) 与 0001~0004(->v5) 两路径；checksum 不变、legacy 并存、失败回滚、backup 机制未绕过（测试断言）",
+    "c8_no_sync_fields": "遵守：无 revision/deleted_at/remote_id/Outbox 等字段或表"
+  },
+  "evidence": {
+    "confirmed": [
+      "0005_identity_domain.sql：merchants/stores/platform_accounts/members/memberships/seats（TEXT PK、snake_case、FK 无 ON DELETE）",
+      "schema 版本 4->5：TS schema-version.ts、Python schema.py、_scaffold、test_schema_version、m12 脚本、migrations.test.ts 同步更新",
+      "repository：6 个接口 + 6 个 Sqlite 实现（repositories/identity-repositories.ts + sqlite/sqlite-identity-repositories.ts）",
+      "persistence 38/38；全 workspace typecheck/build/test exit=0；Worker 473/473"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "Conversation/Message/Ownership 持久化 = SHEEP-019-B（待 Owner 单独批准）",
+    "Customer/Product/SKU/Order/Logistics 持久化 = SHEEP-019-C（待批准）",
+    "Capability/ResourceScope/RoleCapabilitySet 持久化（无当前证据；如未来需要再评估）"
+  ],
+  "tests": [
+    "persistence 38/38（含 7 个 identity 新测试）",
+    "全 workspace typecheck/build/test = 0",
+    "Worker 473/473"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "0001~0004 checksum 不变（升级路径断言）",
+    "legacy 表（shops/products/conversations）并存",
+    "失败 migration 回滚无部分应用",
+    "member 无 merchant_id；repository 无 delete 操作"
+  ],
+  "modified_files": [
+    "packages/persistence/migrations/0005_identity_domain.sql (新建)",
+    "resources/persistence/migrations/0005_identity_domain.sql (新建)",
+    "packages/persistence/src/db/schema-version.ts (4->5)",
+    "packages/persistence/src/repositories/identity-repositories.ts (新建)",
+    "packages/persistence/src/sqlite/sqlite-identity-repositories.ts (新建)",
+    "packages/persistence/src/index.ts (导出)",
+    "packages/persistence/tests/identity-persistence.test.ts (新建)",
+    "packages/persistence/tests/migrations.test.ts (4->5)",
+    "services/ai-worker/src/fastwork_ai_worker/persistence/schema.py (4->5)",
+    "services/ai-worker/tests/_scaffold.py (0005 + v5)",
+    "services/ai-worker/tests/test_schema_version.py (4->5)",
+    "scripts/run-m12-{fresh-profile,imported-profile,migration-matrix,upgraded-profile}-smoke.mjs (4->5)",
+    "project/PROJECT_STATE.json",
+    "reports/SHEEP-019-A-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Phase 1 identity 域持久化：0005 + 6 个域 repository；schema v5"
+  ],
+  "security_changes": [
+    "无安全边界变更"
+  ],
+  "data_model_changes": [
+    "新增 merchants/stores/platform_accounts/members/memberships/seats 表；无删除/同步语义"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

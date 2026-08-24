@@ -23,13 +23,13 @@ from _scaffold import make_migrated_db  # noqa: E402
 
 class TestSchemaVersion(unittest.TestCase):
     def test_supported(self) -> None:
-        self.assertEqual(SUPPORTED_DB_SCHEMA_VERSION(), 4)
-        self.assertTrue(is_schema_supported(4))
-        self.assertFalse(is_schema_supported(2))
+        self.assertEqual(SUPPORTED_DB_SCHEMA_VERSION(), 5)
+        self.assertTrue(is_schema_supported(5))
+        self.assertFalse(is_schema_supported(4))
 
     def test_worker_schema_version_reads_app_meta(self) -> None:
         tmp, conn = make_migrated_db()
-        self.assertEqual(worker_schema_version(conn), 4)
+        self.assertEqual(worker_schema_version(conn), 5)
         conn.close()
 
     def test_unsupported_schema_rejected(self) -> None:

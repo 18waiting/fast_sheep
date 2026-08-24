@@ -11,8 +11,8 @@ function root() { return mkdtempSync(join(tmpdir(), "fw-t-")); }
 
 test("fresh database migrates to schema v1 and seeds defaults", () => {
   const { conn, schemaVersion } = openDatabase(root());
-  assert.equal(schemaVersion, 4);
-  assert.equal(conn.get("SELECT value FROM app_meta WHERE key = 'database_schema_version'").value, "4");
+  assert.equal(schemaVersion, 5);
+  assert.equal(conn.get("SELECT value FROM app_meta WHERE key = 'database_schema_version'").value, "5");
   assert.ok(conn.all("SELECT group_name FROM config_groups").length >= 9);
   conn.close();
 });
@@ -21,7 +21,7 @@ test("migration rerun is a no-op (no duplicate effects)", () => {
   const r = root();
   openDatabase(r).conn.close();
   const b = openDatabase(r);
-  assert.equal(b.conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 4);
+  assert.equal(b.conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 5);
   b.conn.close();
 });
 

@@ -10,8 +10,8 @@ from typing import Optional
 
 
 def SUPPORTED_DB_SCHEMA_VERSION() -> int:
-    # M1 (0001) + M9 (0002) + M10 (0003) + M11 legacy import tracking (0004). Worker never runs migrations.
-    return 4
+    # M1 (0001) + M9 (0002) + M10 (0003) + M11 (0004) + SHEEP-019-A identity domain (0005). Worker never runs migrations.
+    return 5
 
 
 def worker_schema_version(conn: sqlite3.Connection) -> int:

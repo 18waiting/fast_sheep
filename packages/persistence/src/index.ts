@@ -60,3 +60,7 @@ export { InMemoryForbiddenWordRepository } from "./memory/memory-forbidden-word-
 export { InMemoryFeedbackRepository } from "./memory/memory-feedback-repository.js";
 export { InMemoryStatsRepository } from "./memory/memory-stats-repository.js";
 export { InMemoryJobRepository } from "./memory/memory-job-repository.js";
+
+// SHEEP-019-A: Phase 1 identity domain persistence.
+export type { MerchantRecord, StoreRecord, PlatformAccountRecord, MemberRecord, MembershipRecord, SeatRecord, MerchantRepository, StoreRepository, PlatformAccountRepository, MemberRepository, MembershipRepository, SeatRepository } from "./repositories/identity-repositories.js";
+export { SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteMemberRepository, SqliteMembershipRepository, SqliteSeatRepository } from "./sqlite/sqlite-identity-repositories.js";
