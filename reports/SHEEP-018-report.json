@@ -1,0 +1,57 @@
+{
+  "task": "SHEEP-018",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.4",
+  "objective": "New Domain Migration Plan: 制定 Phase 1 领域模型新增式迁移计划（只规划/审计，不实施 SQL/仓库）",
+  "completed_requirements": 4,
+  "total_requirements": 4,
+  "owner_tightening": {
+    "t1_no_locked_schema": "遵守：mapping 仅描述实体/身份/scope/关系/能力；不锁表名/列名/索引/外键/nullable/DB 类型（schema 由 SHEEP-019 决定）",
+    "t2_append_only_0005": "遵守：0001~0004 永久不变；0005 起唯一/有序/可审计只追加；不锁一域一 migration（粒度 SHEEP-019 定）",
+    "t3_backup_order_unchanged": "遵守：高风险 migration 前须可验证/可恢复 backup evidence；安全顺序依 Master 与 MigrationRunner 契约，未因措辞改变",
+    "t4_r07_additivity_only": "遵守：不规划 revision/deleted_at/remote_id/last_synced_at/pending_upload/Outbox 等字段表；仅要求架构不封死未来追加；sync-ready != sync-enabled",
+    "store_scope_per_domain": "遵守：Conversation 的 storeId 已确认保留；Customer/Product/Order 的 Store 语义 DEFERRED 不统一省略/不统一添加"
+  },
+  "evidence": {
+    "confirmed": [
+      "docs/migration-plan-phase1.md 已创建（含审计摘要、迁移纪律、分域 mapping、Store scope 分域处理、R-07 可加性、备份安全顺序、验证方向）",
+      "现有迁移机制审计（MigrationRunner/loader/schema-version/backup；0001~0004 checksum 固化）",
+      "未修改任何 .sql / repository / 数据"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "具体 schema（表/列/索引/FK）= SHEEP-019 实施",
+    "migration SQL 拆分粒度 = SHEEP-019 按最小风险决定",
+    "Customer/Product/Order Store 语义（各域 DEFERRED）",
+    "M1.5 早期基础的 persistence 影响（届时任务）"
+  ],
+  "tests": [
+    "文档完整性：4 项收紧 + Store 分域均已写入",
+    "审计仅读取，未改动迁移文件"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "未修改 0001~0004",
+    "未新增任何 .sql",
+    "未实现 repository/数据",
+    "未规划 sync schema"
+  ],
+  "modified_files": [
+    "docs/migration-plan-phase1.md (新建)",
+    "project/PROJECT_STATE.json (SHEEP-018 记录)",
+    "reports/SHEEP-018-report.json (新建)"
+  ],
+  "architecture_changes": [],
+  "security_changes": [],
+  "data_model_changes": [
+    "仅规划；未改动 schema"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

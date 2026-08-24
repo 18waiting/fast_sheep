@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_1",
   "current_milestone": "M1.1",
-  "last_closed_task": "SHEEP-017",
-  "current_task": "SHEEP-018 (proposal pending approval)",
-  "next_action": "SHEEP-018",
+  "last_closed_task": "SHEEP-018",
+  "current_task": null,
+  "next_action": "SHEEP-019",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-018",
+  "next_task": "SHEEP-019",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -393,5 +393,13 @@
     "report": "reports\\SHEEP-017-report.json",
     "next_stage_not_executed": true,
     "controller_pass_date": "2026-08-24"
+  },
+  "sheep_018": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-24",
+    "plan_document": "docs\\migration-plan-phase1.md",
+    "report": "reports\\SHEEP-018-report.json",
+    "next_stage_not_executed": true
   }
 }
