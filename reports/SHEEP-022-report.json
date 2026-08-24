@@ -1,0 +1,105 @@
+{
+  "task": "SHEEP-022",
+  "result": "COMPLETE",
+  "phase": "Phase 2",
+  "milestone": "M2.1",
+  "objective": "Renderer Page/Feature Map：只读提取页面/功能并按 reference_role × restoration_disposition 分类（证据等级绑定具体 claim）",
+  "completed_requirements": 5,
+  "total_requirements": 5,
+  "method": "只读文本提取（路由/中文标题/注释）；未 eval；未复制；未修改 reference tree；未请求网络",
+  "reference_role_vs_disposition": "遵守：两维分别记录（reference_role 考古事实 / restoration_disposition 施工处置），互不替代",
+  "map": [
+    {
+      "disposition": "SHELL",
+      "evidence": "CONFIRMED(L4 标题)；M2.2 治理依据",
+      "region": "navbar.js",
+      "reference_role": "shell"
+    },
+    {
+      "disposition": "SHELL；店铺增删操作=DO_NOT_PORT_DIRECTLY(feature 粒度)",
+      "evidence": "CONFIRMED(L4 标题/L13 店铺API)",
+      "region": "sidebar.js",
+      "reference_role": "shell + dialog"
+    },
+    {
+      "disposition": "登录/凭据/到期闸门=DO_NOT_PORT_DIRECTLY；账号信息展示=LATER(INFERRED)",
+      "evidence": "CONFIRMED(L4 标题/L8 登录表单/L9 到期锁定)；Master §11/§18",
+      "region": "account.js",
+      "reference_role": "page"
+    },
+    {
+      "disposition": "UI 结构=FIRST_WAVE(治理)；发消息/流式/管家API=DO_NOT_PORT_DIRECTLY",
+      "evidence": "CONFIRMED(L5 标题/L10-11 模型链路)；M2.3 治理依据",
+      "region": "ai.js",
+      "reference_role": "page + panel"
+    },
+    {
+      "disposition": "LATER(治理：Phase 3/9)",
+      "evidence": "CONFIRMED(L5 标题/L9-14 职责)；无 auth/network",
+      "region": "knowledge.js",
+      "reference_role": "page"
+    }
+  ],
+  "evidence_levels": [
+    "CONFIRMED = 具体事实直接可见（如某行标题字符串存在）；不自动确认整页/可达性/流程/启用状态",
+    "INFERRED = 结构/命名/上下文推断（如账号信息展示归 LATER）",
+    "UNKNOWN = 无法可靠归类（会话工作台/平台面板/设置页不在本 scope）"
+  ],
+  "owner_tightening": {
+    "t1_map_vs_priority": "遵守：reference_role 与 restoration_disposition 分维记录",
+    "t2_do_not_port_granularity": "遵守：仅 auth/network feature 标 DO_NOT_PORT_DIRECTLY；普通 UI 结构仍可 reference；未升格整页",
+    "t3_evidence_bound_to_claim": "遵守：每条写明 CONFIRMED 的具体事实（如'L4 标题存在'）；不确认整页/流程/状态",
+    "t4_firstwave_later_governance": "遵守：SHELL/FIRST_WAVE/LATER 均标注治理依据（M2.2/M2.3/Phase 3+9）或考古推断（INFERRED）",
+    "t5_minimal_snippets": "遵守：仅提取最小必要 evidence snippets（标题/路由/职责注释）；未批量复制 UI 文本/代码/字符串资源"
+  },
+  "constraints_kept": [
+    "reference tree 只读",
+    "未 eval bundle",
+    "未请求网络",
+    "未复制 bundle",
+    "未开始 UI implementation",
+    "未读取未授权目录"
+  ],
+  "evidence": {
+    "confirmed": [
+      "0 路由（IPC 桥接面板非 SPA）；5 bundle → 2 shell + 3 page；各页标题/职责注释 CONFIRMED；无字体/图标/图片"
+    ],
+    "inferred": [
+      "account 账号信息展示归 LATER（bundle 推断，非产品决定）"
+    ],
+    "unknown": [
+      "会话工作台/PDD/DouDian 平台面板/设置页不在当前 5 bundle scope"
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "SHEEP-023 JS 依赖细粒度分类；SHEEP-024 UI Asset Provenance",
+    "会话工作台/平台面板 bundle 定位（可能在其它的参考 scope/目录）",
+    "auth/session UI 是否重实现（后续 Phase；基于自有安全架构）"
+  ],
+  "tests": [
+    "提取脚本只读；输出仅最小标识（路由/标题/注释）"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "无敏感值回显；无批量 UI 文本复制",
+    "未复制/修改 reference tree",
+    "未 eval bundle；未请求网络",
+    "Fast Sheep 仅新增报告/文档"
+  ],
+  "modified_files": [
+    "reports/SHEEP-022-report.json (新建)",
+    "docs/renderer-page-map.md (新建)",
+    "project/PROJECT_STATE.json (SHEEP-022 记录)"
+  ],
+  "architecture_changes": [],
+  "security_changes": [
+    "敏感值零回显；未执行网络/eval"
+  ],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
