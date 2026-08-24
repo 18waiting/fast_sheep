@@ -30,7 +30,7 @@
   "current_phase": "PHASE_1",
   "current_milestone": "M1.1",
   "last_closed_task": "SHEEP-019-B",
-  "current_task": null,
+  "current_task": "SHEEP-019-C (proposal pending approval)",
   "next_action": "SHEEP-019-C",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -414,10 +414,11 @@
   },
   "sheep_019_b": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-24",
     "report": "reports\\SHEEP-019-B-report.json",
     "schema_version": 6,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-24"
   }
 }
