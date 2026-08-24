@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_1",
   "current_milestone": "M1.5",
-  "last_closed_task": "M1.5-R07",
-  "current_task": "M1.5-R06 (proposal pending approval)",
-  "next_action": "M1.5-R06",
+  "last_closed_task": "M1.5-R06",
+  "current_task": null,
+  "next_action": "M1.5-R01",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "M1.5-R06 Backup/Restore Foundation (pending Owner PASS)",
+  "next_task": "M1.5-R01 SecretStore Foundation (pending Owner PASS)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -454,5 +454,13 @@
     "report": "reports\\M1.5-R07-report.json",
     "next_stage_not_executed": true,
     "controller_pass_date": "2026-08-24"
+  },
+  "m15_r06": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-24",
+    "report": "reports\\M1.5-R06-report.json",
+    "r06_scope_note": "仅 Backup/Restore foundation；R-06 其它 DATA decisions 保持 Gate/DEFERRED",
+    "next_stage_not_executed": true
   }
 }

@@ -72,3 +72,7 @@ export { SqliteNormalizedConversationRepository, SqliteMessageRepository, Sqlite
 // SHEEP-019-C: commerce domain persistence.
 export type { CustomerRecord, DomainProductRecord, SkuRecord, OrderRecord, LogisticsRecord, CustomerRepository, DomainProductRepository, SkuRepository, OrderRepository, LogisticsRepository } from "./repositories/commerce-repositories.js";
 export { SqliteCustomerRepository, SqliteDomainProductRepository, SqliteSkuRepository, SqliteOrderRepository, SqliteLogisticsRepository } from "./sqlite/sqlite-commerce-repositories.js";
+
+// M1.5-R06: Backup/Restore Foundation.
+export { BACKUP_METADATA_FILENAME, createBackup, listBackups, restoreBackup, rotateBackups } from "./backup/backup-manager.js";
+export type { BackupMetadata } from "./backup/backup-manager.js";

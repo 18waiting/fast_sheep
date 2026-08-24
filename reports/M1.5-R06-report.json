@@ -1,0 +1,72 @@
+{
+  "task": "M1.5-R06",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.5",
+  "objective": "Backup/Restore Foundation（Phase 1 提前项；不关闭 R-06 其余 DATA decisions）",
+  "completed_requirements": 6,
+  "total_requirements": 6,
+  "owner_tightening": {
+    "t1_reuse_verified_boundary": "遵守：createBackup 复用既有 backupDatabase snapshot boundary；无第二套 backup 实现；WAL/active-connection 一致性沿用既有迁移备份边界（文档说明）",
+    "t2_restore_failsafe_atomic": "遵守：restore 先校验 backup -> staging 副本 integrity_check + schema 校验 -> rename 原子替换目标；失败清理 staging、不损坏当前 DB（测试断言）",
+    "t3_schema_compat": "遵守：backup schema > supported 拒绝；<= supported 进入 restore flow；forward migration 由 MigrationRunner 负责（BackupManager 不自升级）",
+    "t4_rotation_capability_only": "遵守：rotateBackups 显式 maxBackups（>=1 校验）；无 production 默认；不自动挂接 startup/migration/createBackup（测试断言 3 份备份创建后全保留）",
+    "t5_secret_boundary": "遵守：BackupManager 仅处理 DB + 批准 metadata；不读/复制 SecretStore；未宣称 SecretStore integration 已验证（R-01 后补 negative test；文档明示）"
+  },
+  "acceptance": {
+    "corrupted_restore_rejected": "PASS（损坏 backup 拒绝，报 backup corrupt）",
+    "restore_failure_db_intact": "PASS（失败后当前 DB 完整可重开）",
+    "successful_restore_checks": "PASS（integrity_check + schema 校验 + reopen smoke）",
+    "schema_v7_unchanged": "PASS（schemaVersion=7）",
+    "migrations_0001_0007_unchanged": "PASS（git diff 空）",
+    "runner_backupdb_behavior_unchanged": "PASS（migration-runner.ts / database-backup.ts 未改）"
+  },
+  "evidence": {
+    "confirmed": [
+      "packages/persistence/src/backup/backup-manager.ts：createBackup/listBackups/restoreBackup/rotateBackups + BackupMetadata",
+      "persistence 62/62（含 7 个 backup 测试）；workspace typecheck/build/test=0；Worker 473/473"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "最终 retention 时长 / rotation 自动 cadence = R-06 DATA Decision（FINAL_RETENTION_DURATIONS）",
+    "Cloud sync scope / deletion / cloud-sync DATA = R-06 其余项（Gate/DEFERRED）",
+    "SecretStore->backup 真实 negative integration test（R-01 后补充）"
+  ],
+  "tests": [
+    "persistence 62/62",
+    "workspace typecheck/build/test=0",
+    "Worker 473/473"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "损坏/篡改/不完整 backup restore 拒绝",
+    "restore 失败后当前 DB 完整可重开",
+    "schema > supported 拒绝",
+    "rotation 无默认/无自动；createBackup 后全保留",
+    "backup 目录仅 DB + metadata（无 secret 产物）"
+  ],
+  "modified_files": [
+    "packages/persistence/src/backup/backup-manager.ts (新建)",
+    "packages/persistence/src/index.ts (导出)",
+    "packages/persistence/tests/backup-manager.test.ts (新建)",
+    "docs/backup-restore-foundation.md (新建)",
+    "project/PROJECT_STATE.json",
+    "reports/M1.5-R06-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Backup/Restore Foundation 建立；无 schema/既有实现变更"
+  ],
+  "security_changes": [
+    "Secret 边界固化（未读/复制 SecretStore）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变；未新增表/字段）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
