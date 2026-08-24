@@ -124,3 +124,73 @@ test("secret exclusion boundary: backup dir contains only DB + metadata (no Secr
   const files = readdirSync(meta.backupDir);
   assert.deepEqual(files.sort(), [BACKUP_METADATA_FILENAME, DB_FILENAME], "only DB + approved metadata");
 });
+
+// --- tightened acceptance: failed restore preserves current DB (corrupt / future-schema / mismatch) ---
+test("failed restore (future-schema) preserves current DB intact and reopenable", () => {
+  const r = root();
+  const dbPath = join(r, DB_FILENAME);
+  const { conn } = openDatabase(r);
+  conn.run("INSERT OR IGNORE INTO merchants (id, name) VALUES ('keep','keep')");
+  conn.close();
+  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  // forge metadata to future schema (99)
+  const metaPath = join(meta.backupDir, BACKUP_METADATA_FILENAME);
+  const forged = JSON.parse(readFileSync(metaPath, "utf-8"));
+  forged.databaseSchemaVersion = 99;
+  writeFileSync(metaPath, JSON.stringify(forged));
+  assert.throws(() => restoreBackup(meta.backupFile, dbPath), /newer than supported/i);
+  const reopened = openDatabase(r);
+  assert.equal(reopened.schemaVersion, 7, "current DB still v7");
+  assert.equal(reopened.conn.get("SELECT COUNT(*) AS c FROM merchants").c, 1, "current data intact");
+  reopened.conn.close();
+});
+
+test("failed restore (metadata/schema mismatch) preserves current DB intact and reopenable", () => {
+  const r = root();
+  const dbPath = join(r, DB_FILENAME);
+  const { conn } = openDatabase(r);
+  conn.run("INSERT OR IGNORE INTO merchants (id, name) VALUES ('keep','keep')");
+  conn.close();
+  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  // alter the BACKUP DB's actual schema version so it no longer matches metadata (7)
+  const bkConn = new SqliteConnection(meta.backupFile);
+  bkConn.run("INSERT OR REPLACE INTO app_meta (key, value) VALUES ('database_schema_version', '6')");
+  bkConn.close();
+  assert.throws(() => restoreBackup(meta.backupFile, dbPath), /schema mismatch/i);
+  const reopened = openDatabase(r);
+  assert.equal(reopened.schemaVersion, 7, "current DB still v7");
+  assert.equal(reopened.conn.get("SELECT COUNT(*) AS c FROM merchants").c, 1, "current data intact");
+  reopened.conn.close();
+});
+
+// --- tightened: metadata cannot cause path breakout ---
+test("path breakout: metadata pointing outside backupRoot is skipped by list and rejected by restore", () => {
+  const r = root();
+  const dbPath = join(r, DB_FILENAME);
+  openDatabase(r).conn.close();
+  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  // forge metadata.backupFile to an outside path
+  const outside = join(tmpdir(), "outside-target.sqlite3");
+  const metaPath = join(meta.backupDir, BACKUP_METADATA_FILENAME);
+  const forged = JSON.parse(readFileSync(metaPath, "utf-8"));
+  forged.backupFile = outside;
+  writeFileSync(metaPath, JSON.stringify(forged));
+  // listBackups must NOT follow it (skip)
+  assert.equal(listBackups(join(r, "backups")).length, 0, "escaping metadata skipped");
+  // restore must reject (metadata backupFile mismatch)
+  assert.throws(() => restoreBackup(meta.backupFile, dbPath), /backupFile mismatch/i);
+});
+
+// --- tightened: rotation fail-safe ---
+test("rotation fail-safe: invalid maxBackups throws and deletes nothing", () => {
+  const r = root();
+  const dbPath = join(r, DB_FILENAME);
+  openDatabase(r).conn.close();
+  const backupRoot = join(r, "backups");
+  createBackup(dbPath, backupRoot, 7);
+  createBackup(dbPath, backupRoot, 7);
+  assert.throws(() => rotateBackups(backupRoot, 0), /maxBackups/);
+  assert.throws(() => rotateBackups(backupRoot, -1), /maxBackups/);
+  assert.throws(() => rotateBackups(backupRoot, 1.5), /maxBackups/);
+  assert.equal(listBackups(backupRoot).length, 2, "no backup deleted on invalid input");
+});

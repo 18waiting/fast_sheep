@@ -68,5 +68,23 @@
   "old_rebuild_modified": false,
   "original_reference_modified": false,
   "secrets_detected": false,
-  "next_stage_not_executed": true
+  "next_stage_not_executed": true,
+  "refinement_2026_08_25": {
+    "owner_tightening": {
+      "r1_controlled_restore": "遵守：restore 要求目标关闭/独占；staging->validation->controlled rename；Windows 对在用文件 rename 安全失败；无裸覆盖",
+      "r2_db_evidence_compat": "遵守：校验基于 DB 实证（可打开/integrity=ok/实际 schema==metadata/实际<=supported）；metadata 仅证据/索引",
+      "r3_path_constraint": "遵守：assertWithin(backupRoot) 约束所有读写/restore/rotation；metadata backupFile 逃逸则跳过/拒绝（测试）",
+      "r4_rotation_mechanism_only": "遵守：maxBackups 仅调用参数；无产品默认/retention 天数；非法值 fail-safe（抛错不删）（测试）",
+      "r5_secret_by_responsibility": "遵守：仅接受 db/backupRoot/schemaVersion；不收集 SecretStore/credential/env/其它文件；不宣称完整证明（R-01 共同形成）"
+    },
+    "acceptance": {
+      "failed_restore_preserves_db": "PASS（corrupt / future-schema / metadata-schema mismatch 三种拒绝场景均验证当前 DB 完整可重开）",
+      "schema_v7": "PASS",
+      "migrations_unchanged": "PASS",
+      "runner_backupdb_unchanged": "PASS",
+      "r06_data_decisions_unclosed": "保持 DEFERRED",
+      "no_sync_outbox": "PASS"
+    },
+    "tests": "persistence 66/66（含新增 4 个：future-schema/mismatch 保留 DB、路径逃逸、rotation fail-safe）；workspace 三绿；Worker 473/473"
+  }
 }
