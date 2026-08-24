@@ -2,31 +2,26 @@
 // and frozen contracts. Do not consult original proprietary source/binaries.
 // M1.5-R06: Backup / Restore Foundation (Phase 1 early item of R-06).
 //
-// Owner tightening applied (2026-08-25):
-// 1. Controlled restore: never bare-overwrite a live/open SQLite DB. Restore requires
-//    the target to be closed/exclusive; it stages to a temp path, validates, then
-//    atomically renames over the target. On Windows, rename-over-an-open-file fails
-//    safely, so an in-use target cannot be corrupted by this path.
-// 2. Restore compatibility is DB-EVIDENCE based, not metadata-trust: the backup must
-//    open as SQLite, pass integrity_check, its ACTUAL schema version must match the
-//    metadata, and the ACTUAL version must not exceed SUPPORTED_DB_SCHEMA_VERSION.
-//    Metadata is evidence/index, not the authoritative source.
-// 3. Metadata cannot cause path breakout: every path read/restored/rotated is
-//    constrained to the specified backupRoot (assertWithin); tampered metadata is
-//    rejected or skipped, never followed.
-// 4. Rotation is mechanism only: maxBackups is a call parameter (no product default,
-//    no retention days). Illegal values (maxBackups < 1) fail safe (throw, delete none).
-// 5. Secret boundary by responsibility: BackupManager only accepts a database path,
-//    a backup root and a schema version; it never reads/copies SecretStore,
-//    credentials, env, or other user files. It does NOT claim to prove that
-//    SecretStore plaintext never enters SQLite — that full invariant is formed by
-//    R-01 + this boundary together.
+// Owner tightening applied (2026-08-25 REPAIR — Backup Creation Consistency):
+// 1. createBackup does NOT plain-copy the possibly-in-use main .sqlite3 file. The
+//    persistence architecture runs SQLite in WAL mode (applyPragmas), so a bare copy
+//    would miss un-checkpointed committed WAL content. createBackup uses SQLite's
+//    canonical consistent snapshot primitive `VACUUM INTO`, which produces a complete,
+//    committed, atomic single-file snapshot safe with active connections.
+// 2. MigrationRunner's existing migration-before-upgrade backup (backupDatabase) is
+//    LEFT UNCHANGED (this REPAIR does not alter it; any change there would be a
+//    separate decision).
+// 3. Active/WAL backup consistency is tested: committed data written under WAL is
+//    present in the independently-opened backup.
+// 4. Failed backup creation cleans up partial artifacts so no incomplete file enters
+//    listBackups()'s recoverable set.
+// 5. Controlled restore, DB-evidence schema compat, backupRoot path constraints,
+//    rotation mechanism-only, and secret-by-responsibility remain as refined.
 
-import { existsSync, writeFileSync, readFileSync, copyFileSync, renameSync, rmSync, readdirSync } from "node:fs";
+import { existsSync, writeFileSync, readFileSync, copyFileSync, renameSync, rmSync, readdirSync, mkdirSync } from "node:fs";
 import { join, dirname, resolve, sep } from "node:path";
 import { DB_FILENAME } from "../db/data-root.js";
 import { SUPPORTED_DB_SCHEMA_VERSION } from "../db/schema-version.js";
-import { backupDatabase } from "../migrations/database-backup.js";
 import { SqliteConnection } from "../db/sqlite-driver.js";
 import { PersistenceError, ERROR_CODES } from "../db/errors.js";
 
@@ -57,25 +52,84 @@ function assertWithin(root: string, candidate: string): string {
 }
 
 /**
- * Create a backup by REUSING the existing verified backupDatabase snapshot boundary,
- * then write approved metadata (schema version) next to it.
+ * Consistent snapshot via SQLite `VACUUM INTO` (canonical safe snapshot primitive):
+ * produces a complete committed snapshot including un-checkpointed WAL content, safe
+ * with active connections, atomic single-file output. Fail-safe: a missing/locked DB
+ * throws and produces no snapshot.
+ */
+function snapshotDatabase(databasePath: string, targetPath: string): void {
+  if (!existsSync(databasePath)) {
+    throw new PersistenceError(ERROR_CODES.INVALID_DATA_ROOT, `backup failed: no database file at ${databasePath}`);
+  }
+  const conn = new SqliteConnection(databasePath);
+  try {
+    const escaped = targetPath.replace(/'/g, "''");
+    conn.exec(`VACUUM INTO '${escaped}'`);
+  } finally {
+    conn.close();
+  }
+}
+
+/** Validate a snapshot using DB evidence only (openable + integrity + schema). */
+function validateSnapshot(snapshotPath: string, expectedSchemaVersion: number): void {
+  const conn = new SqliteConnection(snapshotPath);
+  try {
+    let integrity: Array<{ integrity_check: string }>;
+    try {
+      integrity = conn.all<{ integrity_check: string }>("PRAGMA integrity_check");
+    } catch (e) {
+      throw new PersistenceError(ERROR_CODES.INVALID_DATA_ROOT, `backup corrupt: ${(e as Error).message}`);
+    }
+    if ((integrity[0]?.integrity_check ?? "") !== "ok") {
+      throw new PersistenceError(ERROR_CODES.INVALID_DATA_ROOT, `backup corrupt: integrity_check=${integrity[0]?.integrity_check}`);
+    }
+    const row = conn.get<{ value: string } | undefined>("SELECT value FROM app_meta WHERE key='database_schema_version'");
+    const actual = row ? Number(row.value) : 0;
+    if (actual !== expectedSchemaVersion) {
+      throw new PersistenceError(ERROR_CODES.INVALID_DATA_ROOT, `backup schema mismatch: expected=${expectedSchemaVersion} db=${actual}`);
+    }
+    if (actual > SUPPORTED_DB_SCHEMA_VERSION) {
+      throw new PersistenceError(ERROR_CODES.SCHEMA_TOO_NEW, `backup schema ${actual} newer than supported ${SUPPORTED_DB_SCHEMA_VERSION}`);
+    }
+  } finally {
+    conn.close();
+  }
+}
+
+/**
+ * Create a CONSISTENT backup snapshot (VACUUM INTO) + approved metadata.
+ * On ANY failure, partial artifacts are removed so no incomplete backup becomes
+ * recoverable via listBackups().
  * @param schemaVersion current applied database schema version (from the DB/app_meta).
  */
 export function createBackup(databasePath: string, backupRoot: string, schemaVersion: number): BackupMetadata {
-  const backupFile = backupDatabase(databasePath, backupRoot);
-  if (!backupFile) {
-    throw new PersistenceError(ERROR_CODES.ROOT_NOT_WRITABLE, `backup failed: no database file at ${databasePath}`);
+  const root = resolve(backupRoot);
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const backupDir = join(root, stamp);
+  const finalPath = join(backupDir, DB_FILENAME);
+  const tempPath = join(backupDir, `.snapshot-${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`);
+  mkdirSync(backupDir, { recursive: true });
+  try {
+    snapshotDatabase(databasePath, tempPath);
+    validateSnapshot(tempPath, schemaVersion);
+    renameSync(tempPath, finalPath);
+    const meta: BackupMetadata = {
+      createdAt: new Date().toISOString(),
+      databaseSchemaVersion: schemaVersion,
+      databaseFilename: DB_FILENAME,
+      backupFile: finalPath,
+      backupDir,
+    };
+    writeFileSync(metadataPathFor(backupDir), JSON.stringify(meta, null, 2), "utf-8");
+    return meta;
+  } catch (e) {
+    // never leave a valid-looking incomplete backup behind
+    for (const p of [tempPath, finalPath, metadataPathFor(backupDir)]) {
+      if (existsSync(p)) rmSync(p, { force: true });
+    }
+    if (existsSync(backupDir) && readdirSync(backupDir).length === 0) rmSync(backupDir, { recursive: true, force: true });
+    throw e;
   }
-  const backupDir = dirname(backupFile);
-  const meta: BackupMetadata = {
-    createdAt: new Date().toISOString(),
-    databaseSchemaVersion: schemaVersion,
-    databaseFilename: DB_FILENAME,
-    backupFile,
-    backupDir,
-  };
-  writeFileSync(metadataPathFor(backupDir), JSON.stringify(meta, null, 2), "utf-8");
-  return meta;
 }
 
 /** List backups under backupRoot, newest first. Entries whose paths escape backupRoot are skipped (not followed). */
@@ -90,7 +144,6 @@ export function listBackups(backupRoot: string): BackupMetadata[] {
     if (!existsSync(metaPath)) continue; // incomplete backup -> not listed
     try {
       const meta = JSON.parse(readFileSync(metaPath, "utf-8")) as BackupMetadata;
-      // constrain every path in metadata to backupRoot; skip tampered entries
       assertWithin(root, meta.backupDir ?? "");
       assertWithin(root, meta.backupFile ?? "");
       if (meta.backupFile && existsSync(meta.backupFile)) out.push(meta);
@@ -115,21 +168,13 @@ function readBackupMetadata(backupFile: string): BackupMetadata {
   } catch {
     throw new PersistenceError(ERROR_CODES.INVALID_DATA_ROOT, `backup corrupt: unreadable metadata for ${backupFile}`);
   }
-  // metadata.backupFile must resolve to the actual backup file (evidence consistency);
-  // otherwise the metadata is tampered and must not be followed.
   if (resolve(meta.backupFile ?? "") !== resolve(backupFile)) {
     throw new PersistenceError(ERROR_CODES.INVALID_DATA_ROOT, `backup corrupt: metadata backupFile mismatch for ${backupFile}`);
   }
   return meta;
 }
 
-/**
- * Validate a staged copy of a backup using DB EVIDENCE only:
- * - must open as SQLite (else "backup corrupt"),
- * - PRAGMA integrity_check == ok,
- * - actual app_meta schema version == metadata schema version,
- * - actual schema version <= SUPPORTED_DB_SCHEMA_VERSION.
- */
+/** Validate a staged copy of a backup using DB EVIDENCE only (openable + integrity + schema). */
 function validateStagedBackup(stagedPath: string, expectedSchemaVersion: number): void {
   const conn = new SqliteConnection(stagedPath);
   try {
@@ -139,9 +184,8 @@ function validateStagedBackup(stagedPath: string, expectedSchemaVersion: number)
     } catch (e) {
       throw new PersistenceError(ERROR_CODES.INVALID_DATA_ROOT, `backup corrupt: ${(e as Error).message}`);
     }
-    const first = integrity[0]?.integrity_check ?? "";
-    if (first !== "ok") {
-      throw new PersistenceError(ERROR_CODES.INVALID_DATA_ROOT, `backup corrupt: integrity_check=${first}`);
+    if ((integrity[0]?.integrity_check ?? "") !== "ok") {
+      throw new PersistenceError(ERROR_CODES.INVALID_DATA_ROOT, `backup corrupt: integrity_check=${integrity[0]?.integrity_check}`);
     }
     const row = conn.get<{ value: string } | undefined>("SELECT value FROM app_meta WHERE key='database_schema_version'");
     const actual = row ? Number(row.value) : 0;
@@ -149,10 +193,7 @@ function validateStagedBackup(stagedPath: string, expectedSchemaVersion: number)
       throw new PersistenceError(ERROR_CODES.INVALID_DATA_ROOT, `backup schema mismatch: metadata=${expectedSchemaVersion} db=${actual}`);
     }
     if (actual > SUPPORTED_DB_SCHEMA_VERSION) {
-      throw new PersistenceError(
-        ERROR_CODES.SCHEMA_TOO_NEW,
-        `backup schema ${actual} newer than supported ${SUPPORTED_DB_SCHEMA_VERSION}`
-      );
+      throw new PersistenceError(ERROR_CODES.SCHEMA_TOO_NEW, `backup schema ${actual} newer than supported ${SUPPORTED_DB_SCHEMA_VERSION}`);
     }
   } finally {
     conn.close();
@@ -178,16 +219,13 @@ export function restoreBackup(backupFile: string, targetDatabasePath: string): s
   }
   const meta = readBackupMetadata(backupFile);
   if (meta.databaseSchemaVersion > SUPPORTED_DB_SCHEMA_VERSION) {
-    throw new PersistenceError(
-      ERROR_CODES.SCHEMA_TOO_NEW,
-      `backup schema ${meta.databaseSchemaVersion} newer than supported ${SUPPORTED_DB_SCHEMA_VERSION}`
-    );
+    throw new PersistenceError(ERROR_CODES.SCHEMA_TOO_NEW, `backup schema ${meta.databaseSchemaVersion} newer than supported ${SUPPORTED_DB_SCHEMA_VERSION}`);
   }
   const staging = join(dirname(targetDatabasePath), `.restore-staging-${Date.now()}-${Math.random().toString(36).slice(2)}.sqlite3`);
   try {
     copyFileSync(backupFile, staging);
     validateStagedBackup(staging, meta.databaseSchemaVersion);
-    renameSync(staging, targetDatabasePath); // controlled atomic replacement
+    renameSync(staging, targetDatabasePath);
     return targetDatabasePath;
   } catch (e) {
     if (existsSync(staging)) rmSync(staging, { force: true });
@@ -211,7 +249,7 @@ export function rotateBackups(backupRoot: string, maxBackups: number): number {
   let removed = 0;
   for (let i = maxBackups; i < backups.length; i++) {
     const dir = backups[i].backupDir;
-    assertWithin(backupRoot, dir); // path-constrained removal
+    assertWithin(backupRoot, dir);
     if (existsSync(dir)) {
       rmSync(dir, { recursive: true, force: true });
       removed++;

@@ -86,5 +86,19 @@
       "no_sync_outbox": "PASS"
     },
     "tests": "persistence 66/66（含新增 4 个：future-schema/mismatch 保留 DB、路径逃逸、rotation fail-safe）；workspace 三绿；Worker 473/473"
+  },
+  "repair_2026_08_25_backup_creation_consistency": {
+    "issue": "createBackup 此前复用 backupDatabase 的裸复制主 .sqlite3 文件；在 WAL 模式（applyPragmas 设 journal_mode=WAL）下会漏掉未 checkpoint 的已提交 WAL 内容，不构成通用安全 snapshot",
+    "fix": "createBackup 改用 SQLite 规范一致快照 VACUUM INTO（完整/已提交/原子/单文件，活动连接安全）；生成后实证校验（可打开/integrity=ok/schema==expected/<=supported）；任何失败清理全部半成品，不完整文件不进 listBackups",
+    "preserved": [
+      "MigrationRunner / backupDatabase（migration-before-upgrade）行为未改动（REPAIR 范围外，另行决策）",
+      "受控 restore / DB 实证兼容 / backupRoot 路径约束 / rotation 仅机制 / Secret 按职责 全部保留",
+      "schema v7、0001~0007 migrations、R-06 其余 DATA decisions、sync/Outbox、SecretStore 范围 均未变"
+    ],
+    "new_tests": [
+      "active/WAL backup consistency：连接保持打开 + wal_autocheckpoint=0 写入已提交数据 -> createBackup -> 独立打开 backup 验证最新 committed data + schema v7 + integrity=ok",
+      "failed backup creation：数据库不存在 -> createBackup 抛错 -> listBackups 为空、backupRoot 无残留文件"
+    ],
+    "verification": "persistence 68/68；workspace typecheck/build/test=0；Worker 473/473"
   }
 }

@@ -13,7 +13,7 @@ import {
 
 function root() { return mkdtempSync(join(tmpdir(), "fs-bak-")); }
 
-test("createBackup reuses verified boundary, writes DB + metadata (schema version 7)", () => {
+test("createBackup produces consistent VACUUM INTO snapshot + metadata (schema version 7)", () => {
   const r = root();
   const dbPath = join(r, DB_FILENAME);
   const { conn } = openDatabase(r);
@@ -193,4 +193,41 @@ test("rotation fail-safe: invalid maxBackups throws and deletes nothing", () => 
   assert.throws(() => rotateBackups(backupRoot, -1), /maxBackups/);
   assert.throws(() => rotateBackups(backupRoot, 1.5), /maxBackups/);
   assert.equal(listBackups(backupRoot).length, 2, "no backup deleted on invalid input");
+});
+
+// --- REPAIR: active/WAL backup consistency ---
+test("active/WAL backup consistency: committed WAL data + schema + integrity present in independently-opened backup", () => {
+  const r = root();
+  const dbPath = join(r, DB_FILENAME);
+  const { conn } = openDatabase(r);
+  // keep the connection OPEN (active) and suppress autocheckpoint so the committed row
+  // stays in WAL un-checkpointed at snapshot time
+  conn.exec("PRAGMA wal_autocheckpoint = 0");
+  conn.run("INSERT OR IGNORE INTO merchants (id, name) VALUES ('wal-m1','WAL商户')");
+  // create backup while the source connection is still open
+  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  // open the backup independently
+  const bk = new SqliteConnection(meta.backupFile);
+  try {
+    assert.equal(bk.get("SELECT name FROM merchants WHERE id='wal-m1'").name, "WAL商户", "latest committed data captured");
+    const integrity = bk.all<{ integrity_check: string }>("PRAGMA integrity_check");
+    assert.equal(integrity[0].integrity_check, "ok", "integrity ok");
+    assert.equal(bk.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "7", "schema v7 in backup");
+  } finally {
+    bk.close();
+  }
+  conn.close();
+});
+
+// --- REPAIR: failed backup creation leaves no valid-looking backup ---
+test("failed backup creation leaves no valid-looking backup in listBackups", () => {
+  const r = root();
+  const backupRoot = join(r, "backups");
+  const missing = join(r, "does-not-exist.sqlite3");
+  assert.throws(() => createBackup(missing, backupRoot, 7));
+  assert.equal(listBackups(backupRoot).length, 0, "no recoverable backup after failure");
+  if (existsSync(backupRoot)) {
+    const entries = readdirSync(backupRoot, { withFileTypes: true });
+    assert.equal(entries.length, 0, "no partial files left behind");
+  }
 });
