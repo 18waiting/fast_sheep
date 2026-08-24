@@ -30,7 +30,7 @@
   "current_phase": "PHASE_2",
   "current_milestone": "M2.1",
   "last_closed_task": "SHEEP-021",
-  "current_task": null,
+  "current_task": "SHEEP-022 (proposal pending approval)",
   "next_action": "SHEEP-022",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -507,13 +507,14 @@
   },
   "sheep_021": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-25",
     "report": "reports\\SHEEP-021-report.json",
     "inventory_doc": "docs\\renderer-asset-inventory.md",
     "reference_tree_modified": false,
     "network_requests": 0,
     "sensitive_values_reported": 0,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-25"
   }
 }
