@@ -98,3 +98,7 @@ export * from "./order.js";
 
 // M1.5-R07: Sync-Readiness Persistence Contract (capability/contract level).
 export * from "./sync-readiness.js";
+
+
+// M1.5-R03: Minimal Entitlement Contract.
+export * from "./entitlement.js";

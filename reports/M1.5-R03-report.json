@@ -1,0 +1,71 @@
+{
+  "task": "M1.5-R03",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.5",
+  "objective": "Minimal Entitlement Contract：商业资格边界 + 本地 fail-closed boundary（no fail-open；非授权引擎）",
+  "completed_requirements": 6,
+  "total_requirements": 6,
+  "owner_tightening": {
+    "t1_qualification_only": "遵守：仅商业资格边界；Capability/ResourceScope 与 Entitlement 独立；无 role/capability->entitlement、无工具权限判断（测试断言无授权引擎导出）",
+    "t2_no_full_verification": "遵守：Phase 1 只定义 evidence contract + fail-closed 边界；signed lease 签名/有效期/scope/grace 验证 = Phase 11；未实现小型授权系统",
+    "t3_cloud_authoritative_not_permanent_deny": "遵守：本地 fail closed（reason=requires_authoritative_verification）；非永久无效（测试断言 reason 不含 invalid/disabled）",
+    "t4_local_permitted_not_boolean": "遵守：文档+实现将其视为可信授权 evidence，非用户可改 boolean；无 verifier 即 fail closed",
+    "t5_reasons_no_sensitive": "遵守：reason 为静态通用字符串；不回显 ref/secret/lease/signature（测试断言）",
+    "t6_no_taxonomy": "遵守：EntitlementId 可扩展；无 PDD_ENABLED/AI_AUTO_REPLY_ENABLED/MAX_SEATS 枚举（测试断言）"
+  },
+  "tests_added": [
+    "Capability vs Entitlement 隔离（两模块互不导出对方概念）",
+    "无 evidence / unknown / invalid 均 fail closed",
+    "未测试任何具体 entitlement 永久启用/禁用策略"
+  ],
+  "evidence": {
+    "confirmed": [
+      "packages/domain/src/entitlement.ts：EntitlementId/EvidenceKind/Evidence/Decision/LocalEntitlementBoundary/DenyByDefaultLocalEntitlementBoundary",
+      "域测试 71/71（含 10 个 entitlement 测试）；workspace 三绿（21 包）；Worker 473/473"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "signed offline lease 签名/有效期/scope/grace 验证 = Phase 11（SHEEP-203~207）",
+    "Cloud-authoritative Subscription/Entitlement/AI Gateway = Phase 11（SHEEP-200~215）",
+    "Entitlement 业务 taxonomy / 授权引擎 = 后续"
+  ],
+  "tests": [
+    "domain build/typecheck=0",
+    "domain 71/71",
+    "workspace 三绿（21 包）",
+    "Worker 473/473"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "无 evidence / unknown / invalid -> deny",
+    "cloud_authoritative -> deny（requires verification，非永久无效）",
+    "local_permitted -> deny（requires trusted verification）",
+    "reason 不含 secret/ref/signature/lease",
+    "无授权引擎 / 无业务枚举导出"
+  ],
+  "modified_files": [
+    "packages/domain/src/entitlement.ts (新建)",
+    "packages/domain/src/index.ts (re-export)",
+    "packages/domain/tests/entitlement.test.mjs (新建)",
+    "docs/entitlement-contract.md (新建)",
+    "project/PROJECT_STATE.json",
+    "reports/M1.5-R03-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Entitlement 商业资格契约建立；无 schema/实现变更"
+  ],
+  "security_changes": [
+    "no fail-open；reason 无敏感信息"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变；未改 domain/persistence/migrations）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
