@@ -94,3 +94,7 @@ export * from "./product.js";
 
 // SHEEP-017: Order / Logistics Domain (M1.3 Product/Customer/Order Context).
 export * from "./order.js";
+
+
+// M1.5-R07: Sync-Readiness Persistence Contract (capability/contract level).
+export * from "./sync-readiness.js";

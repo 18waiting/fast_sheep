@@ -1,0 +1,73 @@
+{
+  "task": "M1.5-R07",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.5",
+  "objective": "Sync-Ready Persistence Contract（能力/契约级，不实现同步；sync-ready != sync-enabled 硬边界）",
+  "completed_requirements": 8,
+  "total_requirements": 8,
+  "owner_tightening": {
+    "t1_no_marker_interfaces": "遵守：TS 仅含可消费类型（SyncClass/SyncClassPolicyHook/SyncReadiness）；无 ChangeMetadataCapability/RevisionCapability/MutationBoundary marker interface（测试断言无导出）",
+    "t2_consume_existing_identity": "遵守：无统一 Sync ID；未加 cloudRef/remoteRef；未重定义/包装第二套身份；既有身份契约保持权威",
+    "t3_sync_class_hook_policy_only": "遵守：SyncClassPolicyHook 为 policy integration point；非 entity 字段；未给任何实体/记录赋值 syncClass（测试断言）",
+    "t4_mutation_boundary_no_sync": "遵守：mutation boundary 仅文档描述（复用 typed repositories）；未加 revision/outbox/pending/cloud 行为；未改 repository 实现"
+  },
+  "acceptance": {
+    "schema_version_still_v7": "PASS（openDatabase schemaVersion=7）",
+    "migrations_0001_0007_unchanged": "PASS（git diff 空）",
+    "domain_persistence_impl_unchanged": "PASS（git status 仅新增文件 + index.ts re-export；persistence 未动）",
+    "no_entity_sync_enabled": "PASS（测试断言无 syncEnabled/syncReady）",
+    "no_entity_sync_class": "PASS（测试断言无 syncClass）",
+    "no_outbox_sync_table": "PASS（v7 无 outbox/sync/revision 表；唯一 pending_knowledge 为 0003 遗留学习候选表，与 sync 无关）",
+    "persistence_regression": "PASS（55/55）",
+    "doc_phase12_consumption": "PASS（docs/sync-readiness-contract.md §7 说明 Phase 12 如何消费 identity + mutation boundary，未实现）",
+    "hard_boundary": "PASS（sync-ready != sync-enabled 编码于 SyncReadiness 与文档）"
+  },
+  "evidence": {
+    "confirmed": [
+      "packages/domain/src/sync-readiness.ts：SyncClass(3)/SyncClassPolicyHook/SyncReadiness(ready|enabled)",
+      "docs/sync-readiness-contract.md：能力/映射/边界/R-06 门/Phase 12 消费",
+      "域测试 61/61；persistence 55/55；workspace typecheck/build=0"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "syncClass 实际赋值 + sync 启用 = M1.5-R06 DATA-DECISION-GATE",
+    "Outbox/Pull/Apply/Conflict/Reconciliation = Phase 12（SHEEP-220~224）",
+    "change metadata / revision 具体字段 = 经 R-06 批准的实体 + Phase 12/forward migration"
+  ],
+  "tests": [
+    "domain build/typecheck=0",
+    "domain test 61/61",
+    "persistence 55/55",
+    "workspace typecheck/build=0"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "无 marker interface 导出",
+    "实体无 syncClass/syncEnabled/sync 字段",
+    "v7 无 outbox/sync/revision 表",
+    "模块无 enableSync/SYNC_ENABLED 等启用产物"
+  ],
+  "modified_files": [
+    "packages/domain/src/sync-readiness.ts (新建)",
+    "packages/domain/src/index.ts (re-export)",
+    "packages/domain/tests/sync-readiness.test.mjs (新建)",
+    "docs/sync-readiness-contract.md (新建)",
+    "project/PROJECT_STATE.json",
+    "reports/M1.5-R07-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Sync-Readiness 契约建立（能力级）；无 schema/实现变更"
+  ],
+  "security_changes": [],
+  "data_model_changes": [
+    "无（schema v7 不变；未新增表/字段）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
