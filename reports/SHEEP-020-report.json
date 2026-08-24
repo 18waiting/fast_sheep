@@ -1,0 +1,62 @@
+{
+  "task": "SHEEP-020",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.4",
+  "objective": "Legacy/Existing Data Compatibility Smoke: 0001~0004 数据在 0005~0007 迁移后兼容、保留、可读；新旧并存",
+  "completed_requirements": 5,
+  "total_requirements": 5,
+  "owner_tightening": {
+    "t1_migration_expectation_4_to_7": "遵守：schema_migrations 核心断言 4 -> 7（起始 0001~0004=4，升级后=7，中间版本可验证 [1..7]）",
+    "t2_synthetic_only": "遵守：legacy data 全部为合成 representative legacy-shaped 测试数据；未读取真实 FastWork 商户/客户数据；External Reference Access = 0",
+    "t3_reopen_smoke": "遵守：v4->v7 后关闭重开，验证 schema v7、legacy repository 读取、关键数据完整性",
+    "t4_same_id_collision": "遵守：legacy 与 domain 表同文本 ID（conv-1/prod-1），各自 repo 只读自己的表，互不串读/串写",
+    "t2_wording": "遵守：未修改 production migration/schema/persistence/legacy implementation；仅新增本单元 test/report/PROJECT_STATE"
+  },
+  "evidence": {
+    "confirmed": [
+      "legacy-compatibility-smoke.test.ts：4->7 升级（合成数据保留、checksum 不变、reopen、同 ID 碰撞隔离）",
+      "m12 迁移矩阵 + fresh profile smoke：PASS（fresh->v7、v1/v2/v3->v7、v7 no-op、reopen v7、checksum 拒绝、future 拒绝、backup）",
+      "Worker schema v7：test_schema_version OK",
+      "persistence 55/55；workspace typecheck/build/test=0；Worker 473/473"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [],
+  "tests": [
+    "persistence 55/55（含 2 个 compat smoke）",
+    "m12 matrix/fresh smoke PASS",
+    "workspace typecheck/build/test=0",
+    "Worker 473/473 + schema v7 OK"
+  ],
+  "smokes": [
+    "m12 migration matrix PASS",
+    "m12 fresh profile PASS",
+    "compat reopen smoke PASS"
+  ],
+  "negative_tests": [
+    "0001~0004 checksum 不变（升级后逐条断言）",
+    "legacy 数据行数与关键行完整保留",
+    "同 ID 碰撞：legacy/domain repo 各自读自己的表",
+    "无真实外部数据读取（External Reference Access=0）"
+  ],
+  "modified_files": [
+    "packages/persistence/tests/legacy-compatibility-smoke.test.ts (新建)",
+    "scripts/run-m12-{migration-matrix,fresh-profile,imported-profile,upgraded-profile}-smoke.mjs (标签 v4->v7)",
+    "project/PROJECT_STATE.json",
+    "reports/SHEEP-020-report.json (新建)"
+  ],
+  "architecture_changes": [],
+  "security_changes": [
+    "无安全边界变更；未读取任何真实用户/商户数据"
+  ],
+  "data_model_changes": [
+    "无（纯验证；未改 schema）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

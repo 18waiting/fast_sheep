@@ -1,0 +1,16 @@
+{
+  "milestone": "M12",
+  "schema_version": 4,
+  "checks": {
+    "fresh->v7": "PASS",
+    "v1->v7": "PASS",
+    "v2->v7": "PASS",
+    "v3->v7": "PASS",
+    "v7 no-op": "PASS",
+    "checksum mismatch rejected": "PASS",
+    "future-version rejected": "PASS",
+    "close/reopen integrity": "PASS",
+    "backup dir created": "PASS"
+  },
+  "all_passed": true
+}

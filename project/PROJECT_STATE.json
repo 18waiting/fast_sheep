@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_1",
   "current_milestone": "M1.1",
-  "last_closed_task": "SHEEP-019-C",
-  "current_task": "SHEEP-020 (proposal pending approval)",
-  "next_action": "SHEEP-020",
+  "last_closed_task": "SHEEP-020",
+  "current_task": null,
+  "next_action": "GATE-P1-DOMAIN-FOUNDATION",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-020 (pending Owner PASS)",
+  "next_task": "GATE-P1-DOMAIN-FOUNDATION (pending Owner PASS)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -429,5 +429,14 @@
     "schema_version": 7,
     "next_stage_not_executed": true,
     "controller_pass_date": "2026-08-24"
+  },
+  "sheep_020": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-24",
+    "report": "reports\\SHEEP-020-report.json",
+    "schema_version": 7,
+    "external_reference_access": 0,
+    "next_stage_not_executed": true
   }
 }
