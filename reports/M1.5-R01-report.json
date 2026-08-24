@@ -1,0 +1,81 @@
+{
+  "task": "M1.5-R01",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.5",
+  "objective": "SecretStore Foundation：最小 OS-backed secure local SecretStore 实现 + 契约 + 安全边界（9 项调整落实）",
+  "completed_requirements": 9,
+  "total_requirements": 9,
+  "required_report": {
+    "os_backed_mechanism": "Electron safeStorage（Windows DPAPI / macOS Keychain / Linux libsecret），经注入式 SecureCipher 接入；加密 blob 持久化本地 JSON（原子写，无明文）",
+    "why_minimum_secure": "直接复用 OS 密钥保护（DPAPI），无自研密钥管理；接口注入可替换，未锁死唯一架构",
+    "runtime_fallback": "FAIL CLOSED：OS cipher 不可用即构造抛错；绝不 silent fallback 到 InMemory/plaintext",
+    "renderer_exposure": "NO",
+    "sqlite_plaintext": "NO（负验证：扫描 .sqlite3 字节无明文）",
+    "logs_errors_plaintext": "NO（负验证：decrypt 失败错误不含 secret）",
+    "db_backup_plaintext": "NO（M1.5-R06 联动负验证：backup DB 无明文；backup 目录仅 DB+metadata）",
+    "schema_version": "v7（不变）",
+    "migrations": "0001~0007 未变"
+  },
+  "owner_adjustments": {
+    "a1_min_os_backed_impl": "遵守：Phase 1 提供最小 OS-backed 实现（safeStorage 注入 + 加密文件存储）；未锁死唯一架构",
+    "a2_test_only_inmemory": "遵守：InMemorySecretStore TEST_ONLY/NOT_PRODUCTION_SAFE，构造需 {testOnly:true}；无 silent fallback",
+    "a3_interface_no_rotate": "遵守：set/get/remove/has；remove 仅 logical removal（注释明示）",
+    "a4_no_secret_in_errors": "遵守：错误/序列化不含 secret；has() 不暴露 value；无便利序列化接口",
+    "a5_key_discipline": "遵守：<namespace>.<name> 最小纪律 + 校验；未设计业务 taxonomy",
+    "a6_privileged_boundary": "遵守：secret 不进入 Renderer/SQLite/logs/DOM/localStorage/model prompt；未改 domain schema/migrations",
+    "a7_negative_verification": "遵守：OS-backed round-trip 成功且明文不进入 SQLite/store 文件/错误输出",
+    "a8_backup_negative": "遵守：SecretStore 存测试 secret 后 createBackup，backup DB 无明文；Backup Manager 不感知 SecretStore",
+    "a9_no_credential_byok_provider": "遵守：未实现 Seller Credential/BYOK provider/rotate/Phase 13 hardening"
+  },
+  "evidence": {
+    "confirmed": [
+      "packages/secret-store（新 workspace 包）：secret-store.ts（契约/错误/key 纪律）、os-backed.ts（OsBackedSecretStore + SecureCipher，fail-closed）、in-memory.ts（TEST_ONLY 守卫）、index.ts",
+      "secret-store 9/9 测试；workspace typecheck/build/test（21 包）=0；Worker 473/473"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "Phase 13 SHEEP-240~243：完整 hardening/lifecycle/migration/audit/privacy",
+    "Seller Credential / BYOK provider 调用 / rotate",
+    "PDD/DouDian/BYOK 业务 key taxonomy"
+  ],
+  "tests": [
+    "secret-store build/typecheck=0",
+    "secret-store 9/9",
+    "workspace 三绿（21 包）",
+    "Worker 473/473"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "明文不入 SQLite（字节扫描）",
+    "明文不入 store 文件（字节扫描）",
+    "错误不含 secret（decrypt 失败）",
+    "backup DB 无明文 + backup 目录仅 DB+metadata",
+    "fail-closed（cipher 不可用即抛）",
+    "InMemory 无守卫即抛",
+    "非法 key 拒绝"
+  ],
+  "modified_files": [
+    "packages/secret-store/** (新建包：package.json/tsconfig/src/tests)",
+    "pnpm-lock.yaml (新增 @types/node for secret-store)",
+    "docs/secret-store-foundation.md (新建)",
+    "project/PROJECT_STATE.json",
+    "reports/M1.5-R01-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "新增 @fastwork/secret-store 包（21->21 workspace 项目）；SecretStore 能力/契约 + 最小 OS-backed 实现"
+  ],
+  "security_changes": [
+    "Secret 边界：privileged boundary、fail-closed、无明文落点"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变；未改 domain/persistence/migrations）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

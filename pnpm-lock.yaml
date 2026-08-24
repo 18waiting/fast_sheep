@@ -342,6 +342,15 @@ importers:
         specifier: ^5.5.0
         version: 5.9.3
 
+  packages/secret-store:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.1
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+
   packages/test-kit:
     devDependencies:
       typescript:
