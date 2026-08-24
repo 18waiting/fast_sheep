@@ -100,5 +100,19 @@
       "failed backup creation：数据库不存在 -> createBackup 抛错 -> listBackups 为空、backupRoot 无残留文件"
     ],
     "verification": "persistence 68/68；workspace typecheck/build/test=0；Worker 473/473"
+  },
+  "repair_2026_08_25_migration_prebackup_wal": {
+    "issue": "MigrationRunner 的 migration-before-upgrade backup 仍复用旧 backupDatabase 主 .sqlite3 裸复制；persistence 为 WAL 模式，高风险迁移前恢复点不能保证含全部已提交 WAL 内容（原 DEFERRED 升级为必修）",
+    "fix": "backupDatabase 升级为 VACUUM INTO 一致已提交快照 + 证据校验（integrity=ok）；失败即 THROW -> MigrationRunner 在应用任何 pending migration 前中止，当前 DB 保持原 schema/data",
+    "preserved": [
+      "migration sequencing / checksum / transaction / future-schema rejection 等其它 MigrationRunner 行为未变",
+      "无新增 retention/cadence/product policy",
+      "schema v7、0001~0007 migrations 内容不变；未进入 R-01"
+    ],
+    "new_tests": [
+      "migration pre-upgrade backup WAL consistency：WAL 模式 + wal_autocheckpoint=0 写入已提交数据 -> 真实 MigrationRunner upgrade -> 独立打开最新 pre-upgrade backup 验证 committed data + integrity + schema v4（pre-upgrade）",
+      "pre-upgrade backup 失败安全：backup 目录被阻塞 -> backupDatabase 抛错 -> migrate 中止 -> schema 仍 v4、无 0005~0007 应用、数据完整"
+    ],
+    "verification": "persistence 70/70；workspace typecheck/build/test=0；Worker 473/473；m12 migration matrix PASS（使用升级后 backupDatabase）"
   }
 }

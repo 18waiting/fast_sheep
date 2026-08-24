@@ -3,11 +3,11 @@
 // M1.5-R06: Backup/Restore Foundation tests.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync, readFileSync, existsSync, readdirSync, rmSync } from "node:fs";
+import { mkdtempSync, writeFileSync, readFileSync, copyFileSync, existsSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
-  openDatabase, SqliteConnection, DB_FILENAME,
+  openDatabase, SqliteConnection, DB_FILENAME, MigrationRunner, MIGRATIONS_DIR,
   createBackup, listBackups, restoreBackup, rotateBackups, BACKUP_METADATA_FILENAME,
 } from "../dist/index.js";
 
@@ -230,4 +230,69 @@ test("failed backup creation leaves no valid-looking backup in listBackups", () 
     const entries = readdirSync(backupRoot, { withFileTypes: true });
     assert.equal(entries.length, 0, "no partial files left behind");
   }
+});
+
+// --- REPAIR: migration pre-upgrade backup is WAL-consistent ---
+const LEGACY4 = ["0001_initial.sql","0002_feedback_effect_tracking.sql","0003_learning_review_audit_optimization.sql","0004_legacy_import_tracking.sql"];
+
+test("migration pre-upgrade backup captures committed un-checkpointed WAL data (integrity/schema correct)", () => {
+  const r = root();
+  const dbPath = join(r, DB_FILENAME);
+  const mig4 = mkdtempSync(join(tmpdir(), "fs-wal4-"));
+  for (const f of LEGACY4) copyFileSync(join(MIGRATIONS_DIR, f), join(mig4, f));
+  const conn = new SqliteConnection(dbPath);
+  conn.exec("PRAGMA journal_mode = WAL"); // WAL mode
+  new MigrationRunner(mig4).migrate(conn, join(r, "backups")); // -> v4
+  conn.exec("PRAGMA wal_autocheckpoint = 0"); // keep committed rows un-checkpointed
+  conn.run("INSERT INTO shops (id, type, name, created_time, enabled, sort_order) VALUES ('wal-shop-1','pdd','WAL店',NULL,1,0)");
+
+  // trigger a REAL MigrationRunner upgrade (0005-0007); pre-upgrade backup is created inside
+  const res = new MigrationRunner().migrate(conn, join(r, "backups"));
+  assert.equal(res.migratedCount, 3);
+  assert.equal(res.backedUp, true);
+
+  // locate the pre-upgrade backup file
+  const backupRootDir = join(r, "backups");
+  // choose the NEWEST backup (the one created by the real upgrade, pre-0005-0007)
+  const backupDirs = readdirSync(backupRootDir, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name)
+    .sort()
+    .reverse();
+  const backupFile = backupDirs.map((n) => join(join(backupRootDir, n), DB_FILENAME)).find((p) => existsSync(p));
+  assert.ok(backupFile, "pre-upgrade backup file exists");
+
+  const bk = new SqliteConnection(backupFile);
+  try {
+    assert.equal(bk.get("SELECT name FROM shops WHERE id='wal-shop-1'").name, "WAL店", "committed WAL data captured in pre-upgrade backup");
+    const integrity = bk.all<{ integrity_check: string }>("PRAGMA integrity_check");
+    assert.equal(integrity[0].integrity_check, "ok", "backup integrity ok");
+    assert.equal(bk.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "4", "backup is pre-upgrade schema v4");
+  } finally {
+    bk.close();
+  }
+  // main DB upgraded to v7 with data preserved
+  assert.equal(conn.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "7");
+  assert.equal(conn.get("SELECT name FROM shops WHERE id='wal-shop-1'").name, "WAL店");
+  conn.close();
+});
+
+test("pre-upgrade backup failure aborts migration; current DB stays at original schema/data", () => {
+  const r = root();
+  const dbPath = join(r, DB_FILENAME);
+  const mig4 = mkdtempSync(join(tmpdir(), "fs-wal4-"));
+  for (const f of LEGACY4) copyFileSync(join(MIGRATIONS_DIR, f), join(mig4, f));
+  const conn = new SqliteConnection(dbPath);
+  new MigrationRunner(mig4).migrate(conn, join(r, "backups")); // -> v4
+  conn.run("INSERT INTO shops (id, type, name, created_time, enabled, sort_order) VALUES ('shop-f','pdd','店',NULL,1,0)");
+
+  // block the backup directory so a valid snapshot cannot be produced
+  writeFileSync(join(r, "blocker"), "x");
+  assert.throws(() => new MigrationRunner().migrate(conn, join(r, "blocker", "backups")));
+
+  // migration must NOT have started: schema still v4, no 0005-0007 applied, data intact
+  assert.equal(conn.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "4", "schema unchanged");
+  assert.equal(conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 4, "no 0005-0007 applied");
+  assert.equal(conn.get("SELECT name FROM shops WHERE id='shop-f'").name, "店", "data intact");
+  conn.close();
 });
