@@ -31,7 +31,7 @@
   "current_milestone": "M1.1",
   "last_closed_task": "SHEEP-020",
   "current_task": null,
-  "next_action": "GATE-P1-DOMAIN-FOUNDATION",
+  "next_action": "M1.5_FOUNDATION",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "GATE-P1-DOMAIN-FOUNDATION (pending Owner PASS)",
+  "next_task": "M1.5 Early Cross-Cutting Foundation (R-01/R-02/R-03/R-07/R-06; pending Owner order)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
