@@ -1,0 +1,71 @@
+{
+  "task": "M1.5-R02",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.5",
+  "objective": "Local Ownership Execution Semantics：4 动作→目标状态语义 + authority 边界（Actor≠Authority，非授权引擎）",
+  "completed_requirements": 5,
+  "total_requirements": 5,
+  "owner_tightening": {
+    "t1_actor_not_authority": "遵守：OwnershipActorRef 仅为执行主体身份；无权限判断（无 canClaim/authorize 等导出；测试断言）",
+    "t2_no_supervisor_role_hardcode": "遵守：supervisor_takeover 为动作/结果语义；无 ROLE_SUPERVISOR/role 检查（测试断言）",
+    "t3_semantics_not_transition_engine": "遵守：仅 4 动作→目标状态映射；无 transition matrix/canTransition/all-combos（测试断言）",
+    "t4_ai_active_state_only": "遵守：AI_ACTIVE 不推导 AI_AUTO_REPLY/ALLOW_AUTO/Entitlement（测试断言无导出）",
+    "t5_deferred": "遵守：lease/expiry/cloud authority/reconciliation/presence 全部 DEFERRED（测试断言无导出）"
+  },
+  "tests_added": [
+    "Ownership execution 不导出 authority validation / permission engine",
+    "Actor identity 与 authority capability 隔离（无 SHEEP-012 耦合导出）",
+    "不存在 role=supervisor 自动获得 takeover 的逻辑"
+  ],
+  "evidence": {
+    "confirmed": [
+      "packages/domain/src/ownership-execution.ts：OwnershipAction(4)/OwnershipActionRequest/OwnershipTargetState/targetOwnershipFor/OwnershipExecutionError",
+      "域测试 83/83（含 12 个 ownership-execution 测试）；workspace 三绿（21 包）；Worker 473/473"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "lease duration/refresh/expiry、Cloud ownership authority、reconciliation、presence（Phase 12 / DEFERRED）",
+    "完整 authority validation（SHEEP-012 capability+resource scope）",
+    "自动化策略（Phase 7）"
+  ],
+  "tests": [
+    "domain build/typecheck=0",
+    "domain 83/83",
+    "workspace 三绿（21 包）",
+    "Worker 473/473"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "无权限/authority 函数导出",
+    "无 role=supervisor 自动 takeover",
+    "无 transition matrix/canTransition",
+    "无 AI_AUTO_REPLY/ALLOW_AUTO 泄漏",
+    "无 lease/cloud/reconciliation/presence 导出",
+    "handoff 缺 target -> 通用错误"
+  ],
+  "modified_files": [
+    "packages/domain/src/ownership-execution.ts (新建)",
+    "packages/domain/src/index.ts (re-export)",
+    "packages/domain/tests/ownership-execution.test.mjs (新建)",
+    "docs/ownership-execution-semantics.md (新建)",
+    "project/PROJECT_STATE.json",
+    "reports/M1.5-R02-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Local Ownership Execution 语义契约建立；无 schema/实现变更"
+  ],
+  "security_changes": [
+    "Actor≠Authority 边界；无权限引擎"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变；未改 SHEEP-014/persistence/migrations）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

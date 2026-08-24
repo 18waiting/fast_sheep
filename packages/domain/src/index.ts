@@ -102,3 +102,7 @@ export * from "./sync-readiness.js";
 
 // M1.5-R03: Minimal Entitlement Contract.
 export * from "./entitlement.js";
+
+
+// M1.5-R02: Local Ownership Execution Semantics.
+export * from "./ownership-execution.js";
