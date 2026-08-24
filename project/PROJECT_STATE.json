@@ -28,10 +28,10 @@
     "reviewed_version": "V1.0_REVIEWED"
   },
   "current_phase": "PHASE_1",
-  "current_milestone": "M1.1",
+  "current_milestone": "M1.5",
   "last_closed_task": "SHEEP-020",
-  "current_task": null,
-  "next_action": "M1.5_FOUNDATION",
+  "current_task": "M1.5-R07 (proposal pending approval)",
+  "next_action": "M1.5-R07",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "M1.5 Early Cross-Cutting Foundation (R-01/R-02/R-03/R-07/R-06; pending Owner order)",
+  "next_task": "M1.5-R07 Sync-Ready Persistence Contract",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -432,11 +432,19 @@
   },
   "sheep_020": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-24",
     "report": "reports\\SHEEP-020-report.json",
     "schema_version": 7,
     "external_reference_access": 0,
-    "next_stage_not_executed": true
-  }
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-24"
+  },
+  "m15_order": [
+    "R-07 Sync-Ready Persistence Contract",
+    "R-06 Backup/Restore Foundation",
+    "R-01 SecretStore Foundation",
+    "R-03 Minimal Entitlement Contract",
+    "R-02 Local Ownership Execution Semantics"
+  ]
 }
