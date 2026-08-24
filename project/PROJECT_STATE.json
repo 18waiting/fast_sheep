@@ -482,11 +482,12 @@
   },
   "m15_r02": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-25",
     "report": "reports\\M1.5-R02-report.json",
     "m15_complete": true,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-25"
   },
   "m15_complete": true
 }
