@@ -31,8 +31,8 @@ function seedParents(conn: SqliteConnection, merchantId: string, storeId: string
 test("fresh DB: schema v6, new conversation tables + legacy coexist", () => {
   const r = root();
   const { conn, schemaVersion } = openDatabase(r);
-  assert.equal(schemaVersion, 6);
-  assert.equal(conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 6);
+  assert.equal(schemaVersion, 7);
+  assert.equal(conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 7);
   for (const t of ["normalized_conversations","normalized_messages","ownership_records"]) {
     assert.ok(conn.get("SELECT name FROM sqlite_master WHERE type='table' AND name=?", t), `table ${t}`);
   }
@@ -52,7 +52,7 @@ test("upgrade path: 0001-0005 DB migrates to 0006; historical checksums unchange
 
   const runner = new MigrationRunner();
   const res = runner.migrate(conn, join(r, "backups", "db"));
-  assert.equal(res.migratedCount, 1);
+  assert.equal(res.migratedCount, 2);
   assert.equal(res.backedUp, true);
 
   const applied = runner.applied(conn);

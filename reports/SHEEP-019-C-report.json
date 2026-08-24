@@ -1,0 +1,71 @@
+{
+  "task": "SHEEP-019-C",
+  "result": "COMPLETE",
+  "phase": "Phase 1",
+  "milestone": "M1.4",
+  "objective": "Commerce Persistence: Customer/DomainProduct/Sku/Order/Logistics 落库（0007 + repository），不改 0001~0006",
+  "completed_requirements": 9,
+  "total_requirements": 9,
+  "owner_tightening": {
+    "t1_collision_check": "遵守：0007 前完成命名冲突检查 —— customers/orders/skus/logistics/domain_products 无冲突；仅 products 与 legacy 冲突（用 domain_products + DomainProductRepository）；未覆盖/复用 legacy",
+    "t2_external_ref_opaque_no_unique": "遵守：external_ref 仅 TEXT，无 UNIQUE(external_ref)，无 dedup/merge/identity-resolution（DDL 断言）",
+    "t3_fk_no_cascade": "遵守：FK 仅表达 SKU->domain_products、Logistics->orders 结构关系；无 ON DELETE CASCADE/删除传播（DDL 断言）",
+    "t4_merchant_scope_isolation": "遵守：Customer/Product/Order 双 Merchant 隔离负测试（listByMerchant(A) 不含 B 数据）；SKU/Logistics 无重复 merchant，经 Product/Order 单一事实源"
+  },
+  "evidence": {
+    "confirmed": [
+      "0007_commerce_domain.sql（两处目录字节一致）：customers/domain_products/skus/orders/logistics（均无 store_id；skus/logistics 无 merchant）",
+      "5 个域 repository（接口 + Sqlite）：Customer/DomainProduct/Sku/Order/Logistics",
+      "schema 7：TS/Python/_scaffold(0007)/test_schema_version/m12/测试同步",
+      "persistence 53/53；workspace typecheck/build/test=0；Worker 473/473"
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "Customer/Product/Order Store 语义（DEFERRED）",
+    "商品/订单/物流业务字段与逻辑（Phase 4/5）",
+    "delete/tombstone/retention（R-06 DATA governance）",
+    "external_ref 唯一性/dedup/identity-resolution（无治理证据，未实现）"
+  ],
+  "tests": [
+    "persistence 53/53（含 8 个 commerce 新测试）",
+    "workspace typecheck/build/test=0",
+    "Worker 473/473"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "Merchant scope isolation：listByMerchant(A) 不返回 B 数据（Customer/Product/Order）",
+    "legacy collision：DomainProductRepository 不读/写 legacy products 表",
+    "无 store_id（customers/domain_products/orders）；无 UNIQUE(external_ref)；无 ON DELETE CASCADE",
+    "skus/logistics 无 merchant_id；repository 无 delete；无 sync 字段"
+  ],
+  "modified_files": [
+    "packages/persistence/migrations/0007_commerce_domain.sql (新建)",
+    "resources/persistence/migrations/0007_commerce_domain.sql (新建)",
+    "packages/persistence/src/repositories/commerce-repositories.ts (新建)",
+    "packages/persistence/src/sqlite/sqlite-commerce-repositories.ts (新建)",
+    "packages/persistence/src/index.ts (导出)",
+    "packages/persistence/src/db/schema-version.ts (6->7)",
+    "packages/persistence/tests/commerce-persistence.test.ts (新建)",
+    "packages/persistence/tests/identity-persistence.test.ts / migrations.test.ts / conversation-persistence.test.ts (6->7)",
+    "services/ai-worker/**/schema.py、tests/_scaffold.py、tests/test_schema_version.py (6->7)",
+    "scripts/run-m12-*.mjs (6->7)",
+    "project/PROJECT_STATE.json",
+    "reports/SHEEP-019-C-report.json (新建)"
+  ],
+  "architecture_changes": [
+    "Phase 1 commerce 域持久化：0007 + 5 个域 repository；schema v7"
+  ],
+  "security_changes": [
+    "无安全边界变更"
+  ],
+  "data_model_changes": [
+    "新增 customers/domain_products/skus/orders/logistics；无删除/同步语义"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

@@ -68,3 +68,7 @@ export { SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountR
 // SHEEP-019-B: conversation domain persistence.
 export type { NormalizedConversationRecord, MessageRecord, OwnershipRecord, NormalizedConversationRepository, MessageRepository, OwnershipRepository } from "./repositories/conversation-repositories.js";
 export { SqliteNormalizedConversationRepository, SqliteMessageRepository, SqliteOwnershipRepository } from "./sqlite/sqlite-conversation-repositories.js";
+
+// SHEEP-019-C: commerce domain persistence.
+export type { CustomerRecord, DomainProductRecord, SkuRecord, OrderRecord, LogisticsRecord, CustomerRepository, DomainProductRepository, SkuRepository, OrderRepository, LogisticsRepository } from "./repositories/commerce-repositories.js";
+export { SqliteCustomerRepository, SqliteDomainProductRepository, SqliteSkuRepository, SqliteOrderRepository, SqliteLogisticsRepository } from "./sqlite/sqlite-commerce-repositories.js";
