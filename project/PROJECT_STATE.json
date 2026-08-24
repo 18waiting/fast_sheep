@@ -30,7 +30,7 @@
   "current_phase": "PHASE_1",
   "current_milestone": "M1.5",
   "last_closed_task": "M1.5-R06",
-  "current_task": null,
+  "current_task": "M1.5-R01 (proposal pending approval)",
   "next_action": "M1.5-R01",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -63,7 +63,8 @@
     "UI_AND_THIRD_PARTY_ASSET_LICENSE_INVENTORY",
     "FINAL_HOSTING_PROVIDER_DECISION",
     "FINAL_RETENTION_DURATIONS",
-    "FINAL_CLOUD_SYNC_DATA_SCOPE"
+    "FINAL_CLOUD_SYNC_DATA_SCOPE",
+    "MigrationRunner backupDatabase WAL-consistency: 现有迁移前备份为裸复制（非 WAL 一致快照）；在未来高风险 migration / 对应 Gate 前必须重新验证或解决"
   ],
   "external_reference_sources": [
     {
@@ -457,10 +458,11 @@
   },
   "m15_r06": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-24",
     "report": "reports\\M1.5-R06-report.json",
     "r06_scope_note": "仅 Backup/Restore foundation；R-06 其它 DATA decisions 保持 Gate/DEFERRED",
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-25"
   }
 }
