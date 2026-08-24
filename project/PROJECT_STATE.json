@@ -27,11 +27,11 @@
     "reviewed_path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
     "reviewed_version": "V1.0_REVIEWED"
   },
-  "current_phase": "PHASE_1",
-  "current_milestone": "GATE-P1-PASS / PHASE_2_ENTRY_PENDING_OWNER_GO",
+  "current_phase": "PHASE_2",
+  "current_milestone": "M2.1",
   "last_closed_task": "M1.5-R02",
   "current_task": null,
-  "next_action": "PHASE_2_ENTRY",
+  "next_action": "SHEEP-021",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -109,7 +109,7 @@
     "PHASE_0_START:APPROVED_OWNER_GO"
   ],
   "next_stage_not_executed": true,
-  "lifecycle_stage": "PHASE_1",
+  "lifecycle_stage": "PHASE_2",
   "roadmap_phase_started": true,
   "review_2_inputs_from_dry_run": [
     "R-01 SecretStore dependency ordering",
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-021 (Phase 2 M2.1, pending Owner GO)",
+  "next_task": "SHEEP-021",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -497,5 +497,12 @@
     "ready_to_enter_phase_2": true,
     "requires_owner_approval": true,
     "report": "reports\\GATE-P1-review.json"
+  },
+  "phase_2_entry": {
+    "status": "APPROVED",
+    "approved_date": "2026-08-25",
+    "scope": "Track A FastWork reference restoration only; Phase 3 redesign not started",
+    "first_acceptance_unit": "SHEEP-021",
+    "sheep_021_approved": false
   }
 }
