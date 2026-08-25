@@ -30,8 +30,8 @@
   "current_phase": "PHASE_2",
   "current_milestone": "M2.2-COMPLETE",
   "last_closed_task": "SHEEP-035",
-  "current_task": "REFERENCE_GAP_RESOLUTION_CHECKPOINT (proposal pending approval)",
-  "next_action": "REFERENCE_GAP_RESOLUTION_CHECKPOINT",
+  "current_task": "REFERENCE_GAP_RESOLUTION_CHECKPOINT (RESOLVED 2026-08-26; awaiting Owner Phase 2 continuation direction)",
+  "next_action": "PHASE_2 continuation (M2.4 SHEEP-036) pending Owner direction",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "REFERENCE_GAP_RESOLUTION_CHECKPOINT (pending Owner decisions)",
+  "next_task": "SHEEP-036 (M2.4 Safe Rewiring; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -690,5 +690,31 @@
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
     "controller_pass_date": "2026-08-26"
+  },
+  "reference_gap_resolution": {
+    "checkpoint": "REFERENCE_GAP_RESOLUTION_CHECKPOINT",
+    "status": "RESOLVED",
+    "resolved_date": "2026-08-26",
+    "product_direction": "AI-native workflow + Professional fallback",
+    "principles": [
+      "AI-first: understand intent, auto-organize Customer/Product/Order/Logistics/Knowledge context, generate suggestions, reduce repetitive work",
+      "Key raw facts stay quickly visible/verifiable; never hidden by AI summary",
+      "Human remains in control: AI suggestion != authority; execution obeys Ownership/Capability/Entitlement/Automation Policy",
+      "Agent Workspace: AI-native workflow primary + professional observability/keyboard efficiency/manual fallback",
+      "Supervisor/Ops: professional console (high density, queues, status, metrics, audit, anomaly handling)",
+      "FastWork reference = workflow/behavior/IA inspiration only; NOT mandatory spec for final visual/geometry/IA"
+    ],
+    "dispositions": {
+      "G1_CONVERSATION_WORKBENCH": "CLEAN_ROOM",
+      "G2_PDD_PANEL": "CLEAN_ROOM",
+      "G3_DOUDIAN_PANEL": "CLEAN_ROOM",
+      "G4_PRODUCT_ORDER_CONTEXT": "DEFER (Phase 4 M4.3 redesign per AI-native + Professional fallback; reuse archived partial evidence)",
+      "G5_SETTINGS_PAGES": "CLEAN_ROOM"
+    },
+    "screenshot_constraint": "FastWork v1.0.99 screenshot = workflow/IA reference only; NO pixel-match / exact size/color inference / asset copy",
+    "scope_boundary": "No DISCOVER authorized; reference discovery scope NOT expanded",
+    "phase_2_impact": "5 gaps evidence governance closed (4 CLEAN_ROOM + 1 DEFER); Track A = restored structures + IA docs; GATE-P2 evidence-aware completion rule applies",
+    "reopen_conditions": "Owner separately authorizes minimal read-only discovery per gap/feature phase",
+    "next": "Phase 2 continuation (M2.4) pending Owner direction; not auto-entering Phase 3"
   }
 }
