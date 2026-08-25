@@ -30,8 +30,8 @@
   "current_phase": "PHASE_2",
   "current_milestone": "M2.2-COMPLETE",
   "last_closed_task": "SHEEP-035",
-  "current_task": "REFERENCE_GAP_RESOLUTION_CHECKPOINT (RESOLVED 2026-08-26; awaiting Owner Phase 2 continuation direction)",
-  "next_action": "PHASE_2 continuation (M2.4 SHEEP-036) pending Owner direction",
+  "current_task": "GATE-P2-UI-REFERENCE (reviewed PASS 2026-08-26; awaiting Owner Phase 3 entry approval)",
+  "next_action": "awaiting Owner approval for Phase 3 entry (GATE-P2 PASS)",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-036 (M2.4 Safe Rewiring; pending Owner approval)",
+  "next_task": "Phase 3 entry (pending Owner approval; M2.4 assessed satisfied by existing evidence at GATE-P2)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -716,5 +716,14 @@
     "phase_2_impact": "5 gaps evidence governance closed (4 CLEAN_ROOM + 1 DEFER); Track A = restored structures + IA docs; GATE-P2 evidence-aware completion rule applies",
     "reopen_conditions": "Owner separately authorizes minimal read-only discovery per gap/feature phase",
     "next": "Phase 2 continuation (M2.4) pending Owner direction; not auto-entering Phase 3"
+  },
+  "gate_p2": {
+    "status": "PASS",
+    "reviewed_date": "2026-08-26",
+    "codex_controller_self_review": "PASS",
+    "m2_4_satisfied_by_existing_evidence": true,
+    "ready_to_enter_phase_3": true,
+    "requires_owner_approval": true,
+    "report": "reports\\GATE-P2-review.json"
   }
 }
