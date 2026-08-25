@@ -1,0 +1,74 @@
+{
+  "task": "SHEEP-029",
+  "result": "COMPLETE",
+  "phase": "Phase 2",
+  "milestone": "M2.2",
+  "objective": "Dialog/Common Component Restoration：建立最小 clean-room dialog helper（overlay+panel+title+close+content），无业务内容、无交互行为、无新视觉值；reference 仅确认 modal/dialog 结构存在",
+  "completed_requirements": 4,
+  "total_requirements": 4,
+  "owner_tightening": {
+    "t1_no_unified_framework": "遵守：仅最小 clean-room dialog helper（renderDialog(host,title) -> DialogParts）；未过度设计通用 API/options/slot registry/生命周期/事件系统；接口最小、可替换",
+    "t2_close_structural_only": "遵守：关闭按钮仅结构语义；未实现 Esc close / overlay click close / focus trap / return-focus / animation（保持 UNKNOWN/DEFERRED，测试负例覆盖）",
+    "t3_tokens_only_no_new_visuals": "遵守：dialog 样式仅用既有 --fs-* tokens/布局关键字；未新增遮罩透明度/宽度/padding/shadow/radius 等新视觉值或 token（测试负例：dialog CSS 无 hex/px/box-shadow/opacity/width:/z-index）；reference_match_status = NOT_ESTABLISHED",
+    "t4_api_stability_not_established": "遵守：当前 dialog 原语无消费方；报告明确 API stability = NOT_ESTABLISHED；首个真实消费方可按证据调整，非永久 Design System 契约"
+  },
+  "evidence": {
+    "confirmed": [
+      "reference 添加店铺模态框 UI 结构存在（sidebar.js，SHEEP-022）",
+      "添加/删除店铺操作 DO_NOT_PORT_DIRECTLY（依赖 backend/platform）",
+      "Fast Sheep dialog helper 结构建立且 dist 编译产物一致"
+    ],
+    "inferred": [
+      "模态框 = 覆盖层 + 面板 的常见结构（低风险推断）"
+    ],
+    "unknown": [
+      "模态框精确尺寸/间距/遮罩透明度/动画/关闭交互细节 -> UNKNOWN/NOT_EVIDENCED",
+      "reference 是否存在统一 dialog framework -> UNKNOWN（未确认）"
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "添加店铺模态框业务内容/操作（DO_NOT_PORT_DIRECTLY -> 对应 Fast Sheep 平台/后端单元）",
+    "dialog 交互行为（Esc/overlay/focus/return-focus/animation）",
+    "reference 对话框视觉参数",
+    "SHEEP-030+（M2.3 Core Page Restoration）"
+  ],
+  "tests": [
+    "desktop build/typecheck；desktop tests 194/194（含 5 个新 dialog 结构 guard）",
+    "workspace typecheck / test（全部 PASS，desktop 194/194）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：app_started/renderer_loaded/snapshot_rendered/shutdown_clean 全 PASS"
+  ],
+  "negative_tests": [
+    "无 options/slot/registry/lifecycle/eventEmitter（最小接口）",
+    "无 Escape/keydown/focusTrap/returnFocus/animation/transition/addEventListener（关闭仅结构语义）",
+    "dialog CSS 无 hex 色/px 字面量/box-shadow/opacity/width:/z-index（仅既有 tokens）",
+    "无店铺增删表单/提交/业务内容；无 店铺API/ipcRenderer/fetch/WebSocket 等",
+    "未接入任何现有流程（无消费方）；未 eval reference；未联网；未扩大 scope；schema v7 不变；无 sync/Outbox"
+  ],
+  "modified_files": [
+    "apps/desktop/src/renderer/components/dialog.ts（新建）",
+    "apps/desktop/src/renderer/styles.css（dialog 样式，既有 tokens）",
+    "apps/desktop/tests/renderer-dialog-structure.test.ts（新建）",
+    "docs/renderer-dialog-common-evidence.md（新建）",
+    "reports/SHEEP-029-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-029 记录）"
+  ],
+  "architecture_changes": [
+    "Dialog/Common 最小原语建立（无消费方；API stability = NOT_ESTABLISHED）"
+  ],
+  "security_changes": [
+    "无（CSP 保持；无新远程/专有资产；external_network_calls=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

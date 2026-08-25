@@ -74,3 +74,12 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 .cap-chip { font-size: var(--fs-font-size-xs); padding: 2px var(--fs-space-2); border-radius: var(--fs-radius-full); }
 .cap-chip.supported { background: var(--fs-color-bg-success); color: var(--fs-color-success); }
 .cap-chip.unsupported { background: var(--fs-color-bg-subtle); color: var(--fs-color-text-muted); }
+/* SHEEP-029 dialog common component — clean-room minimal helper.
+ * Uses existing --fs-* tokens only; no new unproven visual values
+ * (overlay opacity/width/shadow/extra radius/padding are NOT invented).
+ * reference_match_status = NOT_ESTABLISHED. */
+.dialog-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--fs-color-bg); }
+.dialog-panel { background: var(--fs-color-bg-surface); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); border-radius: var(--fs-radius-md); padding: var(--fs-space-4); }
+.dialog-header { display: flex; align-items: center; justify-content: space-between; gap: var(--fs-space-3); }
+.dialog-title { margin: 0; font-size: var(--fs-font-size-lg); }
+.dialog-content { margin-top: var(--fs-space-3); }
