@@ -1,4 +1,10 @@
 // M6 app shell (clean-room): composes the workbench from components.
+// SHEEP-026: shell topology aligned to the owner-authorized reference IA —
+// app-navbar (top region, placeholder for SHEEP-028) + app-body (app-sidebar + app-main).
+// Reference is used only for region structure/IA; no reference code, embedded assets,
+// geometry values, or bridge/auth/network behavior are ported.
+// Integration points stay minimal: plain container boundaries only; no slotting,
+// dynamic-mount, or navigation framework/contract is introduced.
 import type { UiState } from "../state/view-model.js";
 import type { WorkbenchActions } from "./actions.js";
 import type { M10PanelActions } from "./m10-panel-types.js";
@@ -30,12 +36,24 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
   renderErrorBanner(errorHost, state);
   shell.appendChild(errorHost);
 
+  // SHEEP-026: top navigation region container (reference navbar shell region).
+  // Empty placeholder — content/geometry (height, padding, sticky) is SHEEP-028 scope
+  // and remains UNKNOWN/NOT_EVIDENCED here. No fake business UI is added.
+  const navbar = el("nav", "app-navbar");
+  navbar.setAttribute("aria-label", "主导航区域（占位，由后续恢复单元填充）");
+  shell.appendChild(navbar);
+
   const body = el("div", "app-body");
+
+  // Left sidebar region container (reference sidebar shell region). Existing
+  // shop-sidebar component keeps rendering inside; its internals are SHEEP-027 scope.
+  const sidebar = el("div", "app-sidebar");
   const sidebarHost = el("div", "sidebar-host");
   renderShopSidebar(sidebarHost, state, actions);
-  body.appendChild(sidebarHost);
+  sidebar.appendChild(sidebarHost);
+  body.appendChild(sidebar);
 
-  const main = el("main", "workbench-main");
+  const main = el("main", "app-main");
   const headerHost = el("div", "header-host");
   renderWorkbenchHeader(headerHost, state);
   main.appendChild(headerHost);

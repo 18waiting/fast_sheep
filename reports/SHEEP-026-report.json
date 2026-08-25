@@ -1,0 +1,73 @@
+{
+  "task": "SHEEP-026",
+  "result": "COMPLETE",
+  "phase": "Phase 2",
+  "milestone": "M2.2",
+  "objective": "App Shell Restoration：建立与 reference IA 对齐的 Fast Sheep clean-room App Shell 骨架（app-navbar + app-sidebar + app-main），reference 仅作区域结构/IA 参考；现有功能区域保持可用",
+  "completed_requirements": 3,
+  "total_requirements": 3,
+  "owner_tightening": {
+    "t1_topology_only_no_geometry": "遵守：仅建立已确认/可合理推断的顶部导航+左侧栏+主内容区域关系；navbar 高度/sidebar 宽度/padding/gap/sticky/breakpoint 保持 UNKNOWN/NOT_EVIDENCED，未发明 reference 数值，仅复用现有 clean-room tokens/值",
+    "t2_minimal_integration_points": "遵守：仅建立 app-navbar/app-sidebar/app-main 容器边界；未引入 slot registry/dynamic mount/navigation API 或其它 shell framework/contract（结构测试负例覆盖）",
+    "t3_empty_render_structural_only": "遵守：空 navbar 占位仅验证结构健壮性（m6 smoke snapshot_rendered 通过）；未新增 fake shop/user/loading/empty-state 业务 UI"
+  },
+  "evidence": {
+    "confirmed": [
+      "reference navbar shell + sidebar shell 区域存在（SHEEP-022）",
+      "Fast Sheep 三区骨架建立且 dist 编译产物含 app-navbar/app-sidebar/app-main",
+      "既有功能区域（error/sidebar/header/status/countdown/panels/platform/m10/m11）全部保持可用"
+    ],
+    "inferred": [
+      "顶部/左侧区域相对位置关系（低风险、可逆）"
+    ],
+    "unknown": [
+      "navbar 高度 / sidebar 宽度 / padding/gap / sticky/fixed / breakpoint / 精确视觉值 -> UNKNOWN/NOT_EVIDENCED"
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "SHEEP-027 Sidebar Restoration；SHEEP-028 Header/Navigation Restoration；SHEEP-029 Dialog/Common",
+    "navbar/几何视觉参数（待对应单元按证据确定）",
+    "Phase 3 Fast Sheep Design System"
+  ],
+  "tests": [
+    "desktop build（含 copy-renderer-assets guard）；desktop typecheck；desktop tests 178/178",
+    "renderer-app-shell-structure.test.ts（4 个新结构 guard：三区边界、最小集成点、无 fake UI、dist 镜像）",
+    "workspace typecheck / test（全部 PASS，desktop 178/178）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：app_started/renderer_loaded/snapshot_rendered/shutdown_clean 全 PASS"
+  ],
+  "negative_tests": [
+    "未复制/提取 reference bundle 代码、嵌入样式或 token 值",
+    "未 eval reference；未联网；未扩大 scope",
+    "未发明 navbar/几何参考数值（无新视觉值）",
+    "未引入 slot registry/dynamic mount/navigation framework（测试负例）",
+    "未新增 fake shop/user/loading/empty-state 业务 UI（测试负例）",
+    "未改 domain/persistence/schema（v7 不变）；无 sync/Outbox"
+  ],
+  "modified_files": [
+    "apps/desktop/src/renderer/components/app-shell.ts（三区骨架）",
+    "apps/desktop/src/renderer/styles.css（.app-main 重命名 + .app-navbar 最小规则/注释）",
+    "apps/desktop/tests/renderer-app-shell-structure.test.ts（新建）",
+    "docs/renderer-app-shell-evidence.md（新建）",
+    "reports/SHEEP-026-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-026 记录）"
+  ],
+  "architecture_changes": [
+    "renderer App Shell 三区容器边界建立（app-navbar/app-sidebar/app-main），作为 SHEEP-027/028/029 稳定集成点"
+  ],
+  "security_changes": [
+    "无（CSP 保持；无新远程/专有资产；external_network_calls=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

@@ -30,7 +30,7 @@
   "current_phase": "PHASE_2",
   "current_milestone": "M2.2",
   "last_closed_task": "SHEEP-025-CR1",
-  "current_task": "SHEEP-026 (proposal pending approval)",
+  "current_task": "SHEEP-026 (executed, pending Owner PASS)",
   "next_action": "SHEEP-026",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -572,5 +572,15 @@
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
     "controller_pass_date": "2026-08-25"
+  },
+  "sheep_026": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-25",
+    "report": "reports\\SHEEP-026-report.json",
+    "evidence_doc": "docs\\renderer-app-shell-evidence.md",
+    "next_per_roadmap": "SHEEP-027 (M2.2 Sidebar Restoration)",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }
