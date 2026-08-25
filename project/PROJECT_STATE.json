@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_2",
   "current_milestone": "M2.2-COMPLETE",
-  "last_closed_task": "SHEEP-032",
-  "current_task": "SHEEP-033 (executed, pending Owner PASS)",
-  "next_action": "SHEEP-033",
+  "last_closed_task": "SHEEP-033",
+  "current_task": "SHEEP-034 (proposal pending approval)",
+  "next_action": "SHEEP-034",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-033 (pending Owner PASS)",
+  "next_task": "SHEEP-034 (pending Owner PASS)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -654,7 +654,7 @@
   },
   "sheep_033": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-26",
     "report": "reports\\SHEEP-033-report.json",
     "evidence_doc": "docs\\renderer-doudian-panel-evidence.md",
@@ -662,6 +662,7 @@
     "gap_cluster": "CONVERSATION+PDD+DOUDIAN (continuous reference-gap cluster; Owner may decide Reference Gap Resolution Checkpoint later)",
     "next_per_roadmap": "SHEEP-034 (M2.3 Product/Order Context; re-verify evidence per unit)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-26"
   }
 }
