@@ -30,7 +30,7 @@
   "current_phase": "PHASE_2",
   "current_milestone": "M2.2-COMPLETE",
   "last_closed_task": "SHEEP-034",
-  "current_task": "SHEEP-035 (proposal pending approval)",
+  "current_task": "SHEEP-035 (executed, pending Owner PASS)",
   "next_action": "SHEEP-035",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -677,5 +677,17 @@
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
     "controller_pass_date": "2026-08-26"
+  },
+  "sheep_035": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-26",
+    "report": "reports\\SHEEP-035-report.json",
+    "evidence_doc": "docs\\renderer-settings-evidence.md",
+    "reference_gap": "REFERENCE_GAP-SETTINGS-PAGES (OPEN/NOT_EVIDENCED_IN_CURRENT_AUTHORIZED_SCOPE)",
+    "checkpoint_recommendation": "REFERENCE_GAP_RESOLUTION_CHECKPOINT (recommended next Owner decision point; not created)",
+    "next_per_roadmap": "Owner decision: REFERENCE_GAP_RESOLUTION_CHECKPOINT (M2.3 evidence coverage complete; do not auto-continue)",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }

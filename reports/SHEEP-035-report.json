@@ -1,0 +1,98 @@
+{
+  "task": "SHEEP-035",
+  "result": "COMPLETE",
+  "phase": "Phase 2",
+  "milestone": "M2.3",
+  "objective": "Settings Pages Clean-room Baseline Consolidation + Reference Evidence Gap Record（re-scoped；逐项核验 Settings；严格区分 target vs related-but-distinct evidence）",
+  "completed_requirements": 3,
+  "total_requirements": 3,
+  "owner_tightening": {
+    "t1_deferred_without_locking": "遵守：Settings 后续实现仅记录 deferred to later roadmap phase/unit；未锁定具体 Phase/页面架构/与 Account/BYOK/SecretStore/Cloud 的组合方式；当前只确认 M2.3 不实现",
+    "t2_related_but_distinct": "遵守：Settings page/layout = NOT_EVIDENCED；account.js account/login/expiry UI = CONFIRMED related evidence（明确 NOT Settings），保留供未来相关 UX 参考",
+    "t3_checkpoint_recommendation_only": "遵守：Settings gap 成立后，最终报告推荐 REFERENCE_GAP_RESOLUTION_CHECKPOINT 作为下一个 Owner decision point；仅推荐，未创建、未执行、未修改 Roadmap；完成后 STOP"
+  },
+  "reference_gap": {
+    "id": "REFERENCE_GAP-SETTINGS-PAGES",
+    "status": "OPEN / NOT_EVIDENCED_IN_CURRENT_AUTHORIZED_SCOPE",
+    "finding": "Settings 页面 UI/page/layout NOT FOUND in authorized 5-bundle scope",
+    "related_but_distinct": "account.js account/login/expiry UI = CONFIRMED（NOT Settings，保留供相关 UX 参考）",
+    "consequence": "Track-A Settings Pages reference restoration 当前无法宣称",
+    "resolution_options": [
+      "Owner 单独授权 reference discovery",
+      "明确选择 clean-room / non-reference 路线"
+    ],
+    "auto_decided": false
+  },
+  "clean_room_baseline_status": {
+    "clean_room_ui_baseline": "NOT_IMPLEMENTED",
+    "layout_status": "NOT_IMPLEMENTED",
+    "reference_match_status": "NOT_ESTABLISHED",
+    "reference_derived": "NO",
+    "settings_future": "deferred to later roadmap phase/unit（未锁定具体 Phase/架构/组合方式；M2.3 不实现）"
+  },
+  "checkpoint_recommendation": {
+    "recommended": "REFERENCE_GAP_RESOLUTION_CHECKPOINT（下一个 Owner decision point）",
+    "action": "仅推荐；未创建、未执行、未修改 Roadmap",
+    "owner_decides": "是否进入（含是否扩大 reference scope / 选择 clean-room 路线）由 Owner 单独决定"
+  },
+  "external_reference_access": {
+    "summary": "SHEEP-035 对 Owner-authorized renderer 5-bundle scope 进行了只读 re-verification（非 0）",
+    "accesses": [
+      "2026-08-26 只读扫描 authorized 5-bundle：设置/settings/配置/config/选项/偏好 关键字计数 + 行上下文定性（未 eval、未复制、未联网、未扩大 scope）"
+    ],
+    "renderer_reference_inspected": true,
+    "note": "读取已获授权的 renderer reference 不记为 0；未读取其它 FastWork tree / nixiang / rebuild"
+  },
+  "evidence": {
+    "confirmed": [
+      "独立 Settings 页面/布局 NOT_FOUND in authorized 5-bundle scope",
+      "account.js account/login/expiry UI = CONFIRMED related evidence（NOT Settings，保留供相关 UX 参考）",
+      "登录态函数/AI FAQ 设置提及/settings-store 配置引用 = 非 Settings 页面证据（non_evidence_reason 已记录）"
+    ],
+    "inferred": [],
+    "unknown": [
+      "Settings 页面/布局 -> NOT_EVIDENCED_IN_CURRENT_AUTHORIZED_SCOPE"
+    ]
+  },
+  "blockers": [
+    "REFERENCE_GAP-SETTINGS-PAGES（OPEN；Track-A Settings restoration 无法宣称）"
+  ],
+  "decisions_required": [
+    "REFERENCE_GAP_RESOLUTION_CHECKPOINT（下一个 Owner decision point；含 reference discovery 或 clean-room 路线）"
+  ],
+  "deferred_items": [
+    "Settings 后续实现（deferred to later roadmap phase/unit；未锁定架构/组合）",
+    "account/login/expiry related evidence 的未来 UX 复用",
+    "REFERENCE_GAP_RESOLUTION_CHECKPOINT（Owner 决定）"
+  ],
+  "tests": [
+    "desktop build/typecheck；desktop tests 207/207（复用既有 guard；新增测试 = 0）",
+    "workspace typecheck / test（全部 PASS，desktop 207/207）",
+    "m6 Electron renderer smoke（PASS，non-regression；external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS（仅 non-regression；产品代码变更=0）"
+  ],
+  "negative_tests": [
+    "未伪造 Settings 页面/layout；未把 account/auth/credential/配置/字符串当 Settings page evidence",
+    "未提前实现 Settings；未新增产品代码/测试；未扩大读取；未 eval；未联网",
+    "未创建 checkpoint / 未修改 Roadmap / 未继续下一阶段；schema v7 不变；无 sync/Outbox"
+  ],
+  "modified_files": [
+    "docs/renderer-settings-evidence.md（新建）",
+    "reports/SHEEP-035-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-035 记录）"
+  ],
+  "architecture_changes": [],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
