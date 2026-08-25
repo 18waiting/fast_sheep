@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_2",
   "current_milestone": "M2.2",
-  "last_closed_task": "SHEEP-025",
-  "current_task": "SHEEP-025-CR1 (executed, pending Owner PASS)",
-  "next_action": "SHEEP-026 (HOLD until CR1 PASS)",
+  "last_closed_task": "SHEEP-025-CR1",
+  "current_task": "SHEEP-026 (proposal pending approval)",
+  "next_action": "SHEEP-026",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -564,12 +564,13 @@
   },
   "sheep_025_cr1": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-25",
     "post_closure_defect_of": "SHEEP-025",
     "report": "reports\\SHEEP-025-CR1-report.json",
     "next_per_roadmap": "SHEEP-026 (App Shell Restoration; re-propose after CR1 PASS)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-25"
   }
 }
