@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_2",
   "current_milestone": "M2.2",
-  "last_closed_task": "SHEEP-024",
-  "current_task": "SHEEP-025 (executed, pending Owner PASS)",
-  "next_action": "SHEEP-025",
+  "last_closed_task": "SHEEP-025",
+  "current_task": "SHEEP-026 (proposal pending approval)",
+  "next_action": "SHEEP-026",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-025 (pending Owner PASS)",
+  "next_task": "SHEEP-026 (pending Owner PASS)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -552,13 +552,14 @@
   },
   "sheep_025": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-25",
     "report": "reports\\SHEEP-025-report.json",
     "evidence_doc": "docs\\renderer-css-tokens-evidence.md",
     "next_per_roadmap": "SHEEP-026 (M2.2 App Shell Restoration)",
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
-    "repair_note": "REPAIR resolved 2026-08-25: removed 4 git-ignored temp scripts under .tmp/ (classify-deps.mjs, classify2.mjs, extract-pages.mjs, scan-renderer.mjs) from closed SHEEP-021~024; check-clean-room-boundary PASS; no product/reference changes"
+    "repair_note": "REPAIR resolved 2026-08-25: removed 4 git-ignored temp scripts under .tmp/ (classify-deps.mjs, classify2.mjs, extract-pages.mjs, scan-renderer.mjs) from closed SHEEP-021~024; check-clean-room-boundary PASS; no product/reference changes",
+    "controller_pass_date": "2026-08-25"
   }
 }
