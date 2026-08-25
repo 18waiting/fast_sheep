@@ -1,0 +1,75 @@
+{
+  "task": "SHEEP-031",
+  "result": "COMPLETE",
+  "phase": "Phase 2",
+  "milestone": "M2.3",
+  "objective": "AI Panel Reference Layout：建立 Fast Sheep clean-room AI Panel 三区布局组件（功能列表区 + 聊天区 + 欢迎/预设问题区，空结构占位），仅用已授权 ai.js evidence；不 port bridge/backend/auth/network/streaming/send",
+  "completed_requirements": 6,
+  "total_requirements": 6,
+  "owner_tightening": {
+    "t1_hierarchy_provisional": "遵守：证据仅确认三区域存在，未确认精确 DOM hierarchy；ai-welcome 位于 ai-chat 内 = provisional clean-room decision（reference-derived=NO/INFERRED），未升级为 CONFIRMED",
+    "t2_preset_area_empty_structure": "遵守：欢迎/预设问题区仅空结构；无 preset-card API/点击行为/composer 填充/发送语义；卡片数量/内容/交互 UNKNOWN",
+    "t3_ai_tools_ui_region_only": "遵守：ai-tools 仅命名 AI Panel feature-list UI region；文档明确不等同 Phase 8 Tool/Capability/Permission domain；无授权/工具领域语义（测试负例覆盖）",
+    "t4_not_mounted": "遵守：组件未挂载；runtime integration/placement/API stability = NOT_ESTABLISHED；M6 smoke 仅作 non-regression evidence，未宣称 AI Panel runtime restoration 完成",
+    "t5_styles_css_unchanged": "遵守：styles.css 未改（无精确几何/视觉 evidence）；未新增任何 CSS/宽度/比例/gap/padding 数值",
+    "t6_tests_evidence_backed_only": "遵守：测试仅断言 evidence-backed 三区域 + negative boundaries；未将推断 DOM hierarchy/视觉布局固化为 reference truth"
+  },
+  "evidence": {
+    "confirmed": [
+      "ai.js 三区域结构存在（功能列表区/聊天区/欢迎页+预设问题区，SHEEP-022 L9/L16）",
+      "发消息/流式/管家API = DO_NOT_PORT_DIRECTLY（SHEEP-021/023）",
+      "Fast Sheep ai-panel 三区结构建立且 dist 编译产物一致"
+    ],
+    "inferred": [
+      "ai-welcome 位于 ai-chat 内（provisional clean-room decision；reference-derived=NO/INFERRED）"
+    ],
+    "unknown": [
+      "功能列表条目/顺序、预设问题卡片内容/数量、聊天区精确尺寸/间距/视觉值、精确 DOM hierarchy -> UNKNOWN/NOT_EVIDENCED"
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "AI 功能/发送/流式/模型集成（Phase 4 M4.x / AI Worker / Phase 9 Knowledge）",
+    "AI Panel 挂载与放置（Phase 3 IA 或首个消费者）",
+    "功能列表条目/预设问题卡片内容（UNKNOWN）",
+    "SHEEP-032（PDD Panel，REFERENCE_GAP 影响）"
+  ],
+  "tests": [
+    "desktop build/typecheck；desktop tests 204/204（含 7 个新 ai-panel 结构 guard）",
+    "workspace typecheck / test（全部 PASS，desktop 204/204）",
+    "m6 Electron renderer smoke（PASS，non-regression；external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS（仅 non-regression；未宣称 AI Panel runtime restoration）"
+  ],
+  "negative_tests": [
+    "无 onSend/sendMessage/stream/composer/presetCard/onPresetClick/管家API/onClick/addEventListener/button(/input(/textarea",
+    "无 店铺API/ipcRenderer/fetch/WebSocket/localStorage/navigate/api_key/credential/token/session/cookie",
+    "无 toolRegistry/toolId/capability/entitlement/permission/authorize/allow（ai-tools 无领域语义）",
+    "无 innerHTML/textContent（无内容伪造）",
+    "app-shell 未挂载 renderAiPanel/ai-panel（placement deferred）",
+    "未 eval reference；未联网；未扩大 scope；schema v7 不变；无 sync/Outbox"
+  ],
+  "modified_files": [
+    "apps/desktop/src/renderer/components/ai-panel.ts（新建；未挂载）",
+    "apps/desktop/tests/renderer-ai-panel-structure.test.ts（新建）",
+    "docs/renderer-ai-panel-evidence.md（新建）",
+    "reports/SHEEP-031-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-031 记录）"
+  ],
+  "architecture_changes": [
+    "AI Panel 三区布局组件建立（未挂载；API stability = NOT_ESTABLISHED）"
+  ],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0；styles.css 未改）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
