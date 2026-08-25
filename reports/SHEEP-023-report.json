@@ -1,0 +1,103 @@
+{
+  "task": "SHEEP-023",
+  "result": "COMPLETE",
+  "phase": "Phase 2",
+  "milestone": "M2.1",
+  "objective": "Renderer JS Dependency Classification：5 bundle 多标签分类（file + feature/region 双级；分层 claim；证据等级）",
+  "completed_requirements": 4,
+  "total_requirements": 4,
+  "method": "只读文本扫描（bridge/backend/runtime-network/URL/auth/DOM 标记）；未 eval；未联网；未复制；未扩大 scope",
+  "owner_tightening": {
+    "t1_ui_only_positive_evidence": "遵守：UI_ONLY 需积极证据（DOM/UI 标记 + 零依赖标记）；结果 = 无文件满足（全部含 bridge）—— 未因'未扫到依赖'标 CONFIRMED",
+    "t2_bridge_portability_not_established": "遵守：全部 bundle 标注 direct bridge/API portability = NOT_ESTABLISHED；恢复须用 Fast Sheep 自身安全/typed bridge",
+    "t3_network_layered": "遵守：URL literal = CONFIRMED(URL reference)；renderer 内 runtime network 调用=0（fetch/XHR/WebSocket/navigation 均无）-> 未确认 renderer 执行网络；网络归属 Main/Worker = INFERRED",
+    "t4_file_plus_region": "遵守：file-level summary + feature/region-level records（导航壳/店铺侧栏/账号页/管家页/知识库页）；未 eval/反编译/扩大 scope"
+  },
+  "file_classification": [
+    {
+      "labels": [
+        "UI_WITH_BRIDGE(CONFIRMED)",
+        "BACKEND_DEPENDENT(CONFIRMED)",
+        "NETWORK(URL ref CONFIRMED; runtime=无)",
+        "AUTH_OR_SELLER_DEPENDENT(CONFIRMED)"
+      ],
+      "file": "account.js"
+    },
+    {
+      "labels": [
+        "UI_WITH_BRIDGE(CONFIRMED)",
+        "BACKEND_DEPENDENT(CONFIRMED)",
+        "NETWORK(URL ref CONFIRMED×4; runtime=无)",
+        "AUTH_OR_SELLER_DEPENDENT(CONFIRMED)"
+      ],
+      "file": "ai.js"
+    },
+    {
+      "labels": [
+        "UI_WITH_BRIDGE(CONFIRMED)",
+        "BACKEND_DEPENDENT(CONFIRMED)"
+      ],
+      "file": "knowledge.js"
+    },
+    {
+      "labels": [
+        "UI_WITH_BRIDGE(CONFIRMED)",
+        "BACKEND_DEPENDENT(CONFIRMED)"
+      ],
+      "file": "navbar.js"
+    },
+    {
+      "labels": [
+        "UI_WITH_BRIDGE(CONFIRMED)",
+        "BACKEND_DEPENDENT(CONFIRMED)",
+        "AUTH_OR_SELLER_DEPENDENT(CONFIRMED)"
+      ],
+      "file": "sidebar.js"
+    }
+  ],
+  "key_findings": [
+    "5 个 bundle 全部含强 bridge 标记（店铺API ×19~57）；UI_ONLY = 无",
+    "renderer 内 runtime network 调用（fetch/XHR/WebSocket/navigation）= 0；网络在 Main/Worker",
+    "direct bridge/API portability = NOT_ESTABLISHED（全部）",
+    "敏感值零回显（仅文件+行+类别/关键字）"
+  ],
+  "evidence": {
+    "confirmed": [
+      "bridge/backend/runtime-network/URL/auth/DOM 标记均为代码级文本证据；设计注释提供 feature/region 职责（CONFIRMED）"
+    ],
+    "inferred": [
+      "ai.js 网络行为归属 Main/Worker（子进程/管家API + renderer 无 runtime 调用）"
+    ],
+    "unknown": []
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "SHEEP-024 UI Asset Provenance（后续 M2.1）",
+    "旧 bridge contract（店铺API）反推 Fast Sheep typed bridge 契约（后续 restoration 任务）",
+    "auth/session UI 重实现（后续 Phase）"
+  ],
+  "tests": [
+    "扫描脚本只读；输出仅文件+行+类别；报告/文档生成"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "无敏感值回显；未 eval；未请求网络；未复制 bundle",
+    "未扩大 reference scope（仅 5 bundle）",
+    "reference tree 未修改"
+  ],
+  "modified_files": [
+    "reports/SHEEP-023-report.json (新建)",
+    "docs/renderer-js-dependency-classification.md (新建)",
+    "project/PROJECT_STATE.json (SHEEP-023 记录)"
+  ],
+  "architecture_changes": [],
+  "security_changes": [
+    "敏感值零回显；bridge portability=NOT_ESTABLISHED（安全边界）"
+  ],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
