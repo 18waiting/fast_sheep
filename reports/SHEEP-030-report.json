@@ -1,0 +1,90 @@
+{
+  "task": "SHEEP-030",
+  "result": "COMPLETE",
+  "phase": "Phase 2",
+  "milestone": "M2.3",
+  "objective": "Conversation Clean-room Baseline Consolidation + Reference Evidence Gap Record（非 Reference Restoration）：确认现有 conversation 区域为 clean-room baseline，正式记录 REFERENCE_GAP，评估 M2.3 后续单元证据影响",
+  "completed_requirements": 6,
+  "total_requirements": 6,
+  "owner_tightening": {
+    "t1_repositioned": "遵守：任务定位 = Clean-room Baseline Consolidation + Reference Evidence Gap Record；reference-derived=NO、reference_match_status=NOT_ESTABLISHED、layout_stability=PROVISIONAL；未宣称完成 Conversation Reference Restoration",
+    "t2_conversation_region_not_required": "遵守：核实 conversation-region 为纯冗余（现有 panels 容器已含 conversation-host+suggestion-host），未引入；产品代码变更 = 0",
+    "t3_styles_css_unchanged": "遵守：styles.css 默认未改；No evidence -> preserve existing clean-room layout",
+    "t4_reference_gap_recorded": "遵守：新增正式 REFERENCE_GAP（Conversation Workbench layout NOT FOUND/UNKNOWN/NOT_EVIDENCED in authorized 5-bundle scope）；exact Track-A restoration 当前无法宣称；解决需 Owner 授权 reference discovery 或明确 clean-room/non-reference 路线",
+    "t5_no_scope_expansion": "遵守：未扩大读取范围（未读其它 FastWork tree / nixiang / rebuild）",
+    "t6_m23_impact_assessment": "遵守：报告评估 SHEEP-031+ 证据影响（SHEEP-031 有 in-scope 证据；SHEEP-032/033/034/035 受同一 REFERENCE_GAP 影响）；只报告影响，未修改 Roadmap、未自动进入 decision、未执行后续任务"
+  },
+  "reference_gap": {
+    "id": "REFERENCE_GAP-CONVERSATION-WORKBENCH",
+    "status": "OPEN / NOT_EVIDENCED",
+    "finding": "Conversation Workbench layout NOT FOUND / UNKNOWN / NOT_EVIDENCED in authorized 5-bundle scope",
+    "consequence": "exact Track-A reference restoration 当前无法宣称",
+    "resolution_options": [
+      "Owner 单独授权 reference discovery",
+      "明确选择 clean-room / non-reference 路线"
+    ],
+    "auto_decided": false
+  },
+  "evidence": {
+    "confirmed": [
+      "reference 5-bundle scope 无 conversation bundle（SHEEP-022）",
+      "Fast Sheep conversation 区域 = 现有 clean-room 组件（conversation-panel + suggestion-panel）",
+      "SHEEP-030 产品代码变更 = 0（conversation-region 纯冗余未引入；styles.css 未改）"
+    ],
+    "inferred": [],
+    "unknown": [
+      "reference conversation layout / 精确视觉值 -> UNKNOWN/NOT_EVIDENCED"
+    ]
+  },
+  "m23_impact_assessment": {
+    "sheep_031_ai_panel": "CONFIRMED in scope（ai.js）——可继续 reference-restoration 路线",
+    "sheep_032_pdd_panel": "UNKNOWN in scope —— 受同一 REFERENCE_GAP 影响（CONFIRMED 缺失）",
+    "sheep_033_doudian_panel": "UNKNOWN in scope —— 受同一 REFERENCE_GAP 影响（CONFIRMED 缺失）",
+    "sheep_034_product_order_context": "UNKNOWN in scope —— 受同一 REFERENCE_GAP 影响（INFERRED 缺失）",
+    "sheep_035_settings_pages": "UNKNOWN in scope —— 受同一 REFERENCE_GAP 影响（CONFIRMED 缺失）",
+    "note": "只报告影响；未修改 Roadmap、未自动进入 decision、未执行后续任务"
+  },
+  "blockers": [
+    "REFERENCE_GAP-CONVERSATION-WORKBENCH（OPEN；exact Track-A restoration 无法宣称）"
+  ],
+  "decisions_required": [
+    "REFERENCE_GAP 解决路线（Owner 授权 reference discovery 或 clean-room/non-reference）"
+  ],
+  "deferred_items": [
+    "Conversation 真实 reference 证据获取（待 Owner 授权）",
+    "Phase 4 会话功能（M4.1~M4.5）",
+    "SHEEP-032~035 的 reference 证据缺口处理"
+  ],
+  "tests": [
+    "desktop build/typecheck；desktop tests 197/197（含 3 个新 conversation-region clean-room guard）",
+    "workspace typecheck / test（全部 PASS，desktop 197/197）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：app_started/renderer_loaded/snapshot_rendered/shutdown_clean 全 PASS"
+  ],
+  "negative_tests": [
+    "conversation-panel/suggestion-panel 无 店铺API/ipcRenderer/fetch/WebSocket/localStorage/navigate/api_key/credential",
+    "无 innerHTML（安全文本渲染）",
+    "app-shell 保持 conversation-host + suggestion-host 现有组合",
+    "未扩大读取范围；未 eval；未联网；schema v7 不变；无 sync/Outbox"
+  ],
+  "modified_files": [
+    "apps/desktop/tests/renderer-conversation-region-structure.test.ts（新建；产品代码变更 = 0）",
+    "docs/renderer-conversation-layout-evidence.md（新建）",
+    "reports/SHEEP-030-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-030 记录）"
+  ],
+  "architecture_changes": [],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
