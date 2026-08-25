@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_2",
   "current_milestone": "M2.2-COMPLETE",
-  "last_closed_task": "SHEEP-029",
-  "current_task": "SHEEP-030 (executed, pending Owner PASS)",
-  "next_action": "SHEEP-030",
+  "last_closed_task": "SHEEP-030",
+  "current_task": "SHEEP-031 (proposal pending approval)",
+  "next_action": "SHEEP-031",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-030 (pending Owner PASS)",
+  "next_task": "SHEEP-031 (pending Owner PASS)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -619,13 +619,14 @@
   },
   "sheep_030": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-26",
     "report": "reports\\SHEEP-030-report.json",
     "evidence_doc": "docs\\renderer-conversation-layout-evidence.md",
     "reference_gap": "REFERENCE_GAP-CONVERSATION-WORKBENCH (OPEN/NOT_EVIDENCED)",
     "next_per_roadmap": "SHEEP-031 (M2.3 AI Panel Reference Layout)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-26"
   }
 }
