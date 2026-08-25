@@ -1,0 +1,55 @@
+{
+  "task": "SHEEP-024",
+  "result": "COMPLETE",
+  "phase": "Phase 2",
+  "milestone": "M2.1",
+  "objective": "UI Asset Provenance：正式记录 owner authorization scope 与 renderer 资产来源/许可状态（ledger）",
+  "completed_requirements": 4,
+  "total_requirements": 4,
+  "owner_tightening": {
+    "t1_no_standalone_assets_only": "遵守：'无 font/icon/image'仅指当前 authorized renderer tree 无独立资产文件；不推断 bundle 内 inline SVG/icon/data URI/CSS-in-JS 等；其 provenance = UNKNOWN/NOT_EVIDENCED（未新增读取）",
+    "t2_js_bundles_in_ledger": "遵守：5 个 JS bundle 纳入 ledger：reference eligibility=YES（授权范围）；direct code/bridge portability=NOT ESTABLISHED；commercial redistribution=NOT ESTABLISHED",
+    "t3_reference_yes_use_boundary": "遵守：YES 仅限 Master §2.2 授权 UI reference/restoration 用途（观察/分析/恢复参考）；不扩展为代码复制/bridge 复用/商业再分发/commercial approval",
+    "t4_future_assets_rule": "遵守：进入 commercial set 前须独立 evidence；有证据按证据分类；无证据才 UNKNOWN/NOT_EVIDENCED"
+  },
+  "next_determination": "SHEEP-025（Reviewed Roadmap M2.2 Global Shell Restoration 首项）—— 依据 active Reviewed Roadmap L354-355；未新建 GATE-P2",
+  "evidence": {
+    "confirmed": [
+      "owner authorization scope（Master §2.2）；5 JS bundle ledger；无独立 font/icon/image 资产文件"
+    ],
+    "unknown": [
+      "bundle 内 inline SVG/icon/data URI/CSS-in-JS 等 provenance（未新增读取）-> UNKNOWN/NOT_EVIDENCED_IN_CURRENT_SCOPE"
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "后续 restoration 任务：SHEEP-025 起（M2.2 Global Shell Restoration）",
+    "bundle 内嵌视觉表达（inline SVG/data URI 等）的 provenance：待授权新增读取时再核",
+    "未来候选资产进入 commercial set 前的独立 evidence 收集"
+  ],
+  "tests": [
+    "报告/文档完整性；未新增读取；reference tree 只读"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "未将 UNKNOWN 升级为无许可/有许可",
+    "未复制/未纳入 commercial asset set",
+    "未扩大授权 scope / 未读取其它目录",
+    "未开始 UI implementation"
+  ],
+  "modified_files": [
+    "docs/ui-asset-provenance.md (新建)",
+    "reports/SHEEP-024-report.json (新建)",
+    "project/PROJECT_STATE.json (SHEEP-024 记录)"
+  ],
+  "architecture_changes": [],
+  "security_changes": [
+    "资产许可边界固化；UNKNOWN 不升级"
+  ],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
