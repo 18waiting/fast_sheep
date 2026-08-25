@@ -15,7 +15,11 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
  * Region relationships follow the owner-authorized reference IA (navbar shell / sidebar shell).
  * Navbar geometry (height, padding, sticky/fixed, breakpoints) stays UNKNOWN/NOT_EVIDENCED;
  * only existing clean-room tokens/values are reused, no invented reference numbers. */
-.app-navbar { flex: none; }
+/* Navbar content layout (SHEEP-028): left/right arrangement + flex alignment is a
+ * Fast Sheep clean-room decision — reference-derived = NO / INFERRED;
+ * reference_match_status = NOT_ESTABLISHED. No invented dimension values. */
+.app-navbar { flex: none; display: flex; align-items: center; justify-content: space-between; gap: var(--fs-space-3); }
+.app-navbar-nav, .app-navbar-user { display: flex; align-items: center; gap: var(--fs-space-2); }
 .app-body { display: flex; flex: 1; min-height: 0; }
 
 /* Left sidebar region container (SHEEP-026 boundary); internals are SHEEP-027 scope. */

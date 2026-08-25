@@ -13,6 +13,7 @@ import type { LegacyImportActions } from "./legacy-import-types.js";
 import { EMPTY_LEGACY_IMPORT_VIEW_MODEL } from "./legacy-import-types.js";
 import { renderLegacyImportPanel } from "./legacy-import-panel.js";
 import { clear, el } from "./dom.js";
+import { renderAppNavbar } from "./app-navbar.js";
 import { renderShopSidebar } from "./shop-sidebar.js";
 import { renderWorkbenchHeader } from "./workbench-header.js";
 import { renderConversationPanel } from "./conversation-panel.js";
@@ -36,11 +37,10 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
   renderErrorBanner(errorHost, state);
   shell.appendChild(errorHost);
 
-  // SHEEP-026: top navigation region container (reference navbar shell region).
-  // Empty placeholder — content/geometry (height, padding, sticky) is SHEEP-028 scope
-  // and remains UNKNOWN/NOT_EVIDENCED here. No fake business UI is added.
+  // Top navigation region (reference navbar shell region). SHEEP-028 fills the
+  // structural sub-regions; content/geometry remain UNKNOWN/NOT_EVIDENCED.
   const navbar = el("nav", "app-navbar");
-  navbar.setAttribute("aria-label", "主导航区域（占位，由后续恢复单元填充）");
+  renderAppNavbar(navbar);
   shell.appendChild(navbar);
 
   const body = el("div", "app-body");

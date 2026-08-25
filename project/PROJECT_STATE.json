@@ -30,7 +30,7 @@
   "current_phase": "PHASE_2",
   "current_milestone": "M2.2",
   "last_closed_task": "SHEEP-027",
-  "current_task": "SHEEP-028 (proposal pending approval)",
+  "current_task": "SHEEP-028 (executed, pending Owner PASS)",
   "next_action": "SHEEP-028",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -594,5 +594,15 @@
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
     "controller_pass_date": "2026-08-26"
+  },
+  "sheep_028": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-26",
+    "report": "reports\\SHEEP-028-report.json",
+    "evidence_doc": "docs\\renderer-header-nav-evidence.md",
+    "next_per_roadmap": "SHEEP-029 (M2.2 Dialog/Common Component Restoration)",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }

@@ -1,0 +1,72 @@
+{
+  "task": "SHEEP-028",
+  "result": "COMPLETE",
+  "phase": "Phase 2",
+  "milestone": "M2.2",
+  "objective": "Header/Navigation Restoration：填充 app-navbar 为「导航项区 + 用户信息区」两空结构子区域；不 port bridge/auth/network；不发明导航标签/用户字段/几何视觉值；workbench-header 保持不动",
+  "completed_requirements": 3,
+  "total_requirements": 3,
+  "owner_tightening": {
+    "t1_layout_is_clean_room_decision": "遵守：app-navbar-nav/app-navbar-user 结构区域建立；左右排列/flex 对齐 = Fast Sheep clean-room implementation decision，未升级为 reference CONFIRMED；报告明确 reference_match_status = NOT_ESTABLISHED、layout reference-derived = NO / INFERRED",
+    "t2_aria_label_generic_only": "遵守：aria-label 仅通用无障碍标签（主导航区/用户信息区）；未提前确定 Phase 3 导航产品文案、栏目名或用户信息字段（测试负例覆盖）",
+    "t3_true_structural_placeholder": "遵守：空 navbar 保持真正结构占位；无 avatar/用户名/badge/logo/icon/loading/skeleton/暂无导航 等占位业务/视觉 UI（测试负例覆盖）"
+  },
+  "evidence": {
+    "confirmed": [
+      "reference navbar shell 区域存在（导航项渲染/切换 + 右上用户信息；bridge 数据）——SHEEP-022/023",
+      "Fast Sheep app-navbar 两空结构子区域建立且 dist 编译产物一致"
+    ],
+    "inferred": [
+      "子区域左右排列/flex 对齐 = clean-room decision（reference-derived = NO / INFERRED）"
+    ],
+    "unknown": [
+      "导航项标签/顺序、用户信息字段、navbar 几何与视觉值 -> UNKNOWN/NOT_EVIDENCED"
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "Fast Sheep 导航分类体系（Phase 3 SHEEP-040/041 IA）",
+    "用户信息数据契约（typed IPC 现无 username/points/expiry 数据）",
+    "navbar 几何/视觉参数（保持 UNKNOWN/NOT_EVIDENCED）",
+    "SHEEP-029 Dialog/Common Component Restoration"
+  ],
+  "tests": [
+    "desktop build/typecheck；desktop tests 189/189（含 6 个新 navbar 结构 guard）",
+    "workspace typecheck / test（全部 PASS，desktop 189/189）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：app_started/renderer_loaded/snapshot_rendered/shutdown_clean 全 PASS"
+  ],
+  "negative_tests": [
+    "无 店铺API/ipcRenderer/fetch/WebSocket/localStorage/navigate/api_key/credential（src + dist）",
+    "无 Phase 3 导航标签（工作台/会话/AI/客户/商品/订单/知识库/团队/设置）或用户字段（用户名/积分/到期）",
+    "无 avatar/badge/logo/icon/loading/skeleton/暂无导航 等占位业务/视觉 UI",
+    "app-shell 接入 renderAppNavbar 且保留 renderWorkbenchHeader",
+    "未 eval reference；未联网；未扩大 scope；未改 domain/persistence/schema（v7 不变）；无 sync/Outbox"
+  ],
+  "modified_files": [
+    "apps/desktop/src/renderer/components/app-navbar.ts（新建）",
+    "apps/desktop/src/renderer/components/app-shell.ts（接入 renderAppNavbar）",
+    "apps/desktop/src/renderer/styles.css（navbar 内容布局，clean-room decision）",
+    "apps/desktop/tests/renderer-navbar-structure.test.ts（新建）",
+    "docs/renderer-header-nav-evidence.md（新建）",
+    "reports/SHEEP-028-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-028 记录）"
+  ],
+  "architecture_changes": [
+    "app-navbar 区域结构填充：app-navbar-nav + app-navbar-user（空占位，SHEEP-029+/Phase 3 消费）"
+  ],
+  "security_changes": [
+    "无（CSP 保持；无新远程/专有资产；external_network_calls=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
