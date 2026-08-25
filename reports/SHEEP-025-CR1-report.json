@@ -1,0 +1,58 @@
+{
+  "task": "SHEEP-025-CR1",
+  "title": "Renderer Token Asset Build Integration",
+  "result": "COMPLETE",
+  "phase": "Phase 2",
+  "milestone": "M2.2",
+  "post_closure_defect_of": "SHEEP-025",
+  "post_closure_defect": {
+    "symptom": "dist/renderer/tokens.css missing although src/renderer/index.html links ./tokens.css; tokenized styles.css in dist would resolve all var(--fs-*) to undefined (visual baseline loss)",
+    "root_cause": "scripts/copy-renderer-assets.mjs used a hardcoded copy list [index.html, styles.css]; tokens.css added by SHEEP-025 was not included in the build copy step",
+    "discovery_reason": "Pre-SHEEP-026 verification of dist/renderer contents during Acceptance Unit proposal preparation (build-integration audit of the SHEEP-025 deliverable)",
+    "why_original_m6_smoke_did_not_catch": "M6 electron smoke is functional-only (renderer_loaded / snapshot_rendered / IPC round-trip); it does not assert that every stylesheet referenced by index.html is physically present in dist. A missing tokens.css silently degrades CSS custom properties without crashing the renderer."
+  },
+  "fix": {
+    "scope": "renderer asset copy/build integration only",
+    "change": "scripts/copy-renderer-assets.mjs now derives the stylesheet copy list from index.html local <link rel=stylesheet> references (index.html + tokens.css + styles.css) and verifies every copied asset exists in dist after copy; a missing referenced stylesheet => FATAL + exit 1 (build FAIL). No runtime fallback for missing tokens.css.",
+    "token_values_changed": false,
+    "styles_css_changed": false,
+    "shell_layout_changed": false,
+    "index_html_changed": false,
+    "reference_tree_modified": false
+  },
+  "regression_guard": {
+    "build_time": "copy-renderer-assets.mjs derives + verifies referenced stylesheets; missing src/dist asset => FATAL + exit 1",
+    "test_time": "apps/desktop/tests/renderer-assets.test.ts (3 tests): dist emits every index.html-referenced stylesheet; tokens.css + styles.css present in dist; src references resolve (no dangling links)",
+    "negative_probe": "temporary dangling <link href=./missing.css> injected into src index.html => \"FATAL: renderer asset missing in src\" + exit=1; source restored and dist rebuilt afterwards"
+  },
+  "verification": {
+    "desktop_build": "PASS (copied index.html, tokens.css, styles.css; \"renderer assets OK\")",
+    "desktop_test": "174/174 PASS (171 prior + 3 new guard tests)",
+    "workspace_typecheck": "PASS (all packages Done)",
+    "m6_electron_smoke": "PASS (renderer_loaded, snapshot_rendered, external_network_calls=0, shutdown_clean)",
+    "check_clean_room_boundary": "PASS: clean-room boundary clean",
+    "secret_scan": "PASS: secret scan clean",
+    "dist_contents": [
+      "index.html",
+      "styles.css",
+      "tokens.css"
+    ],
+    "csp_unchanged": true
+  },
+  "security": {
+    "security_boundary_changed": false,
+    "secrets_detected": false,
+    "raw_ipc_renderer_added": false,
+    "cross_tenant_or_cross_merchant_access_found": false,
+    "unapproved_sync_or_outbox_added": false,
+    "external_network_calls": 0
+  },
+  "modified_files": [
+    "scripts/copy-renderer-assets.mjs (fixed: derived stylesheet copy + dist verification guard)",
+    "apps/desktop/tests/renderer-assets.test.ts (new: permanent regression guard)",
+    "reports/SHEEP-025-CR1-report.json (new)",
+    "project/PROJECT_STATE.json (corrective record appended)"
+  ],
+  "audit_note": "Historical SHEEP-025 PASS facts unchanged; this is an appended post-closure corrective record (post_closure_defect_of=SHEEP-025).",
+  "next_stage_not_executed": true
+}
