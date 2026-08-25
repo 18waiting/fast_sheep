@@ -1,0 +1,56 @@
+/* Fast Sheep design tokens — mechanically promoted from Fast Sheep clean-room
+ * apps/desktop/src/renderer/styles.css baseline. Values are unchanged from that
+ * baseline; NO visual redesign is intended here (Fast Sheep redesign = Phase 3).
+ * Provenance: independently implemented clean-room baseline;
+ * reference_match_status = NOT_ESTABLISHED (not derived from the FastWork renderer
+ * reference; reference token values are UNKNOWN / NOT_EVIDENCED).
+ * Neutral naming: no fastwork-* / reference-* / original-* identifiers.
+ */
+:root {
+  /* color */
+  --fs-color-text: #1f2328;
+  --fs-color-text-secondary: #57606a;
+  --fs-color-text-muted: #8c959f;
+  --fs-color-text-on-primary: #fff;
+  --fs-color-bg: #f6f8fa;
+  --fs-color-bg-surface: #fff;
+  --fs-color-bg-subtle: #eaeef2;
+  --fs-color-bg-selected: #ddf4ff;
+  --fs-color-bg-success: #dafbe1;
+  --fs-color-bg-warning: #fff8c5;
+  --fs-color-bg-danger: #ffebe9;
+  --fs-color-bg-error: #fff1f0;
+  --fs-color-border: #d8dee4;
+  --fs-color-border-selected: #54aeff;
+  --fs-color-border-error: #ffccc7;
+  --fs-color-primary: #0969da;
+  --fs-color-success: #1a7f37;
+  --fs-color-warning: #7a5901;
+  --fs-color-danger: #cf222e;
+  --fs-color-error: #b3261e;
+  --fs-color-warning-strong: #9a6700;
+
+  /* spacing (values from baseline) */
+  --fs-space-1: 4px;
+  --fs-space-2: 8px;
+  --fs-space-3: 12px;
+  --fs-space-4: 16px;
+  --fs-space-5: 10px;
+
+  /* radius */
+  --fs-radius-sm: 6px;
+  --fs-radius-md: 8px;
+  --fs-radius-full: 999px;
+
+  /* border */
+  --fs-border-width: 1px;
+  --fs-border-style: solid;
+
+  /* typography */
+  --fs-font-sans: system-ui, "Microsoft YaHei", sans-serif;
+  --fs-font-size-xs: 11px;
+  --fs-font-size-sm: 12px;
+  --fs-font-size-md: 13px;
+  --fs-font-size-base: 14px;
+  --fs-font-size-lg: 16px;
+}

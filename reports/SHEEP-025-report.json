@@ -1,0 +1,84 @@
+{
+  "task": "SHEEP-025",
+  "result": "COMPLETE",
+  "phase": "Phase 2",
+  "milestone": "M2.2",
+  "objective": "Global CSS/Tokens Reference Restoration：Fast Sheep 全局 tokens + 全局 CSS（机械提升自 clean-room baseline，独立重实现）+ reference evidence 记录",
+  "completed_requirements": 5,
+  "total_requirements": 5,
+  "owner_tightening": {
+    "t1_unknown_not_redesign": "遵守：token 初始值机械提升自 Fast Sheep clean-room styles.css（逐一同原值）；未重新选择颜色/spacing/radius/shadow/typography；Phase 3 才 redesign",
+    "t2_neutral_naming": "遵守：token 命名 --fs-* 中性；无 fastwork-*/reference-*/original-*；provenance=clean-room baseline；reference_match_status=NOT_ESTABLISHED",
+    "t3_title_identity_cleanup": "遵守：index.html title -> 快羊客服；报告单独记录为 Fast Sheep identity cleanup（SHEEP-004 遗留）；reference-derived=NO",
+    "t4_no_visual_redesign": "遵守：选择器/布局/DOM 不变；37 个 var() 全部解析（0 未定义）；未新增 remote font/icon/image/proprietary asset；CSP 保持",
+    "t5_reference_claim_scope": "遵守：reference 仅记录'无独立 CSS + bundle 含 DOM/style 证据'；未声称确认完整 FastWork global CSS/token system；reference token values=UNKNOWN/NOT_EVIDENCED"
+  },
+  "identity_cleanup": {
+    "change": "index.html <title> FastWork 工作台 (M6) -> 快羊客服",
+    "classification": "Fast Sheep identity cleanup（SHEEP-004 遗留）",
+    "reference_derived": "NO",
+    "note": "不作为 FastWork UI restoration evidence"
+  },
+  "evidence": {
+    "confirmed": [
+      "reference 无独立 CSS（SHEEP-021）；bundle 含 DOM/style 证据（SHEEP-023）；tokens.css + 重构 styles.css 37 var() 全解析"
+    ],
+    "unknown": [
+      "reference 内嵌全局 CSS/token 系统与值 -> UNKNOWN/NOT_EVIDENCED"
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "SHEEP-026 App Shell Restoration；SHEEP-027 Sidebar；SHEEP-028 Header/Nav；SHEEP-029 Dialog/Common",
+    "Phase 3 Fast Sheep Design System（正式视觉语言设计）",
+    "bundle 内嵌 token 值提取（待授权新增读取时再核）"
+  ],
+  "tests": [
+    "renderer build（copy-renderer-assets）；desktop typecheck/tests；m6 renderer smoke；workspace 回归"
+  ],
+  "smokes": [],
+  "negative_tests": [
+    "未复制/提取 reference embedded styles/token values",
+    "未 eval reference；未联网；未扩大 scope",
+    "未新增 remote/proprietary asset",
+    "无视觉值变更（机械映射）"
+  ],
+  "modified_files": [
+    "apps/desktop/src/renderer/tokens.css (新建)",
+    "apps/desktop/src/renderer/styles.css (tokenized)",
+    "apps/desktop/src/renderer/index.html (title + tokens link)",
+    "docs/renderer-css-tokens-evidence.md (新建)",
+    "reports/SHEEP-025-report.json (新建)",
+    "project/PROJECT_STATE.json (SHEEP-025 记录)"
+  ],
+  "architecture_changes": [
+    "Fast Sheep 全局设计 tokens 基础建立（clean-room 机械提升）"
+  ],
+  "security_changes": [
+    "CSP 保持；无新远程/专有资产"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "owner_decision": "REPAIR (resolved 2026-08-25)",
+  "workspace_hygiene_cleanup": {
+    "classification": "workspace hygiene cleanup",
+    "removed_files": [
+      ".tmp/classify-deps.mjs",
+      ".tmp/classify2.mjs",
+      ".tmp/extract-pages.mjs",
+      ".tmp/scan-renderer.mjs"
+    ],
+    "origin": "closed SHEEP-021~024 read-only archaeology helper scripts; git-ignored; non-product artifacts",
+    "product_files_changed": false,
+    "reference_tree_modified": false,
+    "note": "remaining .tmp files (gate1.mjs, gate2.mjs, verify-r07.mjs) untouched; not part of this repair scope"
+  },
+  "boundary_guard_evidence": "PASS: scripts/check-clean-room-boundary.mjs -> \"PASS: clean-room boundary clean\" (0 forbidden references) after .tmp cleanup",
+  "tests_note": "desktop/workspace/Worker/M6 results retained (no product file changes since prior run; only git-ignored .tmp cleanup + report/state records)"
+}
