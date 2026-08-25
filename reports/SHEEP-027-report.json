@@ -1,0 +1,71 @@
+{
+  "task": "SHEEP-027",
+  "result": "COMPLETE",
+  "phase": "Phase 2",
+  "milestone": "M2.2",
+  "objective": "Sidebar Restoration：Fast Sheep clean-room Sidebar 区域恢复——店铺列表+选中态，数据来自 typed viewModel；不 port 店铺API/bridge/auth/backend；不实现添加/删除店铺模态框；不发明未证明视觉参数",
+  "completed_requirements": 4,
+  "total_requirements": 4,
+  "owner_tightening": {
+    "t1_sidebar_host_not_hard_goal": "遵守：核实 sidebar-host 为纯冗余层（无 CSS 规则、无测试/脚本引用、无状态生命周期依赖）后移除；否则保持现状；未引入无必要重构",
+    "t2_selection_semantics_only": "遵守：仅保持现有 clean-room selection（onSelectShop + aria-current）；未新增 route/navigation、自动数据加载、bridge call、current-shop persistence、recent/default shop、seller-session 切换逻辑",
+    "t3_no_enabled_type_reinterpretation": "遵守：未重新解释 shop_summaries.enabled/type 业务含义；未新增 disabled/auth/entitlement/platform-availability 语义（测试负例覆盖）",
+    "t4_empty_state_reference_derived_no": "遵守：空状态沿用现有 clean-room baseline 文案；报告与证据文档明确 reference-derived = NO，不冒充 FastWork reference evidence"
+  },
+  "evidence": {
+    "confirmed": [
+      "reference sidebar shell 区域存在（店铺卡片渲染/切换；添加模态框/删除；店铺API bridge）——SHEEP-022/023",
+      "Fast Sheep shop-sidebar 保持店铺列表+选中态，数据来自 typed viewModel",
+      "sidebar-host 纯冗余确认（无 CSS/测试/脚本/状态依赖）"
+    ],
+    "inferred": [],
+    "unknown": [
+      "reference 卡片精确布局/尺寸/间距/视觉值 -> UNKNOWN/NOT_EVIDENCED"
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [],
+  "deferred_items": [
+    "添加/删除店铺模态框（DO_NOT_PORT_DIRECTLY -> SHEEP-029 Dialog/Common 或对应平台单元）",
+    "店铺数据获取/增删操作（Fast Sheep Main/平台架构重实现）",
+    "「全部店铺/PDD/DouDian」分组导航（Phase 3 SHEEP-041，非 M2.2）",
+    "reference 卡片精确视觉参数（待对应单元按证据确定）"
+  ],
+  "tests": [
+    "desktop build/typecheck；desktop tests 183/183（含 5 个新 sidebar 结构 guard）",
+    "workspace typecheck / test（全部 PASS，desktop 183/183）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：app_started/renderer_loaded/snapshot_rendered/shutdown_clean 全 PASS"
+  ],
+  "negative_tests": [
+    "无 店铺API/ipcRenderer/fetch/WebSocket/localStorage/navigate/api_key/credential（src + dist）",
+    "无 onAddShop/onDeleteShop/addShop/deleteShop/removeShop/modal（DO_NOT_PORT_DIRECTLY）",
+    "无 disabled/entitlement/platform_availability/isEnabled/isAvailable 语义",
+    "空状态文案保持 clean-room baseline（reference-derived = NO）",
+    "未 eval reference；未联网；未扩大 scope；未改 domain/persistence/schema（v7 不变）；无 sync/Outbox"
+  ],
+  "modified_files": [
+    "apps/desktop/src/renderer/components/app-shell.ts（移除纯冗余 sidebar-host 中间层）",
+    "apps/desktop/src/renderer/components/shop-sidebar.ts（provenance 注释；行为不变）",
+    "apps/desktop/tests/renderer-sidebar-structure.test.ts（新建）",
+    "docs/renderer-sidebar-evidence.md（新建）",
+    "reports/SHEEP-027-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-027 记录）"
+  ],
+  "architecture_changes": [
+    "Sidebar 区域组合最小化：app-sidebar 直接承载 shop-sidebar（无冗余中间层）"
+  ],
+  "security_changes": [
+    "无（CSP 保持；无新远程/专有资产；external_network_calls=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

@@ -45,12 +45,12 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
 
   const body = el("div", "app-body");
 
-  // Left sidebar region container (reference sidebar shell region). Existing
-  // shop-sidebar component keeps rendering inside; its internals are SHEEP-027 scope.
+  // Left sidebar region container (reference sidebar shell region). The existing
+  // clean-room shop-sidebar component renders directly as this region's content.
+  // (SHEEP-027: the former unstyled sidebar-host wrapper was confirmed pure redundancy
+  // and removed — no CSS/test/state dependency; selection semantics unchanged.)
   const sidebar = el("div", "app-sidebar");
-  const sidebarHost = el("div", "sidebar-host");
-  renderShopSidebar(sidebarHost, state, actions);
-  sidebar.appendChild(sidebarHost);
+  renderShopSidebar(sidebar, state, actions);
   body.appendChild(sidebar);
 
   const main = el("main", "app-main");

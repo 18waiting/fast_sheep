@@ -1,4 +1,7 @@
 // M6 shop sidebar component (clean-room). Local shop list; no login/embedding.
+// SHEEP-027: sidebar region content — shop list + selection only, data from the typed
+// viewModel. No bridge/network calls; no shop add/remove UI (deferred to later units).
+// Empty-state text is the existing clean-room baseline (reference-derived = NO).
 import type { UiState } from "../state/view-model.js";
 import type { WorkbenchActions } from "./actions.js";
 import { button, clear, el } from "./dom.js";
