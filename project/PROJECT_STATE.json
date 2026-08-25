@@ -30,7 +30,7 @@
   "current_phase": "PHASE_2",
   "current_milestone": "M2.1-COMPLETE",
   "last_closed_task": "SHEEP-024",
-  "current_task": null,
+  "current_task": "SHEEP-025 (proposal pending approval)",
   "next_action": "SHEEP-025",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -541,12 +541,13 @@
   },
   "sheep_024": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-25",
     "report": "reports\\SHEEP-024-report.json",
     "provenance_doc": "docs\\ui-asset-provenance.md",
     "next_per_roadmap": "SHEEP-025 (M2.2 Global Shell Restoration first unit)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-25"
   }
 }
