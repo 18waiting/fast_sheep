@@ -837,7 +837,8 @@
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-043-report.json",
     "design_doc": "docs\\fast-sheep-design-tokens.md",
-    "decisions": ["DP-22..DP-28 (applied per Owner decision; awaiting SHEEP-043 PASS)"],
+    "decisions": ["DP-22..DP-28 (implemented per Controller recommendation; OWNER_DECIDED pending this round PASS)"],
+    "repair_note": "REPAIR 2026-08-27: DP-27 canonical status taxonomy (neutral/info/success/warning/danger; primary=Action/Accent); tests lock architecture invariants not exact visual set; Fact/Assistance/Evidence provisional; audit semantics = Owner decision PENDING until PASS",
     "next_per_roadmap": "SHEEP-044 (M3.2 Typography/Spacing/Color; pending Owner PASS)",
     "reference_tree_modified": false,
     "next_stage_not_executed": true

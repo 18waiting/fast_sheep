@@ -4,11 +4,18 @@ import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// SHEEP-043 structural guards: tokens.css = primitive + semantic two-layer system
-// (DP-22), shared semantic system (DP-23), --fs-* namespace kept (DP-24),
-// light-first/theme-ready/dark-deferred (DP-25), no AI brand color/skin (DP-26),
-// limited semantic status palette (DP-27), density reserved not implemented (DP-28);
-// every styles.css var() must resolve (0 undefined), selector/DOM untouched.
+// SHEEP-043 (REPAIR) architecture-invariant guards:
+// the token system must keep its architecture invariants WITHOUT freezing the exact
+// visual token inventory (SHEEP-044 may legitimately refine colors/inventory):
+//   - primitive + semantic two-layer (DP-22)
+//   - shared semantic system, no dual theme (DP-23)
+//   - --fs-* namespace + compatibility aliases (DP-24)
+//   - light-first / dark-deferred (DP-25)
+//   - no AI brand color/skin; Fact/Assistance/Evidence roles provisional (DP-26)
+//   - canonical status palette = neutral/info/success/warning/danger only (DP-27);
+//     primary = Action/Accent, NOT Status; legacy names = compatibility aliases
+//   - density reserved, not implemented (DP-28)
+//   - every styles.css var() resolves to a primitive; no alias cycles
 const HERE = dirname(fileURLToPath(import.meta.url));
 const TOKENS = join(HERE, "..", "src", "renderer", "tokens.css");
 const STYLES = join(HERE, "..", "src", "renderer", "styles.css");
@@ -20,91 +27,92 @@ function tokenDefs(css) {
   return m;
 }
 
-test("tokens.css has primitive + semantic two-layer architecture (DP-22)", () => {
+test("primitive + semantic two-layer architecture (DP-22); no raw hex in semantic layer", () => {
   const css = readFileSync(TOKENS, "utf-8");
   const defs = tokenDefs(css);
   const prims = [...defs.keys()].filter((k) => k.startsWith("--fs-prim-"));
   const sems = [...defs.keys()].filter((k) => !k.startsWith("--fs-prim-"));
-  assert.ok(prims.length > 0, "primitive layer must exist");
-  assert.ok(sems.length > 0, "semantic layer must exist");
-  // semantic layer must reference primitives only (no raw hex after the semantic marker)
+  assert.ok(prims.length > 0 && sems.length > 0, "both layers must exist");
   const semSection = css.slice(css.indexOf("Semantic layer"));
-  assert.ok(!/#[0-9a-fA-F]{3,8}/.test(semSection), "semantic layer must not contain raw hex values");
+  assert.ok(!/#[0-9a-fA-F]{3,8}/.test(semSection), "semantic layer must not contain raw hex");
   for (const s of sems) {
-    const v = defs.get(s);
-    assert.ok(v.startsWith("var(--fs-prim-"), s + " must reference a primitive");
+    assert.ok(defs.get(s).startsWith("var(--fs-prim-") || defs.get(s).startsWith("var(--fs-color-"), s + " must reference primitive or semantic alias");
   }
 });
 
-test("--fs-* namespace kept with aliases; existing tokens preserved (DP-24)", () => {
-  const css = readFileSync(TOKENS, "utf-8");
-  const defs = tokenDefs(css);
-  for (const k of ["--fs-color-text", "--fs-color-bg-surface", "--fs-color-primary", "--fs-space-2", "--fs-radius-md", "--fs-font-sans"]) {
-    assert.ok(defs.has(k), k + " must remain defined");
-  }
-  for (const t of ["fastwork-", "reference-", "original-"]) {
-    assert.ok(!css.includes(t), "tokens.css must not use " + t);
-  }
-});
-
-test("no AI brand color / AI skin token (DP-26)", () => {
-  const css = readFileSync(TOKENS, "utf-8");
-  const defs = tokenDefs(css);
-  for (const k of defs.keys()) {
-    assert.ok(!/ai/i.test(k), "no AI-brand token name: " + k);
-  }
-  assert.ok(!css.toLowerCase().includes("purple"), "no AI-purple token value");
-});
-
-test("reusable semantic roles Fact / Assistance / Evidence / Action exist (DP-26)", () => {
-  const css = readFileSync(TOKENS, "utf-8");
-  const defs = tokenDefs(css);
-  for (const k of ["--fs-color-fact", "--fs-color-fact-secondary", "--fs-color-assistance", "--fs-color-assistance-bg", "--fs-color-evidence", "--fs-color-evidence-bg", "--fs-color-action"]) {
-    assert.ok(defs.has(k), k + " must be defined");
-  }
-});
-
-test("limited semantic status palette (DP-27)", () => {
-  const css = readFileSync(TOKENS, "utf-8");
-  const defs = tokenDefs(css);
-  const status = [...defs.keys()].filter((k) => /--fs-color-(primary|success|warning|danger|error|warning-strong)$/.test(k)).sort();
-  assert.deepEqual(status, ["--fs-color-danger", "--fs-color-error", "--fs-color-primary", "--fs-color-success", "--fs-color-warning", "--fs-color-warning-strong"]);
-  const statusBg = [...defs.keys()].filter((k) => /--fs-color-bg-(success|warning|danger|error)$/.test(k)).sort();
-  assert.deepEqual(statusBg, ["--fs-color-bg-danger", "--fs-color-bg-error", "--fs-color-bg-success", "--fs-color-bg-warning"]);
-});
-
-test("no density switcher / context-density tokens implemented (DP-23/DP-28)", () => {
-  const css = readFileSync(TOKENS, "utf-8");
-  const defs = tokenDefs(css);
-  for (const k of defs.keys()) {
-    assert.ok(!/density|--fs-(compact|comfortable)/i.test(k), "no density token implemented: " + k);
-  }
-  assert.ok(css.includes("NOT implemented"), "DP-28 reserved must be documented");
-});
-
-test("every styles.css var() resolves to a primitive (0 undefined)", () => {
+test("every token resolves to a primitive with no alias cycles (semantic -> primitive)", () => {
   const defs = tokenDefs(readFileSync(TOKENS, "utf-8"));
+  const resolve = (name, seen) => {
+    seen = seen || new Set();
+    if (!defs.has(name)) return { ok: false, reason: "undefined" };
+    const v = defs.get(name);
+    const refs = [...v.matchAll(/var\((--fs-[\w-]+)\)/g)].map((x) => x[1]);
+    if (refs.length === 0) return { ok: true, value: v };
+    for (const r of refs) {
+      if (seen.has(r)) return { ok: false, reason: "cycle " + name + " -> " + r };
+      seen.add(r);
+      const sub = resolve(r, seen);
+      if (!sub.ok) return sub;
+    }
+    return { ok: true, value: "resolved" };
+  };
+  for (const k of defs.keys()) {
+    const r = resolve(k);
+    assert.ok(r.ok, k + " must resolve: " + r.reason);
+  }
+  // styles.css 0 undefined
   const styles = readFileSync(STYLES, "utf-8");
   const uses = [...new Set([...styles.matchAll(/var\((--fs-[\w-]+)\)/g)].map((m) => m[1]))];
   assert.ok(uses.length > 0, "styles.css must use tokens");
-  const resolve = (name, seen) => {
-    seen = seen || new Set();
-    if (!defs.has(name)) return null;
-    const v = defs.get(name);
-    const refs = [...v.matchAll(/var\((--fs-[\w-]+)\)/g)].map((x) => x[1]);
-    if (refs.length === 0) return v;
-    for (const r of refs) {
-      if (seen.has(r)) return "cycle";
-      seen.add(r);
-      if (resolve(r, seen) === null) return null;
-    }
-    return "resolved";
-  };
-  for (const u of uses) {
-    assert.ok(resolve(u) === "resolved", u + " must resolve (got " + resolve(u) + ")");
+  for (const u of uses) assert.ok(resolve(u).ok, u + " must resolve");
+});
+
+test("canonical status palette = neutral/info/success/warning/danger only (DP-27)", () => {
+  const defs = tokenDefs(readFileSync(TOKENS, "utf-8"));
+  const canonical = [...defs.keys()].filter((k) => k.startsWith("--fs-color-status-")).sort();
+  assert.deepEqual(canonical, [
+    "--fs-color-status-danger",
+    "--fs-color-status-info",
+    "--fs-color-status-neutral",
+    "--fs-color-status-success",
+    "--fs-color-status-warning"
+  ], "canonical status roles must be exactly neutral/info/success/warning/danger (no business-status explosion)");
+});
+
+test("primary is Action/Accent, NOT canonical status (DP-27)", () => {
+  const defs = tokenDefs(readFileSync(TOKENS, "utf-8"));
+  assert.ok(defs.has("--fs-color-primary"), "primary legacy name kept");
+  assert.ok(defs.has("--fs-color-action"), "action role exists");
+  assert.ok(![...defs.keys()].some((k) => k.startsWith("--fs-color-status-primary")), "primary must NOT be a canonical status");
+});
+
+test("legacy status names remain compatibility aliases (DP-24/DP-27)", () => {
+  const defs = tokenDefs(readFileSync(TOKENS, "utf-8"));
+  for (const k of ["--fs-color-success", "--fs-color-warning", "--fs-color-danger", "--fs-color-error", "--fs-color-warning-strong"]) {
+    assert.ok(defs.has(k), k + " must remain (compatibility alias)");
   }
 });
 
-test("built dist tokens.css is present (CR1 build guard)", () => {
+test("Fact/Assistance/Evidence roles exist and are marked provisional (DP-26)", () => {
+  const css = readFileSync(TOKENS, "utf-8");
+  const defs = tokenDefs(css);
+  for (const k of ["--fs-color-fact", "--fs-color-fact-secondary", "--fs-color-assistance", "--fs-color-assistance-bg", "--fs-color-evidence", "--fs-color-evidence-bg"]) {
+    assert.ok(defs.has(k), k + " must be defined");
+  }
+  assert.ok(/provisional/i.test(css), "Fact/Assistance/Evidence mapping must be marked provisional");
+  assert.ok(css.includes("SHEEP-044"), "final refinement must point to SHEEP-044");
+  assert.ok(!/ai/i.test([...defs.keys()].filter((k) => k.startsWith("--fs-color-")).join(" ")), "no AI-brand color token");
+});
+
+test("no density implementation; light-first; no external-origin markers (DP-23/25/28)", () => {
+  const css = readFileSync(TOKENS, "utf-8");
+  const defs = tokenDefs(css);
+  for (const k of defs.keys()) assert.ok(!/density/i.test(k), "no density token: " + k);
+  for (const k of defs.keys()) assert.ok(!/dark/i.test(k), "no dark-theme token: " + k);
+  for (const t of ["fastwork-", "reference-", "original-"]) assert.ok(!css.includes(t), "no external-origin marker: " + t);
+  assert.ok(css.includes("NOT implemented") || css.includes("not implemented"), "DP-28 reserved documented");
+});
+
+test("built dist tokens.css present (CR1 build guard)", () => {
   assert.ok(existsSync(DIST_TOKENS), "dist/renderer/tokens.css must exist after build");
 });

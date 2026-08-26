@@ -9,7 +9,8 @@
  *   no dark palette / theme selector / persistence here).
  * DP-26: No AI brand color / AI skin. AI is a cross-cutting consumer of reusable
  *   semantic roles Fact / Assistance / Evidence / Status / Action.
- * DP-27: LIMITED_SEMANTIC_STATUS_PALETTE (business status -> limited visual status roles).
+ * DP-27: LIMITED_CANONICAL_SEMANTIC_STATUS_PALETTE (canonical = neutral/info/success/warning/danger;
+ *   legacy/baseline names = compatibility aliases; primary = Action/Accent, NOT Status).
  * DP-28: DENSITY_IS_CONTEXTUAL_CAPABILITY_NOT_THEME (not implemented now).
  * Values: mechanically mapped from the SHEEP-025 clean-room baseline (no visual
  *   redesign; typography/spacing/color refinement = SHEEP-044).
@@ -75,16 +76,24 @@
   --fs-color-border: var(--fs-prim-border);
   --fs-color-border-selected: var(--fs-prim-border-selected);
   --fs-color-border-error: var(--fs-prim-border-error);
-  /* action role (DP-26) */
+  /* action / accent role (DP-26/DP-27): primary is Action/Accent, NOT Status */
   --fs-color-action: var(--fs-prim-primary);
-  /* status roles (DP-27: LIMITED_SEMANTIC_STATUS_PALETTE) */
   --fs-color-primary: var(--fs-prim-primary);
-  --fs-color-success: var(--fs-prim-success);
-  --fs-color-warning: var(--fs-prim-warning);
-  --fs-color-danger: var(--fs-prim-danger);
+  /* canonical status roles (DP-27: LIMITED_CANONICAL_SEMANTIC_STATUS_PALETTE) */
+  --fs-color-status-neutral: var(--fs-prim-ink-600);
+  --fs-color-status-info: var(--fs-prim-primary);
+  --fs-color-status-success: var(--fs-prim-success);
+  --fs-color-status-warning: var(--fs-prim-warning);
+  --fs-color-status-danger: var(--fs-prim-danger);
+  /* compatibility aliases (legacy/baseline names; NOT canonical status taxonomy) */
+  --fs-color-success: var(--fs-color-status-success);
+  --fs-color-warning: var(--fs-color-status-warning);
+  --fs-color-danger: var(--fs-color-status-danger);
   --fs-color-error: var(--fs-prim-error);
   --fs-color-warning-strong: var(--fs-prim-warning-strong);
-  /* reusable semantic roles Fact / Assistance / Evidence (DP-26; AI = consumer, no AI skin) */
+  /* reusable semantic roles Fact / Assistance / Evidence (DP-26; AI = consumer, no AI skin).
+   * NOTE: current color mapping = PROVISIONAL MECHANICAL BASELINE (aliases to existing values);
+   * final color refinement = SHEEP-044. */
   --fs-color-fact: var(--fs-prim-ink-900);
   --fs-color-fact-secondary: var(--fs-prim-ink-600);
   --fs-color-assistance: var(--fs-prim-primary);

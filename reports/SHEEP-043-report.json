@@ -19,13 +19,14 @@
     "t10_layer_documented": "遵守：文档明确 primitive -> semantic -> optional context/density -> component 层级；Agent/Supervisor 不建立两套冲突 semantic meaning"
   },
   "decisions": {
-    "dp22": "PRIMITIVE_PLUS_SEMANTIC（primitive 最小化）",
-    "dp23": "SHARED_SEMANTIC_SYSTEM_WITH_CONTEXTUAL_DENSITY_CAPABILITY",
-    "dp24": "--fs-* namespace 保留 + semantic reorganization + alias",
-    "dp25": "LIGHT_FIRST_THEME_READY_DARK_DEFERRED",
-    "dp26": "无 AI 品牌色；semantic roles Fact/Assistance/Evidence/Status/Action；AI 为消费者",
-    "dp27": "LIMITED_SEMANTIC_STATUS_PALETTE",
-    "dp28": "DENSITY_IS_CONTEXTUAL_CAPABILITY_NOT_THEME（当前不实现）"
+    "dp22": "PRIMITIVE_PLUS_SEMANTIC (implemented per Controller recommendation)",
+    "dp23": "SHARED_SEMANTIC_SYSTEM_WITH_CONTEXTUAL_DENSITY_CAPABILITY (implemented)",
+    "dp24": "PRESERVE_FS_NAMESPACE_WITH_SEMANTIC_REORGANIZATION_AND_COMPATIBILITY_ALIASES (implemented)",
+    "dp25": "LIGHT_FIRST_THEME_READY_DARK_DEFERRED (implemented)",
+    "dp26": "REUSABLE_FACT_ASSISTANCE_EVIDENCE_STATUS_ACTION_SEMANTICS (implemented; AI no brand skin; Fact/Assistance/Evidence = provisional mechanical baseline, SHEEP-044 refines)",
+    "dp27": "LIMITED_CANONICAL_SEMANTIC_STATUS_PALETTE (canonical = neutral/info/success/warning/danger; legacy = compatibility aliases; primary = Action/Accent)",
+    "dp28": "DENSITY_IS_CONTEXTUAL_CAPABILITY_NOT_THEME (reserved, not implemented)",
+    "owner_decision_status": "PENDING (Owner PASS pending this round; record OWNER_DECIDED after PASS)"
   },
   "evidence": {
     "confirmed": [
@@ -72,5 +73,15 @@
   "old_rebuild_modified": false,
   "original_reference_modified": false,
   "secrets_detected": false,
-  "next_stage_not_executed": true
+  "next_stage_not_executed": true,
+  "repair_record": {
+    "owner_decision": "REPAIR (2026-08-27) — token architecture convergence, no visual redesign",
+    "items": [
+      "DP-27 canonical status taxonomy: neutral/info/success/warning/danger; primary = Action/Accent NOT Status; legacy names = compatibility aliases",
+      "renderer-tokens-structure.test.ts rewritten to lock architecture invariants (not exact visual set); SHEEP-044 may refine colors/inventory",
+      "Fact/Assistance/Evidence color mapping marked provisional mechanical baseline (final color refinement = SHEEP-044)",
+      "Audit semantics: implementation follows Controller recommendation; Owner decision PENDING until this round PASS",
+      "selector/DOM/layout/behavior unchanged; no visual redesign; re-verified token resolution + tests + renderer smoke"
+    ]
+  }
 }

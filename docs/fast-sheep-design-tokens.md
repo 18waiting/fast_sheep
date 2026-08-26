@@ -25,7 +25,7 @@ primitive → semantic → optional context/density → component
 | DP-24 | `--fs-*` namespace 保留 + alias 过渡 | 现有 token 名全部保留，语义化重组 |
 | DP-25 | LIGHT_FIRST_THEME_READY_DARK_DEFERRED | 仅 light；无 dark palette/selector/persistence |
 | DP-26 | 无 AI 品牌色/AI 皮肤 | 定义可复用 semantic roles：Fact / Assistance / Evidence / Status / Action；AI 为消费者 |
-| DP-27 | LIMITED_SEMANTIC_STATUS_PALETTE | 状态仅映射有限 status roles（success/warning/danger/error/warning-strong/primary + bg 变体） |
+| DP-27 | LIMITED_CANONICAL_SEMANTIC_STATUS_PALETTE | canonical = neutral/info/success/warning/danger；legacy 名为 compatibility alias；primary 归 Action/Accent 非 Status |
 | DP-28 | DENSITY_IS_CONTEXTUAL_CAPABILITY_NOT_THEME | density 为未来 contextual capability；当前不实现 |
 
 ## 3. Semantic roles（DP-26）
@@ -33,10 +33,11 @@ primitive → semantic → optional context/density → component
 - **Fact**：原始事实（`--fs-color-fact` / `--fs-color-fact-secondary`）——raw facts 始终可核验（I-1/I-4）。
 - **Assistance**：AI 建议（`--fs-color-assistance` / `--fs-color-assistance-bg`）——附着工作对象（DP-18）；无专属 AI 品牌色。
 - **Evidence**：依据/来源（`--fs-color-evidence` / `--fs-color-evidence-bg`）——AI 建议可查看支撑事实（I-4）。
-- **Status**：有限状态色（DP-27）。
+- **Status**：canonical status roles = `neutral / info / success / warning / danger`（DP-27）；legacy 名（success/warning/danger/error/warning-strong 等）为 compatibility alias，不构成可无限扩张的业务状态视觉词表；`primary` 属 Action/Accent，非 Status。
 - **Action**：交互动作（`--fs-color-action`）。
 
 > Fact 与 AI suggestion 在视觉语义上可区分（fact=正文色 / assistance=action 色 / evidence=次级色），但不依赖专属炫彩 AI skin。
+> **当前 Fact/Assistance/Evidence 颜色映射为 provisional mechanical baseline（alias 到既有值），最终颜色精化属 SHEEP-044，非最终视觉决策。**
 
 ## 4. 迁移与验收
 
