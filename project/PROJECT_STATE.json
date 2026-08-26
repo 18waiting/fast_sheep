@@ -30,7 +30,7 @@
   "current_phase": "PHASE_3",
   "current_milestone": "M3.1",
   "last_closed_task": "SHEEP-041",
-  "current_task": "SHEEP-042 (proposal pending approval)",
+  "current_task": "SHEEP-042 (executed, pending Owner DP-15~21 decisions)",
   "next_action": "SHEEP-042",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -804,5 +804,17 @@
         "I-2 All Stores is a work queue scope, not a data ownership scope",
         "I-3 No ambiguous cross-store action"
     ]
+  },
+  "sheep_042": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-27",
+    "report": "reports\\SHEEP-042-report.json",
+    "proposal_doc": "docs\\fast-sheep-conversation-centered-workspace-ia.md",
+    "invariant": "I-4 AI-assisted decisions expose inspectable source facts without hidden chain-of-thought",
+    "decision_points": ["DP-15..DP-21 (PRODUCT_DECISION_REQUIRED; awaiting Owner decisions)"],
+    "next_per_roadmap": "SHEEP-043 (M3.2 Design Tokens; pending Owner DP-15~21 decisions + PASS)",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }

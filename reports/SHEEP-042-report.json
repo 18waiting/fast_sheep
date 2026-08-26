@@ -1,0 +1,140 @@
+{
+  "task": "SHEEP-042",
+  "result": "COMPLETE",
+  "phase": "Phase 3",
+  "milestone": "M3.1",
+  "objective": "Conversation-centered Workspace IA Proposal：会话为主工作台的信息层级与关系；布局模型比较（不锁栏位）、queue 与 conversation state 区分、AI 附着工作对象、渐进披露、Supervisor/Ops 独立 domain、I-4 可核验性 invariant；纯提案文档，产品代码变更 = 0",
+  "completed_requirements": 9,
+  "total_requirements": 9,
+  "owner_tightening": {
+    "t1_no_fixed_three_column": "遵守：DP-15 比较 持续多栏 / 主会话+按需上下文 / 主会话全宽+专业 surface 三模型；只定信息层级与关系，未锁固定栏位/宽度/永久三列",
+    "t2_queue_not_lock_sidebar": "遵守：DP-16 未锁左侧栏；Conversation Queue 确认为 primary work-entry surface 并受 Store Scope 过滤；placement 后续决定",
+    "t3_ai_attaches_to_work_object": "遵守：DP-18 原则 AI output attaches to the work object it assists；未建立第二条独立 AI 聊天工作流；AI 管理入口属管理 IA",
+    "t4_no_separate_professional_mode": "遵守：DP-19 未采用独立 professional mode；professional fallback continuously reachable（progressive disclosure + 快捷入口）；快捷键非唯一方式",
+    "t5_dp21_inspectable_facts": "遵守：新增 DP-21/invariant I-4——AI-assisted decisions 必须可查看依据业务事实/来源，但不暴露 hidden chain-of-thought",
+    "t6_queue_vs_conversation_state": "遵守：IA 文档明确区分 workspace queue state（待处理/未读/AI待审）与 active conversation state（Ownership/Store/Order/AI suggestion），未混为一类",
+    "t7_progressive_disclosure_no_component_lock": "遵守：DP-17 维持 inline facts -> context surface -> full professional view；未锁 drawer/right-panel/popover",
+    "t8_supervisor_ops_independent": "遵守：DP-20 维持 Supervisor/Ops 独立 IA domain；Agent Workspace 仅少量 escalation/transfer entry，未嵌入 Supervisor console",
+    "t9_no_code_change": "遵守：产品代码变更=0；未挂载 AI primitive；未实现 Phase 4 workflow；未锁 Product/Order 最终 UI"
+  },
+  "invariants": {
+    "I4_ai_assisted_decisions_inspectable": "AI-assisted decisions must expose inspectable source facts/evidence without exposing hidden model reasoning"
+  },
+  "decision_points": [
+    {
+      "id": "DP-15",
+      "question": "工作台布局模型",
+      "options": [
+        "L-1 持续多栏",
+        "L-2 主会话+按需上下文",
+        "L-3 主会话全宽+专业 surface"
+      ],
+      "preliminary": "L-2（只定层级，不锁栏位）",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-16",
+      "question": "Conversation Queue 形态",
+      "options": [
+        "侧栏",
+        "顶部",
+        "独立 panel"
+      ],
+      "preliminary": "primary work-entry surface + Store-scope 过滤；不锁 placement",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-17",
+      "question": "上下文渐进披露",
+      "options": [
+        "inline facts -> context surface -> full view（不锁组件）"
+      ],
+      "preliminary": "维持三级渐进披露",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-18",
+      "question": "AI 建议放置",
+      "options": [
+        "附着工作对象（推荐）",
+        "独立 AI 聊天工作流（禁止）"
+      ],
+      "preliminary": "AI output attaches to the work object；管理入口属管理 IA",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-19",
+      "question": "Professional fallback 可达性",
+      "options": [
+        "continuously reachable（推荐）",
+        "独立 professional mode（禁止）"
+      ],
+      "preliminary": "progressive disclosure + 快捷入口；快捷键非唯一入口",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-20",
+      "question": "Supervisor/Ops 关系",
+      "options": [
+        "独立 IA domain（推荐）",
+        "嵌入主工作区（禁止）"
+      ],
+      "preliminary": "独立 domain + 少量 escalation/transfer 入口",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-21",
+      "question": "AI 建议可核验性",
+      "options": [
+        "I-4：expose inspectable source facts/evidence；不暴露 hidden chain-of-thought"
+      ],
+      "preliminary": "必选 invariant",
+      "status": "PRODUCT_DECISION_REQUIRED (invariant)"
+    }
+  ],
+  "deferrals": [
+    "消息时间线/输入框/发送管道 -> Phase 4 M4.2",
+    "上下文面板具体形态 -> M4.3 / DP-17 未来",
+    "Command Palette -> record-only",
+    "Design System -> M3.2",
+    "SHEEP-031 AI Panel 挂载 -> 后续单元",
+    "Product/Order 最终 UI -> M4.3"
+  ],
+  "evidence": {
+    "confirmed": [
+      "DP-1~14 + I-1~I-3（Owner 决策）",
+      "现有工作台结构",
+      "SHEEP-031 = unmounted primitive"
+    ],
+    "inferred": [
+      "布局/入口推导（低风险、可逆、仅文档）"
+    ],
+    "decisions_required": [
+      "DP-15~21（PRODUCT_DECISION_REQUIRED）"
+    ]
+  },
+  "verification": {
+    "necessary": "无产品代码变更，无必要运行类验证（纯文档）",
+    "non_regression_evidence": "desktop tests 207/207；check:boundary PASS；secret scan PASS（未运行 Electron smoke——纯文档任务惯例）",
+    "product_code_changed": false,
+    "ai_primitive_mounted": false,
+    "phase4_workflow_implemented": false,
+    "product_order_ui_locked": false
+  },
+  "modified_files": [
+    "docs/fast-sheep-conversation-centered-workspace-ia.md（新建）",
+    "reports/SHEEP-042-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-042 记录）"
+  ],
+  "architecture_changes": [],
+  "security_changes": [
+    "无（产品代码变更=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
