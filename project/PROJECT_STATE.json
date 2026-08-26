@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_3",
   "current_milestone": "M3.1",
-  "last_closed_task": "SHEEP-040",
-  "current_task": "SHEEP-041 (executed, pending Owner DP-9~14 decisions)",
-  "next_action": "SHEEP-041",
+  "last_closed_task": "SHEEP-041",
+  "current_task": "SHEEP-042 (proposal pending approval)",
+  "next_action": "SHEEP-042",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-041 (M3.1 Multi-store Navigation Model; pending Owner approval)",
+  "next_task": "SHEEP-042 (M3.1 Conversation-centered Workspace IA; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -778,7 +778,7 @@
   },
   "sheep_041": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-041-report.json",
     "proposal_doc": "docs\\fast-sheep-multi-store-navigation-proposal.md",
@@ -786,6 +786,23 @@
     "decision_points": ["DP-9..DP-14 (PRODUCT_DECISION_REQUIRED; awaiting Owner decisions)"],
     "next_per_roadmap": "SHEEP-042 (M3.1 Conversation-centered Workspace IA; pending Owner DP-9~14 decisions + PASS)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-27",
+    "owner_decisions_recorded": true
+  },
+  "fast_sheep_multi_store_navigation_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-27",
+    "dp_9_store_nav_model": "CONTEXT_AWARE_WORKSPACE_PLUS_EXPLICIT_STORE_SWITCHER (Agent Workspace supports All Stores queue scope + Specific Store scope; Store = work-scope dimension, not a new top-level product; AI may suggest Store but must not implicitly change scope)",
+    "dp_10_switcher_placement": "SIDEBAR_PRIMARY_PLUS_FUTURE_COMMAND_PALETTE_CANDIDATE (Sidebar = primary visible Store switcher; Command Palette remains future candidate, NOT approved for implementation)",
+    "dp_11_store_selection_effect": "STORE_SELECTION_FILTERS_WORKSPACE_QUEUE_ACTIVE_CONVERSATION_REMAINS_CONVERSATION_BOUND (ambient Store selection affects queue/entry scope; active Conversation storeId = context source of truth, not silently overridden)",
+    "dp_12_default_recent_store": "EXPLICIT_SELECTION_PLUS_OPTIONAL_REMEMBERED_NAVIGATION_PREFERENCE (recent Store = UX preference, distinct from business Store fact; AI auto-switch forbidden; AI may propose switch, requires user confirmation)",
+    "dp_13_supervisor_ops_scope": "MERCHANT_WIDE_SUPERVISOR_AGGREGATE_PLUS_STORE_PLATFORM_FILTERS (Supervisor/Ops supports merchant-wide aggregate + Store/Platform filtering; visible scope decided by Capability/ResourceScope; IA grants no authority)",
+    "dp_14_cross_store_action": "NO_AMBIGUOUS_CROSS_STORE_ACTION (any business-impacting action must have explicit target Store; AI suggestion/action must not mix facts from different Stores)",
+    "invariants_confirmed": [
+        "I-1 Conversation-bound context wins over ambient store selection",
+        "I-2 All Stores is a work queue scope, not a data ownership scope",
+        "I-3 No ambiguous cross-store action"
+    ]
   }
 }
