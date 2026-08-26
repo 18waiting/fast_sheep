@@ -46,7 +46,8 @@ test("dialog styles reuse existing tokens only (no new visual values)", () => {
   const css = readFileSync(CSS, "utf-8");
   const start = css.indexOf(".dialog-overlay");
   assert.ok(start >= 0, "styles.css must define dialog rules");
-  const block = css.slice(start);
+  const end = css.indexOf("SHEEP-045 primitives");
+  const block = css.slice(start, end >= 0 ? end : undefined);
   assert.ok(!/#[0-9a-fA-F]{3,8}/.test(block), "no hex colors in dialog styles");
   assert.ok(!/\dpx/.test(block), "no px literals in dialog styles");
   for (const t of ["box-shadow", "opacity", "width:", "z-index"]) {

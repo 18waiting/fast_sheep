@@ -1,0 +1,87 @@
+{
+  "task": "SHEEP-045",
+  "result": "COMPLETE",
+  "phase": "Phase 3",
+  "milestone": "M3.2",
+  "objective": "Component Primitives：thin DOM helper + semantic class contract（无 framework）；action prominence×intent 正交、text semantic roles、status/badge 分离、每 primitive 有声明消费者；Primitive Gallery + Workbench 视觉证据；NO_TOPOLOGY_CHANGE",
+  "completed_requirements": 10,
+  "total_requirements": 10,
+  "owner_tightening": {
+    "dp35_orthogonal": "遵守：ACTION_PROMINENCE_AND_INTENT_ARE_ORTHOGONAL——prominence=primary/secondary/quiet（最小），destructive=独立 intent（≠ status-danger、不与 prominence 平级）；无 tertiary/ghost 预造；interaction state 在 CSS 层与业务/status 语义分离；无业务状态按钮体系",
+    "dp36_minimal_set": "遵守：MINIMAL_SEMANTIC_PRIMITIVE_SET——仅 action/text/status/badge；未因重复矩形建 Panel/Card/Surface（现有 clean-room surface 类已满足）；badge 展示与 status 语义分离（无万能 StatusBadge）",
+    "dp37_semantic_text_roles": "遵守：SEMANTIC_TEXT_ROLES_NOT_NUMERIC_HEADING_LEVELS——work-object/section/component title/body/label/metadata；不锁 HTML heading level（h1-h6 留 SHEEP-047）",
+    "dp38_thin_no_framework": "遵守：THIN_REUSABLE_PRIMITIVES_NO_COMPONENT_FRAMEWORK——仅薄 DOM helper + class contract；无 slot registry/state manager/theme provider/variant engine/framework（测试负例）",
+    "dp39_evidence_driven_consumers": "遵守：EVIDENCE_DRIVEN_PRIMITIVES_WITH_REAL_CONSUMER_VALIDATION——每 primitive 有明确近端消费者声明（doc §Consumers）；未创建零消费者 dead primitive；生产迁移=0（primitives 增量，DOM/行为/事件语义不变）",
+    "dp40_native_semantics": "遵守：NATIVE_SEMANTICS_FIRST——真实 action 保持原生 <button>；无 div-role-button；不混淆 link/action；a11y 完整留 SHEEP-047，无语义债务",
+    "visual_gallery_required": "遵守：生成 Primitive Gallery（evidence-only，不进入 production runtime）+ current workbench 截图；workbench 截图与 SHEEP-044 基线 SHA-256 字节相同（无视觉回归）",
+    "no_topology_change": "遵守：DOM/selector/区域排列/sidebar 宽度未变；Conversation 中心化/AI attachment/Store navigation/Background Tasks IA 均未处理"
+  },
+  "decisions": {
+    "dp35": "ACTION_PROMINENCE_AND_INTENT_ARE_ORTHOGONAL",
+    "dp36": "MINIMAL_SEMANTIC_PRIMITIVE_SET",
+    "dp37": "SEMANTIC_TEXT_ROLES_NOT_NUMERIC_HEADING_LEVELS",
+    "dp38": "THIN_REUSABLE_PRIMITIVES_NO_COMPONENT_FRAMEWORK",
+    "dp39": "EVIDENCE_DRIVEN_PRIMITIVES_WITH_REAL_CONSUMER_VALIDATION",
+    "dp40": "NATIVE_SEMANTICS_FIRST"
+  },
+  "evidence": {
+    "confirmed": [
+      "DP-35~40（Owner 决策）",
+      "primitives 编译 + 结构测试（221/221）",
+      "workbench 截图与 SHEEP-044 基线 SHA-256 相同（无视觉回归）",
+      "gallery 捕获成功"
+    ],
+    "inferred": [
+      "近端消费者声明（doc §Consumers；生产迁移=0）"
+    ]
+  },
+  "tests": [
+    "desktop build/typecheck；desktop tests 221/221（含 6 个新 primitives guard）",
+    "workspace typecheck / test（全部 PASS）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS",
+    "styles.css 45 var() 0 undefined"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS",
+    "visual capture：sheep-045-workbench.png（与 044 字节相同）+ sheep-045-primitive-gallery.png"
+  ],
+  "negative_tests": [
+    "无 slot/registry/stateManager/themeProvider/variantEngine/createComponent（DP-38）",
+    "无 div-role-button；无 button-success/warning 业务状态按钮；无 tertiary/ghost（DP-35/40）",
+    "无 StatusBadge；canonical status 仅 5 项（DP-36/27）",
+    "无 h1-h6 硬编码（DP-37）",
+    "gallery 不引用 renderer main.js/app-shell（evidence-only）",
+    "NO_TOPOLOGY_CHANGE；未挂载 AI primitive；未实现 Phase 4；schema v7 不变；无 sync/Outbox"
+  ],
+  "modified_files": [
+    "apps/desktop/src/renderer/components/primitives/action.ts（新建）",
+    "apps/desktop/src/renderer/components/primitives/text.ts（新建）",
+    "apps/desktop/src/renderer/components/primitives/status.ts（新建）",
+    "apps/desktop/src/renderer/styles.css（primitives CSS 段）",
+    "apps/desktop/tests/renderer-primitives-structure.test.ts（新建）",
+    "docs/fast-sheep-component-primitives.md（新建）",
+    "reports/visual-evidence/primitive-gallery.html（新建，evidence-only）",
+    "reports/visual-evidence/sheep-045-workbench.png（新建）",
+    "reports/visual-evidence/sheep-045-primitive-gallery.png（新建）",
+    "scripts/visual-evidence/capture-main.cjs（target 参数化）",
+    "scripts/capture-renderer-visual.mjs（--gallery）",
+    "apps/desktop/tests/renderer-dialog-structure.test.ts（dialog CSS 切片边界修正）",
+    "reports/SHEEP-045-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-045 记录）"
+  ],
+  "architecture_changes": [
+    "thin Component Primitives（action/text/status/badge；无 framework）"
+  ],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "visual_review_pending": true
+}

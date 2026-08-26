@@ -83,3 +83,35 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 .dialog-header { display: flex; align-items: center; justify-content: space-between; gap: var(--fs-space-3); }
 .dialog-title { margin: 0; font-size: var(--fs-font-size-lg); }
 .dialog-content { margin-top: var(--fs-space-3); }
+/* ===== SHEEP-045 primitives (thin class contracts; no component framework) ===== */
+/* Action (DP-35): prominence x intent orthogonal; native <button>; interaction states
+ * (default/hover/focus/pressed/disabled) separated from business/status semantics. */
+.fs-action { padding: var(--fs-space-1) var(--fs-space-3); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); border-radius: var(--fs-radius-sm); background: var(--fs-color-bg-surface); cursor: pointer; font-size: var(--fs-font-size-md); font-weight: var(--fs-font-weight-medium); line-height: var(--fs-line-height-normal); }
+.fs-action:hover { background: var(--fs-color-bg-subtle); }
+.fs-action:focus-visible { outline: 2px solid var(--fs-color-border-selected); outline-offset: 1px; }
+.fs-action:active { background: var(--fs-color-bg-selected); }
+.fs-action:disabled { opacity: 0.5; cursor: default; }
+.fs-action--primary { background: var(--fs-color-primary); border-color: var(--fs-color-primary); color: var(--fs-color-text-on-primary); }
+.fs-action--quiet { background: transparent; border-color: transparent; color: var(--fs-color-text-secondary); }
+.fs-action--quiet:hover { background: var(--fs-color-bg-subtle); }
+/* destructive = independent INTENT axis (DP-35); provisional visual uses danger value;
+ * it is NOT a status role and NOT a prominence level. */
+.fs-action--destructive { border-color: var(--fs-color-status-danger); color: var(--fs-color-status-danger); }
+.fs-action--primary.fs-action--destructive { background: var(--fs-color-status-danger); border-color: var(--fs-color-status-danger); color: var(--fs-color-text-on-primary); }
+
+/* Text roles (DP-37: semantic text roles, no numeric heading levels) */
+.fs-text--work-object-title { font-size: var(--fs-font-size-lg); font-weight: var(--fs-font-weight-semibold); line-height: var(--fs-line-height-tight); }
+.fs-text--section-title { font-size: var(--fs-font-size-base); font-weight: var(--fs-font-weight-semibold); line-height: var(--fs-line-height-tight); }
+.fs-text--component-title { font-size: var(--fs-font-size-md); font-weight: var(--fs-font-weight-semibold); line-height: var(--fs-line-height-tight); }
+.fs-text--body { font-size: var(--fs-font-size-md); line-height: var(--fs-line-height-normal); }
+.fs-text--label { font-size: var(--fs-font-size-sm); font-weight: var(--fs-font-weight-medium); color: var(--fs-color-text-secondary); }
+.fs-text--metadata { font-size: var(--fs-font-size-xs); color: var(--fs-color-text-muted); }
+
+/* Status (DP-27 canonical roles) separated from Badge presentation (DP-36) */
+.fs-status { display: inline-flex; align-items: center; gap: var(--fs-space-1); font-size: var(--fs-font-size-xs); font-weight: var(--fs-font-weight-medium); }
+.fs-status--neutral { color: var(--fs-color-text-secondary); }
+.fs-status--info { color: var(--fs-color-status-info); }
+.fs-status--success { color: var(--fs-color-status-success); }
+.fs-status--warning { color: var(--fs-color-status-warning); }
+.fs-status--danger { color: var(--fs-color-status-danger); }
+.fs-badge { display: inline-flex; align-items: center; padding: 2px var(--fs-space-2); border-radius: var(--fs-radius-full); font-size: var(--fs-font-size-xs); background: var(--fs-color-bg-subtle); color: var(--fs-color-text-secondary); }

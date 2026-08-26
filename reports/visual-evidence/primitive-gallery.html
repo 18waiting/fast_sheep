@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>Fast Sheep Primitive Gallery (SHEEP-045, evidence-only)</title>
+  <link rel="stylesheet" href="../../apps/desktop/src/renderer/tokens.css" />
+  <link rel="stylesheet" href="../../apps/desktop/src/renderer/styles.css" />
+  <style>
+    /* evidence-only gallery page; NOT production navigation/runtime */
+    body { padding: 24px; background: #f6f8fa; }
+    .g-section { margin-bottom: 28px; }
+    .g-section > h1 { font-size: 16px; font-weight: 600; margin: 0 0 12px; }
+    .g-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 8px; }
+    .g-cap { width: 100%; font-size: 11px; color: #8c959f; }
+  </style>
+</head>
+<body>
+  <div class="g-section">
+    <h1>Text Roles (DP-37: semantic text roles, no numeric heading levels)</h1>
+    <div class="g-row"><div class="fs-text--work-object-title">work-object-title：会话 #c1 · 测试店铺A</div></div>
+    <div class="g-row"><div class="fs-text--section-title">section-title：会话队列</div></div>
+    <div class="g-row"><div class="fs-text--component-title">component-title：AI 建议</div></div>
+    <div class="g-row"><div class="fs-text--body">body：您好，这款商品48小时内发货，感谢您的耐心等待。</div></div>
+    <div class="g-row"><span class="fs-text--label">label：会话状态</span></div>
+    <div class="g-row"><span class="fs-text--metadata">metadata：generation #3 · pending</span></div>
+  </div>
+
+  <div class="g-section">
+    <h1>Actions (DP-35: prominence × intent orthogonal; native button)</h1>
+    <div class="g-row">
+      <button type="button" class="fs-action fs-action--primary">Primary</button>
+      <button type="button" class="fs-action fs-action--secondary">Secondary</button>
+      <button type="button" class="fs-action fs-action--quiet">Quiet</button>
+      <button type="button" class="fs-action fs-action--secondary" disabled>Disabled</button>
+      <button type="button" class="fs-action fs-action--secondary fs-action--destructive">Destructive (secondary)</button>
+      <button type="button" class="fs-action fs-action--primary fs-action--destructive">Destructive (primary)</button>
+    </div>
+    <div class="g-cap">interaction states (default/hover/focus/pressed/disabled) are CSS-level; destructive = intent axis, not status-danger</div>
+  </div>
+
+  <div class="g-section">
+    <h1>Status (DP-27 canonical roles) + Badge (DP-36: presentation separated)</h1>
+    <div class="g-row">
+      <span class="fs-status fs-status--neutral">neutral</span>
+      <span class="fs-status fs-status--info">info</span>
+      <span class="fs-status fs-status--success">success</span>
+      <span class="fs-status fs-status--warning">warning</span>
+      <span class="fs-status fs-status--danger">danger</span>
+    </div>
+    <div class="g-row">
+      <span class="fs-badge">badge</span>
+      <span class="fs-badge fs-status--success">badge + success status</span>
+    </div>
+  </div>
+
+  <div class="g-section">
+    <h1>Surface note (DP-36: MINIMAL_SEMANTIC_PRIMITIVE_SET)</h1>
+    <div class="g-row"><div class="fs-text--body">No new Panel/Card/Surface primitive — existing clean-room surface classes already serve the repeated semantic need.</div></div>
+  </div>
+</body>
+</html>
