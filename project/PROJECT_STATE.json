@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_3",
   "current_milestone": "M3.1",
-  "last_closed_task": "SHEEP-035",
-  "current_task": "SHEEP-040 (executed, pending Owner IA decisions)",
-  "next_action": "SHEEP-040",
+  "last_closed_task": "SHEEP-040",
+  "current_task": "SHEEP-041 (proposal pending approval)",
+  "next_action": "SHEEP-041",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-040 (M3.1 Fast Sheep IA Proposal; pending Owner approval)",
+  "next_task": "SHEEP-041 (M3.1 Multi-store Navigation Model; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -739,17 +739,41 @@
       "sheep_031_ai_panel": "unmounted structural primitive only; final workspace integration NOT claimed"
     },
     "first_acceptance_unit": "SHEEP-040",
-    "sheep_040_approved": false
+    "sheep_040_approved": true
   },
   "sheep_040": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-26",
     "report": "reports\\SHEEP-040-report.json",
     "proposal_doc": "docs\\fast-sheep-ia-proposal.md",
     "decision_points": ["DP-1..DP-8 (PRODUCT_DECISION_REQUIRED; awaiting Owner IA decisions)"],
     "next_per_roadmap": "SHEEP-041 (M3.1 Multi-store Navigation Model; pending Owner IA decisions + PASS)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-26",
+    "owner_ia_decisions_recorded": true
+  },
+  "fast_sheep_ia_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-26",
+    "dp_1_ia_model": "HYBRID_AI_NATIVE_WITH_PROFESSIONAL_FALLBACK (AI-native workflow = Agent default path; Professional fallback = fact verification / human control / advanced ops)",
+    "dp_2_ai_ia_role": "CROSS_CUTTING_CAPABILITY_PLUS_MANAGEMENT_ENTRY (AI usable without a dedicated AI work page; AI/Automation management entry IA decided later; SHEEP-031 unmounted primitive NOT auto-mounted)",
+    "dp_3_workspace_vs_conversation": "CONVERSATION_IS_AGENT_PRIMARY_WORKSPACE (no duplicate heavy top-level product; final nav copy later)",
+    "dp_4_customer_role": "CONTEXTUAL_BY_DEFAULT_PLUS_PROFESSIONAL_SEARCH_MANAGEMENT_CAPABILITY (not locked as permanent top-level nav)",
+    "dp_5_product_order": "DEFER_TO_M4.3 (domain importance confirmed; contextual role + independent professional surface = candidates; primary-nav status UNDECIDED)",
+    "dp_6_agent_fallback": "PROGRESSIVE_DISCLOSURE_PLUS_ONE_ACTION_VERIFICATION (one explicit action reveals underlying raw facts; inline facts -> context surface -> full professional view; no specific drawer/panel/popover locked)",
+    "dp_7_supervisor_ops": "SEPARATE_IA_DOMAIN_FROM_AGENT_WORKSPACE (different info density & task model; shared permission/data; supervisor console NOT forced into Agent Workspace)",
+    "dp_8_nav_complexity": "NO fixed <=7 hard limit. Principle: primary navigation represents stable, high-frequency product destinations, not every domain; Agent daily primary entries kept deliberately few; count by later IA validation",
+    "additional_candidates": {
+        "global_search_command_palette": "record-only candidate for professional efficiency (deep access to Customer/Order/Product/Shop/Settings under fewer primary navs); NOT in implementation scope",
+        "not_locked_by_sheep_040": [
+            "Product/Order final IA",
+            "specific navigation copy",
+            "Context UI form",
+            "AI management IA",
+            "Command Palette implementation"
+        ]
+    }
   }
 }
