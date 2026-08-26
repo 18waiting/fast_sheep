@@ -12,8 +12,12 @@
  * DP-27: LIMITED_CANONICAL_SEMANTIC_STATUS_PALETTE (canonical = neutral/info/success/warning/danger;
  *   legacy/baseline names = compatibility aliases; primary = Action/Accent, NOT Status).
  * DP-28: DENSITY_IS_CONTEXTUAL_CAPABILITY_NOT_THEME (not implemented now).
- * Values: mechanically mapped from the SHEEP-025 clean-room baseline (no visual
- *   redesign; typography/spacing/color refinement = SHEEP-044).
+ * SHEEP-044: operational typography hierarchy (font-size + line-height + weight role),
+ *   spacing audit (4px base rhythm, usage-driven exceptions), controlled color review.
+ * DP-34 Visual Character: CALM_PROFESSIONAL_AI_NATIVE_CLARITY (quiet by default,
+ *   emphasize only when semantically needed; no AI neon/glow/gradient skin).
+ * Values: base mechanically mapped from the SHEEP-025 clean-room baseline; SHEEP-044
+ *   adds typography line-height/weight roles without topology change.
  * Provenance: independently implemented clean-room baseline;
  *   reference_match_status = NOT_ESTABLISHED.
  * Neutral naming: identifiers are project-owned (--fs-*) with no external-origin markers.
@@ -56,6 +60,11 @@
   --fs-prim-font-size-md: 13px;
   --fs-prim-font-size-base: 14px;
   --fs-prim-font-size-lg: 16px;
+  --fs-prim-line-height-tight: 1.25;
+  --fs-prim-line-height-normal: 1.5;
+  --fs-prim-font-weight-normal: 400;
+  --fs-prim-font-weight-medium: 500;
+  --fs-prim-font-weight-semibold: 600;
 
   /* ===== Semantic layer (roles; consumed by components; values reference primitives) ===== */
   /* text */
@@ -120,4 +129,11 @@
   --fs-font-size-md: var(--fs-prim-font-size-md);
   --fs-font-size-base: var(--fs-prim-font-size-base);
   --fs-font-size-lg: var(--fs-prim-font-size-lg);
+  /* line-height roles (operational hierarchy, DP-29) */
+  --fs-line-height-tight: var(--fs-prim-line-height-tight);
+  --fs-line-height-normal: var(--fs-prim-line-height-normal);
+  /* weight roles (operational hierarchy, DP-29) */
+  --fs-font-weight-normal: var(--fs-prim-font-weight-normal);
+  --fs-font-weight-medium: var(--fs-prim-font-weight-medium);
+  --fs-font-weight-semibold: var(--fs-prim-font-weight-semibold);
 }

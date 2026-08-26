@@ -5,12 +5,12 @@
  */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; height: 100%; }
-body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background: var(--fs-color-bg); }
+body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background: var(--fs-color-bg); line-height: var(--fs-line-height-normal); }
 #app { height: 100%; }
 
 .app-shell { display: flex; flex-direction: column; height: 100%; }
 .error-banner { background: var(--fs-color-bg-error); color: var(--fs-color-error); border-bottom: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border-error); padding: var(--fs-space-2) var(--fs-space-4); font-size: var(--fs-font-size-md); }
-.error-label { font-weight: 600; margin-right: var(--fs-space-2); }
+.error-label { font-weight: var(--fs-font-weight-semibold); margin-right: var(--fs-space-2); }
 /* SHEEP-026 shell topology: app-navbar (top region) + app-body (app-sidebar + app-main).
  * Region relationships follow the owner-authorized reference IA (navbar shell / sidebar shell).
  * Navbar geometry (height, padding, sticky/fixed, breakpoints) stays UNKNOWN/NOT_EVIDENCED;
@@ -32,7 +32,7 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 
 .app-main { flex: 1; padding: var(--fs-space-4); overflow: auto; display: flex; flex-direction: column; gap: var(--fs-space-3); }
 .workbench-header { display: flex; gap: var(--fs-space-4); align-items: baseline; font-size: var(--fs-font-size-base); }
-.header-shop { font-weight: 600; font-size: var(--fs-font-size-lg); }
+.header-shop { font-weight: var(--fs-font-weight-semibold); font-size: var(--fs-font-size-lg); }
 .status-row { display: flex; gap: var(--fs-space-4); align-items: center; }
 .worker-badge { padding: var(--fs-space-1) var(--fs-space-5); border-radius: var(--fs-radius-full); font-size: var(--fs-font-size-sm); background: var(--fs-color-bg-subtle); }
 .worker-ready { background: var(--fs-color-bg-success); color: var(--fs-color-success); }
@@ -46,7 +46,7 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 .mode-btn:disabled { opacity: 0.5; cursor: default; }
 
 .countdown-view { display: flex; gap: var(--fs-space-2); align-items: center; font-size: var(--fs-font-size-md); color: var(--fs-color-text-secondary); }
-.countdown-value { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--fs-color-text); }
+.countdown-value { font-variant-numeric: tabular-nums; font-weight: var(--fs-font-weight-semibold); color: var(--fs-color-text); }
 .countdown-note { color: var(--fs-color-text-muted); }
 
 .panels { display: flex; gap: var(--fs-space-4); flex-wrap: wrap; }
@@ -54,7 +54,7 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 .panel-title { margin: 0 0 var(--fs-space-2); font-size: var(--fs-font-size-base); }
 .conversation-facts { margin: 0; display: flex; flex-direction: column; gap: var(--fs-space-1); font-size: var(--fs-font-size-md); }
 .fact { display: flex; gap: var(--fs-space-2); }
-.fact-label { font-weight: 600; }
+.fact-label { font-weight: var(--fs-font-weight-semibold); }
 .suggestion-text { white-space: pre-wrap; font-size: var(--fs-font-size-base); }
 .suggestion-meta { color: var(--fs-color-text-muted); font-size: var(--fs-font-size-sm); }
 .suggestion-controls { display: flex; gap: var(--fs-space-2); margin-top: var(--fs-space-5); }

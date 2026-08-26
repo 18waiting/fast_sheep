@@ -1,0 +1,84 @@
+{
+  "task": "SHEEP-044",
+  "result": "COMPLETE",
+  "phase": "Phase 3",
+  "milestone": "M3.2",
+  "objective": "Typography/Spacing/Color 精化：operational type hierarchy（font-size+line-height+weight）、4px spacing 审计、受控全语义色复核、DP-34 visual character、首次真实视觉变更 + actual renderer visual evidence",
+  "completed_requirements": 10,
+  "total_requirements": 10,
+  "owner_tightening": {
+    "t1_dp34_visual_character": "遵守：新增 DP-34 = CALM_PROFESSIONAL_AI_NATIVE_CLARITY（沉稳专业、默认安静、语义需要时才强调；无 AI neon/glow/gradient skin，无玩具化）",
+    "t2_dp29_operational_type_hierarchy": "遵守：font-size + line-height + weight role（新增 line-height tight/normal + weight normal/medium/semibold）；层级最小，不扩张大字阶；保持 system UI font stack，无远程/专有字体",
+    "t3_dp30_spacing_audit": "遵守：4PX_BASE_RHYTHM_WITH_USAGE_DRIVEN_EXCEPTIONS；审计 space-5=10px 为用法驱动例外（保留 compatibility）；未因数学整齐改布局",
+    "t4_dp31_controlled_color_refinement": "遵守：CONTROLLED_FULL_SEMANTIC_PALETTE_REFINEMENT——受控复核全部 semantic roles；未扩张新视觉宇宙、未新增业务色",
+    "t5_dp32_multi_cue_semantics": "遵守：DISTINCT_BUT_SUBORDINATE_ASSISTANCE_WITH_MULTI_CUE_SEMANTICS——color 仅 reinforcement，非唯一载体；AI Assistance 可辨认但不压过事实/客户内容/危险状态",
+    "t6_canonical_status_kept": "遵守：canonical status = neutral/info/success/warning/danger 保持；Action/Info/Assistance/Link 靠 weight/语义多线索可区分",
+    "t7_dp33_no_topology_change": "遵守：允许 token+styles.css 消费更新但 NO_TOPOLOGY_CHANGE——未改 DOM/selector/区域排列/sidebar 宽度",
+    "t8_visual_evidence_generated": "遵守：生成 actual renderer visual evidence（reports/visual-evidence/sheep-044-workbench.png，真实 preload+renderer+stub Main）；供人工设计评审，非 FastWork pixel-match，无脆弱 pixel regression",
+    "t9_owner_visual_review_required": "遵守：Controller COMPLETE 不单独代表 DP-29~34 最终视觉批准；STOP 后由 Owner 做最终 visual review 决定 PASS/REPAIR",
+    "t10_forbidden_kept": "遵守：未用 FastWork visual values；无远程/专有字体；无 dark theme；无 density switcher；无 AI skin；未提前实现 Phase 4"
+  },
+  "decisions": {
+    "dp29": "COMPACT_OPERATIONAL_TYPE_SCALE_WITH_CLEAR_HIERARCHY",
+    "dp30": "4PX_BASE_RHYTHM_WITH_USAGE_DRIVEN_EXCEPTIONS",
+    "dp31": "CONTROLLED_FULL_SEMANTIC_PALETTE_REFINEMENT",
+    "dp32": "DISTINCT_BUT_SUBORDINATE_ASSISTANCE_WITH_MULTI_CUE_SEMANTICS",
+    "dp33": "NO_TOPOLOGY_CHANGE",
+    "dp34": "CALM_PROFESSIONAL_AI_NATIVE_CLARITY",
+    "note": "Controller COMPLETE != final visual approval; Owner visual review decides PASS/REPAIR"
+  },
+  "evidence": {
+    "confirmed": [
+      "DP-29~34（Owner 收紧决策）",
+      "typography line-height/weight 角色新增",
+      "spacing space-5=10px 用法驱动例外审计",
+      "styles.css 仅 typography 值消费（NO_TOPOLOGY_CHANGE）",
+      "visual evidence PNG 生成"
+    ],
+    "inferred": [
+      "具体视觉值沿用 calm baseline（SHEEP-044 不锁定最终视觉）"
+    ]
+  },
+  "tests": [
+    "desktop build/typecheck；desktop tests 215/215",
+    "workspace typecheck / test（全部 PASS）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS",
+    "var resolution：styles.css 39 var() 0 undefined / 0 cycle"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS",
+    "visual capture：sheep-044-workbench.png 生成（1330x833 PNG）"
+  ],
+  "negative_tests": [
+    "无 FastWork visual values / pixel-match",
+    "无远程/专有字体；无 dark theme；无 density switcher；无 AI skin",
+    "NO_TOPOLOGY_CHANGE：selector/DOM/区域排列/sidebar 宽度未变",
+    "canonical status 词表未扩张；未新增业务色",
+    "未挂载 AI primitive；未实现 Phase 4；schema v7 不变；无 sync/Outbox"
+  ],
+  "modified_files": [
+    "apps/desktop/src/renderer/tokens.css（line-height/weight 角色 + DP-34 标注）",
+    "apps/desktop/src/renderer/styles.css（body line-height + font-weight token 消费，无拓扑变化）",
+    "docs/fast-sheep-typography-spacing-color.md（新建）",
+    "scripts/visual-evidence/capture-main.cjs（新建，evidence tooling）",
+    "scripts/capture-renderer-visual.mjs（新建，evidence tooling）",
+    "reports/visual-evidence/sheep-044-workbench.png（新建，visual evidence）",
+    "reports/SHEEP-044-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-044 记录）"
+  ],
+  "architecture_changes": [
+    "typography operational hierarchy（font-size+line-height+weight role）"
+  ],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "visual_review_pending": true
+}
