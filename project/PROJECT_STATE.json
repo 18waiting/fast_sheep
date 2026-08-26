@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_3",
   "current_milestone": "M3.1-COMPLETE",
-  "last_closed_task": "SHEEP-043",
-  "current_task": "SHEEP-044 (executed, pending Owner visual review + PASS)",
-  "next_action": "SHEEP-044",
+  "last_closed_task": "SHEEP-044",
+  "current_task": "SHEEP-045 (proposal pending approval)",
+  "next_action": "SHEEP-045",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-044 (M3.2 Typography/Spacing/Color; pending Owner approval)",
+  "next_task": "SHEEP-045 (M3.2 Component Primitives; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -858,14 +858,36 @@
   },
   "sheep_044": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-044-report.json",
     "design_doc": "docs\\fast-sheep-typography-spacing-color.md",
     "visual_evidence": "reports\\visual-evidence\\sheep-044-workbench.png",
-    "decisions": ["DP-29..DP-34 (implemented per Controller recommendation; final visual approval = Owner visual review pending)"],
+    "decisions": ["DP-29..DP-34 (OWNER_DECIDED 2026-08-27 after visual review PASS)"],
     "next_per_roadmap": "SHEEP-045 (M3.2 Component Primitives; pending Owner visual review + PASS)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-27",
+    "visual_review_passed": true
+  },
+  "fast_sheep_typography_spacing_color_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-27",
+    "visual_review": "PASS",
+    "dp_29_type_hierarchy": "COMPACT_OPERATIONAL_TYPE_SCALE_WITH_CLEAR_HIERARCHY",
+    "dp_30_spacing": "4PX_BASE_RHYTHM_WITH_USAGE_DRIVEN_EXCEPTIONS",
+    "dp_31_color": "CONTROLLED_FULL_SEMANTIC_PALETTE_REFINEMENT",
+    "dp_32_multi_cue": "DISTINCT_BUT_SUBORDINATE_ASSISTANCE_WITH_MULTI_CUE_SEMANTICS",
+    "dp_33_consumption": "TOKEN_AND_VISUAL_CONSUMPTION_UPDATE_WITHOUT_TOPOLOGY_CHANGE",
+    "dp_34_visual_character": "CALM_PROFESSIONAL_AI_NATIVE_CLARITY",
+    "future_design_notes": [
+        "Conversation must become the visual/task center in the final Agent Workspace (current small card = clean-room baseline)",
+        "AI Assistance should attach to Conversation/message/task/context, not a permanent sibling card",
+        "Background Tasks / Offline Learning current position is not final IA",
+        "SHEEP-045 Button/Action primitives must decouple action hierarchy from success/warning/danger status semantics",
+        "Store switcher evolves per Multi-store IA into a workspace scope/navigation surface (current rectangular list not final)",
+        "Future componentization further distinguishes work-object title / section heading / card heading / label / metadata"
+    ],
+    "note": "This PASS does NOT approve the current clean-room workspace topology as the final product layout; existing Phase 3/4 deferrals unchanged"
   }
 }
