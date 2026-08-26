@@ -30,7 +30,7 @@
   "current_phase": "PHASE_3",
   "current_milestone": "M3.1",
   "last_closed_task": "SHEEP-040",
-  "current_task": "SHEEP-041 (proposal pending approval)",
+  "current_task": "SHEEP-041 (executed, pending Owner DP-9~14 decisions)",
   "next_action": "SHEEP-041",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -775,5 +775,17 @@
             "Command Palette implementation"
         ]
     }
+  },
+  "sheep_041": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-27",
+    "report": "reports\\SHEEP-041-report.json",
+    "proposal_doc": "docs\\fast-sheep-multi-store-navigation-proposal.md",
+    "invariants": ["I-1 conversation-bound context wins", "I-2 All Stores = queue scope not identity", "I-3 no ambiguous cross-store action"],
+    "decision_points": ["DP-9..DP-14 (PRODUCT_DECISION_REQUIRED; awaiting Owner decisions)"],
+    "next_per_roadmap": "SHEEP-042 (M3.1 Conversation-centered Workspace IA; pending Owner DP-9~14 decisions + PASS)",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }

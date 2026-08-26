@@ -1,0 +1,135 @@
+{
+  "task": "SHEEP-041",
+  "result": "COMPLETE",
+  "phase": "Phase 3",
+  "milestone": "M3.1",
+  "objective": "Fast Sheep Multi-store Navigation Model Proposal：核心 invariants（conversation-bound context wins / All Stores = queue scope / no ambiguous cross-store action）+ 模型比较 + DP-9~14；纯提案文档，产品代码变更 = 0",
+  "completed_requirements": 10,
+  "total_requirements": 10,
+  "owner_tightening": {
+    "t1_conversation_bound_context_wins": "遵守：I-1 invariant 确立——打开 Conversation 后其 storeId 为业务上下文事实源；ambient store selection 不得静默改变该会话的 Customer/Product/Order/Platform/AI context",
+    "t2_all_stores_is_queue_scope": "遵守：I-2——All Stores 仅为 workspace/queue query scope，非 Store identity；未设计伪 storeId=\"all\"；原则：All Stores is a work queue scope, not a data ownership scope",
+    "t3_no_ai_auto_store_context": "遵守：DP-9 未使用 AI 自动决定店铺上下文语义；推荐 context-aware workspace + explicit professional store switcher；AI 可建议但不隐式改变 Store scope",
+    "t4_dp11_rewritten": "遵守：DP-11 重写为 Store selection 对 workspace queue/filter 与 active Conversation 的作用关系；推荐 Store selection 过滤 workspace entry/queue，active Conversation 始终绑定自身 Store identity",
+    "t5_dp12_preference_vs_fact": "遵守：DP-12 明确比较 navigation preference 与 business fact；推荐 explicit selection + optional remembered navigation preference；禁止 AI inferred automatic store switching；AI 切店建议需用户确认",
+    "t6_platform_grouping_candidate": "遵守：全部/PDD/DouDian 仅作 platform-grouping candidate，未硬编码为永久 IA taxonomy；未来须支持可扩展 PlatformId",
+    "t7_dp13_scope_vs_authority": "遵守：DP-13 推荐 merchant-wide Supervisor/Ops aggregate + Store/Platform filtering；可见范围由 Capability/ResourceScope 决定，IA 不授予 authority",
+    "t8_dp14_no_ambiguous_cross_store_action": "遵守：新增 DP-14/UX invariant——任何 business-impacting action 必须明确 target Store；AI suggestion/action 不得混合不同 Store 事实上下文",
+    "t9_dual_scope_model_discussed": "遵守：讨论 Agent Workspace 同时支持 All Stores queue scope 与 Specific Store scope 的模型；仅 IA proposal，未实现",
+    "t10_no_code_change": "遵守：产品代码变更=0；未改 shop-sidebar / typed selection；未实现 queue / Command Palette / Phase 4 workflow"
+  },
+  "invariants": {
+    "I1_conversation_bound_context_wins": "active Conversation 的 storeId 为业务上下文事实源；ambient store selection 不得静默改写其上下文",
+    "I2_all_stores_queue_scope": "All Stores is a work queue scope, not a data ownership scope; 无伪 storeId=\"all\"",
+    "I3_no_ambiguous_cross_store_action": "business-impacting action 必须明确 target Store；AI 不得混合多 Store 事实上下文"
+  },
+  "decision_points": [
+    {
+      "id": "DP-9",
+      "question": "店铺导航模型",
+      "options": [
+        "M-1 平面",
+        "M-2 平台分组",
+        "M-3 context-aware + explicit switcher"
+      ],
+      "preliminary": "M-3（AI 可建议，不隐式改 Store scope）",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-10",
+      "question": "店铺切换器放置",
+      "options": [
+        "现有 app-sidebar",
+        "Command Palette（record-only）",
+        "二者结合"
+      ],
+      "preliminary": "现有 sidebar + 未来 Command Palette 深链（record-only）",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-11",
+      "question": "Store selection 作用关系",
+      "options": [
+        "过滤 workspace queue/entry（推荐）",
+        "改写会话上下文（禁止）"
+      ],
+      "preliminary": "过滤 workspace entry/queue；active Conversation 绑定自身 Store identity",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-12",
+      "question": "默认/最近店铺",
+      "options": [
+        "显式 + 可选记忆（推荐）",
+        "AI 自动推断（禁止）"
+      ],
+      "preliminary": "explicit selection + optional remembered preference；AI 切店建议需确认",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-13",
+      "question": "Supervisor/Ops 店铺范围",
+      "options": [
+        "merchant-wide aggregate + filtering（推荐）",
+        "其它"
+      ],
+      "preliminary": "aggregate + Store/Platform filtering；可见范围由 Capability/ResourceScope 决定",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-14",
+      "question": "跨店动作 ambiguity",
+      "options": [
+        "No ambiguous cross-store action（必选 invariant）"
+      ],
+      "preliminary": "任何 business action 须明确 target Store；AI 不得混合多 Store 事实",
+      "status": "PRODUCT_DECISION_REQUIRED (UX invariant)"
+    }
+  ],
+  "deferrals": [
+    "queue 实现 / Command Palette 实现 / Phase 4 workflow（不实现，仅 IA 讨论）",
+    "Product/Order IA -> M4.3",
+    "Design System -> M3.2",
+    "SHEEP-031 AI Panel 挂载 -> 后续单元",
+    "Platform 分组永久 taxonomy / PlatformId 扩展 -> 未来（现仅 candidate）"
+  ],
+  "evidence": {
+    "confirmed": [
+      "Roadmap 多店铺候选",
+      "现有 shop-sidebar 数据/切换机制",
+      "DP-1~8 决策",
+      "I-1~I-3 invariant（待 Owner 确认）"
+    ],
+    "inferred": [
+      "模型/入口推导（低风险、可逆、仅文档）"
+    ],
+    "decisions_required": [
+      "DP-9~14（PRODUCT_DECISION_REQUIRED）"
+    ]
+  },
+  "verification": {
+    "necessary": "无产品代码变更，无必要运行类验证（纯文档）",
+    "non_regression_evidence": "desktop tests 207/207；check:boundary PASS；secret scan PASS（未运行 Electron smoke——纯文档任务惯例）",
+    "product_code_changed": false,
+    "shop_sidebar_changed": false,
+    "typed_selection_changed": false,
+    "queue_or_command_palette_implemented": false,
+    "phase4_workflow_implemented": false
+  },
+  "modified_files": [
+    "docs/fast-sheep-multi-store-navigation-proposal.md（新建）",
+    "reports/SHEEP-041-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-041 记录）"
+  ],
+  "architecture_changes": [],
+  "security_changes": [
+    "无（产品代码变更=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
