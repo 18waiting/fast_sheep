@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_3",
   "current_milestone": "M3.1-COMPLETE",
-  "last_closed_task": "SHEEP-042",
-  "current_task": "SHEEP-043 (executed, pending Owner DP-22~28 decisions)",
-  "next_action": "SHEEP-043",
+  "last_closed_task": "SHEEP-043",
+  "current_task": "SHEEP-044 (proposal pending approval)",
+  "next_action": "SHEEP-044",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-043 (M3.2 Design Tokens; pending Owner approval)",
+  "next_task": "SHEEP-044 (M3.2 Typography/Spacing/Color; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -833,14 +833,27 @@
   },
   "sheep_043": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-043-report.json",
     "design_doc": "docs\\fast-sheep-design-tokens.md",
-    "decisions": ["DP-22..DP-28 (implemented per Controller recommendation; OWNER_DECIDED pending this round PASS)"],
+    "decisions": ["DP-22..DP-28 (OWNER_DECIDED 2026-08-27)"],
     "repair_note": "REPAIR 2026-08-27: DP-27 canonical status taxonomy (neutral/info/success/warning/danger; primary=Action/Accent); tests lock architecture invariants not exact visual set; Fact/Assistance/Evidence provisional; audit semantics = Owner decision PENDING until PASS",
     "next_per_roadmap": "SHEEP-044 (M3.2 Typography/Spacing/Color; pending Owner PASS)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-27"
+  },
+  "fast_sheep_design_token_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-27",
+    "dp_22_token_architecture": "PRIMITIVE_PLUS_SEMANTIC (primitive inventory minimal)",
+    "dp_23_theme_strategy": "SHARED_SEMANTIC_SYSTEM_WITH_CONTEXTUAL_DENSITY_CAPABILITY",
+    "dp_24_namespace": "PRESERVE_FS_NAMESPACE_WITH_SEMANTIC_REORGANIZATION_AND_COMPATIBILITY_ALIASES",
+    "dp_25_theme_scope": "LIGHT_FIRST_THEME_READY_DARK_DEFERRED",
+    "dp_26_semantics": "REUSABLE_FACT_ASSISTANCE_EVIDENCE_STATUS_ACTION_SEMANTICS (AI has no brand skin; Fact/Assistance/Evidence current mapping = provisional mechanical baseline; final visual refinement = SHEEP-044)",
+    "dp_27_status_palette": "LIMITED_CANONICAL_SEMANTIC_STATUS_PALETTE (canonical = neutral/info/success/warning/danger; legacy names = compatibility aliases, NOT to be expanded as canonical vocabulary by future code; primary = Action/Accent NOT Status)",
+    "dp_28_density": "DENSITY_IS_CONTEXTUAL_CAPABILITY_NOT_THEME",
+    "note": "compatibility aliases must not be treated as canonical vocabulary expansion by future code"
   }
 }
