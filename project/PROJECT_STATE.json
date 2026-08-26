@@ -28,10 +28,10 @@
     "reviewed_version": "V1.0_REVIEWED"
   },
   "current_phase": "PHASE_3",
-  "current_milestone": "M3.1",
-  "last_closed_task": "SHEEP-041",
-  "current_task": "SHEEP-042 (executed, pending Owner DP-15~21 decisions)",
-  "next_action": "SHEEP-042",
+  "current_milestone": "M3.1-COMPLETE",
+  "last_closed_task": "SHEEP-042",
+  "current_task": "SHEEP-043 (proposal pending approval)",
+  "next_action": "SHEEP-043",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-042 (M3.1 Conversation-centered Workspace IA; pending Owner approval)",
+  "next_task": "SHEEP-043 (M3.2 Design Tokens; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -807,7 +807,7 @@
   },
   "sheep_042": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-042-report.json",
     "proposal_doc": "docs\\fast-sheep-conversation-centered-workspace-ia.md",
@@ -815,6 +815,20 @@
     "decision_points": ["DP-15..DP-21 (PRODUCT_DECISION_REQUIRED; awaiting Owner decisions)"],
     "next_per_roadmap": "SHEEP-043 (M3.2 Design Tokens; pending Owner DP-15~21 decisions + PASS)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-27",
+    "owner_decisions_recorded": true
+  },
+  "fast_sheep_workspace_ia_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-27",
+    "dp_15_workspace_topology": "CONVERSATION_PRIMARY_WITH_ON_DEMAND_CONTEXT (Conversation = primary work object; Queue = entry; AI assistance & context appear around current work; no permanent 3-column / fixed width / locked surface placement)",
+    "dp_16_conversation_queue": "QUEUE_IS_PRIMARY_WORK_ENTRY_PLACEMENT_DEFERRED (Conversation Queue = primary work-entry surface, Store-scope filtered; left/rail/list placement deferred)",
+    "dp_17_context_disclosure": "THREE_LEVEL_PROGRESSIVE_DISCLOSURE (inline facts -> context surface -> full professional view; no drawer/right-panel/popover locked)",
+    "dp_18_ai_placement": "CONTEXTUAL_AI_ATTACHED_TO_WORK_OBJECT (AI assistance attaches to the Conversation/message/task/context it assists; no second independent Agent AI-chat workflow; AI/Automation management entry remains management IA)",
+    "dp_19_professional_fallback": "CONTINUOUSLY_REACHABLE_PROFESSIONAL_FALLBACK (no normal/advanced dual mode; facts, raw data, manual operations continuously reachable; shortcuts = efficiency enhancement only)",
+    "dp_20_supervisor_ops": "SUPERVISOR_OPS_SEPARATE_IA_DOMAIN (separate task model from Agent Workspace; escalation/transfer/deep-link allowed; Supervisor console NOT an Agent main panel)",
+    "dp_21_ai_evidence_visibility": "INSPECTABLE_SOURCE_FACTS_WITHOUT_HIDDEN_REASONING_EXPOSURE (important AI suggestions/judgments/recommended actions must allow viewing supporting business facts & sources; hidden chain-of-thought NOT a product display or acceptance requirement)",
+    "ia_layer_separation": "Queue State and Active Conversation State are two distinct IA levels and must not be mixed"
   }
 }
