@@ -1,56 +1,114 @@
-/* Fast Sheep design tokens — mechanically promoted from Fast Sheep clean-room
- * apps/desktop/src/renderer/styles.css baseline. Values are unchanged from that
- * baseline; NO visual redesign is intended here (Fast Sheep redesign = Phase 3).
+/* Fast Sheep design tokens — Phase 3 (SHEEP-043) Design Token system.
+ * Architecture: primitive -> semantic -> optional context/density -> component
+ *   (context/density modifier layer reserved; NOT implemented, DP-28).
+ * DP-22: PRIMITIVE_PLUS_SEMANTIC (minimal primitive inventory = current real values).
+ * DP-23: SHARED_SEMANTIC_SYSTEM_WITH_CONTEXTUAL_DENSITY_CAPABILITY
+ *   (no separate Agent/Professional visual themes; shared semantics).
+ * DP-24: --fs-* namespace kept; semantic reorganization + aliases, no big rename.
+ * DP-25: LIGHT_FIRST_THEME_READY_DARK_DEFERRED (components consume semantic tokens;
+ *   no dark palette / theme selector / persistence here).
+ * DP-26: No AI brand color / AI skin. AI is a cross-cutting consumer of reusable
+ *   semantic roles Fact / Assistance / Evidence / Status / Action.
+ * DP-27: LIMITED_SEMANTIC_STATUS_PALETTE (business status -> limited visual status roles).
+ * DP-28: DENSITY_IS_CONTEXTUAL_CAPABILITY_NOT_THEME (not implemented now).
+ * Values: mechanically mapped from the SHEEP-025 clean-room baseline (no visual
+ *   redesign; typography/spacing/color refinement = SHEEP-044).
  * Provenance: independently implemented clean-room baseline;
- * reference_match_status = NOT_ESTABLISHED (not derived from the FastWork renderer
- * reference; reference token values are UNKNOWN / NOT_EVIDENCED).
- * Neutral naming: no fastwork-* / reference-* / original-* identifiers.
+ *   reference_match_status = NOT_ESTABLISHED.
+ * Neutral naming: identifiers are project-owned (--fs-*) with no external-origin markers.
  */
 :root {
-  /* color */
-  --fs-color-text: #1f2328;
-  --fs-color-text-secondary: #57606a;
-  --fs-color-text-muted: #8c959f;
-  --fs-color-text-on-primary: #fff;
-  --fs-color-bg: #f6f8fa;
-  --fs-color-bg-surface: #fff;
-  --fs-color-bg-subtle: #eaeef2;
-  --fs-color-bg-selected: #ddf4ff;
-  --fs-color-bg-success: #dafbe1;
-  --fs-color-bg-warning: #fff8c5;
-  --fs-color-bg-danger: #ffebe9;
-  --fs-color-bg-error: #fff1f0;
-  --fs-color-border: #d8dee4;
-  --fs-color-border-selected: #54aeff;
-  --fs-color-border-error: #ffccc7;
-  --fs-color-primary: #0969da;
-  --fs-color-success: #1a7f37;
-  --fs-color-warning: #7a5901;
-  --fs-color-danger: #cf222e;
-  --fs-color-error: #b3261e;
-  --fs-color-warning-strong: #9a6700;
+  /* ===== Primitive layer (raw values; minimal = only values the renderer currently needs) ===== */
+  --fs-prim-ink-900: #1f2328;
+  --fs-prim-ink-600: #57606a;
+  --fs-prim-ink-400: #8c959f;
+  --fs-prim-white: #fff;
+  --fs-prim-canvas: #f6f8fa;
+  --fs-prim-subtle: #eaeef2;
+  --fs-prim-selected: #ddf4ff;
+  --fs-prim-success-bg: #dafbe1;
+  --fs-prim-warning-bg: #fff8c5;
+  --fs-prim-danger-bg: #ffebe9;
+  --fs-prim-error-bg: #fff1f0;
+  --fs-prim-border: #d8dee4;
+  --fs-prim-border-selected: #54aeff;
+  --fs-prim-border-error: #ffccc7;
+  --fs-prim-primary: #0969da;
+  --fs-prim-success: #1a7f37;
+  --fs-prim-warning: #7a5901;
+  --fs-prim-danger: #cf222e;
+  --fs-prim-error: #b3261e;
+  --fs-prim-warning-strong: #9a6700;
+  --fs-prim-space-1: 4px;
+  --fs-prim-space-2: 8px;
+  --fs-prim-space-3: 12px;
+  --fs-prim-space-4: 16px;
+  --fs-prim-space-5: 10px;
+  --fs-prim-radius-sm: 6px;
+  --fs-prim-radius-md: 8px;
+  --fs-prim-radius-full: 999px;
+  --fs-prim-border-width: 1px;
+  --fs-prim-border-style: solid;
+  --fs-prim-font-sans: system-ui, "Microsoft YaHei", sans-serif;
+  --fs-prim-font-size-xs: 11px;
+  --fs-prim-font-size-sm: 12px;
+  --fs-prim-font-size-md: 13px;
+  --fs-prim-font-size-base: 14px;
+  --fs-prim-font-size-lg: 16px;
 
-  /* spacing (values from baseline) */
-  --fs-space-1: 4px;
-  --fs-space-2: 8px;
-  --fs-space-3: 12px;
-  --fs-space-4: 16px;
-  --fs-space-5: 10px;
-
-  /* radius */
-  --fs-radius-sm: 6px;
-  --fs-radius-md: 8px;
-  --fs-radius-full: 999px;
-
+  /* ===== Semantic layer (roles; consumed by components; values reference primitives) ===== */
+  /* text */
+  --fs-color-text: var(--fs-prim-ink-900);
+  --fs-color-text-secondary: var(--fs-prim-ink-600);
+  --fs-color-text-muted: var(--fs-prim-ink-400);
+  --fs-color-text-on-primary: var(--fs-prim-white);
+  /* background */
+  --fs-color-bg: var(--fs-prim-canvas);
+  --fs-color-bg-surface: var(--fs-prim-white);
+  --fs-color-bg-subtle: var(--fs-prim-subtle);
+  --fs-color-bg-selected: var(--fs-prim-selected);
+  --fs-color-bg-success: var(--fs-prim-success-bg);
+  --fs-color-bg-warning: var(--fs-prim-warning-bg);
+  --fs-color-bg-danger: var(--fs-prim-danger-bg);
+  --fs-color-bg-error: var(--fs-prim-error-bg);
   /* border */
-  --fs-border-width: 1px;
-  --fs-border-style: solid;
-
+  --fs-color-border: var(--fs-prim-border);
+  --fs-color-border-selected: var(--fs-prim-border-selected);
+  --fs-color-border-error: var(--fs-prim-border-error);
+  /* action role (DP-26) */
+  --fs-color-action: var(--fs-prim-primary);
+  /* status roles (DP-27: LIMITED_SEMANTIC_STATUS_PALETTE) */
+  --fs-color-primary: var(--fs-prim-primary);
+  --fs-color-success: var(--fs-prim-success);
+  --fs-color-warning: var(--fs-prim-warning);
+  --fs-color-danger: var(--fs-prim-danger);
+  --fs-color-error: var(--fs-prim-error);
+  --fs-color-warning-strong: var(--fs-prim-warning-strong);
+  /* reusable semantic roles Fact / Assistance / Evidence (DP-26; AI = consumer, no AI skin) */
+  --fs-color-fact: var(--fs-prim-ink-900);
+  --fs-color-fact-secondary: var(--fs-prim-ink-600);
+  --fs-color-assistance: var(--fs-prim-primary);
+  --fs-color-assistance-bg: var(--fs-prim-selected);
+  --fs-color-evidence: var(--fs-prim-ink-600);
+  --fs-color-evidence-bg: var(--fs-prim-subtle);
+  /* spacing */
+  --fs-space-1: var(--fs-prim-space-1);
+  --fs-space-2: var(--fs-prim-space-2);
+  --fs-space-3: var(--fs-prim-space-3);
+  --fs-space-4: var(--fs-prim-space-4);
+  --fs-space-5: var(--fs-prim-space-5);
+  /* radius */
+  --fs-radius-sm: var(--fs-prim-radius-sm);
+  --fs-radius-md: var(--fs-prim-radius-md);
+  --fs-radius-full: var(--fs-prim-radius-full);
+  /* border */
+  --fs-border-width: var(--fs-prim-border-width);
+  --fs-border-style: var(--fs-prim-border-style);
   /* typography */
-  --fs-font-sans: system-ui, "Microsoft YaHei", sans-serif;
-  --fs-font-size-xs: 11px;
-  --fs-font-size-sm: 12px;
-  --fs-font-size-md: 13px;
-  --fs-font-size-base: 14px;
-  --fs-font-size-lg: 16px;
+  --fs-font-sans: var(--fs-prim-font-sans);
+  --fs-font-size-xs: var(--fs-prim-font-size-xs);
+  --fs-font-size-sm: var(--fs-prim-font-size-sm);
+  --fs-font-size-md: var(--fs-prim-font-size-md);
+  --fs-font-size-base: var(--fs-prim-font-size-base);
+  --fs-font-size-lg: var(--fs-prim-font-size-lg);
 }

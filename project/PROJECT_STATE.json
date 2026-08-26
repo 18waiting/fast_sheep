@@ -30,7 +30,7 @@
   "current_phase": "PHASE_3",
   "current_milestone": "M3.1-COMPLETE",
   "last_closed_task": "SHEEP-042",
-  "current_task": "SHEEP-043 (proposal pending approval)",
+  "current_task": "SHEEP-043 (executed, pending Owner DP-22~28 decisions)",
   "next_action": "SHEEP-043",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -830,5 +830,16 @@
     "dp_20_supervisor_ops": "SUPERVISOR_OPS_SEPARATE_IA_DOMAIN (separate task model from Agent Workspace; escalation/transfer/deep-link allowed; Supervisor console NOT an Agent main panel)",
     "dp_21_ai_evidence_visibility": "INSPECTABLE_SOURCE_FACTS_WITHOUT_HIDDEN_REASONING_EXPOSURE (important AI suggestions/judgments/recommended actions must allow viewing supporting business facts & sources; hidden chain-of-thought NOT a product display or acceptance requirement)",
     "ia_layer_separation": "Queue State and Active Conversation State are two distinct IA levels and must not be mixed"
+  },
+  "sheep_043": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-27",
+    "report": "reports\\SHEEP-043-report.json",
+    "design_doc": "docs\\fast-sheep-design-tokens.md",
+    "decisions": ["DP-22..DP-28 (applied per Owner decision; awaiting SHEEP-043 PASS)"],
+    "next_per_roadmap": "SHEEP-044 (M3.2 Typography/Spacing/Color; pending Owner PASS)",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }
