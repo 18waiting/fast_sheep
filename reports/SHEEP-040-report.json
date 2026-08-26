@@ -1,0 +1,155 @@
+{
+  "task": "SHEEP-040",
+  "result": "COMPLETE",
+  "phase": "Phase 3",
+  "milestone": "M3.1",
+  "objective": "Fast Sheep IA Proposal：三种 IA 模型比较 + 入口分层 + AI IA 角色比较 + Owner decision points（DP-1~8）+ deferral 清单；纯提案文档，产品代码变更 = 0",
+  "completed_requirements": 9,
+  "total_requirements": 9,
+  "owner_tightening": {
+    "t1_candidate_domains_not_final_nav": "遵守：Roadmap 9 项仅作为 CONFIRMED roadmap candidate domains，未默认视为最终一级导航",
+    "t2_three_models_compared": "遵守：比较 Domain-first Professional Console / Workflow-first AI-native / Hybrid AI-native workflow + Professional fallback 三模型（§2）",
+    "t3_entry_types_distinguished": "遵守：明确区分 primary workflow entry / contextual entry / administrative-professional entry（§3），未按 domain/table 映射菜单",
+    "t4_agent_vs_supervisor_fallback": "遵守：分别讨论 Agent professional fallback 与 Supervisor/Ops console（§4）",
+    "t5_product_order_deferred": "遵守：Product/Order 仅确认 domain importance；primary-nav/contextual-role 最终决定 DEFER 到 M4.3，未在 SHEEP-040 锁定（DP-5 仅记录候选）",
+    "t6_decision_points_covered": "遵守：DP-1~8 覆盖 IA 模型 / AI IA 角色 / 工作台-会话关系 / Customer 入口角色 / Product-Order 候选角色 / Agent fallback 原则 / Supervisor-Ops IA domain / 一级导航复杂度原则",
+    "t7_ai_ia_role_compared": "遵守：AI 比较 一级模块 / 纯横切 / 横切能力+独立管理入口 三选项（§5）；未因 Roadmap 有 AI 就默认建独立 AI 工作页",
+    "t8_pure_proposal_no_code": "遵守：产品代码变更=0；未挂载 SHEEP-031 AI primitive；未实现路由；未提前实现 Phase 4",
+    "t9_verification_by_change_nature": "遵守：纯文档任务未强制 Electron smoke（未建立新惯例）；运行 desktop 回归/boundary/secret 作为 non-regression evidence，报告区分必要验证（无产品代码变更）与额外回归证据"
+  },
+  "decision_points": [
+    {
+      "id": "DP-1",
+      "question": "IA 模型",
+      "options": [
+        "A 专业 console",
+        "B workflow-first AI-native",
+        "C Hybrid"
+      ],
+      "preliminary": "C（Hybrid）",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-2",
+      "question": "AI 的 IA 角色",
+      "options": [
+        "AI-1 一级模块",
+        "AI-2 纯横切",
+        "AI-3 横切+管理入口"
+      ],
+      "preliminary": "AI-3",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-3",
+      "question": "工作台与会话关系",
+      "options": [
+        "会话即工作台主区",
+        "工作台聚合页+会话模块",
+        "其它"
+      ],
+      "preliminary": "会话即主工作台",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-4",
+      "question": "Customer 入口角色",
+      "options": [
+        "一级入口",
+        "contextual entry",
+        "二者结合"
+      ],
+      "preliminary": "contextual + 管理列表入口",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-5",
+      "question": "Product/Order 候选角色",
+      "options": [
+        "一级",
+        "contextual",
+        "其它（DEFER 到 M4.3）"
+      ],
+      "preliminary": "记录候选，不锁定",
+      "status": "DEFERRED to Phase 4 M4.3（domain importance CONFIRMED）"
+    },
+    {
+      "id": "DP-6",
+      "question": "Agent professional fallback 原则",
+      "options": [
+        "内嵌于工作流",
+        "独立 fallback 模式",
+        "快捷键优先"
+      ],
+      "preliminary": "内嵌 + 快捷键优先",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-7",
+      "question": "Supervisor/Ops IA domain",
+      "options": [
+        "独立一级 console",
+        "与工作台分区",
+        "设置内聚合"
+      ],
+      "preliminary": "独立专业 console 区",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    },
+    {
+      "id": "DP-8",
+      "question": "一级导航复杂度原则",
+      "options": [
+        "<=5",
+        "<=7",
+        "9 全保留",
+        "其它"
+      ],
+      "preliminary": "建议 <=7，多入口归 contextual/admin",
+      "status": "PRODUCT_DECISION_REQUIRED"
+    }
+  ],
+  "deferrals": [
+    "Product/Order primary-nav/contextual-role -> Phase 4 M4.3",
+    "多店铺导航模型 -> SHEEP-041",
+    "Design System（tokens/typography/spacing/color/components）-> M3.2（SHEEP-043~047）",
+    "SHEEP-031 AI Panel 挂载/集成 -> 后续单元（unmounted primitive，不宣称 integration）",
+    "FastWork reference 具体 workflow/IA 细节 -> 仅 inspiration，非 spec"
+  ],
+  "evidence": {
+    "confirmed": [
+      "Roadmap candidate domains（9 项）",
+      "产品方向（AI-native + Professional fallback，Owner 决策）",
+      "SHEEP-031 = unmounted primitive"
+    ],
+    "inferred": [
+      "模型/入口推导（低风险、可逆、仅文档）"
+    ],
+    "decisions_required": [
+      "DP-1~DP-8（PRODUCT_DECISION_REQUIRED）"
+    ]
+  },
+  "verification": {
+    "necessary": "无产品代码变更，无必要运行类验证（纯文档）",
+    "non_regression_evidence": "desktop tests 207/207；check:boundary PASS；secret scan PASS（未运行 Electron smoke——纯文档任务不建立该惯例）",
+    "product_code_changed": false,
+    "ai_panel_mounted": false,
+    "routing_added": false,
+    "phase4_preimplemented": false
+  },
+  "modified_files": [
+    "docs/fast-sheep-ia-proposal.md（新建）",
+    "reports/SHEEP-040-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-040 记录）"
+  ],
+  "architecture_changes": [],
+  "security_changes": [
+    "无（产品代码变更=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
