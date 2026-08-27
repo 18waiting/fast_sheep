@@ -30,7 +30,7 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1",
   "last_closed_task": "SHEEP-047",
-  "current_task": "SHEEP-060 (proposal pending approval)",
+  "current_task": "SHEEP-060 (BLOCKED: queue data-path gap; awaiting Owner decision)",
   "next_action": "SHEEP-060",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -1029,5 +1029,16 @@
     ],
     "first_acceptance_unit": "SHEEP-060",
     "sheep_060_approved": false
+  },
+  "sheep_060": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PENDING_OWNER_DECISION",
+    "status": "BLOCKED",
+    "closed_date_candidate": null,
+    "gap_report": "reports\\SHEEP-060-gap-report.json",
+    "gap": "DATA_PATH_GAP-QUEUE_CONVERSATION_LIST (no wired conversation-list fact source in Main runtime; STOP per tightening #13; no schema expansion, no faked data path)",
+    "next_per_roadmap": "Awaiting Owner decision on queue data path (persistence wiring unit vs injected dev source vs other)",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }

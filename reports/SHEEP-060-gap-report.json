@@ -1,0 +1,37 @@
+{
+  "task": "SHEEP-060",
+  "result": "PARTIAL (BLOCKED before implementation — Read First gap)",
+  "phase": "Phase 4",
+  "milestone": "M4.1",
+  "status": "BLOCKED",
+  "summary": "Queue 生产数据事实源在当前运行时不存在；按收紧 #13 的明确 STOP 条件，未实施、未扩 schema、未伪造数据路径",
+  "read_first": {
+    "exact_files_examined": [
+      "apps/desktop/src/renderer/state/view-model.ts (UiState: 仅单 active conversation 投影)",
+      "apps/desktop/src/main/services/workbench-projection-service.ts (ProjectionSource.conversation(): 单会话)",
+      "apps/desktop/src/main/bootstrap.ts (MainContext + createMainContext: orchestrator 用 InMemoryConversationRepositoryPort; Main 无 SQLite 连接)",
+      "apps/desktop/src/main/ipc/query-handlers.ts (bootstrap/snapshot 经 projection.project(); 无 conversation-list 查询)",
+      "packages/desktop-ipc/src/types.ts + channels.ts (WorkbenchViewModel 无 queue 字段; 无 conversations.list 通道)",
+      "packages/persistence/src/repositories/conversation-repository.ts + sqlite/sqlite-conversation-repositories.ts (SqliteNormalizedConversationRepository 有 listByMerchant/listByStore; normalized_conversations 含 id/merchant_id/store_id/platform_account_id/external_ref, 无 summary/updated_at)",
+      "packages/test-kit InMemoryConversationRepositoryPort (单会话内存; 无 list-by-store)"
+    ]
+  },
+  "gap": {
+    "id": "DATA_PATH_GAP-QUEUE_CONVERSATION_LIST",
+    "finding": "Queue 需要按 Store/merchant 列出会话的持久化事实源；但当前 Main 运行时：1) 无 SQLite 连接实例化 SqliteNormalizedConversationRepository；2) normalized_conversations 仓库未接线进 MainContext；3) orchestrator 用单会话内存仓库且无 list-by-store 方法；4) 无会话写入 normalized_conversations 的 ingestion。",
+    "consequence": "无法安全构建满足 DP-57 (Persistence/Domain -> Main projection -> typed IPC -> Renderer) 的生产 Queue 数据路径；不扩 schema、不伪造数据路径",
+    "smallest_next_validation": "Owner 决策：① 先建 Main-owned 会话持久化接线单元（wire SqliteNormalizedConversationRepository + Main SQLite 连接 + ingestion 契约），再由 SHEEP-060 消费；② 或授权 SHEEP-060 使用「注入式 queue-source port + 明确标记的 in-memory dev source」实现 UI/contract，真实持久化接线另立单元；③ 或其它"
+  },
+  "hardening_compliance_notes": {
+    "dp57": "未实现（数据路径缺失）",
+    "dp58": "normalized_conversations 仅最小事实字段可安全提供 (id/store_id/platform_account_id/external_ref)；无 summary/updated_at -> 队列项最小化 + 按 id 稳定排序可行（未实施）",
+    "dp59": "Queue Scope contract (all_stores | specific_store 判别联合) 为纯类型设计，可安全建立（未实施）",
+    "dp60": "激活与键盘 focus 分离语义可安全定义（未实施）",
+    "dp61_64": "purpose-built projection / atomic context / deterministic ordering / explicit summary source 契约均可在类型/文档层建立（未实施）",
+    "i5": "QUEUE_SELECTS_WORK_CONVERSATION_EXPLAINS_WORK invariant 可记录（未实施）",
+    "t13": "STOP：Queue 事实无法由当前 runtime 安全获得；未扩 schema；未伪造"
+  },
+  "no_product_changes": true,
+  "reference_tree_modified": false,
+  "next_stage_not_executed": true
+}
