@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1",
-  "last_closed_task": "SHEEP-060",
-  "current_task": "SHEEP-061 (executed, pending Owner DP-70~77 + I-8/I-9 decisions + visual review)",
-  "next_action": "SHEEP-061",
+  "last_closed_task": "SHEEP-061",
+  "current_task": "SHEEP-062 (proposal pending approval)",
+  "next_action": "SHEEP-062",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-061 (M4.1 Filters/Store/Platform Scopes; pending Owner approval)",
+  "next_task": "SHEEP-062 (M4.1 Unread/Priority/Risk Indicators; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -1115,13 +1115,43 @@
   },
   "sheep_061": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-28",
     "report": "reports\\SHEEP-061-report.json",
     "visual_evidence": ["reports\\visual-evidence\\sheep-061-queue-all.png", "reports\\visual-evidence\\sheep-061-queue-platform.png", "reports\\visual-evidence\\sheep-061-queue-store.png", "reports\\visual-evidence\\sheep-061-queue-outofscope.png", "reports\\visual-evidence\\sheep-061-queue-empty.png"],
-    "decisions": ["DP-70..DP-77 + I-8/I-9 (implemented per Controller recommendation; final = Owner visual review + PASS pending)"],
+    "decisions": ["DP-70..DP-77 + I-8/I-9 (OWNER_DECIDED 2026-08-28 after visual review PASS)"],
     "next_per_roadmap": "SHEEP-062 (M4.1 Unread/Priority/Risk Indicators; pending Owner PASS; not auto-executed)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-28",
+    "visual_review_passed": true
+  },
+  "fast_sheep_queue_filter_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-28",
+    "visual_review": "PASS",
+    "dp_70": "QUEUE_EMBEDS_SCOPE_CONTROLS_STORE_IS_NOT_A_PARALLEL_NAVIGATION_RAIL (Queue+Store double left rail converged; Store/Platform are query dimensions, not parallel nav)",
+    "dp_71": "PLATFORM_FILTER_USES_CANONICAL_PLATFORM_IDENTITY_AND_MAIN_PROJECTION",
+    "dp_72": "ALL_STORES_IS_MERCHANT_SCOPED_QUEUE_QUERY",
+    "dp_73": "FILTERS_ARE_QUERY_DIMENSIONS_NOT_CONVERSATION_FACTS",
+    "dp_74": "ALL_SCOPE_VALUES_ARE_QUERY_VARIANTS_NOT_DOMAIN_IDENTITIES",
+    "dp_75": "EXPLICIT_QUEUE_FILTERS_NO_GENERIC_FILTER_FRAMEWORK",
+    "dp_76": "ACTIVE_CONVERSATION_MAY_REMAIN_OUTSIDE_CURRENT_QUEUE_SCOPE_WITH_EXPLICIT_CONTEXT_CUE (neutral/info cue, not error/warning, no auto-switch)",
+    "dp_77": "FILTER_OPTIONS_ARE_FACT_BACKED_NOT_ROADMAP_HARDCODED",
+    "i_8": "QUEUE_FILTER_DIMENSIONS_COMPOSE_BY_INTERSECTION",
+    "i_9": "QUEUE_RESULTS_MUST_MATCH_CURRENT_QUERY_SCOPE",
+    "visual_confirmations": [
+        "Queue + Store double left rail successfully converged",
+        "Store/Platform correctly behave as Queue query dimensions, not peer navigation",
+        "All Stores / Specific Store / Platform filter / Empty state hierarchy clear",
+        "Active Conversation outside current Queue Scope cue is neutral/info, not error/warning, no auto-switch"
+    ],
+    "future_design_notes": [
+        "canonical PlatformId vs user-facing platform label separation; internal ids like doudian shown via presentation metadata later",
+        "out-of-scope cue final copy/recovery action to be validated in the real Conversation Workspace",
+        "native Store/Platform select is the correct current baseline; searchable/custom selector only when real scale/search need arises",
+        "Queue Scope topology converged; Conversation Main still runtime baseline; M4.2 must begin delivering the Conversation-centered Workspace",
+        "Platform filter option must stay on a different semantic layer from platform availability/entitlement/connection capability"
+    ]
   }
 }
