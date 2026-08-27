@@ -27,11 +27,11 @@
     "reviewed_path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
     "reviewed_version": "V1.0_REVIEWED"
   },
-  "current_phase": "PHASE_3",
-  "current_milestone": "M3.2-COMPLETE",
+  "current_phase": "PHASE_4",
+  "current_milestone": "M4.1",
   "last_closed_task": "SHEEP-047",
-  "current_task": "GATE-P3-FAST-SHEEP-UX (reviewed PASS 2026-08-27; awaiting Owner Phase 4 entry approval)",
-  "next_action": "awaiting Owner approval for Phase 4 entry (GATE-P3 PASS)",
+  "current_task": "SHEEP-060 (proposal pending approval)",
+  "next_action": "SHEEP-060",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -109,7 +109,7 @@
     "PHASE_0_START:APPROVED_OWNER_GO"
   ],
   "next_stage_not_executed": true,
-  "lifecycle_stage": "PHASE_3",
+  "lifecycle_stage": "PHASE_4",
   "roadmap_phase_started": true,
   "review_2_inputs_from_dry_run": [
     "R-01 SecretStore dependency ordering",
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "Phase 4 entry (pending Owner approval; GATE-P3 PASS, FINAL_PHASE4_WORKSPACE_IMPLEMENTATION=NOT_YET/NOT_REQUIRED_FOR_GATE_P3)",
+  "next_task": "SHEEP-060 (M4.1 Conversation List; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -1006,6 +1006,28 @@
     "final_phase4_workspace_implementation": "NOT_YET / NOT_REQUIRED_FOR_GATE_P3",
     "ready_to_enter_phase_4": true,
     "requires_owner_approval": true,
-    "report": "reports\\GATE-P3-review.json"
+    "report": "reports\\GATE-P3-review.json",
+    "owner_confirmed": true,
+    "owner_confirmed_date": "2026-08-27"
+  },
+  "phase_4_entry": {
+    "status": "APPROVED",
+    "approved_date": "2026-08-27",
+    "gate_p3": "PASS",
+    "hard_constraints": [
+      "Conversation is the Agent primary workspace",
+      "Queue is the primary work-entry surface, Store-scope filtered",
+      "Active Conversation always binds its own Store identity; ambient store selection must not silently rewrite conversation business context",
+      "AI assistance attaches to the Conversation/message/task/context it assists; no second independent Agent AI-chat workflow",
+      "Professional fallback continuously reachable; AI failure must not obscure source facts or manual workflow",
+      "Queue state and Active Conversation state remain layered",
+      "Product/Order final Context UX decided at M4.3; not locked by existing partial evidence",
+      "Current clean-room workbench topology is runtime baseline only, not target layout",
+      "Design System foundation consumable; broad production adoption evidence-driven; no forced refactor for unification",
+      "DP-54 Modal focus contract must be implemented + accepted at the first real modal consumer",
+      "All new dynamic UI in Phase 4 obeys DP-55: announce semantic events, not raw update streams"
+    ],
+    "first_acceptance_unit": "SHEEP-060",
+    "sheep_060_approved": false
   }
 }
