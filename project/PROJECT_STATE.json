@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1",
-  "last_closed_task": "SHEEP-060-PR1",
-  "current_task": "SHEEP-060 (executed, pending Owner DP-57~64+DP-69+I-5~7 decisions + visual review)",
-  "next_action": "SHEEP-060 (restored proposal)",
+  "last_closed_task": "SHEEP-060",
+  "current_task": "SHEEP-061 (proposal pending approval)",
+  "next_action": "SHEEP-061",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-060 (M4.1 Conversation List; re-proposal on real persistence path; pending Owner approval)",
+  "next_task": "SHEEP-061 (M4.1 Filters/Store/Platform Scopes; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -1070,14 +1070,47 @@
   },
   "sheep_060_restored": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-060-report.json",
     "prerequisite_resolved": "DATA_PATH_GAP-QUEUE-CONVERSATION-LIST closed by SHEEP-060-PR1 (BLOCKED audit history retained in sheep_060 + gap report)",
     "visual_evidence": ["reports\\visual-evidence\\sheep-060-queue-populated.png", "reports\\visual-evidence\\sheep-060-queue-empty.png"],
-    "decisions": ["DP-57..DP-64 + DP-69 + I-5..I-7 (implemented per Controller recommendation; final = Owner visual review + PASS pending)"],
+    "decisions": ["DP-57..DP-64 + DP-69 + I-5..I-7 (OWNER_DECIDED 2026-08-28 after visual review PASS)"],
     "next_per_roadmap": "SHEEP-061 (M4.1 Filters/Store/Platform Scopes; pending Owner PASS; not auto-executed)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-28",
+    "visual_review_passed": true
+  },
+  "fast_sheep_conversation_list_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-28",
+    "visual_review": "PASS",
+    "dp_57": "TYPED_MAIN_PROJECTION_WITH_SEMANTIC_REFRESH_BOUNDARY",
+    "dp_58": "FACT_BACKED_MINIMAL_QUEUE_ITEM",
+    "dp_59": "EXPLICIT_QUEUE_SCOPE_MODEL_WITH_PROVISIONAL_SIDEBAR_CONTROL",
+    "dp_60": "EXPLICIT_ACTIVATION_SEPARATE_FROM_KEYBOARD_FOCUS",
+    "dp_61": "QUEUE_PROJECTION_IS_PURPOSE_BUILT_NOT_FULL_CONVERSATION_OBJECT",
+    "dp_62": "ACTIVE_CONVERSATION_CONTEXT_SWITCH_IS_ATOMIC",
+    "dp_63": "DETERMINISTIC_TECHNICAL_ORDERING_WITH_NO_PRODUCT_PRIORITY_SEMANTICS",
+    "dp_64": "QUEUE_SUMMARY_SOURCE_MUST_BE_EXPLICIT",
+    "dp_69": "WORKSPACE_CONVERSATION_ACTIVATION_IS_NAVIGATION_STATE_NOT_BUSINESS_MUTATION",
+    "i_5": "QUEUE_SELECTS_WORK_CONVERSATION_EXPLAINS_WORK",
+    "i_7": "DISPLAYED_CONVERSATION_FACTS_MUST_MATCH_ACTIVE_CONVERSATION_IDENTITY",
+    "confirmations": [
+        "synthetic populated evidence used real production architecture path",
+        "production-real Empty Queue correctly expresses no-work",
+        "Queue did not fabricate summary/unread/priority/risk/activity",
+        "Store Scope change must not silently rewrite Active Conversation",
+        "activation is Workspace navigation state, not claim/read/ownership/persistence mutation",
+        "current technical ordering has no product priority/recency semantics"
+    ],
+    "future_design_notes": [
+        "Queue + Store double left rail is incremental topology only; SHEEP-061 must re-evaluate Store/Platform Scope presentation — Store is a scope dimension, must not permanently become a Queue-weight nav column",
+        "M4.2 must let the Conversation Main become the true visual/task center; current small Conversation card is still runtime baseline",
+        "identity-only Queue is the correct baseline under the current fact contract, not final Inbox richness; new fields await real fact contracts",
+        "conversation_id ordering is only a technical fallback; re-decide product ordering once real activity facts exist",
+        "after richer Queue, re-validate active vs keyboard-focused row distinction at high density when on different rows"
+    ]
   }
 }
