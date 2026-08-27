@@ -28,10 +28,10 @@
     "reviewed_version": "V1.0_REVIEWED"
   },
   "current_phase": "PHASE_4",
-  "current_milestone": "M4.1",
-  "last_closed_task": "SHEEP-061",
-  "current_task": "SHEEP-062 (Fact-Readiness Review executed; awaiting Owner decision on prerequisites/DEFER/indicator)",
-  "next_action": "SHEEP-062",
+  "current_milestone": "M4.1-COMPLETE",
+  "last_closed_task": "SHEEP-062",
+  "current_task": "SHEEP-063 (proposal pending approval)",
+  "next_action": "SHEEP-063",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-062 (M4.1 Unread/Priority/Risk Indicators; pending Owner approval)",
+  "next_task": "SHEEP-063 (M4.2 Message Timeline; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -1156,7 +1156,7 @@
   },
   "sheep_062": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-28",
     "report": "reports\\SHEEP-062-report.json",
     "review_doc": "docs\\fast-sheep-unread-priority-risk-indicators.md",
@@ -1165,9 +1165,35 @@
       "PRIORITY_FACT_READINESS": "PRODUCT_DECISION_REQUIRED (no fact source; semantics undefined)",
       "RISK_FACT_READINESS": "PRODUCT_DECISION_REQUIRED/DEFER (no typed risk signal contract)"
     },
-    "decisions": ["DP-78..DP-82 + I-10/I-11 (fact-readiness review completed; no indicator implemented)"],
+    "decisions": ["DP-78..DP-82 + I-10/I-11 (OWNER_DECIDED 2026-08-28)"],
     "next_per_roadmap": "Owner decision: prerequisite unit / DEFER / approve indicator implementation (not auto-advanced)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-28"
+  },
+  "fast_sheep_indicator_fact_readiness_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-28",
+    "dp_78": "UNREAD_IS_DERIVED_FROM_AN_EXPLICIT_READER_PROGRESS_FACT",
+    "dp_79": "PRIORITY_REQUIRES_EXPLICIT_PROVENANCE_AND_AUTHORITY",
+    "dp_80": "RISK_IS_TYPED_EVIDENCE_BACKED_SIGNAL_NOT_GENERIC_SEVERITY",
+    "dp_81": "FACT_STORAGE_FOLLOWS_SEMANTICS_NOT_UI_CONVENIENCE",
+    "dp_82": "INDICATOR_PRESENTATION_REQUIRES_AUTHORITATIVE_FACT_READINESS",
+    "i_10": "INDICATORS_DO_NOT_IMPLY_RANKING_AUTHORITY",
+    "i_11": "OPERATIONAL_INDICATORS_REQUIRE_TRACEABLE_FACT_PROVENANCE",
+    "dispositions": {
+        "UNREAD": "DEFER_TO_M4_2_MESSAGE_FACTS (no standalone prerequisite now; reopen readiness after M4.2 message identity/order/timestamp + reader identity/read-progress; forbidden: conversation-level unread boolean/count bypassing reader-progress model)",
+        "PRIORITY": "DEFERRED_PRODUCT_DECISION (no implementation/schema now; separate product decision when real priority authority/provenance/override/lifecycle need arises; AI recommendation != authoritative priority)",
+        "RISK": "DEFERRED_TYPED_SIGNAL_DESIGN (no generic risk badge/schema now; future must model typed + source/evidence-backed risk signal; AI-derived risk obeys I-4)"
+    },
+    "future_constraints": [
+        "agent-local read progress and team/workflow processing state must not be conflated into unread",
+        "indicator presence does not grant Queue ranking authority",
+        "future indicators must have traceable authoritative provenance",
+        "do not design persistence schema backwards from UI convenience",
+        "after M4.2 message facts mature, UNREAD_FACT_READINESS must be re-evaluated"
+    ],
+    "note": "this round implemented no indicator — correct acceptance result, not a defect",
+    "m41_evidence_aware_complete": "M4.1 COMPLETE: Queue + scopes implemented (SHEEP-060/061); Unread/Priority/Risk have explicit legal dispositions after fact-readiness review (SHEEP-062)"
   }
 }
