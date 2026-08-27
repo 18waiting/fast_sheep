@@ -16,7 +16,6 @@ import { renderLegacyImportPanel } from "./legacy-import-panel.js";
 import { renderConversationList } from "./conversation-list.js";
 import { clear, el } from "./dom.js";
 import { renderAppNavbar } from "./app-navbar.js";
-import { renderShopSidebar } from "./shop-sidebar.js";
 import { renderWorkbenchHeader } from "./workbench-header.js";
 import { renderConversationPanel } from "./conversation-panel.js";
 import { renderSuggestionPanel } from "./suggestion-panel.js";
@@ -54,13 +53,6 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
   if (queueActions) renderConversationList(queueHost, state, queueActions);
   body.appendChild(queueHost);
 
-  // Left sidebar region container (reference sidebar shell region). The existing
-  // clean-room shop-sidebar component renders directly as this region's content.
-  // (SHEEP-027: the former unstyled sidebar-host wrapper was confirmed pure redundancy
-  // and removed — no CSS/test/state dependency; selection semantics unchanged.)
-  const sidebar = el("div", "app-sidebar");
-  renderShopSidebar(sidebar, state, actions);
-  body.appendChild(sidebar);
 
   const main = el("main", "app-main");
   const headerHost = el("div", "header-host");

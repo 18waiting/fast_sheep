@@ -5,7 +5,7 @@ import { dirname, join as pathJoin } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { openDatabase, SqliteNormalizedConversationRepository, SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, type NormalizedConversationRepository, type StoreRepository } from "@fastwork/persistence";
+import { openDatabase, SqliteNormalizedConversationRepository, SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, type NormalizedConversationRepository, type StoreRepository, type PlatformAccountRepository } from "@fastwork/persistence";
 import { QUERY_HANDLERS, type QueryDeps } from "../dist/main/ipc/query-handlers.js";
 import { createConversationIngestion } from "../dist/main/services/conversation-ingestion.js";
 import type { QueueScope } from "@fastwork/desktop-ipc";
@@ -24,21 +24,25 @@ function seed(root: string): { conversations: NormalizedConversationRepository; 
   m.save({ id: "m-B", name: "B" });
   for (const st of [["A1", "m-A"], ["A2", "m-A"], ["B1", "m-B"]] as const) {
     s.save({ id: st[0], merchantId: st[1], name: st[0], platform: "pdd" });
-    pa.save({ id: "pa-" + st[0], merchantId: st[1], platform: "pdd" });
+    pa.save({ id: "pa-" + st[0], merchantId: st[1], platform: st[1] === "m-B" ? "doudian" : "pdd" });
   }
   const conversations = new SqliteNormalizedConversationRepository(ctx.conn);
   const ingestion = createConversationIngestion(conversations);
   ingestion.saveNormalizedConversation({ id: "c-a1", merchantId: "m-A", storeId: "A1", platformAccountId: "pa-A1", externalRef: null });
   ingestion.saveNormalizedConversation({ id: "c-a2", merchantId: "m-A", storeId: "A2", platformAccountId: "pa-A2", externalRef: null });
   ingestion.saveNormalizedConversation({ id: "c-b1", merchantId: "m-B", storeId: "B1", platformAccountId: "pa-B1", externalRef: null });
+  pa.save({ id: "pa-A1-dd", merchantId: "m-A", platform: "doudian" });
+  ingestion.saveNormalizedConversation({ id: "c-a2-dd", merchantId: "m-A", storeId: "A1", platformAccountId: "pa-A1-dd", externalRef: null });
   const stores = new SqliteStoreRepository(ctx.conn);
-  return { conversations, stores };
+  const platformAccounts = new SqlitePlatformAccountRepository(ctx.conn);
+  return { conversations, stores, platformAccounts };
 }
 
-function deps(conversations: NormalizedConversationRepository, stores: StoreRepository, selected: string | null): QueryDeps {
+function deps(conversations: NormalizedConversationRepository, stores: StoreRepository, selected: string | null, platformAccounts?: PlatformAccountRepository): QueryDeps {
   return {
     conversations,
     stores,
+    platformAccounts: platformAccounts ?? ({} as PlatformAccountRepository),
     selectedShopId: () => selected,
   } as unknown as QueryDeps;
 }
@@ -46,11 +50,11 @@ function deps(conversations: NormalizedConversationRepository, stores: StoreRepo
 test("conversations.list specific_store is merchant-constrained with deterministic ordering (I-6/DP-63)", async () => {
   const root = tempRoot();
   try {
-    const { conversations, stores } = seed(root);
-    const handler = QUERY_HANDLERS["conversations.list"](deps(conversations, stores, "A1"));
+    const { conversations, stores, platformAccounts } = seed(root);
+    const handler = QUERY_HANDLERS["conversations.list"](deps(conversations, stores, "A1", platformAccounts));
     const r1 = await handler({ scope: { kind: "specific_store", storeId: "A1" } });
     assert.equal(r1.ok, true);
-    if (r1.ok) assert.deepEqual(r1.data.items.map((i) => i.conversation_id), ["c-a1"]);
+    if (r1.ok) assert.deepEqual(r1.data.items.map((i) => i.conversation_id), ["c-a1", "c-a2-dd"]);
     const r2 = await handler({ scope: { kind: "specific_store", storeId: "A2" } });
     if (r2.ok) assert.deepEqual(r2.data.items.map((i) => i.conversation_id), ["c-a2"]);
     const rb = await handler({ scope: { kind: "specific_store", storeId: "B1" } });
@@ -63,8 +67,8 @@ test("conversations.list specific_store is merchant-constrained with determinist
 test("conversations.list unknown store => NOT_FOUND; all_stores bounded by selected shop merchant (no cross-merchant leak)", async () => {
   const root = tempRoot();
   try {
-    const { conversations, stores } = seed(root);
-    const handler = QUERY_HANDLERS["conversations.list"](deps(conversations, stores, "A1"));
+    const { conversations, stores, platformAccounts } = seed(root);
+    const handler = QUERY_HANDLERS["conversations.list"](deps(conversations, stores, "A1", platformAccounts));
     const bad = await handler({ scope: { kind: "specific_store", storeId: "nope" } });
     assert.equal(bad.ok, false);
     if (!bad.ok) assert.equal(bad.error.code, "desktop.not_found");
@@ -72,7 +76,7 @@ test("conversations.list unknown store => NOT_FOUND; all_stores bounded by selec
     assert.equal(all.ok, true);
     if (all.ok) {
       const ids = all.data.items.map((i) => i.conversation_id).sort();
-      assert.deepEqual(ids, ["c-a1", "c-a2"], "all_stores bounded by selected shop merchant A; B not leaked");
+      assert.deepEqual(ids, ["c-a1", "c-a2", "c-a2-dd"], "all_stores bounded by selected shop merchant A; B not leaked");
     }
   } finally {
     try { rmSync(root, { recursive: true, force: true }); } catch { }
@@ -82,4 +86,43 @@ test("conversations.list unknown store => NOT_FOUND; all_stores bounded by selec
 test("QueueScope has no pseudo storeId=\"all\" at query layer (I-2)", () => {
   const src = readFileSync(pathJoin(dirname(fileURLToPath(import.meta.url)), "..", "src", "renderer", "components", "conversation-list.ts"), "utf-8");
   assert.ok(!src.includes('storeId: "all"'));
+});
+test("platform filter composes by intersection (I-8): store ∩ platform", async () => {
+  const root = tempRoot();
+  try {
+    const { conversations, stores, platformAccounts } = seed(root);
+    const handler = QUERY_HANDLERS["conversations.list"](deps(conversations, stores, "A1", platformAccounts));
+    const r = await handler({ scope: { kind: "specific_store", storeId: "A1" }, platform: "doudian" });
+    assert.equal(r.ok, true);
+    if (r.ok) assert.deepEqual(r.data.items.map((i) => i.conversation_id), ["c-a2-dd"], "A1 + doudian => only doudian conversation");
+    const r2 = await handler({ scope: { kind: "specific_store", storeId: "A1" }, platform: "pdd" });
+    if (r2.ok) assert.deepEqual(r2.data.items.map((i) => i.conversation_id), ["c-a1"], "A1 + pdd => only pdd conversation");
+  } finally { try { rmSync(root, { recursive: true, force: true }); } catch { } }
+});
+
+test("all_stores + platform filter stays merchant-bounded (I-6/I-8), options fact-backed (DP-77)", async () => {
+  const root = tempRoot();
+  try {
+    const { conversations, stores, platformAccounts } = seed(root);
+    const handler = QUERY_HANDLERS["conversations.list"](deps(conversations, stores, "A1", platformAccounts));
+    const r = await handler({ scope: { kind: "all_stores" }, platform: "doudian" });
+    assert.equal(r.ok, true);
+    if (r.ok) {
+      const ids = r.data.items.map((i) => i.conversation_id).sort();
+      assert.deepEqual(ids, ["c-a2-dd"], "all_stores + doudian => merchant A doudian only (no B leak)");
+      assert.ok(r.data.stores.some((s) => s.store_id === "A1") && r.data.stores.some((s) => s.store_id === "A2"), "stores option fact-backed");
+      assert.ok(r.data.platforms.includes("pdd") && r.data.platforms.includes("doudian"), "platforms option canonical");
+    }
+  } finally { try { rmSync(root, { recursive: true, force: true }); } catch { } }
+});
+
+test("platform filter validates canonical identity (DP-71): unknown platform yields empty, no crash", async () => {
+  const root = tempRoot();
+  try {
+    const { conversations, stores, platformAccounts } = seed(root);
+    const handler = QUERY_HANDLERS["conversations.list"](deps(conversations, stores, "A1", platformAccounts));
+    const r = await handler({ scope: { kind: "all_stores" }, platform: "pdd" as never });
+    assert.equal(r.ok, true);
+    if (r.ok) assert.ok(Array.isArray(r.data.items));
+  } finally { try { rmSync(root, { recursive: true, force: true }); } catch { } }
 });

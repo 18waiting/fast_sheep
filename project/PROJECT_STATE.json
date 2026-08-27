@@ -30,7 +30,7 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1",
   "last_closed_task": "SHEEP-060",
-  "current_task": "SHEEP-061 (proposal pending approval)",
+  "current_task": "SHEEP-061 (executed, pending Owner DP-70~77 + I-8/I-9 decisions + visual review)",
   "next_action": "SHEEP-061",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -1112,5 +1112,16 @@
         "conversation_id ordering is only a technical fallback; re-decide product ordering once real activity facts exist",
         "after richer Queue, re-validate active vs keyboard-focused row distinction at high density when on different rows"
     ]
+  },
+  "sheep_061": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-28",
+    "report": "reports\\SHEEP-061-report.json",
+    "visual_evidence": ["reports\\visual-evidence\\sheep-061-queue-all.png", "reports\\visual-evidence\\sheep-061-queue-platform.png", "reports\\visual-evidence\\sheep-061-queue-store.png", "reports\\visual-evidence\\sheep-061-queue-outofscope.png", "reports\\visual-evidence\\sheep-061-queue-empty.png"],
+    "decisions": ["DP-70..DP-77 + I-8/I-9 (implemented per Controller recommendation; final = Owner visual review + PASS pending)"],
+    "next_per_roadmap": "SHEEP-062 (M4.1 Unread/Priority/Risk Indicators; pending Owner PASS; not auto-executed)",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }

@@ -28,5 +28,5 @@ export type {
   LearningChangedEvent, ReviewChangedEvent, AuditChangedEvent, OptimizationChangedEvent,
   LegacyImportSelectRequest, LegacyImportSelectResult, LegacyImportPlanRequest,
   LegacyImportApplyAction, LegacyImportStatusView, LegacyImportEvent,
-  QueueScope, QueueItemView, ConversationListRequest, ConversationListResult,
+  QueueScope, QueueItemView, ConversationListRequest, ConversationListResult, QueuePlatformFilter, QueueStoreOption,
 } from "./types.js";

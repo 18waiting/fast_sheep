@@ -21,8 +21,14 @@ export interface ConversationView { conversation_id: string; shop_id: string; st
 export type QueueScope = { kind: "all_stores" } | { kind: "specific_store"; storeId: string };
 /** Minimal fact-backed queue item (DP-58/64/61): only facts with explicit source; no fabricated summary/timestamp/unread/priority/risk. */
 export interface QueueItemView { conversation_id: string; store_id: string }
-export interface ConversationListRequest { scope: QueueScope }
-export interface ConversationListResult { items: QueueItemView[]; scope: QueueScope }
+/** SHEEP-061: canonical platform identity for queue filtering (typed union of the canonical
+ * Main PLATFORM_IDS; no bare-string taxonomy. Main remains the authority via isPlatformId;
+ * a consistency test keeps this union in sync with Main PLATFORM_IDS). */
+export type QueuePlatformFilter = "pdd" | "doudian" | "jd" | "kuaishou" | "qianniu" | "xianyu";
+/** Query variants only (DP-74): platform filter is a query dimension; absence = all platforms (no fake "all"). */
+export interface QueueStoreOption { store_id: string; name: string }
+export interface ConversationListRequest { scope: QueueScope; platform?: QueuePlatformFilter }
+export interface ConversationListResult { items: QueueItemView[]; scope: QueueScope; platform?: QueuePlatformFilter; stores: QueueStoreOption[]; platforms: QueuePlatformFilter[] }
 export interface WorkbenchViewModel {
   revision: number;
   shop_summaries: ShopSummary[];

@@ -3,7 +3,7 @@
 // produced by Main. It never decides business rules (staleness, takeover
 // breaker, countdown send eligibility, feedback class, serialization, provider
 // route, handoff decision).
-import type { WorkbenchViewModel, OrchestratorEventPayload, QueueScope, QueueItemView } from "@fastwork/desktop-ipc";
+import type { WorkbenchViewModel, OrchestratorEventPayload, QueueScope, QueueItemView, QueuePlatformFilter, QueueStoreOption } from "@fastwork/desktop-ipc";
 import type { PlatformViewState } from "./platform-view-state.js";
 import { EMPTY_PLATFORM_VIEW_STATE } from "./platform-view-state.js";
 import type { M10PanelViewModel } from "../components/m10-panel-types.js";
@@ -30,6 +30,11 @@ export interface UiState {
   queueItems: QueueItemView[];
   queueLoading: boolean;
   queueError: string | null;
+  queuePlatform?: QueuePlatformFilter;
+  availableStores: QueueStoreOption[];
+  availablePlatforms: QueuePlatformFilter[];
+  /** DP-76: active conversation may remain outside current queue scope; calm neutral cue. */
+  queueOutOfScopeCue: boolean;
   /** SHEEP-060: active conversation navigation identity (DP-69: navigation state, not business mutation). */
   activeConversationId: string | null;
 }
@@ -47,6 +52,10 @@ export const EMPTY_UI_STATE: UiState = {
   queueItems: [],
   queueLoading: false,
   queueError: null,
+  queuePlatform: undefined,
+  availableStores: [],
+  availablePlatforms: [],
+  queueOutOfScopeCue: false,
   activeConversationId: null,
 };
 
@@ -69,6 +78,15 @@ export function setQueueScope(state: UiState, scope: QueueScope): UiState {
 /** SHEEP-060: set queue items (from Main typed projection). */
 export function setQueueItems(state: UiState, items: QueueItemView[], scope: QueueScope): UiState {
   return { ...state, queueItems: items, queueScope: scope, queueLoading: false, queueError: null };
+}
+
+export function setQueuePlatform(state: UiState, platform: QueuePlatformFilter | undefined): UiState {
+  if (state.queuePlatform === platform) return state;
+  return { ...state, queuePlatform: platform, queueLoading: true, queueError: null };
+}
+
+export function setQueueOptions(state: UiState, stores: QueueStoreOption[], platforms: QueuePlatformFilter[]): UiState {
+  return { ...state, availableStores: stores, availablePlatforms: platforms };
 }
 
 export function setQueueError(state: UiState, message: string): UiState {

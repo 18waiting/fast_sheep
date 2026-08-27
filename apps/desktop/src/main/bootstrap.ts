@@ -15,7 +15,7 @@ import {
   type PlatformAdapter,
   type TransferDecision,
 } from "@fastwork/orchestrator";
-import { InMemorySettingsRepository, type NormalizedConversationRepository, type NormalizedConversationRecord, type StoreRepository, type StoreRecord } from "@fastwork/persistence";
+import { InMemorySettingsRepository, type NormalizedConversationRepository, type NormalizedConversationRecord, type StoreRepository, type StoreRecord, type PlatformAccountRepository, type PlatformAccountRecord } from "@fastwork/persistence";
 import { VirtualClock, FakeAiEngineClient, FakePlatformAdapter, CapturingEventBus, FakeFeedbackSink, InMemoryConversationRepositoryPort } from "@fastwork/test-kit";
 import { OrchestratorFeedbackSink, type FeedbackService } from "@fastwork/feedback";
 import type { PlatformStatusChangedEvent, PlatformSessionStatus } from "@fastwork/desktop-ipc";
@@ -87,6 +87,8 @@ export interface MainContext {
   conversations: NormalizedConversationRepository;
   /** SHEEP-060: Store repository port (merchant boundary resolution for queue scope). */
   stores: StoreRepository;
+  /** SHEEP-061: PlatformAccount repository port (canonical platform fact source for queue platform filter). */
+  platformAccounts: PlatformAccountRepository;
   /** M10 Main-owned BackgroundJobService (single writer for background_jobs). */
   jobs: BackgroundJobService;
   /** M10 learning service (Worker executes offline QA lifecycle). */
@@ -140,11 +142,21 @@ export interface BootstrapOptions {
   conversationRepository?: NormalizedConversationRepository;
   /** SHEEP-060: Store repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
   storeRepository?: StoreRepository;
+  /** SHEEP-061: PlatformAccount repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
+  platformAccountRepository?: PlatformAccountRepository;
 }
 
 /** Minimal in-memory JobRepository for isolated test mode (M10). */
 /** PR1: minimal in-memory NormalizedConversationRepository test double (isolated test mode only). */
 /** SHEEP-060: minimal in-memory StoreRepository test double (isolated test mode only). */
+/** SHEEP-061: minimal in-memory PlatformAccountRepository test double (isolated test mode only). */
+class InMemoryPlatformAccountRepositoryImpl implements PlatformAccountRepository {
+  private readonly map = new Map<string, PlatformAccountRecord>();
+  save(p: PlatformAccountRecord): void { this.map.set(p.id, { ...p, externalRef: p.externalRef ?? null }); }
+  findById(id: string): PlatformAccountRecord | null { const r = this.map.get(id); return r ? { ...r, externalRef: r.externalRef ?? null } : null; }
+  listByMerchant(merchantId: string): PlatformAccountRecord[] { return [...this.map.values()].filter((p) => p.merchantId === merchantId).map((p) => ({ ...p, externalRef: p.externalRef ?? null })); }
+}
+
 class InMemoryStoreRepositoryImpl implements StoreRepository {
   private readonly map = new Map<string, StoreRecord>();
   save(s: StoreRecord): void { this.map.set(s.id, { ...s }); }
@@ -181,6 +193,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   const repo = new InMemoryConversationRepositoryPort();
   const conversationRepository = options.conversationRepository ?? new InMemoryNormalizedConversationRepositoryImpl();
   const storeRepository = options.storeRepository ?? new InMemoryStoreRepositoryImpl();
+  const platformAccountRepository = options.platformAccountRepository ?? new InMemoryPlatformAccountRepositoryImpl();
   const aiRaw = new FakeAiEngineClient([{ reply: "亲,有的哦~" }]);
 
   // Default: offline fake AI (M6). M7 vertical smoke injects a real worker client.
@@ -420,7 +433,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   });
 
   void bumpRevision;
-  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, stores: storeRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
+  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, stores: storeRepository, platformAccounts: platformAccountRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
 }
 
 /** Minimal in-memory import session store (isolated test mode). */

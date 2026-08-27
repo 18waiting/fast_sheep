@@ -1,5 +1,5 @@
 // M6/M10 query handlers: bootstrap / shops / snapshot / worker.status / platform.status / jobs.
-import { IPC, DesktopError, DESKTOP_ERROR_CODES, type BootstrapState, type DesktopResult, type JobListResult, type JobRecordView, type LegacyImportStatusView, type PlatformStatusView, type WorkbenchViewModel, type WorkerStatusView, type ConversationListRequest, type ConversationListResult, type QueueItemView } from "@fastwork/desktop-ipc";
+import { IPC, DesktopError, DESKTOP_ERROR_CODES, type BootstrapState, type DesktopResult, type JobListResult, type JobRecordView, type LegacyImportStatusView, type PlatformStatusView, type WorkbenchViewModel, type WorkerStatusView, type ConversationListRequest, type ConversationListResult, type QueueItemView, type QueuePlatformFilter } from "@fastwork/desktop-ipc";
 import type { PlatformSessionCoordinator } from "../platforms/platform-session-coordinator.js";
 import type { PlatformId } from "../platforms/platform-host-registry.js";
 import type { OrchestratorHost } from "../services/orchestrator-host.js";
@@ -8,8 +8,11 @@ import type { WorkerStatusService } from "../services/worker-status-service.js";
 import type { WorkbenchProjectionService } from "../services/workbench-projection-service.js";
 import type { BackgroundJobService } from "../services/background-job-service.js";
 import type { LegacyImportService } from "../services/legacy-import-service.js";
-import type { NormalizedConversationRepository, StoreRepository } from "@fastwork/persistence";
+import type { NormalizedConversationRepository, StoreRepository, PlatformAccountRepository } from "@fastwork/persistence";
 import { ok, err } from "./ipc-guard.js";
+
+// SHEEP-061: canonical platform set for queue filter options (mirror of Main PLATFORM_IDS; validated by isPlatformId).
+const CANONICAL_PLATFORMS: QueuePlatformFilter[] = ["pdd", "doudian", "jd", "kuaishou", "qianniu", "xianyu"];
 
 export interface QueryDeps {
   orchestrator: OrchestratorHost;
@@ -25,6 +28,8 @@ export interface QueryDeps {
   conversations: NormalizedConversationRepository;
   /** SHEEP-060: Store repository port (merchant boundary resolution). */
   stores: StoreRepository;
+  /** SHEEP-061: PlatformAccount repository port (canonical platform fact source). */
+  platformAccounts: PlatformAccountRepository;
   /** SHEEP-060: currently selected shop id (provisional queue scope merchant anchor). */
   selectedShopId(): string | null;
 }
@@ -45,26 +50,34 @@ export const QUERY_HANDLERS = {
   [IPC.conversationsList]: (deps: QueryDeps) => async (req: ConversationListRequest): Promise<DesktopResult<ConversationListResult>> => {
     if (!req || !req.scope) return err(new DesktopError(DESKTOP_ERROR_CODES.INVALID_REQUEST, "missing queue scope"));
     const scope = req.scope;
-    let items: QueueItemView[] = [];
+    const platform = req.platform;
+    let merchantId: string | null = null;
+    let rows: Array<{ id: string; storeId: string; platformAccountId: string; merchantId: string }> = [];
     if (scope.kind === "specific_store") {
       const store = deps.stores.findById(scope.storeId);
       if (!store) return err(new DesktopError(DESKTOP_ERROR_CODES.NOT_FOUND, "unknown store"));
+      merchantId = store.merchantId;
       // Merchant boundary enforced Main-side (I-6); renderer never supplies merchant.
-      items = deps.conversations.listByStore(store.id)
-        .filter((c) => c.merchantId === store.merchantId)
-        .map((c) => ({ conversation_id: c.id, store_id: c.storeId }))
-        .sort((a, b) => (a.conversation_id < b.conversation_id ? -1 : a.conversation_id > b.conversation_id ? 1 : 0));
+      rows = deps.conversations.listByStore(store.id).filter((c) => c.merchantId === store.merchantId);
     } else {
-      // all_stores: merchant boundary = currently selected shop's store (provisional; full All Stores UI = SHEEP-061)
+      // all_stores: merchant boundary = currently selected shop's store (DP-72: All Stores is merchant-scoped queue query).
       const sid = deps.selectedShopId();
       const store = sid ? deps.stores.findById(sid) : null;
-      if (store) {
-        items = deps.conversations.listByMerchant(store.merchantId)
-          .map((c) => ({ conversation_id: c.id, store_id: c.storeId }))
-          .sort((a, b) => (a.conversation_id < b.conversation_id ? -1 : a.conversation_id > b.conversation_id ? 1 : 0));
-      }
+      merchantId = store ? store.merchantId : null;
+      if (merchantId) rows = deps.conversations.listByMerchant(merchantId);
     }
-    return ok({ items, scope });
+    // Platform filter: resolve each conversation's platform via platform_accounts (DP-71 canonical fact source);
+    // I-8: final query = merchant boundary ∩ Store Scope ∩ Platform Filter.
+    let items: QueueItemView[] = rows
+      .filter((c) => !platform || deps.platformAccounts.findById(c.platformAccountId)?.platform === platform)
+      .map((c) => ({ conversation_id: c.id, store_id: c.storeId }))
+      .sort((a, b) => (a.conversation_id < b.conversation_id ? -1 : a.conversation_id > b.conversation_id ? 1 : 0));
+    // Fact-backed filter options (DP-77): stores of the merchant + canonical platforms (Main capability set).
+    const stores = merchantId
+      ? deps.stores.listByMerchant(merchantId).map((s) => ({ store_id: s.id, name: s.name })).sort((a, b) => (a.store_id < b.store_id ? -1 : a.store_id > b.store_id ? 1 : 0))
+      : [];
+    const platforms = CANONICAL_PLATFORMS;
+    return ok({ items, scope, platform, stores, platforms });
   },
     [IPC.workerStatus]: (deps: QueryDeps) => async (): Promise<DesktopResult<WorkerStatusView>> => {
     return ok(deps.worker.status());

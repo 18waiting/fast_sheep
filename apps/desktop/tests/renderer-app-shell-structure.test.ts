@@ -5,21 +5,21 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // SHEEP-026 structural guards: app shell must establish the three reference-aligned
-// region containers (app-navbar / app-sidebar / app-main) as minimal boundaries,
+// region containers (app-navbar / app-main / queue-host) as minimal boundaries;
 // keep every existing functional region composed, and introduce no shell framework
 // contract or fake business UI. Mirrors the existing source-scan test style.
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SRC = join(HERE, "..", "src", "renderer", "components", "app-shell.ts");
 const DIST = join(HERE, "..", "dist", "renderer", "components", "app-shell.js");
 
-const REGIONS = ['"app-navbar"', '"app-sidebar"', '"app-main"'];
+const REGIONS = ["app-navbar", "app-main", "queue-host"];
 
 test("app-shell establishes navbar/sidebar/main region boundaries (SHEEP-026)", () => {
   const src = readFileSync(SRC, "utf-8");
   for (const cls of REGIONS) {
     assert.ok(src.includes(cls), "app-shell.ts must create " + cls + " container");
   }
-  for (const name of ["renderErrorBanner", "renderShopSidebar", "renderWorkbenchHeader", "renderModeToggle", "renderWorkerStatusBadge"]) {
+  for (const name of ["renderErrorBanner", "renderAppNavbar", "renderWorkbenchHeader", "renderModeToggle", "renderWorkerStatusBadge", "renderConversationList"]) {
     assert.ok(src.includes(name), "app-shell.ts must keep " + name);
   }
 });

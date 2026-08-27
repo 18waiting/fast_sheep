@@ -25,9 +25,14 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const PRELOAD = join(ROOT, "apps", "desktop", "dist", "preload", "index.js");
 const RENDERER_HTML = join(ROOT, "apps", "desktop", "dist", "renderer", "index.html");
 const seed = process.env.FS_VISUAL_QUEUE_SEED === "1";
-const OUT = seed
-  ? join(ROOT, "reports", "visual-evidence", "sheep-060-queue-populated.png")
-  : join(ROOT, "reports", "visual-evidence", "sheep-060-queue-empty.png");
+const STATE = process.env.FS_VISUAL_QUEUE_STATE || "all";
+const OUT = !seed
+  ? join(ROOT, "reports", "visual-evidence", "sheep-061-queue-empty.png")
+  : join(ROOT, "reports", "visual-evidence",
+      STATE === "platform" ? "sheep-061-queue-platform.png"
+      : STATE === "store" ? "sheep-061-queue-store.png"
+      : STATE === "outofscope" ? "sheep-061-queue-outofscope.png"
+      : "sheep-061-queue-all.png");
 
 const dataRoot = mkdtempSync(join(tmpdir(), "fs-queue-evidence-"));
 let cleanupRoot = dataRoot;
@@ -42,14 +47,15 @@ function seedEvidence(dbRoot) {
   stores.save({ id: "shop-test-1", merchantId: "m-A", name: "测试店铺A", platform: "pdd" });
   stores.save({ id: "shop-test-2", merchantId: "m-A", name: "测试店铺B", platform: "pdd" });
   stores.save({ id: "shop-doudian-1", merchantId: "m-A", name: "抖店测试店铺", platform: "doudian" });
-  for (const st of ["shop-test-1", "shop-test-2", "shop-doudian-1"]) {
-    accounts.save({ id: "pa-" + st, merchantId: "m-A", platform: "pdd" });
-  }
+  accounts.save({ id: "pa-shop-test-1", merchantId: "m-A", platform: "pdd" });
+  accounts.save({ id: "pa-shop-test-2", merchantId: "m-A", platform: "pdd" });
+  accounts.save({ id: "pa-shop-doudian-1", merchantId: "m-A", platform: "doudian" });
   const conversations = new SqliteNormalizedConversationRepository(ctx.conn);
   const ingestion = createConversationIngestion(conversations);
   ingestion.saveNormalizedConversation({ id: "conv-1001", merchantId: "m-A", storeId: "shop-test-1", platformAccountId: "pa-shop-test-1", externalRef: null });
   ingestion.saveNormalizedConversation({ id: "conv-1002", merchantId: "m-A", storeId: "shop-test-1", platformAccountId: "pa-shop-test-1", externalRef: null });
   ingestion.saveNormalizedConversation({ id: "conv-1003", merchantId: "m-A", storeId: "shop-test-2", platformAccountId: "pa-shop-test-2", externalRef: null });
+  ingestion.saveNormalizedConversation({ id: "conv-1004", merchantId: "m-A", storeId: "shop-doudian-1", platformAccountId: "pa-shop-doudian-1", externalRef: null });
 }
 
 app.setName("fast_sheep");
@@ -106,17 +112,36 @@ app.whenReady().then(async () => {
       await new Promise((r) => setTimeout(r, 200));
     }
     if (seed) {
-      // Wait for queue items, then demonstrate active vs keyboard-focused distinction:
-      // activate row 1 via real pointer activation; focus row 2 via keyboard focus (no activation).
       const qDeadline = Date.now() + 15000;
-      for (;;) {
-        const ready = await win.webContents.executeJavaScript("document.querySelectorAll('.conversation-list-row').length >= 2", true).catch(() => false);
-        if (ready) break;
-        if (Date.now() >= qDeadline) break;
+      const waitRows = async (min) => {
+        for (;;) {
+          const ready = await win.webContents.executeJavaScript("document.querySelectorAll('.conversation-list-row').length >= " + min, true).catch(() => false);
+          if (ready) break;
+          if (Date.now() >= qDeadline) break;
+          await new Promise((r) => setTimeout(r, 200));
+        }
+      };
+      if (STATE === "platform") {
+        await waitRows(1);
+        const rPlat = await win.webContents.executeJavaScript("(function(){ try { var s=document.querySelector('.conversation-list-scope-platform'); if (!s) return {ok:false,err:'no platform select'}; s.value='doudian'; s.dispatchEvent(new Event('change')); return {ok:true}; } catch(e){ return {ok:false,err:String(e&&e.message||e)}; } })()", true); console.log("STATE_PLATFORM " + JSON.stringify(rPlat));
+        await waitRows(1);
+      } else if (STATE === "store") {
+        await waitRows(1);
+        const rStore = await win.webContents.executeJavaScript("(function(){ try { var s=document.querySelector('.conversation-list-scope-store'); if (!s) return {ok:false,err:'no store select'}; var opts=Array.from(s.options).map(function(o){return o.value;}); s.value='shop-test-1'; var after=s.value; s.dispatchEvent(new Event('change')); return {ok:true,opts:opts,after:after}; } catch(e){ return {ok:false,err:String(e&&e.message||e)}; } })()", true); console.log("STATE_STORE " + JSON.stringify(rStore));
+        await waitRows(1);
+        await win.webContents.executeJavaScript("document.querySelector('.conversation-list-row').click(); true", true);
+      } else if (STATE === "outofscope") {
+        await waitRows(1);
+        // activate the doudian conversation (row 3+), then switch store to a pdd store so active is out of scope
+        const rClick = await win.webContents.executeJavaScript("(function(){ try { var rows=document.querySelectorAll('.conversation-list-row'); if(!rows.length) return {ok:false,err:'no rows'}; rows[rows.length-1].click(); return {ok:true}; } catch(e){ return {ok:false,err:String(e&&e.message||e)}; } })()", true); console.log("STATE_CLICK " + JSON.stringify(rClick));
         await new Promise((r) => setTimeout(r, 200));
+        const rStore = await win.webContents.executeJavaScript("(function(){ try { var s=document.querySelector('.conversation-list-scope-store'); if (!s) return {ok:false,err:'no store select'}; var opts=Array.from(s.options).map(function(o){return o.value;}); s.value='shop-test-1'; var after=s.value; s.dispatchEvent(new Event('change')); return {ok:true,opts:opts,after:after}; } catch(e){ return {ok:false,err:String(e&&e.message||e)}; } })()", true); console.log("STATE_STORE " + JSON.stringify(rStore));
+        await waitRows(1);
+      } else {
+        await waitRows(2);
+        await win.webContents.executeJavaScript("document.querySelector('.conversation-list-row').click(); true", true);
+        await win.webContents.executeJavaScript("document.querySelectorAll('.conversation-list-row')[1].focus(); true", true);
       }
-      await win.webContents.executeJavaScript("document.querySelector('.conversation-list-row').click(); true", true);
-      await win.webContents.executeJavaScript("document.querySelectorAll('.conversation-list-row')[1].focus(); true", true);
       await new Promise((r) => setTimeout(r, 400));
     } else {
       await new Promise((r) => setTimeout(r, 400));

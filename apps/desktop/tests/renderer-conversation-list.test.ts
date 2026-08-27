@@ -87,3 +87,50 @@ test("store: queue failure surfaces contained inline error (DP-55/47), active co
   assert.ok(store.getState().queueError, "queue error surfaced");
   assert.equal(store.getState().activeConversationId, null, "no active conversation invented");
 });
+
+test("I-9 stale protection: rapid scope switch does not let old response overwrite current queue", async () => {
+  let calls = 0;
+  const api = makeApi();
+  api.listConversations = async (req) => {
+    const my = ++calls;
+    const scope = req.scope;
+    if (my === 1) await new Promise((r) => setTimeout(r, 30));
+    const items = scope.kind === "specific_store" && scope.storeId === "A2" ? [{ conversation_id: "c2", store_id: "A2" }] : [{ conversation_id: "c1", store_id: "A1" }];
+    return { ok: true, data: { items, scope, stores: [], platforms: [] } };
+  };
+  const store = new WorkbenchStore(api);
+  await store.boot();
+  await store.setQueueScope({ kind: "specific_store", storeId: "A1" });
+  const p2 = store.setQueueScope({ kind: "specific_store", storeId: "A2" });
+  await p2;
+  await new Promise((r) => setTimeout(r, 40));
+  const got = store.getState().queueItems.map((i) => i.conversation_id).join(",");
+  assert.equal(got, "c2", "old A1 response must not overwrite A2 scope");
+});
+
+test("DP-76: active conversation may remain outside current scope (cue condition, no auto-switch)", async () => {
+  const api = makeApi([{ conversation_id: "c1", store_id: "A1" }, { conversation_id: "c2", store_id: "A2" }]);
+  api.listConversations = async (req) => {
+    const scope = req.scope;
+    const all = [{ conversation_id: "c1", store_id: "A1" }, { conversation_id: "c2", store_id: "A2" }];
+    const items = scope.kind === "specific_store" ? all.filter((i) => i.store_id === scope.storeId) : all;
+    return { ok: true, data: { items, scope, stores: [], platforms: [] } };
+  };
+  const store = new WorkbenchStore(api);
+  await store.boot();
+  store.activateConversation("c1");
+  await store.setQueueScope({ kind: "specific_store", storeId: "A2" });
+  assert.equal(store.getState().activeConversationId, "c1", "active preserved (no auto-switch)");
+  const inScope = store.getState().queueItems.some((i) => i.conversation_id === store.getState().activeConversationId);
+  assert.equal(inScope, false, "active outside current scope => out-of-scope cue condition");
+});
+
+test("platform filter re-queries and preserves active conversation (DP-73/59)", async () => {
+  const api = makeApi([{ conversation_id: "c1", store_id: "A1" }]);
+  const store = new WorkbenchStore(api);
+  await store.boot();
+  store.activateConversation("c1");
+  await store.setQueuePlatform("pdd");
+  assert.equal(store.getState().queuePlatform, "pdd");
+  assert.equal(store.getState().activeConversationId, "c1", "platform filter must not touch active conversation");
+});

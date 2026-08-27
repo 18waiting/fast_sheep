@@ -47,6 +47,7 @@ export function mountApp(root: HTMLElement): WorkbenchStore {
     onActivate: (conversationId) => store.activateConversation(conversationId),
     onScopeAllStores: () => void store.setQueueScope({ kind: "all_stores" }),
     onScopeStore: (storeId) => void store.setQueueScope({ kind: "specific_store", storeId }),
+    onScopePlatform: (platform) => void store.setQueuePlatform(platform),
   };
 
     // M11 legacy import: projection/control only.

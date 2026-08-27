@@ -16,7 +16,8 @@ const states = process.argv.includes("--states");
 const focus = process.argv.includes("--focus");
 const queue = process.argv.includes("--queue");
 const queueEmpty = process.argv.includes("--queue-empty");
-const CAPTURE_MAIN = queue || queueEmpty
+const queueState = ["--queue-all", "--queue-platform", "--queue-store", "--queue-outofscope"].find((f) => process.argv.includes(f));
+const CAPTURE_MAIN = queue || queueEmpty || queueState
   ? join(HERE, "visual-evidence", "capture-queue-main.mjs")
   : join(HERE, "visual-evidence", "capture-main.cjs");
 const MAIN_ENTRY = join(ROOT, "apps", "desktop", "dist", "main", "index.js");
@@ -29,17 +30,18 @@ if (!existsSync(MAIN_ENTRY)) {
 
 const child = spawn(electronPath, [CAPTURE_MAIN], {
   cwd: ROOT,
-  env: { ...process.env, ELECTRON_DISABLE_SECURITY_WARNINGS: "true", FS_VISUAL_TARGET: queue || queueEmpty ? "queue" : focus ? "focus" : states ? "states" : gallery ? "gallery" : "workbench", FS_VISUAL_QUEUE_SEED: queue ? "1" : "0", FASTWORK_DESKTOP_TEST_MODE: queue || queueEmpty ? "1" : "0" },
+  env: { ...process.env, ELECTRON_DISABLE_SECURITY_WARNINGS: "true", FS_VISUAL_TARGET: queue || queueEmpty ? "queue" : focus ? "focus" : states ? "states" : gallery ? "gallery" : "workbench", FS_VISUAL_QUEUE_SEED: queue || queueState ? "1" : "0", FS_VISUAL_QUEUE_STATE: queueState ? queueState.replace("--queue-", "") : "all", FASTWORK_DESKTOP_TEST_MODE: queue || queueEmpty || queueState ? "1" : "0" },
   stdio: ["ignore", "pipe", "pipe"],
 });
 
 let stderr = "";
+child.stdout.on("data", (d) => { process.stdout.write(d); });
 child.stderr.on("data", (d) => { stderr += String(d); });
 const timeout = setTimeout(() => { console.error("FAIL: visual capture timed out after 60s"); child.kill(); process.exit(1); }, 60000);
 
 child.on("exit", (code) => {
   clearTimeout(timeout);
-  const out = join(ROOT, "reports", "visual-evidence", queue ? "sheep-060-queue-populated.png" : queueEmpty ? "sheep-060-queue-empty.png" : focus ? "sheep-047-a11y-focus-gallery.png" : states ? "sheep-046-state-gallery.png" : gallery ? "sheep-045-primitive-gallery.png" : "sheep-047-workbench.png");
+  const out = join(ROOT, "reports", "visual-evidence", queueState ? "sheep-061-queue-" + queueState.replace("--queue-", "") + ".png" : queue ? "sheep-060-queue-populated.png" : queueEmpty ? "sheep-061-queue-empty.png" : focus ? "sheep-047-a11y-focus-gallery.png" : states ? "sheep-046-state-gallery.png" : gallery ? "sheep-045-primitive-gallery.png" : "sheep-047-workbench.png");
   if (!existsSync(out)) {
     console.error("FAIL: no visual captured. exit=" + code);
     if (stderr) console.error(stderr.slice(0, 4000));

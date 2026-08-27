@@ -1,0 +1,98 @@
+{
+  "task": "SHEEP-061",
+  "result": "COMPLETE",
+  "phase": "Phase 4",
+  "milestone": "M4.1",
+  "objective": "Queue Filters / Store / Platform Scopes：Queue 内嵌 scope controls（Store 非并行导航列，DP-70）、canonical platform filter（DP-71）、All Stores merchant-scoped（DP-72）、filters=query dimensions（DP-73/74/75）、active 越界 cue（DP-76）、fact-backed options（DP-77）、交集组合（I-8）、stale 保护（I-9）",
+  "completed_requirements": 16,
+  "total_requirements": 16,
+  "owner_tightening": {
+    "dp70_queue_embeds_controls": "遵守：QUEUE_EMBEDS_SCOPE_CONTROLS_STORE_IS_NOT_A_PARALLEL_NAVIGATION_RAIL——Queue(controls+list)+Main；移除独立 Store rail（shop-sidebar 不再作为导航 surface）；Store=query scope",
+    "dp71_canonical_platform": "遵守：PLATFORM_FILTER_USES_CANONICAL_PLATFORM_IDENTITY_AND_MAIN_PROJECTION——desktop-ipc canonical typed union（非裸 string）+ 一致性测试同步 Main PLATFORM_IDS；过滤经 platform_accounts（事实源）；无 schema 绕过、不在 Renderer 拉全量过滤",
+    "dp72_all_stores_merchant_scoped": "遵守：ALL_STORES_IS_MERCHANT_SCOPED_QUEUE_QUERY（I-6 merchant boundary）",
+    "dp73_filters_query_dimensions": "遵守：FILTERS_ARE_QUERY_DIMENSIONS_NOT_CONVERSATION_FACTS",
+    "dp74_query_variants": "遵守：ALL_SCOPE_VALUES_ARE_QUERY_VARIANTS_NOT_DOMAIN_IDENTITIES（无伪 StoreId/PlatformId \"all\"）",
+    "dp75_no_filter_framework": "遵守：EXPLICIT_QUEUE_FILTERS_NO_GENERIC_FILTER_FRAMEWORK（仅 Store+Platform 两维度）",
+    "dp76_active_outside_scope": "遵守：ACTIVE_CONVERSATION_MAY_REMAIN_OUTSIDE_CURRENT_QUEUE_SCOPE_WITH_EXPLICIT_CONTEXT_CUE（calm info cue；不 error/warning；不自动切）",
+    "dp77_fact_backed_options": "遵守：FILTER_OPTIONS_ARE_FACT_BACKED_NOT_ROADMAP_HARDCODED（stores 来自 runtime fact；platforms 来自 canonical capability；无 phantom option）",
+    "i8_intersection": "遵守：QUEUE_FILTER_DIMENSIONS_COMPOSE_BY_INTERSECTION（merchant ∩ Store ∩ Platform）",
+    "i9_stale_protection": "遵守：QUEUE_RESULTS_MUST_MATCH_CURRENT_QUERY_SCOPE（seq guard 防旧响应覆盖）",
+    "filtering_in_main": "遵守：过滤在 Main query 层；Renderer 仅维护 query intent/state，不拉全量本地过滤",
+    "dp45_refresh": "遵守：scope re-query 时清空旧队列避免冒充（DP-45 安全侧）；不保留旧 scope 结果冒充新 scope",
+    "native_select": "遵守：scope controls 用原生 <select>；未预造 custom combobox/select framework",
+    "dp14_store_rail_removal": "遵守：移除 production composition 独立 Store rail（Phase 4 IA convergence，非 unrelated rewrite）；未重排 Main/Conversation/AI/Platform；shop-sidebar 文件保留（未删除）",
+    "forbidden_kept": "遵守：未实现 unread/priority/risk/AI-pending、summary/activity、timeline/composer、平台 ingestion、sync/Outbox/schema migration",
+    "visual_evidence": "遵守：All Stores+All Platforms / Specific Store / Platform filter / Active outside scope（真实 evidence persistence→Main→IPC→Renderer；无 renderer fake data）+ Empty"
+  },
+  "decisions": {
+    "dp70": "QUEUE_EMBEDS_SCOPE_CONTROLS_STORE_IS_NOT_A_PARALLEL_NAVIGATION_RAIL",
+    "dp71": "PLATFORM_FILTER_USES_CANONICAL_PLATFORM_IDENTITY_AND_MAIN_PROJECTION",
+    "dp72": "ALL_STORES_IS_MERCHANT_SCOPED_QUEUE_QUERY",
+    "dp73": "FILTERS_ARE_QUERY_DIMENSIONS_NOT_CONVERSATION_FACTS",
+    "dp74": "ALL_SCOPE_VALUES_ARE_QUERY_VARIANTS_NOT_DOMAIN_IDENTITIES",
+    "dp75": "EXPLICIT_QUEUE_FILTERS_NO_GENERIC_FILTER_FRAMEWORK",
+    "dp76": "ACTIVE_CONVERSATION_MAY_REMAIN_OUTSIDE_CURRENT_QUEUE_SCOPE_WITH_EXPLICIT_CONTEXT_CUE",
+    "dp77": "FILTER_OPTIONS_ARE_FACT_BACKED_NOT_ROADMAP_HARDCODED",
+    "i8": "QUEUE_FILTER_DIMENSIONS_COMPOSE_BY_INTERSECTION",
+    "i9": "QUEUE_RESULTS_MUST_MATCH_CURRENT_QUERY_SCOPE"
+  },
+  "evidence": {
+    "confirmed": [
+      "canonical platform union + consistency test（DP-71）",
+      "platform filter via platform_accounts（Main，I-8）",
+      "I-9 stale 保护 + DP-76 cue 测试",
+      "visual evidence 5 状态（真实 path）",
+      "desktop 251/251 + m6 smoke PASS"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "desktop build/typecheck；desktop tests 251/251（含 7 个新 guard + 1 平台一致性）",
+    "workspace typecheck / test（全部 PASS）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS",
+    "visual capture：sheep-061-queue-{all,platform,store,outofscope,empty}.png（真实 persistence->IPC->Renderer）"
+  ],
+  "negative_tests": [
+    "无伪 storeId=\"all\"/platformId \"all\"；无跨 merchant 泄漏；无 filter framework",
+    "无 unread/priority/risk/AI-pending、summary/activity、timeline/composer、平台 ingestion、sync/Outbox",
+    "无硬编码 Roadmap 平台 taxonomy（canonical + 一致性测试）；无 phantom option",
+    "旧响应不覆盖当前 scope（I-9）；scope 不改写 active conversation（DP-76/59）",
+    "schema v7 / migrations 不变；Renderer 不接触 SQLite；无 FastWork 复制"
+  ],
+  "modified_files": [
+    "packages/desktop-ipc/src/types.ts + index.ts（QueuePlatformFilter/QueueStoreOption + request/result 扩展）",
+    "apps/desktop/src/main/bootstrap.ts + worker-runtime.ts + index.ts（platformAccounts port）",
+    "apps/desktop/src/main/ipc/query-handlers.ts（platform filter + options）",
+    "apps/desktop/src/renderer/state/view-model.ts + workbench-store.ts（filter/options/cue/I-9）",
+    "apps/desktop/src/renderer/components/conversation-list.ts（selects + cue）",
+    "apps/desktop/src/renderer/components/app-shell.ts（移除 Store rail；Queue 内嵌 controls）",
+    "apps/desktop/src/renderer/app.ts（onScopePlatform）",
+    "apps/desktop/src/renderer/styles.css（controls/cue 样式）",
+    "apps/desktop/tests/renderer-app-shell-structure.test.ts（topology 收敛）",
+    "apps/desktop/tests/renderer-conversation-list.test.ts + conversation-list-query.test.ts + platform-identity-consistency.test.ts（扩展/新建）",
+    "docs/fast-sheep-conversation-filters-scopes.md（新建）",
+    "reports/visual-evidence/sheep-061-queue-*.png（5 状态）",
+    "scripts/visual-evidence/capture-queue-main.mjs（state 驱动）",
+    "scripts/capture-renderer-visual.mjs（--queue-* flags + stdout 转发）",
+    "reports/SHEEP-061-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-061 记录）"
+  ],
+  "architecture_changes": [
+    "Queue scope controls 内嵌（Store 非并行导航列）；canonical platform filter（Main projection）"
+  ],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0；Renderer 不接触 SQLite）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "visual_review_pending": true
+}

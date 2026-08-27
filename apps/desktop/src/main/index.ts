@@ -192,6 +192,7 @@ async function init(): Promise<void> {
     legacyImport: context.legacyImport,
     conversations: context.conversations,
     stores: context.stores,
+    platformAccounts: context.platformAccounts,
     selectedShopId: () => context!.projection.selectedShopId(),
   });
   wireBridges(mainWindow);

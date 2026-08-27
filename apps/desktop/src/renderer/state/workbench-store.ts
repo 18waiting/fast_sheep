@@ -37,6 +37,7 @@ import type {
   ConversationListRequest,
   ConversationListResult,
   QueueScope,
+  QueuePlatformFilter,
 } from "@fastwork/desktop-ipc";
 import { EMPTY_PLATFORM_VIEW_STATE, type PlatformViewState } from "./platform-view-state.js";
 import type { M10PanelViewModel } from "../components/m10-panel-types.js";
@@ -53,6 +54,8 @@ import {
   setQueueScope as setQueueScopePure,
   setQueueItems as setQueueItemsPure,
   setQueueError as setQueueErrorPure,
+  setQueuePlatform as setQueuePlatformPure,
+  setQueueOptions as setQueueOptionsPure,
   setActiveConversation as setActiveConversationPure,
   type UiState,
 } from "./view-model.js";
@@ -155,24 +158,37 @@ export class WorkbenchStore {
   }
 
   /** SHEEP-060: refresh Queue via Main typed projection (DP-57 semantic refresh: initial + scope-change re-query). */
-  async refreshQueue(scope?: QueueScope): Promise<void> {
-    const target = scope ?? this.state.queueScope;
-    this.setState(setQueueScopePure(this.state, target));
+  private queueRequestSeq = 0;
+
+  /** SHEEP-061: refresh Queue via Main typed projection (platform filter + I-9 stale protection). */
+  async refreshQueue(scope?: QueueScope, platform?: QueuePlatformFilter): Promise<void> {
+    const targetScope = scope ?? this.state.queueScope;
+    const targetPlatform = platform !== undefined ? platform : this.state.queuePlatform;
+    this.setState(setQueueScopePure(this.state, targetScope));
+    this.setState(setQueuePlatformPure(this.state, targetPlatform));
     if (!this.api.listConversations) {
       this.setState(setQueueErrorPure(this.state, "队列查询不可用"));
       return;
     }
-    const res = await this.api.listConversations({ scope: target });
+    const seq = ++this.queueRequestSeq;
+    const res = await this.api.listConversations({ scope: targetScope, platform: targetPlatform });
+    if (seq !== this.queueRequestSeq) return; // I-9: stale response must not overwrite current scope
     if (!res.ok) {
       this.setState(setQueueErrorPure(this.state, safeMessage(res.error)));
       return;
     }
+    this.setState(setQueueOptionsPure(this.state, res.data.stores, res.data.platforms));
     this.setState(setQueueItemsPure(this.state, res.data.items, res.data.scope));
   }
 
   /** SHEEP-060: change Queue Scope (re-query queue; does NOT touch active conversation, DP-59/5). */
   async setQueueScope(scope: QueueScope): Promise<void> {
     await this.refreshQueue(scope);
+  }
+
+  /** SHEEP-061: change Queue platform filter (I-8: composes by intersection; does NOT touch active conversation). */
+  async setQueuePlatform(platform: QueuePlatformFilter | undefined): Promise<void> {
+    await this.refreshQueue(undefined, platform);
   }
 
   /** SHEEP-060: activate conversation (DP-60/69: pointer/Enter activates; navigation state only). */
