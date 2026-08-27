@@ -1,0 +1,79 @@
+{
+  "task": "SHEEP-060-PR1",
+  "result": "COMPLETE",
+  "phase": "Phase 4 / M4.1 prerequisite",
+  "milestone": "M4.1",
+  "objective": "Conversation Runtime Persistence Foundation：SqliteNormalizedConversationRepository 接入 production Main 既有 openDatabase lifecycle（DP-65）+ 薄 ingestion boundary（DP-67）+ fail-closed（DP-66）+ port/composition 分离（DP-68）+ I-6 isolation 证据",
+  "completed_requirements": 15,
+  "total_requirements": 15,
+  "owner_tightening": {
+    "t1_share_existing_connection": "遵守：Conversation repository 复用 createWorkerBackedMainContext 已拥有的 m10Sqlite.conn；未为 Conversation 二次 openDatabase / 未建第二 connection ownership（测试 durability close/reopen 除外）",
+    "t2_port_vs_binding": "遵守：Main/bootstrap 依赖 NormalizedConversationRepository port；SQLite 绑定仅在 createWorkerBackedMainContext（production composition）；test mode 显式 InMemory test double（非 production fallback）",
+    "t3_thin_ingestion_accurate_semantics": "遵守：ingestion boundary 极薄——saveNormalizedConversation = repository.save（plain INSERT）；未发明 merge/upsert/dedupe/reconciliation/platform normalization policy；无含糊 ensure* 语义",
+    "t4_ingestion_is_write_boundary": "遵守：仅未来 platform/import producer 的 Main-side write boundary；非 Domain Service/event bus/Outbox/sync；未实现任何真实平台 producer",
+    "dp65": "遵守：CONVERSATION_REPOSITORY_SHARES_MAIN_PRODUCTION_DB_LIFECYCLE（共享 m10Sqlite.conn）",
+    "dp66": "遵守：PRODUCTION_PERSISTENCE_FAILURE_NEVER_FALLS_BACK_TO_MEMORY——corrupt DB/composition 抛错（fail-closed 测试证明无 memory fact source）",
+    "dp67": "遵守：CONVERSATION_INGESTION_IS_A_THIN_PRODUCTION_WRITE_BOUNDARY",
+    "dp68": "遵守：RUNTIME_DEPENDS_ON_REPOSITORY_PORT_PRODUCTION_COMPOSITION_BINDS_SQLITE",
+    "i6": "遵守：I-6 QUEUE_SCOPE_IS_ALWAYS_CONTAINED_BY_MERCHANT_BOUNDARY——isolation 测试提供底层证据（listByMerchant/listByStore 无跨 merchant 泄漏）",
+    "two_layer_round_trip": "遵守：persistence durability proof（fresh v7 -> ingestion -> close -> reopen -> read）+ production composition proof（createWorkerBackedMainContext 写入 -> 独立同 root 连接读取命中，证明 SQLite 绑定非 InMemory）",
+    "isolation_fixture": "遵守：同 merchant 两 store + 另一 merchant（A1/A2/B1/B2）；listByMerchant(A) 仅 A；listByStore 分别隔离；无跨 merchant 泄漏",
+    "schema_unchanged": "遵守：schema v7 / migrations 0001~0007 不变；未补 summary/updated_at；未发明 activity ordering",
+    "forbidden_kept": "遵守：未实现 Queue projection/IPC/UI、SHEEP-061/062、timeline、平台 ingestion、sync/Outbox/cloud；Renderer 不接触 SQLite",
+    "regression": "遵守：desktop/workspace regression + m6 Electron smoke（production Main composition non-regression）；未要求视觉证据"
+  },
+  "decisions": {
+    "dp65": "CONVERSATION_REPOSITORY_SHARES_MAIN_PRODUCTION_DB_LIFECYCLE",
+    "dp66": "PRODUCTION_PERSISTENCE_FAILURE_NEVER_FALLS_BACK_TO_MEMORY",
+    "dp67": "CONVERSATION_INGESTION_IS_A_THIN_PRODUCTION_WRITE_BOUNDARY",
+    "dp68": "RUNTIME_DEPENDS_ON_REPOSITORY_PORT_PRODUCTION_COMPOSITION_BINDS_SQLITE",
+    "i6": "QUEUE_SCOPE_IS_ALWAYS_CONTAINED_BY_MERCHANT_BOUNDARY"
+  },
+  "evidence": {
+    "confirmed": [
+      "bootstrap/worker-runtime 接线成功（共享 m10Sqlite.conn）",
+      "ingestion boundary（save = plain INSERT）",
+      "两层 round-trip + isolation + fail-closed 测试（237/237）",
+      "m6 smoke PASS（production Main composition non-regression）"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "desktop build/typecheck；desktop tests 237/237（含 4 个新 PR1 foundation guard）",
+    "workspace typecheck / test（全部 PASS）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）——production Main composition non-regression",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS"
+  ],
+  "negative_tests": [
+    "无第二 openDatabase / 第二 connection ownership（Conversation 复用 m10Sqlite.conn）",
+    "无 production in-memory fallback（fail-closed 测试）",
+    "无 upsert/merge/dedupe/reconciliation；无 ensure* 含糊语义",
+    "无 Queue projection/IPC/UI/DTO；无 unread/priority/risk；无 timeline；无平台 ingestion；无 sync/Outbox",
+    "schema v7 / migrations 不变；Renderer 不接触 SQLite；无 secret/credential 落库"
+  ],
+  "modified_files": [
+    "apps/desktop/src/main/bootstrap.ts（MainContext.conversations port + BootstrapOptions + InMemory test double）",
+    "apps/desktop/src/main/worker-runtime.ts（生产 composition 绑定 Sqlite，共享 m10Sqlite.conn）",
+    "apps/desktop/src/main/services/conversation-ingestion.ts（新建，薄 write boundary）",
+    "apps/desktop/tests/conversation-persistence-foundation.test.ts（新建）",
+    "docs/fast-sheep-conversation-persistence-foundation.md（新建）",
+    "reports/SHEEP-060-PR1-report.json（新建）",
+    "project/PROJECT_STATE.json（PR1 记录）"
+  ],
+  "architecture_changes": [
+    "Conversation persistence 接入既有 production DB lifecycle（port/composition 分离）"
+  ],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0；Renderer 不接触 SQLite；无 secret 落库）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

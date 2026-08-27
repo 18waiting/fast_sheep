@@ -15,7 +15,7 @@ import {
   type PlatformAdapter,
   type TransferDecision,
 } from "@fastwork/orchestrator";
-import { InMemorySettingsRepository } from "@fastwork/persistence";
+import { InMemorySettingsRepository, type NormalizedConversationRepository, type NormalizedConversationRecord } from "@fastwork/persistence";
 import { VirtualClock, FakeAiEngineClient, FakePlatformAdapter, CapturingEventBus, FakeFeedbackSink, InMemoryConversationRepositoryPort } from "@fastwork/test-kit";
 import { OrchestratorFeedbackSink, type FeedbackService } from "@fastwork/feedback";
 import type { PlatformStatusChangedEvent, PlatformSessionStatus } from "@fastwork/desktop-ipc";
@@ -83,6 +83,8 @@ export interface MainContext {
   feedbackService: FeedbackService | null;
   clock: VirtualClock;
   orchestrator: ConversationOrchestrator;
+  /** PR1: Conversation normalized repository port (production = SQLite via worker-backed composition). */
+  conversations: NormalizedConversationRepository;
   /** M10 Main-owned BackgroundJobService (single writer for background_jobs). */
   jobs: BackgroundJobService;
   /** M10 learning service (Worker executes offline QA lifecycle). */
@@ -132,9 +134,24 @@ export interface BootstrapOptions {
   importRagRebuild?: () => Promise<boolean>;
   /** M11: database backup port (defaults to no-op in test mode). */
   importBackup?: DatabaseBackupPort;
+  /** PR1: Conversation normalized repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
+  conversationRepository?: NormalizedConversationRepository;
 }
 
 /** Minimal in-memory JobRepository for isolated test mode (M10). */
+/** PR1: minimal in-memory NormalizedConversationRepository test double (isolated test mode only). */
+class InMemoryNormalizedConversationRepositoryImpl implements NormalizedConversationRepository {
+  private readonly map = new Map<string, NormalizedConversationRecord>();
+  save(c: NormalizedConversationRecord): void { this.map.set(c.id, { ...c, externalRef: c.externalRef ?? null }); }
+  findById(id: string): NormalizedConversationRecord | null { const r = this.map.get(id); return r ? { ...r, externalRef: r.externalRef ?? null } : null; }
+  listByMerchant(merchantId: string): NormalizedConversationRecord[] {
+    return [...this.map.values()].filter((c) => c.merchantId === merchantId).map((c) => ({ ...c, externalRef: c.externalRef ?? null })).sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  }
+  listByStore(storeId: string): NormalizedConversationRecord[] {
+    return [...this.map.values()].filter((c) => c.storeId === storeId).map((c) => ({ ...c, externalRef: c.externalRef ?? null })).sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  }
+}
+
 class InMemoryJobRepositoryImpl implements JobRepository {
   private readonly map = new Map<string, JobRecord>();
   create(j: JobRecord): void { this.map.set(j.job_id, { ...j }); }
@@ -150,6 +167,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   const rawEvents = new CapturingEventBus();
   const feedback = options.feedbackService ? new OrchestratorFeedbackSink(options.feedbackService) : new FakeFeedbackSink();
   const repo = new InMemoryConversationRepositoryPort();
+  const conversationRepository = options.conversationRepository ?? new InMemoryNormalizedConversationRepositoryImpl();
   const aiRaw = new FakeAiEngineClient([{ reply: "亲,有的哦~" }]);
 
   // Default: offline fake AI (M6). M7 vertical smoke injects a real worker client.
@@ -389,7 +407,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   });
 
   void bumpRevision;
-  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
+  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
 }
 
 /** Minimal in-memory import session store (isolated test mode). */

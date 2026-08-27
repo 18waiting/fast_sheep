@@ -30,7 +30,7 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1",
   "last_closed_task": "SHEEP-047",
-  "current_task": "SHEEP-060 (BLOCKED: queue data-path gap; awaiting Owner decision)",
+  "current_task": "SHEEP-060-PR1 (executed, pending Owner PASS)",
   "next_action": "SHEEP-060",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -1038,6 +1038,17 @@
     "gap_report": "reports\\SHEEP-060-gap-report.json",
     "gap": "DATA_PATH_GAP-QUEUE_CONVERSATION_LIST (no wired conversation-list fact source in Main runtime; STOP per tightening #13; no schema expansion, no faked data path)",
     "next_per_roadmap": "Awaiting Owner decision on queue data path (persistence wiring unit vs injected dev source vs other)",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
+  },
+  "sheep_060_pr1": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-27",
+    "report": "reports\\SHEEP-060-PR1-report.json",
+    "prerequisite_of": "SHEEP-060 (DATA_PATH_GAP-QUEUE-CONVERSATION-LIST resolved by PR1; SHEEP-060 restoration pending PR1 PASS)",
+    "decisions": ["DP-65..DP-68 + I-6 (implemented per Controller recommendation; final = Owner PASS pending)"],
+    "next_per_roadmap": "SHEEP-060 restore (re-confirm DP-57~64 + I-5 on real production data path) after PR1 PASS",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   }
