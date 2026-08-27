@@ -1,0 +1,85 @@
+{
+  "task": "SHEEP-062",
+  "result": "COMPLETE (Fact-Readiness Review / Decision Package; no indicator implemented)",
+  "phase": "Phase 4",
+  "milestone": "M4.1",
+  "objective": "Unread / Priority / Risk Indicator Fact-Readiness Review + Decision Package（不实现 indicator）",
+  "completed_requirements": 15,
+  "total_requirements": 15,
+  "owner_tightening": {
+    "t1_fact_readiness_review": "遵守：本单元 = Fact-Readiness Review；三类 indicator 分别判定 READY/BLOCKED/DEFERRED/PRODUCT_DECISION_REQUIRED；未为 Roadmap 完成度强行产 UI",
+    "dp78_unread_reader_progress": "遵守：UNREAD_IS_DERIVED_FROM_AN_EXPLICIT_READER_PROGRESS_FACT——未持久化/伪造 conversation.unread boolean；Read First 核验 message ordering/identity、reader identity、ownership 后判定 prerequisites 未成熟",
+    "t3_agent_local_vs_team": "遵守：明确区分 agent-local read progress 与 team/workflow processing state；不得混成一个 unread；prerequisites 未成熟 → DEFER 到 M4.2 等真实 prerequisite 后",
+    "dp79_priority_provenance_authority": "遵守：PRIORITY_REQUIRES_EXPLICIT_PROVENANCE_AND_AUTHORITY——未硬编码 VIP/等待/资金规则；priority 来源/authority/override/lifecycle 未定义 → PRODUCT_DECISION_REQUIRED；AI suggestion 非 authoritative",
+    "dp80_risk_typed_evidence": "遵守：RISK_IS_TYPED_EVIDENCE_BACKED_SIGNAL_NOT_GENERIC_SEVERITY——未造 low/medium/high risk badge；需区分 type/source/evidence；AI-derived risk 遵守 I-4",
+    "dp81_fact_storage_follows_semantics": "遵守：FACT_STORAGE_FOLLOWS_SEMANTICS_NOT_UI_CONVENIENCE——未假定 migration 0008；先判断事实 owner/lifecycle 再决定存储方式",
+    "dp82_indicator_requires_fact_readiness": "遵守：INDICATOR_PRESENTATION_REQUIRES_AUTHORITATIVE_FACT_READINESS——当前不满足 → 不呈现任何 indicator",
+    "i10_no_ranking_authority": "遵守：INDICATORS_DO_NOT_IMPLY_RANKING_AUTHORITY——conversation_id technical ordering 保持，未改 Queue ordering",
+    "i11_traceable_provenance": "遵守：OPERATIONAL_INDICATORS_REQUIRE_TRACEABLE_FACT_PROVENANCE——本轮无 indicator，无 renderer heuristic",
+    "t10_read_only_contracts": "遵守：只读核验现有 contract；未把同名字符串视为目标事实（按 domain semantics 定性）",
+    "t11_stop_on_prerequisite": "遵守：若需 schema/事实契约/producer 扩展 → 本单元 STOP 后另提最小 prerequisite proposal；未自行 migration/加字段/实现 UI",
+    "t12_ordering_unchanged": "遵守：conversation_id technical ordering 保持",
+    "t13_no_visual_required": "遵守：无事实 indicator 不要求 visual evidence；未造 Gallery/fake badge；回归按纯审计任务执行",
+    "t14_outputs": "遵守：分别输出 UNREAD/PRIORITY/RISK_FACT_READINESS + prerequisites/owner decisions（三者可不同结论）",
+    "t15_stop": "遵守：完成后 STOP；不自动进入下一单元"
+  },
+  "decisions": {
+    "dp78": "UNREAD_IS_DERIVED_FROM_AN_EXPLICIT_READER_PROGRESS_FACT",
+    "dp79": "PRIORITY_REQUIRES_EXPLICIT_PROVENANCE_AND_AUTHORITY",
+    "dp80": "RISK_IS_TYPED_EVIDENCE_BACKED_SIGNAL_NOT_GENERIC_SEVERITY",
+    "dp81": "FACT_STORAGE_FOLLOWS_SEMANTICS_NOT_UI_CONVENIENCE",
+    "dp82": "INDICATOR_PRESENTATION_REQUIRES_AUTHORITATIVE_FACT_READINESS",
+    "i10": "INDICATORS_DO_NOT_IMPLY_RANKING_AUTHORITY",
+    "i11": "OPERATIONAL_INDICATORS_REQUIRE_TRACEABLE_FACT_PROVENANCE"
+  },
+  "fact_readiness": {
+    "UNREAD_FACT_READINESS": "BLOCKED / DEFERRED (prerequisite: message ordering/timestamp fact contract + reader identity/read-progress watermark + agent-local vs team state separation; defer to M4.2 or separate prerequisite unit)",
+    "PRIORITY_FACT_READINESS": "PRODUCT_DECISION_REQUIRED (no fact source; priority source/authority/override/lifecycle undefined; AI suggestion not authoritative)",
+    "RISK_FACT_READINESS": "PRODUCT_DECISION_REQUIRED / DEFER (no typed risk signal contract; requires governance + typed evidence-backed signal per I-4)"
+  },
+  "prerequisites_future_decisions": [
+    "Unread: message created_at/sequence fact contract; reader identity/watermark; agent-local vs team separation (M4.2 or separate prerequisite unit)",
+    "Priority: Owner product/governance decision (source/authority/override/lifecycle)",
+    "Risk: Owner governance + typed risk signal contract (type/source/evidence)",
+    "If schema/contract/producer extension needed -> submit minimal prerequisite proposal separately (not here)"
+  ],
+  "evidence": {
+    "confirmed": [
+      "normalized_messages 无 created_at/sequence/role/content；normalized_conversations 无 unread/priority/risk/activity；Member/Membership 无 reader progress；OwnershipRecord = processing state ≠ read progress；全仓无目标事实（仅备份文案/注释同名单词）"
+    ],
+    "inferred": [
+      "unread prerequisites 成熟度评估（M4.2 或独立 prerequisite）"
+    ]
+  },
+  "tests": [
+    "desktop build/typecheck；desktop tests 251/251（回归；纯审计无新增测试）",
+    "workspace typecheck / test（全部 PASS）",
+    "m6 Electron renderer smoke（PASS，non-regression；external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS（non-regression）"
+  ],
+  "negative_tests": [
+    "未实现任何 indicator；未造 Gallery/fake badge；未改 Queue ordering（I-10）",
+    "未改 schema/migrations（v7 不变）；未假定 migration 0008（DP-81）",
+    "无 renderer heuristic（I-11）；未硬编码 priority/risk 规则；未混淆 entitlement/availability",
+    "未挂载 AI primitive；未实现 timeline/composer/平台 ingestion/sync/Outbox"
+  ],
+  "modified_files": [
+    "docs/fast-sheep-unread-priority-risk-indicators.md（新建）",
+    "reports/SHEEP-062-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-062 记录）"
+  ],
+  "architecture_changes": [],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

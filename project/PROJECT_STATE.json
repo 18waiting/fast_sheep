@@ -30,7 +30,7 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1",
   "last_closed_task": "SHEEP-061",
-  "current_task": "SHEEP-062 (proposal pending approval)",
+  "current_task": "SHEEP-062 (Fact-Readiness Review executed; awaiting Owner decision on prerequisites/DEFER/indicator)",
   "next_action": "SHEEP-062",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -1153,5 +1153,21 @@
         "Queue Scope topology converged; Conversation Main still runtime baseline; M4.2 must begin delivering the Conversation-centered Workspace",
         "Platform filter option must stay on a different semantic layer from platform availability/entitlement/connection capability"
     ]
+  },
+  "sheep_062": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-28",
+    "report": "reports\\SHEEP-062-report.json",
+    "review_doc": "docs\\fast-sheep-unread-priority-risk-indicators.md",
+    "fact_readiness": {
+      "UNREAD_FACT_READINESS": "BLOCKED/DEFERRED (reader-progress fact contract prerequisite; M4.2 or separate unit)",
+      "PRIORITY_FACT_READINESS": "PRODUCT_DECISION_REQUIRED (no fact source; semantics undefined)",
+      "RISK_FACT_READINESS": "PRODUCT_DECISION_REQUIRED/DEFER (no typed risk signal contract)"
+    },
+    "decisions": ["DP-78..DP-82 + I-10/I-11 (fact-readiness review completed; no indicator implemented)"],
+    "next_per_roadmap": "Owner decision: prerequisite unit / DEFER / approve indicator implementation (not auto-advanced)",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }
