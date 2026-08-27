@@ -20,6 +20,10 @@ export interface ProjectionSource {
 export class WorkbenchProjectionService {
   constructor(private readonly source: ProjectionSource) {}
 
+  selectedShopId(): string | null {
+    return this.source.selectedShopId();
+  }
+
   project(): WorkbenchViewModel {
     const vm: WorkbenchViewModel = {
       revision: this.source.revision(),

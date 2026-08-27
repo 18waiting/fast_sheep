@@ -190,6 +190,9 @@ async function init(): Promise<void> {
     audit: context.audit,
     optimization: context.optimization,
     legacyImport: context.legacyImport,
+    conversations: context.conversations,
+    stores: context.stores,
+    selectedShopId: () => context!.projection.selectedShopId(),
   });
   wireBridges(mainWindow);
 

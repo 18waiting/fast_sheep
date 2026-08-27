@@ -1,5 +1,5 @@
 // FastWorkDesktopAPI preload surface (M6). No Electron classes in public types.
-import type { BootstrapState, DesktopResult, WorkbenchViewModel, WorkerStatusView, SetModeRequest, ManualSendRequest, NoSaveSendRequest, CancelRequest, FocusRequest, OrchestratorEventPayload, PlatformStatusView, PlatformActivateShopRequest, PlatformSetViewBoundsRequest, PlatformReloadRequest, PlatformStatusChangedEvent, JobListResult, JobRecordView, JobGetRequest, JobCancelRequest, LearningStartRequest, ReviewActionRequest, AuditActionRequest, OptimizationActionRequest, LearningChangedEvent, ReviewChangedEvent, AuditChangedEvent, OptimizationChangedEvent, BackgroundJobEvent, LegacyImportSelectRequest, LegacyImportSelectResult, LegacyImportPlanRequest, LegacyImportApplyAction, LegacyImportStatusView, LegacyImportEvent } from "./types.js";
+import type { BootstrapState, DesktopResult, WorkbenchViewModel, WorkerStatusView, SetModeRequest, ManualSendRequest, NoSaveSendRequest, CancelRequest, FocusRequest, OrchestratorEventPayload, PlatformStatusView, PlatformActivateShopRequest, PlatformSetViewBoundsRequest, PlatformReloadRequest, PlatformStatusChangedEvent, JobListResult, JobRecordView, JobGetRequest, JobCancelRequest, LearningStartRequest, ReviewActionRequest, AuditActionRequest, OptimizationActionRequest, LearningChangedEvent, ReviewChangedEvent, AuditChangedEvent, OptimizationChangedEvent, BackgroundJobEvent, LegacyImportSelectRequest, LegacyImportSelectResult, LegacyImportPlanRequest, LegacyImportApplyAction, LegacyImportStatusView, LegacyImportEvent, ConversationListRequest, ConversationListResult } from "./types.js";
 
 export interface Unsubscribe { (): void }
 
@@ -7,6 +7,7 @@ export interface FastWorkDesktopAPI {
   bootstrap(): Promise<DesktopResult<BootstrapState>>;
   listShops(): Promise<DesktopResult<{ shops: Array<{ shop_id: string; name: string; type: string; enabled: boolean }> }>>;
   getSnapshot(req: { shop_id?: string }): Promise<DesktopResult<WorkbenchViewModel>>;
+  listConversations(req: ConversationListRequest): Promise<DesktopResult<ConversationListResult>>;
   getWorkerStatus(): Promise<DesktopResult<WorkerStatusView>>;
   setMode(req: SetModeRequest): Promise<DesktopResult<{ ok: boolean }>>;
   manualSend(req: ManualSendRequest): Promise<DesktopResult<{ ok: boolean }>>;

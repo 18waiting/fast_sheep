@@ -10,8 +10,10 @@ import type { WorkbenchActions } from "./actions.js";
 import type { M10PanelActions } from "./m10-panel-types.js";
 import { EMPTY_M10_VIEW_MODEL } from "./m10-panel-types.js";
 import type { LegacyImportActions } from "./legacy-import-types.js";
+import type { QueueActions } from "./conversation-list.js";
 import { EMPTY_LEGACY_IMPORT_VIEW_MODEL } from "./legacy-import-types.js";
 import { renderLegacyImportPanel } from "./legacy-import-panel.js";
+import { renderConversationList } from "./conversation-list.js";
 import { clear, el } from "./dom.js";
 import { renderAppNavbar } from "./app-navbar.js";
 import { renderShopSidebar } from "./shop-sidebar.js";
@@ -29,7 +31,7 @@ import { renderReviewPanel } from "./review-panel.js";
 import { renderAuditPanel } from "./audit-panel.js";
 import { renderProductOptimizationPanel } from "./product-optimization-panel.js";
 
-export function renderAppShell(root: HTMLElement, state: UiState, actions: WorkbenchActions, m10Actions?: M10PanelActions, legacyImportActions?: LegacyImportActions): void {
+export function renderAppShell(root: HTMLElement, state: UiState, actions: WorkbenchActions, m10Actions?: M10PanelActions, legacyImportActions?: LegacyImportActions, queueActions?: QueueActions): void {
   clear(root);
   const shell = el("div", "app-shell");
 
@@ -43,7 +45,14 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
   renderAppNavbar(navbar);
   shell.appendChild(navbar);
 
+
   const body = el("div", "app-body");
+
+  // SHEEP-060 Queue work-entry surface (Phase 4 incremental topology; provisional
+  // left-rail placement; not final Conversation-centered Workspace layout).
+  const queueHost = el("div", "queue-host");
+  if (queueActions) renderConversationList(queueHost, state, queueActions);
+  body.appendChild(queueHost);
 
   // Left sidebar region container (reference sidebar shell region). The existing
   // clean-room shop-sidebar component renders directly as this region's content.

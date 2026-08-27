@@ -3,9 +3,9 @@ import assert from "node:assert/strict";
 
 import { IPC, QUERY_CHANNELS, COMMAND_CHANNELS, EVENT_CHANNELS, ALL_CHANNELS, isAllowedChannel } from "../dist/index.js";
 
-test("channel registry has 40 canonical channels (M6/M7/M10 + M11 8)", () => {
-  assert.equal(ALL_CHANNELS.length, 40);
-  assert.equal(QUERY_CHANNELS.length, 8);
+test("channel registry has 41 canonical channels (M6/M7/M10 + M11 8 + SHEEP-060 conversations.list)", () => {
+  assert.equal(ALL_CHANNELS.length, 41);
+  assert.equal(QUERY_CHANNELS.length, 9);
   assert.equal(COMMAND_CHANNELS.length, 22);
   assert.equal(EVENT_CHANNELS.length, 10);
   assert.equal(IPC.bootstrap, "desktop.bootstrap");

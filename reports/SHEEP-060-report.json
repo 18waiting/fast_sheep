@@ -1,0 +1,106 @@
+{
+  "task": "SHEEP-060",
+  "result": "COMPLETE",
+  "phase": "Phase 4",
+  "milestone": "M4.1",
+  "objective": "Conversation List（Queue，Agent primary work-entry surface）：真实 production persistence path（PR1）+ typed IPC + renderer；DP-57~64 + DP-69 + I-5/6/7；视觉证据",
+  "completed_requirements": 15,
+  "total_requirements": 15,
+  "owner_tightening": {
+    "dp63_technical_ordering": "遵守：DETERMINISTIC_TECHNICAL_ORDERING_WITH_NO_PRODUCT_PRIORITY_SEMANTICS——按 conversation_id 稳定排序；UI 无 recency/activity/priority 文案；真实 activity fact 后再做产品排序决策",
+    "dp60_activation": "遵守：EXPLICIT_ACTIVATION_SEPARATE_FROM_KEYBOARD_FOCUS——native <button>，pointer click/Enter 激活，focus movement 不激活",
+    "i7_displayed_facts_match_active": "遵守：I-7——activation 后 conversation-bound facts 必须匹配新 active identity；本单元仅显示 queue item 自身 identity 事实（无 mixed-context；无上一会话 facts 冒充）",
+    "dp62_i7_atomic_anchor": "遵守：DP-62 + I-7 联合——active identity 为后续 projection 原子 anchor；未提前实现 Customer/Product/Order/AI/Ownership projection",
+    "dp59_scope": "遵守：QueueScope explicit；shop-sidebar 为 PROVISIONAL_SCOPE_CONTROL；scope 改变只 re-query、不清空/切换 active conversation；active conversation 可暂不属于当前 scope",
+    "all_stores_merchant_boundary": "遵守：All Stores contract 建模、完整 UI 留 SHEEP-061；无伪 storeId=\"all\"；查询始终 merchant-boundary（Main 解析，renderer 不传 merchant）",
+    "dp58_minimal_fields": "遵守：QueueItemView = { conversation_id, store_id }；不暴露 platform_account_id；不伪造 buyer/summary/timestamp",
+    "real_path_visual": "遵守：populated visual 走 临时 evidence DB -> 真实 ingestion -> SQLite repo -> createWorkerBackedMainContext -> 真实 typed IPC -> renderer；无 renderer fake queue/dev fake source；production-real Empty 单独记录",
+    "loading_error_harness": "遵守：Loading/Error 仅经证据 harness/受控 query state 展示；无 force-error/debug 开关进 production component",
+    "no_activate_ipc": "遵守：conversations.list 保持 typed query boundary；未新增 conversations.activate IPC（Read First 未证明需 Main-owned）",
+    "dp69_navigation_state": "遵守：WORKSPACE_CONVERSATION_ACTIVATION_IS_NAVIGATION_STATE_NOT_BUSINESS_MUTATION——activation 不改 DB/ownership/store/不 send event/不 claim/mark-read",
+    "dp57_semantic_refresh_minimal": "遵守：initial query + scope-change re-query + 既有 refresh boundary；未预造 conversation-arrived subscription/event 设施",
+    "i5_queue_selects_work": "遵守：QUEUE_SELECTS_WORK_CONVERSATION_EXPLAINS_WORK——Queue 不承载完整 context，未退化 ERP 表格",
+    "no_unrelated_topology_rewrite": "遵守：app-shell 仅新增 queue 左轨 work-entry surface（Phase 4 incremental topology）；未重排/删除既有功能区；未宣称最终 Conversation-centered Workspace layout",
+    "visual_evidence_5": "遵守：populated queue（真实 path）+ production-real empty + active/focused 可区分 + scope 改变不改写 active（store 测试）+ All Stores 非伪 identity（contract/query 测试）"
+  },
+  "decisions": {
+    "dp57": "TYPED_MAIN_PROJECTION_WITH_SEMANTIC_REFRESH_BOUNDARY",
+    "dp58": "FACT_BACKED_MINIMAL_QUEUE_ITEM",
+    "dp59": "EXPLICIT_QUEUE_SCOPE_MODEL_WITH_PROVISIONAL_SIDEBAR_CONTROL",
+    "dp60": "EXPLICIT_ACTIVATION_SEPARATE_FROM_KEYBOARD_FOCUS",
+    "dp61": "QUEUE_PROJECTION_IS_PURPOSE_BUILT_NOT_FULL_CONVERSATION_OBJECT",
+    "dp62": "ACTIVE_CONVERSATION_CONTEXT_SWITCH_IS_ATOMIC",
+    "dp63": "DETERMINISTIC_TECHNICAL_ORDERING_WITH_NO_PRODUCT_PRIORITY_SEMANTICS",
+    "dp64": "QUEUE_SUMMARY_SOURCE_MUST_BE_EXPLICIT",
+    "dp69": "WORKSPACE_CONVERSATION_ACTIVATION_IS_NAVIGATION_STATE_NOT_BUSINESS_MUTATION",
+    "i5": "QUEUE_SELECTS_WORK_CONVERSATION_EXPLAINS_WORK",
+    "i6": "QUEUE_SCOPE_IS_ALWAYS_CONTAINED_BY_MERCHANT_BOUNDARY",
+    "i7": "DISPLAYED_CONVERSATION_FACTS_MUST_MATCH_ACTIVE_CONVERSATION_IDENTITY"
+  },
+  "evidence": {
+    "confirmed": [
+      "conversations.list typed query + QueueScope/QueueItemView",
+      "merchant-constrained query（specific_store + all_stores 受 selected-shop merchant）",
+      "store flow（activation/scope/error）",
+      "visual evidence（populated + empty，真实 path）",
+      "desktop 244/244 + m6 smoke PASS"
+    ],
+    "inferred": [
+      "all_stores merchant 由 selected-shop store 解析（provisional；完整 All Stores UI 留 SHEEP-061）"
+    ]
+  },
+  "tests": [
+    "desktop build/typecheck；desktop tests 244/244（含 7 个新 SHEEP-060 guard）",
+    "workspace typecheck / test（全部 PASS；desktop-ipc channel count 40->41 更新）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS",
+    "visual capture：sheep-060-queue-populated.png + sheep-060-queue-empty.png（真实 persistence->IPC->Renderer path）"
+  ],
+  "negative_tests": [
+    "无 timeline/composer/send/takeover；无第二 AI-chat；无 AI 自动切店；无 conversations.activate IPC",
+    "无伪 storeId=\"all\"；无跨 merchant 泄漏（I-6）；scope 改变不改写 active conversation",
+    "无 summary/unread/priority/risk/timestamp 伪造；无 recency/activity 排序文案",
+    "无 conversation-arrived subscription 预造；无 force-error/debug 开关进 production",
+    "schema v7 / migrations 不变；Renderer 不接触 SQLite；无 sync/Outbox"
+  ],
+  "modified_files": [
+    "packages/desktop-ipc/src/channels.ts + types.ts + index.ts + preload-api.ts（conversations.list + QueueScope/QueueItemView）",
+    "packages/desktop-ipc/tests/channel-registry.test.ts（40->41 + query 8->9）",
+    "apps/desktop/src/preload/index.ts（channel + listConversations）",
+    "apps/desktop/src/main/bootstrap.ts（conversations/stores port + InMemory doubles）",
+    "apps/desktop/src/main/worker-runtime.ts（Sqlite conversation + store 共享 conn）",
+    "apps/desktop/src/main/ipc/query-handlers.ts（conversations.list merchant-constrained）",
+    "apps/desktop/src/main/services/workbench-projection-service.ts（selectedShopId()）",
+    "apps/desktop/src/main/index.ts（registerIpc 传参）",
+    "apps/desktop/src/renderer/state/view-model.ts + workbench-store.ts（queue state/actions）",
+    "apps/desktop/src/renderer/components/conversation-list.ts（新建）",
+    "apps/desktop/src/renderer/components/app-shell.ts（queue 左轨 surface）",
+    "apps/desktop/src/renderer/app.ts（sidebar -> provisional scope control）",
+    "apps/desktop/src/renderer/styles.css（queue 样式）",
+    "apps/desktop/tests/renderer-conversation-list.test.ts + conversation-list-query.test.ts（新建）",
+    "docs/fast-sheep-conversation-list.md（新建）",
+    "reports/visual-evidence/sheep-060-queue-populated.png + sheep-060-queue-empty.png（新建）",
+    "scripts/visual-evidence/capture-queue-main.mjs（新建，真实 path evidence tooling）",
+    "scripts/capture-renderer-visual.mjs（--queue/--queue-empty）",
+    "scripts/visual-evidence/capture-main.cjs（stub conversations.list empty）",
+    "reports/SHEEP-060-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-060 记录）"
+  ],
+  "architecture_changes": [
+    "Conversation List / Queue work-entry surface（typed IPC + merchant-constrained Main projection）"
+  ],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0；Renderer 不接触 SQLite）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "visual_review_pending": true
+}

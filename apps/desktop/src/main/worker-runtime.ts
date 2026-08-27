@@ -9,7 +9,7 @@
 import { existsSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { AIWorkerClient } from "@fastwork/worker-rpc";
-import { resolveDataRoot, openDatabase, SqliteFeedbackRepository, SqliteJobRepository, SqliteProductRepository, SqliteNormalizedConversationRepository } from "@fastwork/persistence";
+import { resolveDataRoot, openDatabase, SqliteFeedbackRepository, SqliteJobRepository, SqliteProductRepository, SqliteNormalizedConversationRepository, SqliteStoreRepository } from "@fastwork/persistence";
 import { WorkerAiEngineClient, type WorkerGenerateReplyResponse } from "@fastwork/orchestrator";
 import { FeedbackService, PersistenceFeedbackRepository, WorkerKnowledgeFeedbackClient } from "@fastwork/feedback";
 import { WorkerJobClient } from "@fastwork/background-jobs";
@@ -123,6 +123,7 @@ export function createWorkerBackedMainContext(deps: WorkerBackedMainDeps, option
   // PR1: Conversation repository SHARES the production DB connection/lifecycle (DP-65);
   // no second openDatabase / second connection ownership for conversations.
   const conversationRepository = new SqliteNormalizedConversationRepository(m10Sqlite.conn);
+  const storeRepository = new SqliteStoreRepository(m10Sqlite.conn);
   const productSqlite = new SqliteProductRepository(m10Sqlite.conn);
   const productRepository: ProductRepositoryPort = {
     get: (id) => {
@@ -141,6 +142,7 @@ export function createWorkerBackedMainContext(deps: WorkerBackedMainDeps, option
     optimizationWorkerClient: new WorkerOptimizationClient(deps.workerClient),
     productRepository,
     conversationRepository,
+    storeRepository,
   });
 }
 

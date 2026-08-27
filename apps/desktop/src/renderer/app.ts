@@ -7,6 +7,7 @@ import { renderAppShell } from "./components/app-shell.js";
 import type { WorkbenchActions } from "./components/actions.js";
 import type { M10PanelActions } from "./components/m10-panel-types.js";
 import type { LegacyImportActions } from "./components/legacy-import-types.js";
+import type { QueueActions } from "./components/conversation-list.js";
 
 export function mountApp(root: HTMLElement): WorkbenchStore {
   // Provided by the context-isolated preload (window.fastworkDesktop).
@@ -14,7 +15,11 @@ export function mountApp(root: HTMLElement): WorkbenchStore {
 
   const store = new WorkbenchStore(api);
   const actions: WorkbenchActions = {
-    onSelectShop: (shopId) => void store.selectShop(shopId),
+    onSelectShop: (shopId) => {
+    // DP-59: shop-sidebar = PROVISIONAL queue scope control (specific_store; storeId = shop id, Main-side merchant resolution).
+    void store.selectShop(shopId);
+    void store.setQueueScope({ kind: "specific_store", storeId: shopId });
+  },
     onSetMode: (mode) => void store.setMode(mode),
     onManualSend: () => void store.manualSend(),
     onNoSaveSend: () => void store.noSaveSend(),
@@ -37,7 +42,14 @@ export function mountApp(root: HTMLElement): WorkbenchStore {
     onCancelJob: (jobId) => void store.cancelJob(jobId),
   };
 
-  // M11 legacy import: projection/control only.
+  // SHEEP-060 Queue: navigation-state activation + scope re-query (typed IPC; no business mutation).
+  const queueActions: QueueActions = {
+    onActivate: (conversationId) => store.activateConversation(conversationId),
+    onScopeAllStores: () => void store.setQueueScope({ kind: "all_stores" }),
+    onScopeStore: (storeId) => void store.setQueueScope({ kind: "specific_store", storeId }),
+  };
+
+    // M11 legacy import: projection/control only.
   const legacyImportActions: LegacyImportActions = {
     onSelect: () => void store.selectLegacyImport(),
     onScan: () => void store.refreshLegacyImportStatus(),
@@ -49,7 +61,7 @@ export function mountApp(root: HTMLElement): WorkbenchStore {
   };
 
   const render = (state: UiState): void => {
-    renderAppShell(root, state, actions, m10Actions, legacyImportActions);
+    renderAppShell(root, state, actions, m10Actions, legacyImportActions, queueActions);
   };
 
   store.subscribe(render);

@@ -17,6 +17,7 @@ const CH = {
   bootstrap: "desktop.bootstrap",
   listShops: "shops.list",
   snapshot: "orchestrator.snapshot",
+  conversationsList: "conversations.list",
   workerStatus: "worker.status",
   setMode: "orchestrator.set_mode",
   manualSend: "orchestrator.manual_send",
@@ -68,6 +69,7 @@ const api = {
   bootstrap: () => ipcRenderer.invoke(CH.bootstrap),
   listShops: () => ipcRenderer.invoke(CH.listShops),
   getSnapshot: (req?: { shop_id?: string }) => ipcRenderer.invoke(CH.snapshot, req ?? {}),
+  listConversations: (req: { scope: { kind: "all_stores" } | { kind: "specific_store"; storeId: string } }) => ipcRenderer.invoke(CH.conversationsList, req),
   getWorkerStatus: () => ipcRenderer.invoke(CH.workerStatus),
   setMode: (req: { shop_id: string; conversation_id?: string; mode: "human_review" | "full_auto" }) =>
     ipcRenderer.invoke(CH.setMode, req),

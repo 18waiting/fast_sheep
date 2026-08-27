@@ -30,7 +30,7 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1",
   "last_closed_task": "SHEEP-060-PR1",
-  "current_task": "SHEEP-060 (proposal pending approval; restored on real production persistence path)",
+  "current_task": "SHEEP-060 (executed, pending Owner DP-57~64+DP-69+I-5~7 decisions + visual review)",
   "next_action": "SHEEP-060 (restored proposal)",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -1067,5 +1067,17 @@
         "I-6 establishes the merchant boundary; All Stores Queue must be implemented in SHEEP-060 via explicit Queue Scope contract (no pseudo storeId=\"all\")",
         "summary / updated_at / activity ordering still absent; restored SHEEP-060 must not fake summaries or \"recent activity\" ordering"
     ]
+  },
+  "sheep_060_restored": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-27",
+    "report": "reports\\SHEEP-060-report.json",
+    "prerequisite_resolved": "DATA_PATH_GAP-QUEUE-CONVERSATION-LIST closed by SHEEP-060-PR1 (BLOCKED audit history retained in sheep_060 + gap report)",
+    "visual_evidence": ["reports\\visual-evidence\\sheep-060-queue-populated.png", "reports\\visual-evidence\\sheep-060-queue-empty.png"],
+    "decisions": ["DP-57..DP-64 + DP-69 + I-5..I-7 (implemented per Controller recommendation; final = Owner visual review + PASS pending)"],
+    "next_per_roadmap": "SHEEP-061 (M4.1 Filters/Store/Platform Scopes; pending Owner PASS; not auto-executed)",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }

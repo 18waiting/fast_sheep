@@ -15,6 +15,14 @@ export interface WorkerStatusView { status: "starting" | "ready" | "restarting" 
 export interface ShopSummary { shop_id: string; name: string; type: string; enabled: boolean }
 export interface SuggestionView { reply: string; generation: number; status: string; mode?: string }
 export interface ConversationView { conversation_id: string; shop_id: string; state: string; buyer?: string }
+
+// ---- SHEEP-060 Conversation List (Queue) typed contract ----
+/** Explicit Queue Scope (DP-59/I-6): all_stores is a work queue scope, NOT a store identity; never use storeId="all". */
+export type QueueScope = { kind: "all_stores" } | { kind: "specific_store"; storeId: string };
+/** Minimal fact-backed queue item (DP-58/64/61): only facts with explicit source; no fabricated summary/timestamp/unread/priority/risk. */
+export interface QueueItemView { conversation_id: string; store_id: string }
+export interface ConversationListRequest { scope: QueueScope }
+export interface ConversationListResult { items: QueueItemView[]; scope: QueueScope }
 export interface WorkbenchViewModel {
   revision: number;
   shop_summaries: ShopSummary[];
@@ -94,6 +102,7 @@ export type RequestByChannel = {
   [IPC.bootstrap]: undefined;
   [IPC.listShops]: undefined;
   [IPC.snapshot]: { shop_id?: string };
+  [IPC.conversationsList]: ConversationListRequest;
   [IPC.workerStatus]: undefined;
   [IPC.setMode]: SetModeRequest;
   [IPC.manualSend]: ManualSendRequest;

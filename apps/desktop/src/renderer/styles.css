@@ -126,3 +126,11 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 .fs-state--error.fs-state--section { padding: var(--fs-space-3); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border-error); border-radius: var(--fs-radius-md); background: var(--fs-color-bg-error); }
 .fs-state .fs-state-action { align-self: flex-start; }
 .btn:focus-visible, .shop-button:focus-visible, .mode-btn:focus-visible { outline: 2px solid var(--fs-color-primary); outline-offset: 1px; } /* a11y focus baseline (SHEEP-047) */
+/* ===== SHEEP-060 Conversation List / Queue (work-entry surface; provisional placement) ===== */
+.queue-host { width: 220px; border-right: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); background: var(--fs-color-bg); overflow: auto; padding: var(--fs-space-3); }
+.conversation-list-title { margin: 0 0 var(--fs-space-2); }
+.conversation-list-scope { margin: 0 0 var(--fs-space-2); }
+.conversation-list-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--fs-space-1); }
+.conversation-list-row { width: 100%; text-align: left; padding: var(--fs-space-2); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); border-radius: var(--fs-radius-sm); background: var(--fs-color-bg-surface); cursor: pointer; font-size: var(--fs-font-size-md); }
+.conversation-list-row.active { background: var(--fs-color-bg-selected); border-left: 3px solid var(--fs-color-primary); border-color: var(--fs-color-primary); }
+.conversation-list-row:focus-visible { outline: 2px solid var(--fs-color-primary); outline-offset: 1px; }

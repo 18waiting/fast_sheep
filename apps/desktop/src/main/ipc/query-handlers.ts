@@ -1,5 +1,5 @@
 // M6/M10 query handlers: bootstrap / shops / snapshot / worker.status / platform.status / jobs.
-import { IPC, DesktopError, DESKTOP_ERROR_CODES, type BootstrapState, type DesktopResult, type JobListResult, type JobRecordView, type LegacyImportStatusView, type PlatformStatusView, type WorkbenchViewModel, type WorkerStatusView } from "@fastwork/desktop-ipc";
+import { IPC, DesktopError, DESKTOP_ERROR_CODES, type BootstrapState, type DesktopResult, type JobListResult, type JobRecordView, type LegacyImportStatusView, type PlatformStatusView, type WorkbenchViewModel, type WorkerStatusView, type ConversationListRequest, type ConversationListResult, type QueueItemView } from "@fastwork/desktop-ipc";
 import type { PlatformSessionCoordinator } from "../platforms/platform-session-coordinator.js";
 import type { PlatformId } from "../platforms/platform-host-registry.js";
 import type { OrchestratorHost } from "../services/orchestrator-host.js";
@@ -8,6 +8,7 @@ import type { WorkerStatusService } from "../services/worker-status-service.js";
 import type { WorkbenchProjectionService } from "../services/workbench-projection-service.js";
 import type { BackgroundJobService } from "../services/background-job-service.js";
 import type { LegacyImportService } from "../services/legacy-import-service.js";
+import type { NormalizedConversationRepository, StoreRepository } from "@fastwork/persistence";
 import { ok, err } from "./ipc-guard.js";
 
 export interface QueryDeps {
@@ -20,6 +21,12 @@ export interface QueryDeps {
   revision(): number;
   jobs: BackgroundJobService;
   legacyImport: LegacyImportService;
+  /** PR1/SHEEP-060: Conversation repository port (merchant-constrained Main-side queries). */
+  conversations: NormalizedConversationRepository;
+  /** SHEEP-060: Store repository port (merchant boundary resolution). */
+  stores: StoreRepository;
+  /** SHEEP-060: currently selected shop id (provisional queue scope merchant anchor). */
+  selectedShopId(): string | null;
 }
 
 export const QUERY_HANDLERS = {
@@ -35,7 +42,31 @@ export const QUERY_HANDLERS = {
   [IPC.snapshot]: (deps: QueryDeps) => async (req: { shop_id?: string }): Promise<DesktopResult<WorkbenchViewModel>> => {
     return ok(deps.projection.project());
   },
-  [IPC.workerStatus]: (deps: QueryDeps) => async (): Promise<DesktopResult<WorkerStatusView>> => {
+  [IPC.conversationsList]: (deps: QueryDeps) => async (req: ConversationListRequest): Promise<DesktopResult<ConversationListResult>> => {
+    if (!req || !req.scope) return err(new DesktopError(DESKTOP_ERROR_CODES.INVALID_REQUEST, "missing queue scope"));
+    const scope = req.scope;
+    let items: QueueItemView[] = [];
+    if (scope.kind === "specific_store") {
+      const store = deps.stores.findById(scope.storeId);
+      if (!store) return err(new DesktopError(DESKTOP_ERROR_CODES.NOT_FOUND, "unknown store"));
+      // Merchant boundary enforced Main-side (I-6); renderer never supplies merchant.
+      items = deps.conversations.listByStore(store.id)
+        .filter((c) => c.merchantId === store.merchantId)
+        .map((c) => ({ conversation_id: c.id, store_id: c.storeId }))
+        .sort((a, b) => (a.conversation_id < b.conversation_id ? -1 : a.conversation_id > b.conversation_id ? 1 : 0));
+    } else {
+      // all_stores: merchant boundary = currently selected shop's store (provisional; full All Stores UI = SHEEP-061)
+      const sid = deps.selectedShopId();
+      const store = sid ? deps.stores.findById(sid) : null;
+      if (store) {
+        items = deps.conversations.listByMerchant(store.merchantId)
+          .map((c) => ({ conversation_id: c.id, store_id: c.storeId }))
+          .sort((a, b) => (a.conversation_id < b.conversation_id ? -1 : a.conversation_id > b.conversation_id ? 1 : 0));
+      }
+    }
+    return ok({ items, scope });
+  },
+    [IPC.workerStatus]: (deps: QueryDeps) => async (): Promise<DesktopResult<WorkerStatusView>> => {
     return ok(deps.worker.status());
   },
   [IPC.platformStatus]: (deps: QueryDeps) => async (req: { shop_id: string }): Promise<DesktopResult<PlatformStatusView>> => {

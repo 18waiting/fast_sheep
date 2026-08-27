@@ -43,6 +43,7 @@ function handle(channel, fn) { ipcMain.handle(channel, fn); }
 
 handle("desktop.bootstrap", () => ok({ revision: 1, worker_status: { status: "ready" }, shops, view_model: viewModel }));
 handle("shops.list", () => ok({ shops }));
+handle("conversations.list", (req) => ok({ items: [], scope: req && req.scope ? req.scope : { kind: "all_stores" } }));
 handle("orchestrator.snapshot", () => ok(viewModel));
 handle("worker.status", () => ok({ status: "ready" }));
 handle("orchestrator.set_mode", okTrue);

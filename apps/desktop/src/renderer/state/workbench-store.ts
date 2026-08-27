@@ -34,6 +34,9 @@ import type {
   LegacyImportPlanRequest,
   LegacyImportApplyAction,
   LegacyImportStatusView,
+  ConversationListRequest,
+  ConversationListResult,
+  QueueScope,
 } from "@fastwork/desktop-ipc";
 import { EMPTY_PLATFORM_VIEW_STATE, type PlatformViewState } from "./platform-view-state.js";
 import type { M10PanelViewModel } from "../components/m10-panel-types.js";
@@ -47,6 +50,10 @@ import {
   revisionOf,
   selectShop as selectShopPure,
   setPendingCommand,
+  setQueueScope as setQueueScopePure,
+  setQueueItems as setQueueItemsPure,
+  setQueueError as setQueueErrorPure,
+  setActiveConversation as setActiveConversationPure,
   type UiState,
 } from "./view-model.js";
 import { reduceEvent, shouldResync } from "./event-reducer.js";
@@ -57,6 +64,7 @@ export type StoreListener = (state: UiState) => void;
 export interface WorkbenchApiLike {
   bootstrap(): Promise<DesktopResult<BootstrapState>>;
   getSnapshot(req: { shop_id?: string }): Promise<DesktopResult<WorkbenchViewModel>>;
+  listConversations?(req: ConversationListRequest): Promise<DesktopResult<ConversationListResult>>;
   setMode(req: SetModeRequest): Promise<DesktopResult<{ ok: boolean }>>;
   manualSend(req: ManualSendRequest): Promise<DesktopResult<{ ok: boolean }>>;
   noSaveSend(req: NoSaveSendRequest): Promise<DesktopResult<{ ok: boolean }>>;
@@ -138,6 +146,7 @@ export class WorkbenchStore {
       lastError: null,
       pendingCommand: null,
     });
+    void this.refreshQueue();
   }
 
   applyViewModel(vm: WorkbenchViewModel): void {
@@ -145,7 +154,33 @@ export class WorkbenchStore {
     this.setState({ ...this.state, viewModel: vm, selectedShopId: selected, loading: false, lastError: null });
   }
 
-  async onEvent(event: OrchestratorEventPayload): Promise<void> {
+  /** SHEEP-060: refresh Queue via Main typed projection (DP-57 semantic refresh: initial + scope-change re-query). */
+  async refreshQueue(scope?: QueueScope): Promise<void> {
+    const target = scope ?? this.state.queueScope;
+    this.setState(setQueueScopePure(this.state, target));
+    if (!this.api.listConversations) {
+      this.setState(setQueueErrorPure(this.state, "队列查询不可用"));
+      return;
+    }
+    const res = await this.api.listConversations({ scope: target });
+    if (!res.ok) {
+      this.setState(setQueueErrorPure(this.state, safeMessage(res.error)));
+      return;
+    }
+    this.setState(setQueueItemsPure(this.state, res.data.items, res.data.scope));
+  }
+
+  /** SHEEP-060: change Queue Scope (re-query queue; does NOT touch active conversation, DP-59/5). */
+  async setQueueScope(scope: QueueScope): Promise<void> {
+    await this.refreshQueue(scope);
+  }
+
+  /** SHEEP-060: activate conversation (DP-60/69: pointer/Enter activates; navigation state only). */
+  activateConversation(conversationId: string | null): void {
+    this.setState(setActiveConversationPure(this.state, conversationId));
+  }
+
+    async onEvent(event: OrchestratorEventPayload): Promise<void> {
     const outcome = reduceEvent(this.state, event);
     if (!shouldResync(outcome)) return;
     // Event applied (or revision gap): reload the authoritative snapshot.
