@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1-COMPLETE",
-  "last_closed_task": "SHEEP-062",
-  "current_task": "SHEEP-063-PR1 (Message Fact + Runtime Ingestion Foundation; Controller Review submitted; awaiting Owner PASS — SHEEP-063 Timeline NOT resumed)",
-  "next_action": "SHEEP-063-PR1 (awaiting Owner PASS; after PASS restore SHEEP-063 Timeline implementation)",
+  "last_closed_task": "SHEEP-063-PR1",
+  "current_task": "SHEEP-063 (restored on real Message Fact path; Timeline execution proposal submitted — awaiting Owner approval; NOT executed)",
+  "next_action": "SHEEP-063 (Timeline execution proposal — awaiting Owner approval; not auto-executed; no SHEEP-064)",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1204,22 +1204,22 @@
     "read_first": "docs\\fast-sheep-message-timeline-read-first.md",
     "report": "reports\\SHEEP-063-report.json",
     "fact_readiness": {
-      "MESSAGE_FACT_PATH": "BLOCKED (no content/actor/time/ordering; no message ingestion; not composed in Main)",
-      "UNREAD_FACT_READINESS": "NOT_READY"
+      "MESSAGE_FACT_PATH": "READY for Timeline foundation (PR1 closed: identity/actor/content/time/ordering/source-provenance persisted; production ingestion boundary + shared DB lifecycle)",
+      "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (PR1 confirmed; never auto-READY)"
     },
-    "prerequisite": "SHEEP-063-PR1 (Message Fact + Runtime Ingestion Foundation; executed; Controller Review submitted — awaiting Owner PASS; Timeline NOT resumed)",
-    "next_per_roadmap": "After SHEEP-063-PR1 Owner PASS: restore SHEEP-063 (re-confirm DP-83~89 + I-12~I-14 on real production fact path) then re-evaluate Timeline implementation",
+    "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28, Owner PASS; DATA_FACT_GAP-MESSAGE_PATH resolved; BLOCKED audit history retained)",
+    "next_per_roadmap": "SHEEP-063 Timeline execution proposal (submitted; awaiting Owner approval; NOT auto-executed; no SHEEP-064)",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   },
   "sheep_063_pr1": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
-    "closed_date_candidate": null,
+    "controller_decision": "PASS",
+    "closed_date_candidate": "2026-08-28",
     "report": "reports\\SHEEP-063-PR1-report.json",
     "review_doc": "docs\\fast-sheep-message-fact-foundation.md",
-    "prerequisite_of": "SHEEP-063 (DATA_FACT_GAP-MESSAGE_PATH; SHEEP-063 Timeline restoration pending PR1 Owner PASS; BLOCKED audit history retained)",
-    "decisions": ["DP-83/86/87/88/90 + I-12/I-13/I-15/I-16 (executed; OWNER_DECIDED pending Owner PASS)"],
+    "prerequisite_of": "SHEEP-063 (DATA_FACT_GAP-MESSAGE_PATH resolved by PR1; SHEEP-063 Timeline restoration pending new execution proposal approval; BLOCKED audit history retained)",
+    "decisions": ["DP-83/86/87/88/90 + I-12/I-13/I-15/I-16 (OWNER_DECIDED 2026-08-28)"],
     "fact_readiness": {
       "MESSAGE_FACT_PATH": "READY for Timeline foundation (identity/actor/content/time/ordering/source-provenance persisted; production ingestion boundary + shared DB lifecycle)",
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (never auto-READY; reader identity + read-progress watermark still required)"
@@ -1231,6 +1231,30 @@
         "UNREAD_FACT_READINESS max PARTIALLY_READY until reader-progress fact contract exists"
     ],
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-28"
+  },
+  "fast_sheep_message_fact_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-28",
+    "dp_83": "MESSAGE_FACT_CONTRACT_PRECEDES_STORAGE_SHAPE (0008 is not a mechanical 4-column shape; identity/actor/content/time/ordering/source-provenance semantics defined first)",
+    "dp_86": "CONVERSATION_MESSAGE_ACTOR_SEMANTICS_ARE_DISTINCT_FROM_LLM_ROLES (actor = customer|agent minimal set; no AI/system actor)",
+    "dp_87": "MESSAGE_TIME_SEMANTICS_MUST_BE_EXPLICIT (occurred_at source/platform may be unknown; observed_at Fast Sheep produced at ingestion boundary; no ambiguous created_at)",
+    "dp_88": "MESSAGE_CONTENT_IS_TYPED_EXTENSIBLE_TEXT_FIRST_NOT_TEXT_ONLY (text-first; attachments/rich payload stay SHEEP-065)",
+    "dp_90": "MESSAGE_REPOSITORY_SHARES_MAIN_PRODUCTION_DB_LIFECYCLE (shared m10Sqlite.conn; no second openDatabase; fail-closed no memory fallback)",
+    "i_12": "MESSAGE_TIMELINE_ORDERING_IS_DETERMINISTIC_AND_EXPLAINABLE (occurred_at asc + id tie-breaker; unknown last; local ingestion order never masquerades as source order)",
+    "i_13": "INTERNAL_MESSAGE_IDENTITY_AND_EXTERNAL_SOURCE_IDENTITY_REMAIN_DISTINCT (external_ref opaque; no invented UNIQUE)",
+    "i_15": "MESSAGE_ACTOR_AND_GENERATION_PROVENANCE_ARE_ORTHOGONAL (AI-assisted generation provenance != message actor)",
+    "i_16": "MIGRATION_MUST_NOT_FABRICATE_HISTORICAL_MESSAGE_FACTS (legacy fact-less rows keep NULL; no system/empty/migration-time backfill)",
+    "unread_fact_readiness": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (never auto-READY; reader identity + read-progress watermark still required)",
+    "future_constraints": [
+        "occurred_at + id ordering is an evidence-bounded baseline; re-evaluate when authoritative source ordering emerges",
+        "actor taxonomy only expands by real consumers; no pre-invented AI/system actor",
+        "external_ref dedupe/edit/recall/reconciliation/idempotency stays with real producer unit",
+        "Timeline must not implement unread boolean/count; reader-progress remains prerequisite",
+        "rich/attachment message kinds stay SHEEP-065; historical incomplete facts must not be fabricated"
+    ]
   }
 }
+
+
