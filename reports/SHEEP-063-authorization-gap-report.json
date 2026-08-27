@@ -1,0 +1,53 @@
+{
+  "task": "SHEEP-063 (restored; Timeline execution Read First #2)",
+  "codex_result": "PARTIAL",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "status": "BLOCKED",
+  "phase": "Phase 4",
+  "milestone": "M4.2",
+  "gap": "DATA_AUTHORIZATION_GAP-TIMELINE-WORKSPACE_MERCHANT_CONTEXT",
+  "summary": "执行前 Read First 核验 DP-91/I-17：Main 缺独立 trusted merchant/workspace context（无 currentMerchant/workspace 概念；MerchantRepository 未接入 Main；data root 单一全局路径；seed 不建 merchant；唯一 merchant 锚点 = provisional selected shop / Queue Scope，被 I-17/DP-91 明确禁止用于 Timeline authority）。按 DP-91 明确指令 STOP/report gap；不实现 Timeline；不用 selected shop 冒充",
+  "timeline_data_path": "READY (SHEEP-063-PR1 closed: normalized_messages typed facts + SqliteMessageRepository production wiring + thin ingestion boundary + I-12 ordering + merchant boundary repo-level evidence)",
+  "authorization_gap_evidence": {
+    "currentMerchant_workspace_context": "NONE (no currentMerchant/workspaceMerchant/merchantContext/currentWorkspace anywhere in repo)",
+    "merchant_repository_in_main": "NOT_WIRED (MerchantRepository/SqliteMerchantRepository never constructed in apps/desktop/src/main)",
+    "main_owned_active_workspace": "NONE (no session/workspace bootstrap; app-lifecycle only window lifecycle)",
+    "data_root_per_merchant": "NO (resolveDataRoot = single global %LOCALAPPDATA%\\fast_sheep\\data; not merchant-scoped)",
+    "seed_local_merchant_identity": "NO (seedDefaults only config_groups; no merchants row)",
+    "existing_merchant_anchor": "ONLY provisional selectedShopId -> store -> merchantId (Queue Scope; forbidden by I-17/DP-91 for Timeline authority)"
+  },
+  "reasoning": "Timeline 若此刻实现只能 a) 用 selected shop 冒充授权（违反 I-17/DP-91）、b) 不授权（违反 Master §10 / DP-91）、或 c) 信任 renderer 提供的 merchant 参数（违反 Master §10）。三者均不可接受 -> STOP",
+  "not_implemented": [
+    "conversations.listMessages typed IPC (channel/types/preload/handler)",
+    "Timeline renderer surface (message-timeline component / store timeline state / stale guard)",
+    "Timeline visual evidence (populated / empty / switch / incomplete-fact)",
+    "DP-92 presentability rule / DP-93 time presentation (deferred until Timeline implementation after PR2)",
+    "schema 0009 / composer / attachments / send / producer / sync / Outbox / Queue ordering"
+  ],
+  "fact_readiness": {
+    "MESSAGE_FACT_PATH": "READY",
+    "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged)"
+  },
+  "prerequisite_proposal": "SHEEP-063-PR2 — Workspace Merchant Context Foundation (Main-owned trusted active-workspace merchant context independent of Queue Scope; Owner decision points: single-merchant local workspace assumption vs explicit merchant selection; test-mode synthetic context; PR2 does not implement auth/cloud/entitlement)",
+  "tests": [
+    "desktop build/typecheck + desktop tests 259/259 (regression; pure Read First turn — no new product code)",
+    "workspace typecheck/test PASS",
+    "m6 Electron smoke PASS (external_network_calls=0) — non-regression",
+    "check:boundary PASS; secret scan PASS"
+  ],
+  "negative_tests": [
+    "Timeline 未实现（0 product code change）",
+    "未用 selected shop / Queue Scope 冒充 Timeline 授权（I-17/DP-91）",
+    "未新增 schema / 未改 Queue ordering / 未实现 unread/priority/risk/composer/attachments/producer/sync",
+    "未读 reference/nixiang；未联网；无 secret/credential；Renderer 不接触 SQLite"
+  ],
+  "modified_files": [
+    "docs/fast-sheep-message-timeline-authorization-gap.md (new)",
+    "reports/SHEEP-063-authorization-gap-report.json (new)",
+    "project/PROJECT_STATE.json (gap record + prerequisite proposal)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

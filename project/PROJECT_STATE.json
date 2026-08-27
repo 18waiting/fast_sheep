@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1-COMPLETE",
   "last_closed_task": "SHEEP-063-PR1",
-  "current_task": "SHEEP-063 (restored on real Message Fact path; Timeline execution proposal submitted — awaiting Owner approval; NOT executed)",
-  "next_action": "SHEEP-063 (Timeline execution proposal — awaiting Owner approval; not auto-executed; no SHEEP-064)",
+  "current_task": "SHEEP-063 (Timeline Read First #2 BLOCKED — DATA_AUTHORIZATION_GAP-TIMELINE-WORKSPACE_MERCHANT_CONTEXT; SHEEP-063-PR2 proposal pending Owner decision; Timeline NOT executed)",
+  "next_action": "SHEEP-063-PR2 (Workspace Merchant Context Foundation proposal — awaiting Owner decision; SHEEP-063 Timeline not auto-executed; no SHEEP-064)",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1202,13 +1202,16 @@
     "status": "BLOCKED",
     "closed_date_candidate": null,
     "read_first": "docs\\fast-sheep-message-timeline-read-first.md",
+    "read_first_2_authorization_gap": "docs\\fast-sheep-message-timeline-authorization-gap.md",
     "report": "reports\\SHEEP-063-report.json",
+    "authorization_gap_report": "reports\\SHEEP-063-authorization-gap-report.json",
+    "authorization_gap": "DATA_AUTHORIZATION_GAP-TIMELINE-WORKSPACE_MERCHANT_CONTEXT (Main has no independent trusted merchant/workspace context; only provisional selected shop / Queue Scope anchor exists, forbidden by I-17/DP-91 for Timeline authority)",
     "fact_readiness": {
       "MESSAGE_FACT_PATH": "READY for Timeline foundation (PR1 closed: identity/actor/content/time/ordering/source-provenance persisted; production ingestion boundary + shared DB lifecycle)",
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (PR1 confirmed; never auto-READY)"
     },
-    "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28, Owner PASS; DATA_FACT_GAP-MESSAGE_PATH resolved; BLOCKED audit history retained)",
-    "next_per_roadmap": "SHEEP-063 Timeline execution proposal (submitted; awaiting Owner approval; NOT auto-executed; no SHEEP-064)",
+    "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28, Owner PASS; DATA_FACT_GAP-MESSAGE_PATH resolved) + SHEEP-063-PR2 (Workspace Merchant Context Foundation — proposal pending Owner decision; DATA_AUTHORIZATION_GAP-TIMELINE-WORKSPACE_MERCHANT_CONTEXT)",
+    "next_per_roadmap": "Owner decides on SHEEP-063-PR2; after PR2 PASS, re-submit SHEEP-063 Timeline execution on trusted authorization path (DP-84/85/89/91/92/93 + I-14/I-17); NOT auto-executed; no SHEEP-064",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   },
@@ -1256,5 +1259,6 @@
     ]
   }
 }
+
 
 
