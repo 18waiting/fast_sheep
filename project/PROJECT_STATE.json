@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1-COMPLETE",
   "last_closed_task": "SHEEP-063-PR1",
-  "current_task": "SHEEP-063 (Timeline Read First #2 BLOCKED — DATA_AUTHORIZATION_GAP-TIMELINE-WORKSPACE_MERCHANT_CONTEXT; SHEEP-063-PR2 proposal pending Owner decision; Timeline NOT executed)",
-  "next_action": "SHEEP-063-PR2 (Workspace Merchant Context Foundation proposal — awaiting Owner decision; SHEEP-063 Timeline not auto-executed; no SHEEP-064)",
+  "current_task": "SHEEP-063-PR2 (Read First BLOCKED — DATA_IDENTITY_BOOTSTRAP_GAP-WORKSPACE_MERCHANT; SHEEP-063-PR2-PR1 identity-bootstrap proposal pending Owner decision; WorkspaceMerchantContext/Timeline NOT implemented)",
+  "next_action": "SHEEP-063-PR2-PR1 (Workspace Merchant Identity Bootstrap proposal — awaiting Owner decision; no auto-execution; no SHEEP-064)",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1210,8 +1210,8 @@
       "MESSAGE_FACT_PATH": "READY for Timeline foundation (PR1 closed: identity/actor/content/time/ordering/source-provenance persisted; production ingestion boundary + shared DB lifecycle)",
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (PR1 confirmed; never auto-READY)"
     },
-    "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28, Owner PASS; DATA_FACT_GAP-MESSAGE_PATH resolved) + SHEEP-063-PR2 (Workspace Merchant Context Foundation — proposal pending Owner decision; DATA_AUTHORIZATION_GAP-TIMELINE-WORKSPACE_MERCHANT_CONTEXT)",
-    "next_per_roadmap": "Owner decides on SHEEP-063-PR2; after PR2 PASS, re-submit SHEEP-063 Timeline execution on trusted authorization path (DP-84/85/89/91/92/93 + I-14/I-17); NOT auto-executed; no SHEEP-064",
+    "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28) + SHEEP-063-PR2 (approved 2026-08-28 but Read First BLOCKED on DATA_IDENTITY_BOOTSTRAP_GAP-WORKSPACE_MERCHANT; PR2-PR1 identity bootstrap proposal pending) + SHEEP-063-PR2-PR1 (Workspace Merchant Identity Bootstrap — proposal pending Owner decision)",
+    "next_per_roadmap": "Owner decides on SHEEP-063-PR2-PR1 (identity bootstrap); after bootstrap + PR2 land, re-submit SHEEP-063 Timeline execution on trusted authorization path (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19); NOT auto-executed; no SHEEP-064",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   },
@@ -1257,8 +1257,28 @@
         "Timeline must not implement unread boolean/count; reader-progress remains prerequisite",
         "rich/attachment message kinds stay SHEEP-065; historical incomplete facts must not be fabricated"
     ]
+  },
+  "sheep_063_pr2": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "BLOCKED",
+    "closed_date_candidate": null,
+    "gap": "DATA_IDENTITY_BOOTSTRAP_GAP-WORKSPACE_MERCHANT",
+    "read_first": "docs\\fast-sheep-workspace-merchant-identity-gap.md",
+    "report": "reports\\SHEEP-063-PR2-identity-gap-report.json",
+    "owner_decisions": ["DP-94..DP-98 + I-18/I-19 (adopted from Owner approval; OWNER_DECIDED pending PR2 PASS)"],
+    "blocked_reason": "production has NO trusted local bootstrap/identity source to explicitly resolve Workspace Merchant + verify Merchant exists (no env/onboarding/registration/platform-connection/import creates normalized merchant; merchants table empty in production); per tightening #4/#11 STOP + minimal identity-bootstrap prerequisite; no magic default/first-row/selected-shop fallback (DP-96)",
+    "prerequisite_proposal": "SHEEP-063-PR2-PR1 — Workspace Merchant Identity Bootstrap (Owner decision points: creation authority MAIN_OWNED_FIRST_RUN_BOOTSTRAP vs PLATFORM_CONNECTION_CREATES_MERCHANT vs CLOUD_REGISTRATION; persistence contract app_meta workspace_merchant_id + verified merchants row (schema v8) vs new 0009; no auth/cloud/entitlement/session UI/multi-merchant selector; test-mode synthetic only)",
+    "deferred_until_identity_bootstrap": [
+        "WorkspaceMerchantContext production composition (DP-94/95/96/97)",
+        "Queue merchant-boundary migration to WorkspaceMerchantContext (DP-98; Queue filter/UI semantics unchanged)",
+        "Timeline implementation (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19)"
+    ],
+    "fact_readiness": {
+      "MESSAGE_FACT_PATH": "READY",
+      "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged)"
+    },
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }
-
-
-

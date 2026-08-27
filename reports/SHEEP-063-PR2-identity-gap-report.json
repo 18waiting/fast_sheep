@@ -1,0 +1,61 @@
+{
+  "task": "SHEEP-063-PR2 (Workspace Merchant Context Foundation)",
+  "codex_result": "PARTIAL",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "status": "BLOCKED",
+  "phase": "Phase 4",
+  "milestone": "M4.2 prerequisite chain",
+  "gap": "DATA_IDENTITY_BOOTSTRAP_GAP-WORKSPACE_MERCHANT",
+  "summary": "PR2 Read First：生产环境无任何可信 local bootstrap/identity source 可显式 resolve Workspace Merchant 并验证 Merchant 存在（无 FASTWORK_MERCHANT_* env；生产代码不创建 merchants 行；无 onboarding/注册/平台连接创建 normalized merchant；M11 import 不写 identity；app_meta/config 无 workspace merchant 引用）。按收紧 #4/#11 明确指令 STOP/report gap/另提最小 identity-bootstrap prerequisite；不创造 magic default merchant / first-row / selected-shop / UI-config convenience 绕过",
+  "owner_decisions_consumed": {
+    "dp_94": "WORKSPACE_MERCHANT_CONTEXT_IS_MAIN_OWNED_AND_QUEUE_SCOPE_INDEPENDENT (adopted; production wiring blocked on identity bootstrap)",
+    "dp_95": "LOCAL_DESKTOP_RUNTIME_HAS_ONE_ACTIVE_MERCHANT_WORKSPACE_UNTIL_MULTI_MERCHANT_REQUIREMENT_EXISTS (adopted; not a physical single-merchant constraint)",
+    "dp_96": "WORKSPACE_MERCHANT_IDENTITY_IS_EXPLICITLY_COMPOSED_NOT_INFERRED_FROM_AMBIENT_DATA (adopted; no selected-shop/queue/active-conversation/first-row inference)",
+    "dp_97": "WORKSPACE_MERCHANT_CONTEXT_IS_A_MINIMAL_AUTHORIZATION_ANCHOR_NOT_A_SESSION_FRAMEWORK (adopted; PR2 stays minimal)",
+    "dp_98": "MERCHANT_AUTHORIZATION_HAS_ONE_MAIN_OWNED_SOURCE_OF_TRUTH (deferred Queue migration until PR2 lands on real identity bootstrap)",
+    "i_18": "CONVERSATION_BOUND_READS_REQUIRE_TRUSTED_WORKSPACE_MERCHANT_CONTAINMENT (contract recorded; implementation blocked on identity bootstrap)",
+    "i_19": "WORKSPACE_MERCHANT_CONTEXT_IS_STABLE_FOR_A_MAIN_CONTEXT_LIFETIME (contract recorded; no runtime switching)"
+  },
+  "identity_bootstrap_evidence": {
+    "merchant_env": "NONE (no FASTWORK_MERCHANT_* / workspace merchant env)",
+    "production_merchant_creation": "NONE (SqliteMerchantRepository.save only in tests; MerchantRepository not wired in Main)",
+    "onboarding_first_run": "NONE",
+    "platform_connection_creates_merchant": "NONE (platform services write legacy shops/sessions only)",
+    "m11_import_identity": "NO (legacy tables only)",
+    "config_app_meta_merchant_ref": "NONE (app_meta only database_schema_version/updated_at)",
+    "production_merchant_rows": "NONE (merchants table exists at v8 but empty in production)"
+  },
+  "reasoning": "PR2 生产组合必须 resolve merchantId + verify Merchant exists（收紧 #4）；当前无任何可信来源可显式 resolve，且无 bootstrap 流创建/记录本地 workspace merchant identity -> STOP + 最小 identity-bootstrap prerequisite（收紧 #4/#11）",
+  "not_implemented": [
+    "WorkspaceMerchantContext production composition (blocked on identity bootstrap)",
+    "Queue merchant-boundary migration to WorkspaceMerchantContext (DP-98; after PR2 lands)",
+    "Timeline IPC/UI / DP-92 presentability / DP-93 time presentation / visual evidence",
+    "identity bootstrap (SHEEP-063-PR2-PR1 proposal only)",
+    "schema 0009 / auth / cloud / entitlement / session UI / multi-merchant selector / composer / attachments / producer / sync"
+  ],
+  "prerequisite_proposal": "SHEEP-063-PR2-PR1 — Workspace Merchant Identity Bootstrap (Owner decision points: creation authority = MAIN_OWNED_FIRST_RUN_BOOTSTRAP vs PLATFORM_CONNECTION_CREATES_MERCHANT vs CLOUD_REGISTRATION; persistence contract = app_meta workspace_merchant_id + verified merchants row (schema v8 kept) vs new 0009; constraints: no auth/cloud/entitlement/session UI/multi-merchant selector; test-mode synthetic only; no Queue/UI semantics change)",
+  "fact_readiness": {
+    "MESSAGE_FACT_PATH": "READY (PR1 closed)",
+    "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged)"
+  },
+  "tests": [
+    "desktop build/typecheck + desktop tests 259/259 (regression; pure Read First turn — no new product code)",
+    "workspace typecheck/test PASS",
+    "m6 Electron smoke PASS (external_network_calls=0) — non-regression",
+    "check:boundary PASS; secret scan PASS"
+  ],
+  "negative_tests": [
+    "未创造 magic default merchant / first-row fallback / count==1 inference / selected-shop fallback（DP-96/#4）",
+    "未改 schema / 未改 Queue ordering/UI / 未实现 Timeline / unread/priority/risk/composer/attachments/producer/sync",
+    "未读 reference/nixiang；未联网；无 secret/credential；Renderer 不接触 SQLite"
+  ],
+  "modified_files": [
+    "docs/fast-sheep-workspace-merchant-identity-gap.md (new)",
+    "reports/SHEEP-063-PR2-identity-gap-report.json (new)",
+    "project/PROJECT_STATE.json (PR2 gap record + PR2-PR1 proposal)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
