@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>Fast Sheep A11y / Focus Gallery (SHEEP-047, evidence-only)</title>
+  <link rel="stylesheet" href="../../apps/desktop/src/renderer/tokens.css" />
+  <link rel="stylesheet" href="../../apps/desktop/src/renderer/styles.css" />
+  <style>
+    body { padding: 24px; background: #f6f8fa; }
+    .g-section { margin-bottom: 26px; }
+    .g-section > h1 { font-size: 16px; font-weight: 600; margin: 0 0 10px; }
+    .g-panel { background: #fff; border: 1px solid #87919e; border-radius: 8px; padding: 16px; max-width: 640px; }
+    .g-cap { font-size: 11px; color: #65717c; margin-top: 6px; }
+    .g-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+
+  <div class="g-section">
+    <h1>1. Keyboard focus (focus-visible) on Action primitives — primary button focused</h1>
+    <div class="g-panel">
+      <div class="g-row">
+        <button type="button" class="fs-action fs-action--primary" autofocus>Primary (focused)</button>
+        <button type="button" class="fs-action fs-action--secondary">Secondary</button>
+        <button type="button" class="fs-action fs-action--quiet">Quiet</button>
+        <button type="button" class="fs-action fs-action--secondary fs-action--destructive">Destructive</button>
+      </div>
+    </div>
+    <div class="g-cap">focus = 2px outline in primary (5.19:1); DP-50/DP-56</div>
+  </div>
+
+  <div class="g-section">
+    <h1>2. Focus vs Selected/current vs Status — three distinct signals</h1>
+    <div class="g-panel">
+      <div class="g-row">
+        <button type="button" class="shop-button" tabindex="-1">Shop A (unselected)</button>
+        <button type="button" class="shop-button selected" tabindex="-1">Shop B (selected)</button>
+        <button type="button" class="shop-button" tabindex="-1">Shop C (focused via focus-visible below)</button>
+      </div>
+      <div class="g-row">
+        <span class="fs-status fs-status--success">success</span>
+        <span class="fs-status fs-status--warning">warning</span>
+        <span class="fs-status fs-status--danger">danger</span>
+      </div>
+    </div>
+    <div class="g-cap">selected = fill+border (primary border); status = color+text; focus = outline ring — not the same blue alone (DP-56)</div>
+  </div>
+
+  <div class="g-section">
+    <h1>3. Loading / error semantic announcements (DP-55, quiet vs assertive)</h1>
+    <div class="g-panel">
+      <div class="g-row"><div class="fs-state fs-state--loading" role="status"><span class="fs-text--body fs-state-label">正在刷新</span><span class="fs-state-indicator">…</span></div></div>
+      <div class="g-row"><div class="fs-state fs-state--error fs-state--inline" role="alert"><p class="fs-text--body fs-state-error-message">发送失败，请重试。</p></div></div>
+    </div>
+    <div class="g-cap">loading/refresh = polite (role=status); error/important = assertive (role=alert); no raw update-stream announcements (DP-55)</div>
+  </div>
+
+</body>
+</html>

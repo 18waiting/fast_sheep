@@ -28,7 +28,7 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 .shop-list { list-style: none; margin: 0; padding: 0; }
 .shop-item { margin-bottom: var(--fs-space-1); }
 .shop-button { width: 100%; text-align: left; padding: var(--fs-space-2); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); border-radius: var(--fs-radius-sm); background: var(--fs-color-bg-surface); cursor: pointer; font-size: var(--fs-font-size-md); }
-.shop-button.selected { background: var(--fs-color-bg-selected); border-color: var(--fs-color-border-selected); }
+.shop-button.selected { background: var(--fs-color-bg-selected); border-color: var(--fs-color-primary); } /* a11y selected indicator 3:1 (SHEEP-047/DP-56) */
 
 .app-main { flex: 1; padding: var(--fs-space-4); overflow: auto; display: flex; flex-direction: column; gap: var(--fs-space-3); }
 .workbench-header { display: flex; gap: var(--fs-space-4); align-items: baseline; font-size: var(--fs-font-size-base); }
@@ -88,7 +88,7 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
  * (default/hover/focus/pressed/disabled) separated from business/status semantics. */
 .fs-action { padding: var(--fs-space-1) var(--fs-space-3); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); border-radius: var(--fs-radius-sm); background: var(--fs-color-bg-surface); cursor: pointer; font-size: var(--fs-font-size-md); font-weight: var(--fs-font-weight-medium); line-height: var(--fs-line-height-normal); }
 .fs-action:hover { background: var(--fs-color-bg-subtle); }
-.fs-action:focus-visible { outline: 2px solid var(--fs-color-border-selected); outline-offset: 1px; }
+.fs-action:focus-visible { outline: 2px solid var(--fs-color-primary); outline-offset: 1px; } /* a11y 3:1 focus indicator (SHEEP-047) */
 .fs-action:active { background: var(--fs-color-bg-selected); }
 .fs-action:disabled { opacity: 0.5; cursor: default; }
 .fs-action--primary { background: var(--fs-color-primary); border-color: var(--fs-color-primary); color: var(--fs-color-text-on-primary); }
@@ -125,3 +125,4 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 .fs-state--error.fs-state--inline { color: var(--fs-color-error); }
 .fs-state--error.fs-state--section { padding: var(--fs-space-3); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border-error); border-radius: var(--fs-radius-md); background: var(--fs-color-bg-error); }
 .fs-state .fs-state-action { align-self: flex-start; }
+.btn:focus-visible, .shop-button:focus-visible, .mode-btn:focus-visible { outline: 2px solid var(--fs-color-primary); outline-offset: 1px; } /* a11y focus baseline (SHEEP-047) */

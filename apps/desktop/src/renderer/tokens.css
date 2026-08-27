@@ -26,7 +26,7 @@
   /* ===== Primitive layer (raw values; minimal = only values the renderer currently needs) ===== */
   --fs-prim-ink-900: #1f2328;
   --fs-prim-ink-600: #57606a;
-  --fs-prim-ink-400: #8c959f;
+  --fs-prim-ink-400: #65717c; /* a11y AA on surface (SHEEP-047) */
   --fs-prim-white: #fff;
   --fs-prim-canvas: #f6f8fa;
   --fs-prim-subtle: #eaeef2;
@@ -35,7 +35,7 @@
   --fs-prim-warning-bg: #fff8c5;
   --fs-prim-danger-bg: #ffebe9;
   --fs-prim-error-bg: #fff1f0;
-  --fs-prim-border: #d8dee4;
+  --fs-prim-border: #87919e; /* a11y 3:1 UI boundary on surface (SHEEP-047) */
   --fs-prim-border-selected: #54aeff;
   --fs-prim-border-error: #ffccc7;
   --fs-prim-primary: #0969da;

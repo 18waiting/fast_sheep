@@ -14,9 +14,12 @@ const OUT = TARGET === "gallery"
   ? join(ROOT, "reports", "visual-evidence", "sheep-045-primitive-gallery.png")
   : TARGET === "states"
   ? join(ROOT, "reports", "visual-evidence", "sheep-046-state-gallery.png")
-  : join(ROOT, "reports", "visual-evidence", "sheep-046-workbench.png");
+  : TARGET === "focus"
+  ? join(ROOT, "reports", "visual-evidence", "sheep-047-a11y-focus-gallery.png")
+  : join(ROOT, "reports", "visual-evidence", "sheep-047-workbench.png");
 const GALLERY_HTML = join(ROOT, "reports", "visual-evidence", "primitive-gallery.html");
 const STATES_HTML = join(ROOT, "reports", "visual-evidence", "state-gallery.html");
+const FOCUS_HTML = join(ROOT, "reports", "visual-evidence", "a11y-focus-gallery.html");
 
 const shops = [
   { shop_id: "shop-test-1", name: "测试店铺A", type: "pdd", enabled: true },
@@ -73,8 +76,8 @@ app.setName("fast_sheep");
 app.setPath("userData", join(app.getPath("appData"), "fast_sheep_visual_evidence"));
 
 app.whenReady().then(async () => {
-  const isStatic = TARGET === "gallery" || TARGET === "states";
-  const html = TARGET === "gallery" ? GALLERY_HTML : TARGET === "states" ? STATES_HTML : RENDERER_HTML;
+  const isStatic = TARGET === "gallery" || TARGET === "states" || TARGET === "focus";
+  const html = TARGET === "gallery" ? GALLERY_HTML : TARGET === "states" ? STATES_HTML : TARGET === "focus" ? FOCUS_HTML : RENDERER_HTML;
   const win = new BrowserWindow({
     width: isStatic ? (TARGET === "states" ? 760 : 1000) : 1200,
     height: isStatic ? (TARGET === "states" ? 1080 : 720) : 800,

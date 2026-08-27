@@ -1,0 +1,98 @@
+{
+  "task": "SHEEP-047",
+  "result": "COMPLETE",
+  "phase": "Phase 3",
+  "milestone": "M3.2",
+  "objective": "Accessibility Baseline：heading 结构审计、focus 基线（focus-visible/无 trap）、WCAG AA contrast 机械审计+最小 token 修正、minimal ARIA、reduced-motion contract、modal focus contract、semantic announcements、focus/selected/status 区分；NO_TOPOLOGY_CHANGE",
+  "completed_requirements": 15,
+  "total_requirements": 15,
+  "owner_tightening": {
+    "dp49_heading_follows_structure": "遵守：HEADING_LEVEL_FOLLOWS_DOCUMENT_STRUCTURE_NOT_VISUAL_TEXT_ROLE——审计真实页面结构（h2 店铺/h3 会话/AI建议/平台接入）；不强制每页 h1、不全用 div；text roles 不永久锁 heading level",
+    "dp50_native_tab_order_visible_focus": "遵守：NATIVE_TAB_ORDER_VISIBLE_FOCUS_NO_KEYBOARD_TRAPS——真实交互均 native button；无 positive tabindex（测试负例）；focus-visible 覆盖 .fs-action/.btn/.shop-button/.mode-btn；不重复实现 native Enter/Space",
+    "dp51_wcag_aa_contrast": "遵守：WCAG_AA_CONTRAST_BASELINE——mechanical contrast audit（text 4.5:1、UI boundary/focus 3:1）；最小 semantic-token 修正：muted #8c959f->#65717c（4.99/4.69）、border #d8dee4->#87919e（3.19/3.00）、focus outline->primary、selected border->primary；status 色全部 >=4.5；视觉变化已记录",
+    "dp52_native_semantics_minimal_aria": "遵守：NATIVE_SEMANTICS_FIRST_MINIMAL_ARIA——native HTML 优先；ARIA 仅补 native 无法表达（alert/status/dialog/nav）；无 role=button on div/重复 aria-label/ARIA spam（测试负例）",
+    "dp53_reduced_motion_requirement": "遵守：PREFERS_REDUCED_MOTION_IS_A_DESIGN_SYSTEM_REQUIREMENT——当前无 motion 不强制 selector；contract 确定，未来非必要 motion 必须尊重 reduced-motion",
+    "dp54_modal_focus_contract": "遵守：MODAL_FOCUS_CONTRACT_REQUIRED_IMPLEMENTATION_AT_FIRST_REAL_CONSUMER——initial focus/contained tab/Escape/return focus 确立为 contract；dialog 无 consumer 不提前造 framework；overlay-click-close 继续 DEFER；不依赖 FastWork reference evidence",
+    "dp55_semantic_announcements": "遵守：SEMANTIC_EVENT_ANNOUNCEMENTS_NOT_RAW_UPDATE_STREAMS——error=assertive（alert）/loading=polite（status）；无 raw update-stream announcement（测试负例）",
+    "dp56_focus_selection_status_distinct": "遵守：FOCUS_SELECTION_AND_STATUS_ARE_VISUALLY_DISTINCT——focus=outline（primary）、selected=fill+border（primary on bg-selected）、status=color+text；三信号可区分",
+    "accessible_name_audit": "遵守：interactive accessible-name audit（优先可见文字；无 icon-only 无名称控件；无重复/误导 aria-label、duplicate IDs、ARIA sanity）；Phase 4 页面 a11y 随真实功能验收",
+    "loading_signal": "遵守：Loading「…」不作为唯一 accessible signal；有意义状态文字+status semantics 为 a11y source；未强行加 spinner",
+    "error_label_note": "遵守：workspace error「错误:」标签不作为本任务 defect，继续 copy/design polish future note",
+    "dialog_focus_reclassify": "遵守：SHEEP-029 focus DEFER 重新分类——focus contract 由本单元决定，implementation 在首个真实 modal consumer；overlay-click 等继续 DEFER",
+    "visual_evidence": "遵守：A11y/Focus Gallery（focus-visible autofocus、selected vs focus vs status、loading/error announcements）+ current workbench；静态截图不足以证明 focus，故 Gallery 用 autofocus 展示实际 focus ring",
+    "automated_guard": "遵守：renderer-a11y-baseline.test.ts 锁 a11y invariants（contrast 计算/focus-visible/无 tabindex/native heading/ARIA sanity/信号区分）；未堆 ARIA 凑测试；未引入大型 scanner 依赖",
+    "no_topology_change": "遵守：NO_TOPOLOGY_CHANGE；a11y 属性/heading/focus/必要 contrast token 最小调整；未重做页面/Conversation IA/Store navigation/AI placement"
+  },
+  "decisions": {
+    "dp49": "HEADING_LEVEL_FOLLOWS_DOCUMENT_STRUCTURE_NOT_VISUAL_TEXT_ROLE",
+    "dp50": "NATIVE_TAB_ORDER_VISIBLE_FOCUS_NO_KEYBOARD_TRAPS",
+    "dp51": "WCAG_AA_CONTRAST_BASELINE",
+    "dp52": "NATIVE_SEMANTICS_FIRST_MINIMAL_ARIA",
+    "dp53": "PREFERS_REDUCED_MOTION_IS_A_DESIGN_SYSTEM_REQUIREMENT",
+    "dp54": "MODAL_FOCUS_CONTRACT_REQUIRED_IMPLEMENTATION_AT_FIRST_REAL_CONSUMER",
+    "dp55": "SEMANTIC_EVENT_ANNOUNCEMENTS_NOT_RAW_UPDATE_STREAMS",
+    "dp56": "FOCUS_SELECTION_AND_STATUS_ARE_VISUALLY_DISTINCT"
+  },
+  "contrast_audit": {
+    "method": "mechanical WCAG relative-luminance ratio computation on semantic token combinations",
+    "fixes": [
+      "text-muted #8c959f -> #65717c (3.04/2.85 -> 4.99/4.69, AA 4.5)",
+      "border #d8dee4 -> #87919e (1.36/1.28 -> 3.19/3.00, UI 3:1)",
+      "focus-visible outline: border-selected -> primary (5.19/4.56, 3:1)",
+      ".shop-button.selected border -> primary (4.56 on bg-selected, 3:1)"
+    ],
+    "unchanged": "text 15.80, text-secondary 6.39, text-on-primary 5.19, status success/warning/danger/info >= 4.5"
+  },
+  "evidence": {
+    "confirmed": [
+      "DP-49~56（Owner 决策）",
+      "a11y baseline 测试（233/233）",
+      "contrast audit + token 修正",
+      "A11y/Focus Gallery + workbench 捕获成功",
+      "workbench 视觉因 a11y 对比修正略有变化（已记录）"
+    ]
+  },
+  "tests": [
+    "desktop build/typecheck；desktop tests 233/233（含 6 个新 a11y baseline guard）",
+    "workspace typecheck / test（全部 PASS）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS",
+    "contrast mechanical audit（4.5:1 / 3:1 目标全达标）"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS",
+    "visual capture：sheep-047-workbench.png + sheep-047-a11y-focus-gallery.png"
+  ],
+  "negative_tests": [
+    "无 positive tabindex；无 role=button on div；无重复 aria-label；无 assertive spam",
+    "无 skeleton/动画新增；未强行加 spinner；未堆 ARIA",
+    "无大型 scanner 依赖；NO_TOPOLOGY_CHANGE；schema v7 不变；无 sync/Outbox"
+  ],
+  "modified_files": [
+    "apps/desktop/src/renderer/tokens.css（ink-400/border a11y 修正）",
+    "apps/desktop/src/renderer/styles.css（focus-visible 覆盖 + selected border + a11y 说明）",
+    "apps/desktop/tests/renderer-a11y-baseline.test.ts（新建）",
+    "docs/fast-sheep-accessibility-baseline.md（新建）",
+    "reports/visual-evidence/a11y-focus-gallery.html（新建，evidence-only）",
+    "reports/visual-evidence/sheep-047-workbench.png（新建）",
+    "reports/visual-evidence/sheep-047-a11y-focus-gallery.png（新建）",
+    "scripts/visual-evidence/capture-main.cjs（focus target）",
+    "scripts/capture-renderer-visual.mjs（--focus）",
+    "reports/SHEEP-047-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-047 记录）"
+  ],
+  "architecture_changes": [
+    "Accessibility Baseline contract（heading/focus/contrast/ARIA/reduced-motion/modal-focus/announcements/信号区分）"
+  ],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "visual_review_pending": true
+}

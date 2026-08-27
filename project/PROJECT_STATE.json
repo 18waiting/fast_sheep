@@ -30,7 +30,7 @@
   "current_phase": "PHASE_3",
   "current_milestone": "M3.1-COMPLETE",
   "last_closed_task": "SHEEP-046",
-  "current_task": "SHEEP-047 (proposal pending approval)",
+  "current_task": "SHEEP-047 (executed, pending Owner DP-49~56 decisions + visual review)",
   "next_action": "SHEEP-047",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -959,5 +959,18 @@
         "AI failure preserving source facts/manual path is a future Conversation Workspace constraint; Gallery layout/copy does not lock Phase 4 final UI"
     ],
     "note": "PASS does not change NO_TOPOLOGY_CHANGE; current clean-room Workspace is NOT approved as final page design"
+  },
+  "sheep_047": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": "2026-08-27",
+    "report": "reports\\SHEEP-047-report.json",
+    "a11y_doc": "docs\\fast-sheep-accessibility-baseline.md",
+    "visual_evidence": ["reports\\visual-evidence\\sheep-047-workbench.png", "reports\\visual-evidence\\sheep-047-a11y-focus-gallery.png"],
+    "decisions": ["DP-49..DP-56 (implemented per Controller recommendation; final = Owner visual review + PASS pending)"],
+    "no_topology_change": true,
+    "next_per_roadmap": "GATE-P3-FAST-SHEEP-UX (M3.2 complete; pending Owner DP-49~56 decisions + visual review + PASS)",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }
