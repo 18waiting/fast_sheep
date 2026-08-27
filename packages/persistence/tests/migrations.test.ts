@@ -9,10 +9,10 @@ import { openDatabase, resolveDataRoot, provisionDataRoot, SqliteConnection, Mig
 
 function root() { return mkdtempSync(join(tmpdir(), "fw-t-")); }
 
-test("fresh database migrates to schema v1 and seeds defaults", () => {
+test("fresh database migrates to schema v8 and seeds defaults", () => {
   const { conn, schemaVersion } = openDatabase(root());
-  assert.equal(schemaVersion, 7);
-  assert.equal(conn.get("SELECT value FROM app_meta WHERE key = 'database_schema_version'").value, "7");
+  assert.equal(schemaVersion, 8);
+  assert.equal(conn.get("SELECT value FROM app_meta WHERE key = 'database_schema_version'").value, "8");
   assert.ok(conn.all("SELECT group_name FROM config_groups").length >= 9);
   conn.close();
 });
@@ -21,7 +21,7 @@ test("migration rerun is a no-op (no duplicate effects)", () => {
   const r = root();
   openDatabase(r).conn.close();
   const b = openDatabase(r);
-  assert.equal(b.conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 7);
+  assert.equal(b.conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 8);
   b.conn.close();
 });
 
@@ -95,3 +95,4 @@ test("corrupt migration metadata fails safely", () => {
   assert.throws(() => new MigrationRunner().migrate(conn2, join(r, "backups", "db")), (e) => e.code === ERROR_CODES.MIGRATION_FAILED);
   conn2.close();
 });
+

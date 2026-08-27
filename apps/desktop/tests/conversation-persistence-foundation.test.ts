@@ -9,7 +9,7 @@ import { createConversationIngestion } from "../dist/main/services/conversation-
 import type { SqliteConnection } from "@fastwork/persistence";
 
 // SHEEP-060-PR1 foundation guards:
-//   - persistence durability: fresh schema-v7 DB -> ingestion -> close -> reopen -> read
+//   - persistence durability: fresh schema-v8 DB -> ingestion -> close -> reopen -> read
 //   - production composition: createWorkerBackedMainContext binds SQLite (cross-connection proof)
 //   - I-6 merchant boundary: listByMerchant/listByStore isolation, no cross-merchant leak
 //   - DP-66: corrupt DB / production composition fail closed (never fall back to memory)
@@ -39,10 +39,10 @@ function withTemp(fn: (root: string) => void) {
   }
 }
 
-test("persistence durability: fresh v7 DB -> ingestion -> close -> reopen -> repository reads (PR1 layer 1)", () => {
+test("persistence durability: fresh v8 DB -> ingestion -> close -> reopen -> repository reads (PR1 layer 1)", () => {
   withTemp((root) => {
     const ctx1 = openDatabase(root);
-    assert.equal(ctx1.schemaVersion, 7, "fresh DB must be schema v7");
+    assert.equal(ctx1.schemaVersion, 8, "fresh DB must be schema v8");
     const repo1 = new SqliteNormalizedConversationRepository(ctx1.conn);
     seedIdentity(ctx1.conn, [{ id: "A1", merchantId: "m-A", platform: "pdd" }, { id: "A2", merchantId: "m-A", platform: "pdd" }, { id: "B1", merchantId: "m-B", platform: "doudian" }]);
     const ingestion = createConversationIngestion(repo1);
@@ -116,3 +116,4 @@ test("DP-66 fail-closed: corrupt DB and production composition never fall back t
     );
   });
 });
+

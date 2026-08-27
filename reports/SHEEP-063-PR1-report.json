@@ -1,0 +1,106 @@
+{
+  "task": "SHEEP-063-PR1",
+  "codex_result": "COMPLETE",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.2 prerequisite (before SHEEP-063 Timeline)",
+  "summary": "Message Fact + Runtime Ingestion Foundation：0008_message_facts.sql（v7->v8，fact contract 先于存储形状 DP-83）；MessageRecord/SqliteMessageRepository 扩展 typed 事实列（actor/content/time/provenance）；thin Main message-ingestion boundary（observed_at 由 boundary 产生 DP-87，typed text-first DP-88，actor customer|agent DP-86/I-15）；SqliteMessageRepository 接入 production Main 共享 m10Sqlite.conn（DP-90）；v7->v8 传播全部更新；8 个 foundation guard 测试（fresh 1->8 / v7->v8 upgrade / I-16 unknown preservation / production shared-connection / round-trip / equal-time ordering / conversation isolation / fail-closed）",
+  "completed_requirements": 0,
+  "total_requirements": 0,
+  "owner_tightening": {
+    "dp83_contract_precedes_storage": "遵守：先定义 identity/actor/content/time/ordering/source-provenance 语义再落存储；0008 不是机械四列",
+    "dp86_actor_distinct_from_llm_roles": "遵守：actor = customer|agent（最小集合，无 AI actor）；I-15 generation provenance 与 actor 正交（未建模，真实 producer 出现后再定义）",
+    "i15_actor_generation_orthogonal": "遵守：AI-assisted generation provenance 不等于 message actor；actor taxonomy 不含 AI/system",
+    "dp87_time_semantics_explicit": "遵守：occurred_at（source/platform，可 unknown）与 observed_at（Fast Sheep，ingestion boundary 产生）显式区分；不使用含糊 created_at；observed_at 不冒充 occurred_at（测试断言）",
+    "dp88_content_typed_extensible_text_first": "遵守：content_kind='text'（CHECK）+ content_text；ingestion 强制 typed text；attachments/rich payload 留 SHEEP-065",
+    "source_provenance_minimal_typed": "遵守：external_ref + occurred_at + observed_at 最小 typed facts；无 metadata JSON bag",
+    "external_ref_uniqueness": "遵守：Read First 确认 uniqueness scope 未契约化；未加猜测性 UNIQUE；internal MessageId authoritative（I-13）",
+    "ingestion_thin_append": "遵守：saveNormalizedMessage = plain INSERT；无 dedupe/edit/recall/reconciliation/idempotency policy（DEFER 真实 producer）",
+    "dp90_shared_db_lifecycle": "遵守：SqliteMessageRepository(m10Sqlite.conn) 共享既有生产 DB connection/lifecycle；未二次 openDatabase；production failure 不 silent fallback memory",
+    "migration_fresh_and_upgrade": "遵守：fresh 0001->0008 与 v7->v8 upgrade 均验证；0001~0007 checksum 不变",
+    "i16_no_fabricated_history": "遵守：legacy fact-less 行 5 个事实列全部 NULL；无 system/空文本/migration-time backfill",
+    "observed_at_produced_at_boundary": "遵守：observed_at 由 Main ingestion boundary 产生；repository 只保存事实不制造 provenance",
+    "i12_ordering_policy": "遵守：排序策略与持久化事实分离；occurred_at 已知升序 + equal-time id tie-breaker；unknown 置后；local ingestion order 不冒充 source absolute order；测试覆盖 equal-time tie",
+    "required_tests": "遵守：fresh/v7->v8 upgrade/legacy unknown preservation/production shared-connection/close-reopen round-trip/deterministic+equal-time ordering/conversation isolation 全覆盖",
+    "forbidden_kept": "遵守：未实现 Timeline IPC/UI、Composer、Attachments、Unread、真实平台 producer、sync/Outbox",
+    "unread_readiness": "遵守：PR1 PASS 后 UNREAD_FACT_READINESS 不自动变 READY；输出 PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS"
+  },
+  "decisions": {
+    "dp83": "MESSAGE_FACT_CONTRACT_PRECEDES_STORAGE_SHAPE",
+    "dp86": "CONVERSATION_MESSAGE_ACTOR_SEMANTICS_ARE_DISTINCT_FROM_LLM_ROLES",
+    "dp87": "MESSAGE_TIME_SEMANTICS_MUST_BE_EXPLICIT",
+    "dp88": "MESSAGE_CONTENT_IS_TYPED_EXTENSIBLE_TEXT_FIRST_NOT_TEXT_ONLY",
+    "dp90": "MESSAGE_REPOSITORY_SHARES_MAIN_PRODUCTION_DB_LIFECYCLE",
+    "i12": "MESSAGE_TIMELINE_ORDERING_IS_DETERMINISTIC_AND_EXPLAINABLE",
+    "i13": "INTERNAL_MESSAGE_IDENTITY_AND_EXTERNAL_SOURCE_IDENTITY_REMAIN_DISTINCT",
+    "i15": "MESSAGE_ACTOR_AND_GENERATION_PROVENANCE_ARE_ORTHOGONAL",
+    "i16": "MIGRATION_MUST_NOT_FABRICATE_HISTORICAL_MESSAGE_FACTS"
+  },
+  "fact_readiness": {
+    "MESSAGE_FACT_PATH": "READY for Timeline foundation (identity/actor/content/time/ordering/source-provenance persisted; production ingestion boundary + shared DB lifecycle; Timeline UI remains SHEEP-063 after Owner PASS)",
+    "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (message identity/order/time facts now exist; reader identity + read-progress watermark still required; never auto-READY)"
+  },
+  "evidence": {
+    "confirmed": [
+      "0008_message_facts.sql applied on fresh DB (schema v8, 8 migrations)",
+      "v7->v8 upgrade: 0008 applied, backup created, 0001-0007 checksums unchanged",
+      "I-16: legacy fact-less normalized_messages rows keep NULL actor/content_kind/content_text/occurred_at/observed_at",
+      "SqliteMessageRepository persists/reads typed fact columns; I-12 ordering deterministic (occurred_at asc, equal-time id tie, unknown last)",
+      "message-ingestion.ts produces observed_at at boundary; rejects missing actor / non-text content",
+      "createWorkerBackedMainContext binds SqliteMessageRepository on shared m10Sqlite.conn (cross-connection proof)",
+      "close/reopen round-trip preserves all facts",
+      "conversation isolation: listByConversation(c1) never returns c2 messages",
+      "DP-66 fail-closed: corrupt DB -> production composition throws (no memory fallback)"
+    ],
+    "inferred": [
+      "真实平台 producer 的 external_ref dedupe/edit/recall/reconciliation/idempotency 语义未定义（DEFER；PR1 仅为 plain INSERT）"
+    ]
+  },
+  "tests": [
+    "desktop build/typecheck；desktop tests 259/259（含 8 个新 message-fact-foundation guard）",
+    "workspace typecheck / test（全部 PASS；含 persistence 70/70、secret-store 修正后全绿）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）——production Main composition non-regression",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS"
+  ],
+  "negative_tests": [
+    "无第二 openDatabase / 第二 connection ownership（Message 复用 m10Sqlite.conn，DP-90）",
+    "无 production in-memory fallback（fail-closed 测试）",
+    "无 UNIQUE(external_ref)（I-13）；无 metadata JSON bag",
+    "无 upsert/merge/dedupe/reconciliation；无 system/empty/migration-time backfill（I-16）",
+    "无 Timeline IPC/UI、Composer、Attachments、Unread、真实平台 producer、sync/Outbox；Renderer 不接触 SQLite",
+    "未读 reference/nixiang；未联网（m6 external_network_calls=0）；无 secret/credential 落库"
+  ],
+  "modified_files": [
+    "packages/persistence/migrations/0008_message_facts.sql（新建）",
+    "packages/persistence/src/db/schema-version.ts（SUPPORTED_DB_SCHEMA_VERSION 7->8）",
+    "packages/persistence/src/repositories/conversation-repositories.ts（MessageRecord typed facts + MessageActor/MessageContentKind）",
+    "packages/persistence/src/sqlite/sqlite-conversation-repositories.ts（SqliteMessageRepository 事实列 + I-12 排序）",
+    "apps/desktop/src/main/services/message-ingestion.ts（新建，薄 write boundary）",
+    "apps/desktop/src/main/bootstrap.ts（MainContext.messages port + BootstrapOptions + InMemory test double）",
+    "apps/desktop/src/main/worker-runtime.ts（生产 composition 绑定 SqliteMessageRepository，共享 m10Sqlite.conn）",
+    "apps/desktop/tests/message-fact-foundation.test.ts（新建，8 guard）",
+    "packages/persistence/tests/migrations.test.ts / conversation-persistence.test.ts / identity-persistence.test.ts / commerce-persistence.test.ts / legacy-compatibility-smoke.test.ts / backup-manager.test.ts（v8 传播）",
+    "packages/secret-store/tests/secret-store.test.mjs（v8 传播）",
+    "apps/desktop/tests/conversation-persistence-foundation.test.ts（v8 传播）",
+    "scripts/run-m12-migration-matrix.mjs / run-m12-fresh-profile-smoke.mjs / run-m12-imported-profile-smoke.mjs / run-m12-upgraded-profile-smoke.mjs（v8 传播）",
+    "docs/fast-sheep-message-fact-foundation.md（新建）",
+    "reports/SHEEP-063-PR1-report.json（新建）",
+    "project/PROJECT_STATE.json（PR1 记录 + current_task）"
+  ],
+  "architecture_changes": [
+    "normalized message 事实契约（identity/actor/content/time/provenance）落 SQLite v8；SqliteMessageRepository 接入既有 production DB lifecycle（port/composition 分离）"
+  ],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0；Renderer 不接触 SQLite；无 secret/credential 落库）"
+  ],
+  "data_model_changes": [
+    "schema v7 -> v8（0008_message_facts.sql：normalized_messages 增 actor/content_kind/content_text/occurred_at/observed_at，均允许 NULL 以保留未知历史事实）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

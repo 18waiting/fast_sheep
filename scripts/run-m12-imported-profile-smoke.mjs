@@ -45,7 +45,7 @@ try {
   await worker.stop(); worker = null;
   db.conn.close(); db = null;
   const b = openDatabase(dataRoot);
-  check("imported profile reopen v7", b.schemaVersion === 7);
+  check("imported profile reopen v8", b.schemaVersion === 8);
   const products = new SqliteProductRepository(b.conn).list();
   check("imported products usable after reopen", products.length >= 2);
   b.conn.close();
@@ -56,3 +56,4 @@ try {
 }
 if (failed > 0) process.exit(1);
 console.log("M12 imported profile smoke PASS.");
+

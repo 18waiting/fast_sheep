@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1-COMPLETE",
   "last_closed_task": "SHEEP-062",
-  "current_task": "SHEEP-063 (Read First: BLOCKED; SHEEP-063-PR1 prerequisite proposal pending)",
-  "next_action": "SHEEP-063",
+  "current_task": "SHEEP-063-PR1 (Message Fact + Runtime Ingestion Foundation; Controller Review submitted; awaiting Owner PASS — SHEEP-063 Timeline NOT resumed)",
+  "next_action": "SHEEP-063-PR1 (awaiting Owner PASS; after PASS restore SHEEP-063 Timeline implementation)",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1207,8 +1207,29 @@
       "MESSAGE_FACT_PATH": "BLOCKED (no content/actor/time/ordering; no message ingestion; not composed in Main)",
       "UNREAD_FACT_READINESS": "NOT_READY"
     },
-    "prerequisite": "SHEEP-063-PR1 (Message Fact + Runtime Ingestion Foundation; proposal pending Owner approval)",
-    "next_per_roadmap": "SHEEP-063-PR1 prerequisite (awaiting Owner PASS) then re-evaluate Timeline implementation",
+    "prerequisite": "SHEEP-063-PR1 (Message Fact + Runtime Ingestion Foundation; executed; Controller Review submitted — awaiting Owner PASS; Timeline NOT resumed)",
+    "next_per_roadmap": "After SHEEP-063-PR1 Owner PASS: restore SHEEP-063 (re-confirm DP-83~89 + I-12~I-14 on real production fact path) then re-evaluate Timeline implementation",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
+  },
+  "sheep_063_pr1": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "closed_date_candidate": null,
+    "report": "reports\\SHEEP-063-PR1-report.json",
+    "review_doc": "docs\\fast-sheep-message-fact-foundation.md",
+    "prerequisite_of": "SHEEP-063 (DATA_FACT_GAP-MESSAGE_PATH; SHEEP-063 Timeline restoration pending PR1 Owner PASS; BLOCKED audit history retained)",
+    "decisions": ["DP-83/86/87/88/90 + I-12/I-13/I-15/I-16 (executed; OWNER_DECIDED pending Owner PASS)"],
+    "fact_readiness": {
+      "MESSAGE_FACT_PATH": "READY for Timeline foundation (identity/actor/content/time/ordering/source-provenance persisted; production ingestion boundary + shared DB lifecycle)",
+      "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (never auto-READY; reader identity + read-progress watermark still required)"
+    },
+    "schema_change": "v7 -> v8 (0008_message_facts.sql; fresh + v7->v8 upgrade verified; 0001~0007 checksums unchanged; I-16 legacy unknown preservation)",
+    "future_constraints": [
+        "saveNormalizedMessage is plain INSERT; duplicate/idempotency/external_ref reconciliation semantics for real platform producers remain DEFERRED (separate unit)",
+        "Timeline IPC/UI remains SHEEP-063 after Owner PASS; Composer/Attachments (SHEEP-065)/Unread not implemented",
+        "UNREAD_FACT_READINESS max PARTIALLY_READY until reader-progress fact contract exists"
+    ],
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   }

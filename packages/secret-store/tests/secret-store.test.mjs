@@ -129,7 +129,7 @@ test("M1.5-R06 linkage: DB backup does NOT contain the plaintext secret; Backup 
   conn.close();
   const store = new OsBackedSecretStore(mockCipher, join(r, "secrets", "store.json"));
   store.set("test.backup", SECRET);
-  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  const meta = createBackup(dbPath, join(r, "backups"), 8);
   // backup DB file contains no plaintext secret
   const backupRaw = readFileSync(meta.backupFile, "utf-8");
   assert.ok(!backupRaw.includes(SECRET), "plaintext absent from backup DB");

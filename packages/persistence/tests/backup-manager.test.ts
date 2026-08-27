@@ -13,16 +13,16 @@ import {
 
 function root() { return mkdtempSync(join(tmpdir(), "fs-bak-")); }
 
-test("createBackup produces consistent VACUUM INTO snapshot + metadata (schema version 7)", () => {
+test("createBackup produces consistent VACUUM INTO snapshot + metadata (schema version 8)", () => {
   const r = root();
   const dbPath = join(r, DB_FILENAME);
   const { conn } = openDatabase(r);
   conn.run("INSERT OR IGNORE INTO merchants (id, name) VALUES ('m1','m')");
   conn.close();
-  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  const meta = createBackup(dbPath, join(r, "backups"), 8);
   assert.ok(existsSync(meta.backupFile));
   assert.ok(existsSync(join(meta.backupDir, BACKUP_METADATA_FILENAME)));
-  assert.equal(meta.databaseSchemaVersion, 7);
+  assert.equal(meta.databaseSchemaVersion, 8);
   assert.equal(meta.databaseFilename, DB_FILENAME);
   const listed = listBackups(join(r, "backups"));
   assert.equal(listed.length, 1);
@@ -36,7 +36,7 @@ test("restore happy path: data restored; quick_check + schema validation + reope
   conn.run("INSERT OR IGNORE INTO merchants (id, name) VALUES ('m1','商户甲')");
   conn.run("INSERT OR IGNORE INTO stores (id, merchant_id, name, platform) VALUES ('s1','m1','店','pdd')");
   conn.close();
-  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  const meta = createBackup(dbPath, join(r, "backups"), 8);
 
   // damage current DB
   const { conn: c2 } = openDatabase(r);
@@ -47,7 +47,7 @@ test("restore happy path: data restored; quick_check + schema validation + reope
 
   restoreBackup(meta.backupFile, dbPath);
   const reopened = openDatabase(r);
-  assert.equal(reopened.schemaVersion, 7, "schema validation after restore");
+  assert.equal(reopened.schemaVersion, 8, "schema validation after restore");
   assert.equal(reopened.conn.get("SELECT name FROM merchants WHERE id='m1'").name, "商户甲", "data restored");
   const integrity = reopened.conn.all<{ integrity_check: string }>("PRAGMA integrity_check");
   assert.equal(integrity[0].integrity_check, "ok", "quick_check/integrity after restore");
@@ -60,7 +60,7 @@ test("restore rejects corrupted/tampered backup; current DB intact and reopenabl
   const { conn } = openDatabase(r);
   conn.run("INSERT OR IGNORE INTO merchants (id, name) VALUES ('keep','keep')");
   conn.close();
-  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  const meta = createBackup(dbPath, join(r, "backups"), 8);
 
   // tamper the backup DB file
   writeFileSync(meta.backupFile, "THIS IS NOT A SQLITE DATABASE; CORRUPTED", "utf-8");
@@ -68,7 +68,7 @@ test("restore rejects corrupted/tampered backup; current DB intact and reopenabl
   assert.throws(() => restoreBackup(meta.backupFile, dbPath), /corrupt|integrity/i);
   // current DB still intact and reopenable
   const reopened = openDatabase(r);
-  assert.equal(reopened.schemaVersion, 7);
+  assert.equal(reopened.schemaVersion, 8);
   assert.equal(reopened.conn.get("SELECT COUNT(*) AS c FROM merchants").c, 1, "current data intact");
   reopened.conn.close();
 });
@@ -77,7 +77,7 @@ test("restore rejects incomplete backup (missing metadata)", () => {
   const r = root();
   const dbPath = join(r, DB_FILENAME);
   openDatabase(r).conn.close();
-  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  const meta = createBackup(dbPath, join(r, "backups"), 8);
   rmSync(join(meta.backupDir, BACKUP_METADATA_FILENAME), { force: true });
   assert.throws(() => restoreBackup(meta.backupFile, dbPath), /metadata missing/i);
 });
@@ -86,7 +86,7 @@ test("restore rejects backup with schema newer than supported", () => {
   const r = root();
   const dbPath = join(r, DB_FILENAME);
   openDatabase(r).conn.close();
-  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  const meta = createBackup(dbPath, join(r, "backups"), 8);
   // forge metadata to a future schema
   const metaPath = join(meta.backupDir, BACKUP_METADATA_FILENAME);
   const forged = JSON.parse(readFileSync(metaPath, "utf-8"));
@@ -102,9 +102,9 @@ test("rotateBackups is capability only: explicit maxBackups; keeps newest N; no 
   conn.run("INSERT OR IGNORE INTO merchants (id, name) VALUES ('m1','m')");
   conn.close();
   const backupRoot = join(r, "backups");
-  const m1 = createBackup(dbPath, backupRoot, 7);
-  const m2 = createBackup(dbPath, backupRoot, 7);
-  const m3 = createBackup(dbPath, backupRoot, 7);
+  const m1 = createBackup(dbPath, backupRoot, 8);
+  const m2 = createBackup(dbPath, backupRoot, 8);
+  const m3 = createBackup(dbPath, backupRoot, 8);
   assert.equal(listBackups(backupRoot).length, 3, "no auto-rotation: all 3 retained after createBackup");
   assert.throws(() => rotateBackups(backupRoot, 0), /maxBackups/);
   const removed = rotateBackups(backupRoot, 2);
@@ -120,7 +120,7 @@ test("secret exclusion boundary: backup dir contains only DB + metadata (no Secr
   const r = root();
   const dbPath = join(r, DB_FILENAME);
   openDatabase(r).conn.close();
-  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  const meta = createBackup(dbPath, join(r, "backups"), 8);
   const files = readdirSync(meta.backupDir);
   assert.deepEqual(files.sort(), [BACKUP_METADATA_FILENAME, DB_FILENAME], "only DB + approved metadata");
 });
@@ -132,7 +132,7 @@ test("failed restore (future-schema) preserves current DB intact and reopenable"
   const { conn } = openDatabase(r);
   conn.run("INSERT OR IGNORE INTO merchants (id, name) VALUES ('keep','keep')");
   conn.close();
-  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  const meta = createBackup(dbPath, join(r, "backups"), 8);
   // forge metadata to future schema (99)
   const metaPath = join(meta.backupDir, BACKUP_METADATA_FILENAME);
   const forged = JSON.parse(readFileSync(metaPath, "utf-8"));
@@ -140,7 +140,7 @@ test("failed restore (future-schema) preserves current DB intact and reopenable"
   writeFileSync(metaPath, JSON.stringify(forged));
   assert.throws(() => restoreBackup(meta.backupFile, dbPath), /newer than supported/i);
   const reopened = openDatabase(r);
-  assert.equal(reopened.schemaVersion, 7, "current DB still v7");
+  assert.equal(reopened.schemaVersion, 8, "current DB still v8");
   assert.equal(reopened.conn.get("SELECT COUNT(*) AS c FROM merchants").c, 1, "current data intact");
   reopened.conn.close();
 });
@@ -151,14 +151,14 @@ test("failed restore (metadata/schema mismatch) preserves current DB intact and 
   const { conn } = openDatabase(r);
   conn.run("INSERT OR IGNORE INTO merchants (id, name) VALUES ('keep','keep')");
   conn.close();
-  const meta = createBackup(dbPath, join(r, "backups"), 7);
-  // alter the BACKUP DB's actual schema version so it no longer matches metadata (7)
+  const meta = createBackup(dbPath, join(r, "backups"), 8);
+  // alter the BACKUP DB's actual schema version so it no longer matches metadata (8)
   const bkConn = new SqliteConnection(meta.backupFile);
   bkConn.run("INSERT OR REPLACE INTO app_meta (key, value) VALUES ('database_schema_version', '6')");
   bkConn.close();
   assert.throws(() => restoreBackup(meta.backupFile, dbPath), /schema mismatch/i);
   const reopened = openDatabase(r);
-  assert.equal(reopened.schemaVersion, 7, "current DB still v7");
+  assert.equal(reopened.schemaVersion, 8, "current DB still v8");
   assert.equal(reopened.conn.get("SELECT COUNT(*) AS c FROM merchants").c, 1, "current data intact");
   reopened.conn.close();
 });
@@ -168,7 +168,7 @@ test("path breakout: metadata pointing outside backupRoot is skipped by list and
   const r = root();
   const dbPath = join(r, DB_FILENAME);
   openDatabase(r).conn.close();
-  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  const meta = createBackup(dbPath, join(r, "backups"), 8);
   // forge metadata.backupFile to an outside path
   const outside = join(tmpdir(), "outside-target.sqlite3");
   const metaPath = join(meta.backupDir, BACKUP_METADATA_FILENAME);
@@ -187,8 +187,8 @@ test("rotation fail-safe: invalid maxBackups throws and deletes nothing", () => 
   const dbPath = join(r, DB_FILENAME);
   openDatabase(r).conn.close();
   const backupRoot = join(r, "backups");
-  createBackup(dbPath, backupRoot, 7);
-  createBackup(dbPath, backupRoot, 7);
+  createBackup(dbPath, backupRoot, 8);
+  createBackup(dbPath, backupRoot, 8);
   assert.throws(() => rotateBackups(backupRoot, 0), /maxBackups/);
   assert.throws(() => rotateBackups(backupRoot, -1), /maxBackups/);
   assert.throws(() => rotateBackups(backupRoot, 1.5), /maxBackups/);
@@ -205,14 +205,14 @@ test("active/WAL backup consistency: committed WAL data + schema + integrity pre
   conn.exec("PRAGMA wal_autocheckpoint = 0");
   conn.run("INSERT OR IGNORE INTO merchants (id, name) VALUES ('wal-m1','WAL商户')");
   // create backup while the source connection is still open
-  const meta = createBackup(dbPath, join(r, "backups"), 7);
+  const meta = createBackup(dbPath, join(r, "backups"), 8);
   // open the backup independently
   const bk = new SqliteConnection(meta.backupFile);
   try {
     assert.equal(bk.get("SELECT name FROM merchants WHERE id='wal-m1'").name, "WAL商户", "latest committed data captured");
     const integrity = bk.all<{ integrity_check: string }>("PRAGMA integrity_check");
     assert.equal(integrity[0].integrity_check, "ok", "integrity ok");
-    assert.equal(bk.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "7", "schema v7 in backup");
+    assert.equal(bk.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "8", "schema v8 in backup");
   } finally {
     bk.close();
   }
@@ -224,7 +224,7 @@ test("failed backup creation leaves no valid-looking backup in listBackups", () 
   const r = root();
   const backupRoot = join(r, "backups");
   const missing = join(r, "does-not-exist.sqlite3");
-  assert.throws(() => createBackup(missing, backupRoot, 7));
+  assert.throws(() => createBackup(missing, backupRoot, 8));
   assert.equal(listBackups(backupRoot).length, 0, "no recoverable backup after failure");
   if (existsSync(backupRoot)) {
     const entries = readdirSync(backupRoot, { withFileTypes: true });
@@ -248,7 +248,7 @@ test("migration pre-upgrade backup captures committed un-checkpointed WAL data (
 
   // trigger a REAL MigrationRunner upgrade (0005-0007); pre-upgrade backup is created inside
   const res = new MigrationRunner().migrate(conn, join(r, "backups"));
-  assert.equal(res.migratedCount, 3);
+  assert.equal(res.migratedCount, 4);
   assert.equal(res.backedUp, true);
 
   // locate the pre-upgrade backup file
@@ -271,8 +271,8 @@ test("migration pre-upgrade backup captures committed un-checkpointed WAL data (
   } finally {
     bk.close();
   }
-  // main DB upgraded to v7 with data preserved
-  assert.equal(conn.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "7");
+  // main DB upgraded to v8 with data preserved
+  assert.equal(conn.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "8");
   assert.equal(conn.get("SELECT name FROM shops WHERE id='wal-shop-1'").name, "WAL店");
   conn.close();
 });
@@ -296,3 +296,4 @@ test("pre-upgrade backup failure aborts migration; current DB stays at original 
   assert.equal(conn.get("SELECT name FROM shops WHERE id='shop-f'").name, "店", "data intact");
   conn.close();
 });
+

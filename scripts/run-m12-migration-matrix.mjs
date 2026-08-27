@@ -1,4 +1,4 @@
-// M12 migration matrix (clean-room). Executes fresh->v7, v1/v2/v3->v7, v7 no-op,
+// M12 migration matrix (clean-room). Executes fresh->v8, v1/v2/v3->v8, v8 no-op,
 // checksum mismatch rejection, future-version rejection, backup, rollback,
 // quick_check and close/reopen. Migration files are never modified.
 import { mkdtempSync, rmSync, writeFileSync, existsSync } from "node:fs";
@@ -16,16 +16,16 @@ const check = (n, c, extra = "") => { results[n] = c ? "PASS" : "FAIL"; console.
 
 function tmpRoot() { return mkdtempSync(join(tmpdir(), "fw-m12-mig-")); }
 
-// fresh -> v4
+// fresh -> v8
 {
   const r = tmpRoot();
   const a = openDatabase(r);
-  check("fresh->v7", a.schemaVersion === 7, "got " + a.schemaVersion);
+  check("fresh->v8", a.schemaVersion === 8, "got " + a.schemaVersion);
   a.conn.close();
   rmSync(r, { recursive: true, force: true });
 }
 
-// v1/v2/v3 -> v4
+// v1/v2/v3 -> v8
 for (const target of [1, 2, 3]) {
   const r = tmpRoot();
   const migDir = join(r, "mig");
@@ -43,18 +43,18 @@ for (const target of [1, 2, 3]) {
   const conn2 = new SqliteConnection(pjoin(r, "fast_sheep.sqlite3"));
   const res = new MigrationRunner().migrate(conn2, pjoin(r, "backups", "db"));
   const version = conn2.get("SELECT value FROM app_meta WHERE key = 'database_schema_version'").value;
-  check("v" + target + "->v7", Number(version) === 7 && res.migratedCount >= 0, "version=" + version);
+  check("v" + target + "->v8", Number(version) === 8 && res.migratedCount >= 0, "version=" + version);
   conn.close(); conn2.close();
   rmSync(r, { recursive: true, force: true });
 }
 
-// v7 no-op
+// v8 no-op
 {
   const r = tmpRoot();
   openDatabase(r).conn.close();
   const conn = new SqliteConnection(join(r, "fast_sheep.sqlite3"));
   const res = new MigrationRunner().migrate(conn, join(r, "backups", "db"));
-  check("v7 no-op", res.migratedCount === 0, "count=" + res.migratedCount);
+  check("v8 no-op", res.migratedCount === 0, "count=" + res.migratedCount);
   conn.close();
   rmSync(r, { recursive: true, force: true });
 }
@@ -96,7 +96,7 @@ for (const target of [1, 2, 3]) {
   const a = openDatabase(r);
   a.conn.exec("PRAGMA quick_check");
   const b = openDatabase(r);
-  check("close/reopen integrity", b.schemaVersion === 7);
+  check("close/reopen integrity", b.schemaVersion === 8);
   b.conn.close(); a.conn.close();
   check("backup dir created", existsSync(join(r, "backups", "db")) || true);
   rmSync(r, { recursive: true, force: true });
@@ -106,3 +106,5 @@ const report = { milestone: "M12", schema_version: 4, checks: results, all_passe
 writeFileSync(join(REPORTS, "m12-migration-matrix-report.json"), JSON.stringify(report, null, 2) + "\n", "utf-8");
 if (failed > 0) { console.error("M12 migration matrix FAILED"); process.exit(1); }
 console.log("M12 migration matrix PASS.");
+
+

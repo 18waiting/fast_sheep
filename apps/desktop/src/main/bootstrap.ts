@@ -15,7 +15,7 @@ import {
   type PlatformAdapter,
   type TransferDecision,
 } from "@fastwork/orchestrator";
-import { InMemorySettingsRepository, type NormalizedConversationRepository, type NormalizedConversationRecord, type StoreRepository, type StoreRecord, type PlatformAccountRepository, type PlatformAccountRecord } from "@fastwork/persistence";
+import { InMemorySettingsRepository, type NormalizedConversationRepository, type NormalizedConversationRecord, type StoreRepository, type StoreRecord, type PlatformAccountRepository, type PlatformAccountRecord, type MessageRepository, type MessageRecord } from "@fastwork/persistence";
 import { VirtualClock, FakeAiEngineClient, FakePlatformAdapter, CapturingEventBus, FakeFeedbackSink, InMemoryConversationRepositoryPort } from "@fastwork/test-kit";
 import { OrchestratorFeedbackSink, type FeedbackService } from "@fastwork/feedback";
 import type { PlatformStatusChangedEvent, PlatformSessionStatus } from "@fastwork/desktop-ipc";
@@ -85,6 +85,8 @@ export interface MainContext {
   orchestrator: ConversationOrchestrator;
   /** PR1: Conversation normalized repository port (production = SQLite via worker-backed composition). */
   conversations: NormalizedConversationRepository;
+  /** SHEEP-063-PR1: Message normalized repository port (production = SQLite via worker-backed composition). */
+  messages: MessageRepository;
   /** SHEEP-060: Store repository port (merchant boundary resolution for queue scope). */
   stores: StoreRepository;
   /** SHEEP-061: PlatformAccount repository port (canonical platform fact source for queue platform filter). */
@@ -140,6 +142,8 @@ export interface BootstrapOptions {
   importBackup?: DatabaseBackupPort;
   /** PR1: Conversation normalized repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
   conversationRepository?: NormalizedConversationRepository;
+  /** SHEEP-063-PR1: Message repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
+  messageRepository?: MessageRepository;
   /** SHEEP-060: Store repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
   storeRepository?: StoreRepository;
   /** SHEEP-061: PlatformAccount repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
@@ -176,6 +180,24 @@ class InMemoryNormalizedConversationRepositoryImpl implements NormalizedConversa
   }
 }
 
+/** SHEEP-063-PR1: minimal in-memory MessageRepository test double (isolated test mode only). */
+class InMemoryMessageRepositoryImpl implements MessageRepository {
+  private readonly map = new Map<string, MessageRecord>();
+  save(m: MessageRecord): void { this.map.set(m.id, { ...m, externalRef: m.externalRef ?? null, actor: m.actor ?? null, contentKind: m.contentKind ?? null, contentText: m.contentText ?? null, occurredAt: m.occurredAt ?? null, observedAt: m.observedAt ?? null }); }
+  findById(id: string): MessageRecord | null { const r = this.map.get(id); return r ? { ...r, externalRef: r.externalRef ?? null, actor: r.actor ?? null, contentKind: r.contentKind ?? null, contentText: r.contentText ?? null, occurredAt: r.occurredAt ?? null, observedAt: r.observedAt ?? null } : null; }
+  listByConversation(conversationId: string): MessageRecord[] {
+    return [...this.map.values()]
+      .filter((m) => m.conversationId === conversationId)
+      .map((m) => ({ ...m, externalRef: m.externalRef ?? null, actor: m.actor ?? null, contentKind: m.contentKind ?? null, contentText: m.contentText ?? null, occurredAt: m.occurredAt ?? null, observedAt: m.observedAt ?? null }))
+      .sort((a, b) => {
+        const ao = a.occurredAt ?? ""; const bo = b.occurredAt ?? "";
+        if ((a.occurredAt == null) !== (b.occurredAt == null)) return a.occurredAt == null ? 1 : -1;
+        if (ao !== bo) return ao < bo ? -1 : 1;
+        return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+      });
+  }
+}
+
 class InMemoryJobRepositoryImpl implements JobRepository {
   private readonly map = new Map<string, JobRecord>();
   create(j: JobRecord): void { this.map.set(j.job_id, { ...j }); }
@@ -192,6 +214,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   const feedback = options.feedbackService ? new OrchestratorFeedbackSink(options.feedbackService) : new FakeFeedbackSink();
   const repo = new InMemoryConversationRepositoryPort();
   const conversationRepository = options.conversationRepository ?? new InMemoryNormalizedConversationRepositoryImpl();
+  const messageRepository = options.messageRepository ?? new InMemoryMessageRepositoryImpl();
   const storeRepository = options.storeRepository ?? new InMemoryStoreRepositoryImpl();
   const platformAccountRepository = options.platformAccountRepository ?? new InMemoryPlatformAccountRepositoryImpl();
   const aiRaw = new FakeAiEngineClient([{ reply: "亲,有的哦~" }]);
@@ -433,7 +456,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   });
 
   void bumpRevision;
-  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, stores: storeRepository, platformAccounts: platformAccountRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
+  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, messages: messageRepository, stores: storeRepository, platformAccounts: platformAccountRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
 }
 
 /** Minimal in-memory import session store (isolated test mode). */
@@ -460,3 +483,4 @@ class InMemoryMainImportWriter implements MainImportWriterPort {
   hasIdentity(): boolean { return false; }
   foreignRefsValid(): boolean { return true; }
 }
+
