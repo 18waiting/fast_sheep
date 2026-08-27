@@ -1,0 +1,80 @@
+{
+  "task": "SHEEP-063",
+  "result": "PARTIAL (Read First only; BLOCKED before Timeline implementation)",
+  "phase": "Phase 4",
+  "milestone": "M4.2",
+  "status": "BLOCKED",
+  "summary": "Read First 确认 message production fact path 不充分（storage/repository/composition/ingestion/actor/content/time/ordering 核心能力缺失）；按收紧 #11 STOP，提交 SHEEP-063-PR1 最小 prerequisite proposal；未实现 Timeline/indicator/schema",
+  "completed_requirements": 18,
+  "total_requirements": 18,
+  "owner_tightening": {
+    "dp83_contract_precedes_storage": "遵守：未预设 migration 0008 四列；先明确 identity/actor/content/time/ordering/source-provenance 语义，再决定 storage",
+    "dp84_normalized_facts_only": "遵守：legacy orchestrator in-memory MessageRecord 仅语义参考，非 production Timeline source",
+    "dp85_bound_to_active_only": "遵守：Timeline 仅绑定 active conversation；ambient Store/Platform Queue Scope 不改写 Timeline identity",
+    "dp86_actor_distinct_from_llm_roles": "遵守：不把 user/assistant/system LLM role 直接当客服 Conversation actor model；AI suggestion provenance 与实际 outbound actor 可区分（契约要求）",
+    "dp87_time_semantics_explicit": "遵守：区分 source/platform occurrence time 与 Fast Sheep observed/ingested time（Read First 确认 legacy created_at 含糊）",
+    "dp88_content_typed_extensible_text_first": "遵守：063 仅可 text，但 contract 不锁死纯字符串（attachments 留 SHEEP-065）",
+    "dp89_content_preservation_same_conversation": "遵守：refresh 仅同 active conversation 可保留 last-known content；active 切换不冒充",
+    "i12_deterministic_ordering": "遵守：I-12 记录——排序须确定性可解释 + 稳定 tie-breaker；local ingestion order 不得冒充平台绝对顺序",
+    "i13_internal_vs_external_identity": "遵守：I-13 核验——internal MessageId 与 external_ref 字段区分；external_ref 唯一性/范围未契约化（待 PR1 明确）",
+    "i14_stale_protection": "遵守：I-14 记录——Timeline query 须 stale-result protection（未来实现）",
+    "t11_stop_submit_pr1": "遵守：message production path 缺核心能力 → STOP + 提交 SHEEP-063-PR1 proposal；未把 migration+ingestion+IPC+UI 一次性塞入 063",
+    "t12_migration_authorization": "遵守：schema forward migration 需独立 Owner 授权（DP-81/PR1 中申请）",
+    "t13_timeline_main_surface": "遵守：Timeline 实现时须成为 Conversation Main 主要内容 surface（incremental convergence）；本单元未实现",
+    "t14_text_facts_only": "遵守：第一版仅事实可读性/层级；未实现 avatar/chat skin/read receipt/reaction/date grouping/hover action",
+    "t15_empty_loading_error": "遵守：Timeline state meaning 明确（未来实现时）；active 切换不保留旧 facts",
+    "t16_unread_not_implemented": "遵守：063 未实现 unread；重输出 UNREAD_FACT_READINESS（仍非 ready）",
+    "t17_exact_files": "遵守：main/renderer/tests 通配符未授权扩大；本单元仅 docs/report/state",
+    "t18_real_path_visual": "遵守：Timeline 实现时 visual 走真实 persistence→Main→IPC→Renderer（未来）；本单元无 visual"
+  },
+  "fact_readiness": {
+    "MESSAGE_FACT_PATH": "BLOCKED (normalized_messages lacks content/actor/time/ordering/source-provenance; no message ingestion; SqliteMessageRepository not composed in Main; actor/time semantics undefined)",
+    "UNREAD_FACT_READINESS": "NOT_READY (reader-progress not established; no unread shown)",
+    "PRIORITY_FACT_READINESS": "DEFERRED_PRODUCT_DECISION (unchanged)",
+    "RISK_FACT_READINESS": "DEFERRED_TYPED_SIGNAL_DESIGN (unchanged)"
+  },
+  "evidence": {
+    "confirmed": [
+      "normalized MessageRecord = id/conversationId/externalRef only",
+      "MessageRepository = save/findById/listByConversation",
+      "no message ingestion boundary",
+      "SqliteMessageRepository not composed in Main",
+      "legacy in-memory MessageRecord has content/role/created_at (semantic ref only)"
+    ],
+    "inferred": [
+      "actor/time/ordering fact model to be defined in PR1 (DP-83/86/87)"
+    ]
+  },
+  "tests": [
+    "desktop build/typecheck；desktop tests 251/251（回归；纯 Read First 无新增测试）",
+    "workspace typecheck / test（全部 PASS）",
+    "m6 Electron renderer smoke（PASS，non-regression；external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS（non-regression）"
+  ],
+  "negative_tests": [
+    "未实现 Timeline/indicator；未改 schema/migrations（v7 不变）；未改 Queue ordering",
+    "未把 legacy in-memory 当 production Timeline source（DP-84）",
+    "未把 LLM role 当 Conversation actor model（DP-86）；未混淆 time 语义（DP-87）",
+    "未读 reference/nixiang；未联网"
+  ],
+  "modified_files": [
+    "docs/fast-sheep-message-timeline-read-first.md（新建）",
+    "reports/SHEEP-063-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-063 Read First 记录）"
+  ],
+  "architecture_changes": [],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "prerequisite": "SHEEP-063-PR1 (Message Fact + Runtime Ingestion Foundation) proposal submitted; not executed without Owner PASS"
+}

@@ -30,7 +30,7 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1-COMPLETE",
   "last_closed_task": "SHEEP-062",
-  "current_task": "SHEEP-063 (proposal pending approval)",
+  "current_task": "SHEEP-063 (Read First: BLOCKED; SHEEP-063-PR1 prerequisite proposal pending)",
   "next_action": "SHEEP-063",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -1195,5 +1195,21 @@
     ],
     "note": "this round implemented no indicator — correct acceptance result, not a defect",
     "m41_evidence_aware_complete": "M4.1 COMPLETE: Queue + scopes implemented (SHEEP-060/061); Unread/Priority/Risk have explicit legal dispositions after fact-readiness review (SHEEP-062)"
+  },
+  "sheep_063": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "BLOCKED",
+    "closed_date_candidate": null,
+    "read_first": "docs\\fast-sheep-message-timeline-read-first.md",
+    "report": "reports\\SHEEP-063-report.json",
+    "fact_readiness": {
+      "MESSAGE_FACT_PATH": "BLOCKED (no content/actor/time/ordering; no message ingestion; not composed in Main)",
+      "UNREAD_FACT_READINESS": "NOT_READY"
+    },
+    "prerequisite": "SHEEP-063-PR1 (Message Fact + Runtime Ingestion Foundation; proposal pending Owner approval)",
+    "next_per_roadmap": "SHEEP-063-PR1 prerequisite (awaiting Owner PASS) then re-evaluate Timeline implementation",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }
