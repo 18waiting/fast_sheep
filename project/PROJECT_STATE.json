@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1",
-  "last_closed_task": "SHEEP-047",
-  "current_task": "SHEEP-060-PR1 (executed, pending Owner PASS)",
-  "next_action": "SHEEP-060",
+  "last_closed_task": "SHEEP-060-PR1",
+  "current_task": "SHEEP-060 (proposal pending approval; restored on real production persistence path)",
+  "next_action": "SHEEP-060 (restored proposal)",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-060 (M4.1 Conversation List; pending Owner approval)",
+  "next_task": "SHEEP-060 (M4.1 Conversation List; re-proposal on real persistence path; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -1043,13 +1043,29 @@
   },
   "sheep_060_pr1": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-060-PR1-report.json",
     "prerequisite_of": "SHEEP-060 (DATA_PATH_GAP-QUEUE-CONVERSATION-LIST resolved by PR1; SHEEP-060 restoration pending PR1 PASS)",
-    "decisions": ["DP-65..DP-68 + I-6 (implemented per Controller recommendation; final = Owner PASS pending)"],
+    "decisions": ["DP-65..DP-68 + I-6 (OWNER_DECIDED 2026-08-27)"],
     "next_per_roadmap": "SHEEP-060 restore (re-confirm DP-57~64 + I-5 on real production data path) after PR1 PASS",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-27"
+  },
+  "fast_sheep_conversation_persistence_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-27",
+    "dp_65": "CONVERSATION_REPOSITORY_SHARES_MAIN_PRODUCTION_DB_LIFECYCLE (shared DB connection ownership with existing Main persistence lifecycle)",
+    "dp_66": "PRODUCTION_PERSISTENCE_FAILURE_NEVER_FALLS_BACK_TO_MEMORY (production composition binds SQLite; test mode may use InMemory double; production failure no silent fallback)",
+    "dp_67": "CONVERSATION_INGESTION_IS_A_THIN_PRODUCTION_WRITE_BOUNDARY (no upsert/merge/dedupe/reconciliation/platform ingestion/sync semantics)",
+    "dp_68": "RUNTIME_DEPENDS_ON_REPOSITORY_PORT_PRODUCTION_COMPOSITION_BINDS_SQLITE",
+    "i_6": "QUEUE_SCOPE_IS_ALWAYS_CONTAINED_BY_MERCHANT_BOUNDARY (merchant-store isolation evidence PASS; All Stores Queue via explicit Queue Scope contract in SHEEP-060, no fake storeId=\"all\")",
+    "pr1_acceptance": "durability / production composition / merchant-store isolation / fail-closed evidence all PASS; schema v7 + migrations 0001~0007 unchanged",
+    "future_constraints": [
+        "saveNormalizedConversation is plain INSERT; duplicate/idempotency/external_ref reconciliation semantics for real producer ingestion must be separately accepted by a future platform-ingestion unit",
+        "I-6 establishes the merchant boundary; All Stores Queue must be implemented in SHEEP-060 via explicit Queue Scope contract (no pseudo storeId=\"all\")",
+        "summary / updated_at / activity ordering still absent; restored SHEEP-060 must not fake summaries or \"recent activity\" ordering"
+    ]
   }
 }
