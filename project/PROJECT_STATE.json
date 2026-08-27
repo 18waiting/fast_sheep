@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_3",
   "current_milestone": "M3.1-COMPLETE",
-  "last_closed_task": "SHEEP-044",
-  "current_task": "SHEEP-045 (executed, pending Owner DP-35~40 decisions + visual review)",
-  "next_action": "SHEEP-045",
+  "last_closed_task": "SHEEP-045",
+  "current_task": "SHEEP-046 (proposal pending approval)",
+  "next_action": "SHEEP-046",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-045 (M3.2 Component Primitives; pending Owner approval)",
+  "next_task": "SHEEP-046 (M3.2 Empty/Error/Loading States; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -892,15 +892,36 @@
   },
   "sheep_045": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-045-report.json",
     "primitives_doc": "docs\\fast-sheep-component-primitives.md",
     "visual_evidence": ["reports\\visual-evidence\\sheep-045-workbench.png", "reports\\visual-evidence\\sheep-045-primitive-gallery.png"],
-    "decisions": ["DP-35..DP-40 (implemented per Controller recommendation; final = Owner visual review + PASS pending)"],
+    "decisions": ["DP-35..DP-40 (OWNER_DECIDED 2026-08-27 after visual review PASS)"],
     "no_topology_change": true,
     "next_per_roadmap": "SHEEP-046 (M3.2 Empty/Error/Loading States; pending Owner visual review + PASS)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-27",
+    "visual_review_passed": true
+  },
+  "fast_sheep_component_primitive_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-27",
+    "visual_review": "PASS",
+    "dp_35_action": "ACTION_PROMINENCE_AND_INTENT_ARE_ORTHOGONAL",
+    "dp_36_primitives": "MINIMAL_SEMANTIC_PRIMITIVE_SET",
+    "dp_37_text_roles": "SEMANTIC_TEXT_ROLES_NOT_NUMERIC_HEADING_LEVELS",
+    "dp_38_no_framework": "THIN_REUSABLE_PRIMITIVES_NO_COMPONENT_FRAMEWORK",
+    "dp_39_consumers": "EVIDENCE_DRIVEN_PRIMITIVES_WITH_REAL_CONSUMER_VALIDATION",
+    "dp_40_native_semantics": "NATIVE_SEMANTICS_FIRST",
+    "gallery_visual_review": "PASS (CALM_PROFESSIONAL_AI_NATIVE_CLARITY)",
+    "workbench_non_regression": "PASS (SHA-256 identical to SHEEP-044 baseline)",
+    "future_design_notes": [
+        "destructive-primary must stay rare; ordinary cancel/stop must NOT auto-map to highest danger prominence",
+        "Badge composition must stay evidence-driven; avoid arbitrary badge x status-color combination system",
+        "Text roles to be re-validated for high-density page hierarchy once adopted in the real Conversation Workspace",
+        "SHEEP-045 production primitive adoption = 0; PASS approves primitive contract/design, NOT full production adoption"
+    ]
   }
 }
