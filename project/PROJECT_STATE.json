@@ -28,10 +28,10 @@
     "reviewed_version": "V1.0_REVIEWED"
   },
   "current_phase": "PHASE_3",
-  "current_milestone": "M3.1-COMPLETE",
-  "last_closed_task": "SHEEP-046",
-  "current_task": "SHEEP-047 (executed, pending Owner DP-49~56 decisions + visual review)",
-  "next_action": "SHEEP-047",
+  "current_milestone": "M3.2-COMPLETE",
+  "last_closed_task": "SHEEP-047",
+  "current_task": "GATE-P3-FAST-SHEEP-UX (proposal pending approval)",
+  "next_action": "GATE-P3-FAST-SHEEP-UX",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-047 (M3.2 Accessibility Baseline; pending Owner approval)",
+  "next_task": "GATE-P3-FAST-SHEEP-UX Completion Review (pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -962,15 +962,40 @@
   },
   "sheep_047": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-047-report.json",
     "a11y_doc": "docs\\fast-sheep-accessibility-baseline.md",
     "visual_evidence": ["reports\\visual-evidence\\sheep-047-workbench.png", "reports\\visual-evidence\\sheep-047-a11y-focus-gallery.png"],
-    "decisions": ["DP-49..DP-56 (implemented per Controller recommendation; final = Owner visual review + PASS pending)"],
+    "decisions": ["DP-49..DP-56 (OWNER_DECIDED 2026-08-27 after accessibility/visual review PASS)"],
     "no_topology_change": true,
     "next_per_roadmap": "GATE-P3-FAST-SHEEP-UX (M3.2 complete; pending Owner DP-49~56 decisions + visual review + PASS)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-27",
+    "accessibility_visual_review_passed": true
+  },
+  "fast_sheep_accessibility_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-27",
+    "accessibility_visual_review": "PASS",
+    "dp_49_heading": "HEADING_LEVEL_FOLLOWS_DOCUMENT_STRUCTURE_NOT_VISUAL_TEXT_ROLE",
+    "dp_50_focus": "NATIVE_TAB_ORDER_VISIBLE_FOCUS_NO_KEYBOARD_TRAPS",
+    "dp_51_contrast": "WCAG_AA_CONTRAST_BASELINE",
+    "dp_52_aria": "NATIVE_SEMANTICS_FIRST_MINIMAL_ARIA",
+    "dp_53_reduced_motion": "PREFERS_REDUCED_MOTION_IS_A_DESIGN_SYSTEM_REQUIREMENT",
+    "dp_54_modal_focus": "MODAL_FOCUS_CONTRACT_REQUIRED_IMPLEMENTATION_AT_FIRST_REAL_CONSUMER",
+    "dp_55_announcements": "SEMANTIC_EVENT_ANNOUNCEMENTS_NOT_RAW_UPDATE_STREAMS",
+    "dp_56_signal_distinct": "FOCUS_SELECTION_AND_STATUS_ARE_VISUALLY_DISTINCT",
+    "contrast_evidence": "PASS",
+    "focus_gallery_review": "PASS",
+    "accessibility_driven_changes_accepted": "muted #65717c, border #87919e, focus/selected primary outline (recorded)",
+    "future_design_notes": [
+        "Real Store switcher: validate combined visual when selected + keyboard-focused coexist",
+        "Modal focus contract approved but NOT yet production-implemented; first real modal consumer MUST implement + accept",
+        "Contrast audit must regress with future semantic token/theme/component changes",
+        "AI streaming/countdown/background progress dynamic UI must obey DP-55 (announce only meaningful semantic events)"
+    ],
+    "m32_design_system_complete": true
   }
 }
