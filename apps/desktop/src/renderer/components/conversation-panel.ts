@@ -1,6 +1,7 @@
 // M6 conversation panel (clean-room): safe conversation/send/takeover projection.
 import type { UiState } from "../state/view-model.js";
 import { clear, el } from "./dom.js";
+import { emptyState } from "./states/empty.js";
 
 export function renderConversationPanel(root: HTMLElement, state: UiState): void {
   clear(root);
@@ -9,7 +10,7 @@ export function renderConversationPanel(root: HTMLElement, state: UiState): void
   const vm = state.viewModel;
   const conv = vm?.conversation;
   if (!conv) {
-    panel.appendChild(el("p", "conversation-empty", "当前店铺没有活动会话"));
+    panel.appendChild(emptyState({ meaning: "no-work", title: "暂无活动会话", body: "当前店铺没有活动会话" }));
   } else {
     const rows = el("dl", "conversation-facts");
     rows.appendChild(fact("会话状态", conv.state));

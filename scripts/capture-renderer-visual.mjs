@@ -13,6 +13,7 @@ const require = createRequire(join(ROOT, "apps", "desktop", "package.json"));
 const electronPath = require("electron");
 const CAPTURE_MAIN = join(HERE, "visual-evidence", "capture-main.cjs");
 const gallery = process.argv.includes("--gallery");
+const states = process.argv.includes("--states");
 const MAIN_ENTRY = join(ROOT, "apps", "desktop", "dist", "main", "index.js");
 
 if (!existsSync(MAIN_ENTRY)) {
@@ -23,7 +24,7 @@ if (!existsSync(MAIN_ENTRY)) {
 
 const child = spawn(electronPath, [CAPTURE_MAIN], {
   cwd: ROOT,
-  env: { ...process.env, ELECTRON_DISABLE_SECURITY_WARNINGS: "true", FS_VISUAL_TARGET: gallery ? "gallery" : "workbench" },
+  env: { ...process.env, ELECTRON_DISABLE_SECURITY_WARNINGS: "true", FS_VISUAL_TARGET: states ? "states" : gallery ? "gallery" : "workbench" },
   stdio: ["ignore", "pipe", "pipe"],
 });
 
@@ -33,7 +34,7 @@ const timeout = setTimeout(() => { console.error("FAIL: visual capture timed out
 
 child.on("exit", (code) => {
   clearTimeout(timeout);
-  const out = join(ROOT, "reports", "visual-evidence", gallery ? "sheep-045-primitive-gallery.png" : "sheep-045-workbench.png");
+  const out = join(ROOT, "reports", "visual-evidence", states ? "sheep-046-state-gallery.png" : gallery ? "sheep-045-primitive-gallery.png" : "sheep-046-workbench.png");
   if (!existsSync(out)) {
     console.error("FAIL: no visual captured. exit=" + code);
     if (stderr) console.error(stderr.slice(0, 4000));

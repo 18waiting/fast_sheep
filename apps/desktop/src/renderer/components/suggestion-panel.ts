@@ -7,6 +7,7 @@ import type { UiState } from "../state/view-model.js";
 import { resolveSuggestionKey } from "../state/view-model.js";
 import type { WorkbenchActions } from "./actions.js";
 import { button, clear, el } from "./dom.js";
+import { emptyState } from "./states/empty.js";
 
 export function renderSuggestionPanel(root: HTMLElement, state: UiState, actions: WorkbenchActions): void {
   clear(root);
@@ -15,7 +16,7 @@ export function renderSuggestionPanel(root: HTMLElement, state: UiState, actions
   const vm = state.viewModel;
   const suggestion = vm?.suggestion;
   if (!suggestion) {
-    panel.appendChild(el("p", "suggestion-empty", "暂无建议"));
+    panel.appendChild(emptyState({ meaning: "no-result", title: "暂无建议", body: "暂无 AI 建议" })); // baseline consumer validation only; final behavior not locked
     root.appendChild(panel);
     return;
   }

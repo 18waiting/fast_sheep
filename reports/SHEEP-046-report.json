@@ -1,0 +1,96 @@
+{
+  "task": "SHEEP-046",
+  "result": "COMPLETE",
+  "phase": "Phase 3",
+  "milestone": "M3.2",
+  "objective": "Empty/Error/Loading States：thin state patterns（empty/loading/error）+ 首次 production primitive adoption（error-banner/conversation-empty/suggestion-empty）+ State Gallery + Workbench 视觉证据；NO_TOPOLOGY_CHANGE",
+  "completed_requirements": 13,
+  "total_requirements": 13,
+  "owner_tightening": {
+    "dp41_minimal_presentation_families": "遵守：MINIMAL_PRESENTATION_FAMILIES_WITH_EXPLICIT_STATE_MEANING——Empty meaning 显式区分 no-work/no-result/not-configured/not-yet-created（data-state-meaning）；不机械同 CTA",
+    "condition_impact_then_action": "遵守：先说明 condition/impact，再仅在真正 actionable 时提供 action；Empty 无默认 CTA",
+    "dp42_quiet_textual_progress": "遵守：QUIET_TEXTUAL_PROGRESS_WITH_OPTIONAL_MINIMAL_INDICATOR——Loading 非 Status Badge 主导；克制文本+极简「…」；无 skeleton/玩具动画；不伪造未知 progress",
+    "dp43_error_placement_follows_scope": "遵守：ERROR_PLACEMENT_FOLLOWS_FAILURE_SCOPE——inline/section/workspace；无 error dialog",
+    "dp44_limited_adoption": "遵守：迁移 error-banner/conversation-empty/suggestion-empty（exact files）；suggestion-empty 仅 baseline consumer validation，不锁定最终产品行为",
+    "dp45_preserve_last_known_content": "遵守：PRESERVE_LAST_KNOWN_USEFUL_CONTENT_DURING_REFRESH 记录为后续 invariant；未实现不存在的 refresh workflow",
+    "dp46_thin_no_mega_component": "遵守：THIN_STATE_PATTERNS_NO_MEGA_STATE_COMPONENT——无 renderState/options 膨胀框架（测试负例）",
+    "dp47_failure_contained_to_scope": "遵守：FAILURE_IS_CONTAINED_TO_AFFECTED_SCOPE——AI/Context 失败不遮蔽 Conversation/source facts/manual workflow（Gallery 概念示例）",
+    "dp48_absence_not_conceal": "遵守：ABSENCE_MUST_NOT_CONCEAL_DENIAL_UNAVAILABILITY_OR_NOT_CONFIGURED——Empty 不把 denied/unavailable/not-configured 伪装成无数据；本任务只固化语义边界，未实现 entitlement/auth UI",
+    "error_copy_safe": "遵守：error copy 描述影响+恢复；无 raw RPC/SQLite/provider/credential/secret 细节（测试负例）",
+    "text_first_no_illustration": "遵守：Empty/Error/Loading 默认 text-first；无品牌插画/玩具化 icon/AI skin",
+    "visual_evidence": "遵守：State Gallery（覆盖 7 必选概念）+ current Workbench；Gallery evidence-only，不进入 production runtime；workbench 与 SHEEP-044 基线 SHA-256 相同（无视觉回归）",
+    "no_topology_change": "遵守：仅列出 consumers 迁移；DOM native semantics/事件/业务行为保持；未重做 Conversation/AI/Store IA"
+  },
+  "decisions": {
+    "dp41": "MINIMAL_PRESENTATION_FAMILIES_WITH_EXPLICIT_STATE_MEANING",
+    "dp42": "QUIET_TEXTUAL_PROGRESS_WITH_OPTIONAL_MINIMAL_INDICATOR",
+    "dp43": "ERROR_PLACEMENT_FOLLOWS_FAILURE_SCOPE",
+    "dp44": "有限真实 consumer adoption（error-banner/conversation-empty/suggestion-empty）",
+    "dp45": "PRESERVE_LAST_KNOWN_USEFUL_CONTENT_DURING_REFRESH（invariant 记录）",
+    "dp46": "THIN_STATE_PATTERNS_NO_MEGA_STATE_COMPONENT",
+    "dp47": "FAILURE_IS_CONTAINED_TO_AFFECTED_SCOPE",
+    "dp48": "ABSENCE_MUST_NOT_CONCEAL_DENIAL_UNAVAILABILITY_OR_NOT_CONFIGURED"
+  },
+  "evidence": {
+    "confirmed": [
+      "DP-41~48（Owner 决策）",
+      "state patterns 编译 + 结构测试（227/227）",
+      "3 consumers 迁移（DOM/行为/事件保持）",
+      "workbench 截图与 SHEEP-044 基线 SHA-256 相同",
+      "State Gallery 捕获成功（7 概念）"
+    ],
+    "inferred": [
+      "suggestion-empty 为 baseline consumer validation（最终产品行为未锁定）"
+    ]
+  },
+  "tests": [
+    "desktop build/typecheck；desktop tests 227/227（含 6 个新 states guard）",
+    "workspace typecheck / test（全部 PASS）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS",
+    "styles.css var() 全解析"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS",
+    "visual capture：sheep-046-workbench.png（SHA-256 与 044 相同）+ sheep-046-state-gallery.png"
+  ],
+  "negative_tests": [
+    "无 skeleton/animation/spinner/progressbar（DP-42）；无 error dialog（DP-43）",
+    "无 raw sqlite/rpc/provider/credential/password 细节（DP-10）",
+    "无 renderState/framework/slot/registry/variantEngine（DP-46）",
+    "Empty 无默认 CTA；无 entitlement/auth UI（DP-48 边界）",
+    "gallery evidence-only（不引用 renderer runtime）；NO_TOPOLOGY_CHANGE；schema v7 不变；无 sync/Outbox"
+  ],
+  "modified_files": [
+    "apps/desktop/src/renderer/components/states/empty.ts（新建）",
+    "apps/desktop/src/renderer/components/states/loading.ts（新建）",
+    "apps/desktop/src/renderer/components/states/error.ts（新建）",
+    "apps/desktop/src/renderer/components/error-banner.ts（迁移 workspace errorState）",
+    "apps/desktop/src/renderer/components/conversation-panel.ts（迁移 emptyState no-work）",
+    "apps/desktop/src/renderer/components/suggestion-panel.ts（迁移 emptyState no-result）",
+    "apps/desktop/src/renderer/styles.css（state patterns CSS；.error-banner -> fs-state workspace）",
+    "apps/desktop/tests/renderer-states-structure.test.ts（新建）",
+    "docs/fast-sheep-empty-error-loading-states.md（新建）",
+    "reports/visual-evidence/state-gallery.html（新建，evidence-only）",
+    "reports/visual-evidence/sheep-046-workbench.png（新建）",
+    "reports/visual-evidence/sheep-046-state-gallery.png（新建）",
+    "scripts/visual-evidence/capture-main.cjs（states target）",
+    "scripts/capture-renderer-visual.mjs（--states）",
+    "reports/SHEEP-046-report.json（新建）",
+    "project/PROJECT_STATE.json（SHEEP-046 记录）"
+  ],
+  "architecture_changes": [
+    "thin State patterns（empty/loading/error；production primitive adoption 首次落地）"
+  ],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0；无 raw 细节）"
+  ],
+  "data_model_changes": [
+    "无（schema v7 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "visual_review_pending": true
+}

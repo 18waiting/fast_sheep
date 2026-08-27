@@ -9,8 +9,8 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 #app { height: 100%; }
 
 .app-shell { display: flex; flex-direction: column; height: 100%; }
-.error-banner { background: var(--fs-color-bg-error); color: var(--fs-color-error); border-bottom: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border-error); padding: var(--fs-space-2) var(--fs-space-4); font-size: var(--fs-font-size-md); }
-.error-label { font-weight: var(--fs-font-weight-semibold); margin-right: var(--fs-space-2); }
+/* SHEEP-046 workspace error (replaces .error-banner; same visual baseline) */
+.fs-state--error.fs-state--workspace { background: var(--fs-color-bg-error); color: var(--fs-color-error); border-bottom: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border-error); padding: var(--fs-space-2) var(--fs-space-4); font-size: var(--fs-font-size-md); }
 /* SHEEP-026 shell topology: app-navbar (top region) + app-body (app-sidebar + app-main).
  * Region relationships follow the owner-authorized reference IA (navbar shell / sidebar shell).
  * Navbar geometry (height, padding, sticky/fixed, breakpoints) stays UNKNOWN/NOT_EVIDENCED;
@@ -115,3 +115,13 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 .fs-status--warning { color: var(--fs-color-status-warning); }
 .fs-status--danger { color: var(--fs-color-status-danger); }
 .fs-badge { display: inline-flex; align-items: center; padding: 2px var(--fs-space-2); border-radius: var(--fs-radius-full); font-size: var(--fs-font-size-xs); background: var(--fs-color-bg-subtle); color: var(--fs-color-text-secondary); }
+/* ===== SHEEP-046 state patterns (thin; text-first; calm professional) ===== */
+.fs-state { display: flex; flex-direction: column; gap: var(--fs-space-2); }
+.fs-state--empty .fs-state-title { margin: 0; }
+.fs-state--empty .fs-state-body { margin: 0; color: var(--fs-color-text-secondary); }
+.fs-state--loading .fs-state-label { color: var(--fs-color-text-secondary); }
+.fs-state--loading .fs-state-indicator { color: var(--fs-color-text-muted); }
+.fs-state--error .fs-state-error-message { margin: 0; }
+.fs-state--error.fs-state--inline { color: var(--fs-color-error); }
+.fs-state--error.fs-state--section { padding: var(--fs-space-3); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border-error); border-radius: var(--fs-radius-md); background: var(--fs-color-bg-error); }
+.fs-state .fs-state-action { align-self: flex-start; }

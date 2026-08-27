@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>Fast Sheep State Gallery (SHEEP-046, evidence-only)</title>
+  <link rel="stylesheet" href="../../apps/desktop/src/renderer/tokens.css" />
+  <link rel="stylesheet" href="../../apps/desktop/src/renderer/styles.css" />
+  <style>
+    body { padding: 24px; background: #f6f8fa; }
+    .g-section { margin-bottom: 26px; }
+    .g-section > h1 { font-size: 16px; font-weight: 600; margin: 0 0 10px; }
+    .g-panel { background: #fff; border: 1px solid #d8dee4; border-radius: 8px; padding: 16px; max-width: 640px; }
+    .g-cap { font-size: 11px; color: #8c959f; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+  <div class="g-section">
+    <h1>1. Empty — no-work</h1>
+    <div class="g-panel"><div class="fs-state fs-state--empty" data-state-meaning="no-work">
+      <div class="fs-text--section-title fs-state-title">暂无活动会话</div>
+      <p class="fs-text--body fs-state-body">当前店铺没有活动会话。</p>
+    </div></div>
+    <div class="g-cap">condition/impact first; no default CTA (DP-41/2)</div>
+  </div>
+
+  <div class="g-section">
+    <h1>2. Empty — no-result + action (only when actionable)</h1>
+    <div class="g-panel"><div class="fs-state fs-state--empty" data-state-meaning="no-result">
+      <div class="fs-text--section-title fs-state-title">没有匹配结果</div>
+      <p class="fs-text--body fs-state-body">未找到符合条件的会话。</p>
+      <button type="button" class="fs-action fs-action--secondary fs-state-action">清除筛选</button>
+    </div></div>
+    <div class="g-cap">action only when truly actionable</div>
+  </div>
+
+  <div class="g-section">
+    <h1>3. Initial loading (quiet textual)</h1>
+    <div class="g-panel"><div class="fs-state fs-state--loading" role="status">
+      <span class="fs-text--body fs-state-label">正在加载会话</span><span class="fs-state-indicator">…</span>
+    </div></div>
+    <div class="g-cap">no skeleton / toy animation; no fake progress (DP-42)</div>
+  </div>
+
+  <div class="g-section">
+    <h1>4. Quiet refresh concept (DP-45 preserved content concept)</h1>
+    <div class="g-panel">
+      <div class="fs-state fs-state--loading" role="status"><span class="fs-text--body fs-state-label">正在刷新</span><span class="fs-state-indicator">…</span></div>
+      <p class="fs-text--body" style="margin:8px 0 0;">保留最后已知内容：会话 #c1 · 测试店铺A（上次数据仍可见）</p>
+    </div>
+    <div class="g-cap">PRESERVE_LAST_KNOWN_USEFUL_CONTENT_DURING_REFRESH (recorded invariant, not implemented workflow)</div>
+  </div>
+
+  <div class="g-section">
+    <h1>5. Inline error + retry</h1>
+    <div class="g-panel"><div class="fs-state fs-state--error fs-state--inline" role="alert">
+      <p class="fs-text--body fs-state-error-message">发送失败，请重试。</p>
+      <button type="button" class="fs-action fs-action--secondary fs-state-action">重试</button>
+    </div></div>
+    <div class="g-cap">action/field error adjacent; impact + recovery copy (DP-43/10)</div>
+  </div>
+
+  <div class="g-section">
+    <h1>6. Workspace / banner error</h1>
+    <div class="g-panel"><div class="fs-state fs-state--error fs-state--workspace" role="alert">
+      <span class="fs-text--label fs-state-error-label">错误:</span>
+      <p class="fs-text--body fs-state-error-message">工作台初始化失败，请重启应用重试。</p>
+    </div></div>
+    <div class="g-cap">workspace-wide failure -> global banner only (DP-43)</div>
+  </div>
+
+  <div class="g-section">
+    <h1>7. AI-assistance failure: source facts / manual path still available (DP-47)</h1>
+    <div class="g-panel">
+      <div class="fs-state fs-state--error fs-state--inline" role="alert">
+        <p class="fs-text--body fs-state-error-message">AI 建议暂不可用，会话内容与手动操作不受影响。</p>
+      </div>
+      <p class="fs-text--body" style="margin:8px 0 0;"><span class="fs-text--label">原始事实：</span>买家-张三 · 会话状态 idle</p>
+      <p class="fs-text--body" style="margin:4px 0 0;"><span class="fs-text--label">手动路径：</span><button type="button" class="fs-action fs-action--quiet fs-state-action">手动回复</button></p>
+    </div>
+    <div class="g-cap">FAILURE_IS_CONTAINED_TO_AFFECTED_SCOPE (DP-47)</div>
+  </div>
+
+</body>
+</html>

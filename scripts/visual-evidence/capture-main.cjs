@@ -12,8 +12,11 @@ const RENDERER_HTML = join(ROOT, "apps", "desktop", "dist", "renderer", "index.h
 const TARGET = process.env.FS_VISUAL_TARGET || "workbench";
 const OUT = TARGET === "gallery"
   ? join(ROOT, "reports", "visual-evidence", "sheep-045-primitive-gallery.png")
-  : join(ROOT, "reports", "visual-evidence", "sheep-045-workbench.png");
+  : TARGET === "states"
+  ? join(ROOT, "reports", "visual-evidence", "sheep-046-state-gallery.png")
+  : join(ROOT, "reports", "visual-evidence", "sheep-046-workbench.png");
 const GALLERY_HTML = join(ROOT, "reports", "visual-evidence", "primitive-gallery.html");
+const STATES_HTML = join(ROOT, "reports", "visual-evidence", "state-gallery.html");
 
 const shops = [
   { shop_id: "shop-test-1", name: "测试店铺A", type: "pdd", enabled: true },
@@ -70,22 +73,23 @@ app.setName("fast_sheep");
 app.setPath("userData", join(app.getPath("appData"), "fast_sheep_visual_evidence"));
 
 app.whenReady().then(async () => {
-  const isGallery = TARGET === "gallery";
+  const isStatic = TARGET === "gallery" || TARGET === "states";
+  const html = TARGET === "gallery" ? GALLERY_HTML : TARGET === "states" ? STATES_HTML : RENDERER_HTML;
   const win = new BrowserWindow({
-    width: isGallery ? 1000 : 1200,
-    height: isGallery ? 720 : 800,
+    width: isStatic ? (TARGET === "states" ? 760 : 1000) : 1200,
+    height: isStatic ? (TARGET === "states" ? 1080 : 720) : 800,
     show: false,
-    webPreferences: isGallery
+    webPreferences: isStatic
       ? { contextIsolation: true, nodeIntegration: false, sandbox: true }
       : { preload: PRELOAD, contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
   win.webContents.setBackgroundThrottling(false);
-  await win.loadFile(isGallery ? GALLERY_HTML : RENDERER_HTML);
+  await win.loadFile(html);
   const deadline = Date.now() + 20000;
   for (;;) {
     try {
       const rendered = await win.webContents.executeJavaScript(
-        isGallery ? "!!document.querySelector('.g-section')" : "!!document.querySelector('.app-shell')",
+        isStatic ? "!!document.querySelector('.g-section')" : "!!document.querySelector('.app-shell')",
         true
       );
       if (rendered) break;
