@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_3",
   "current_milestone": "M3.1-COMPLETE",
-  "last_closed_task": "SHEEP-045",
-  "current_task": "SHEEP-046 (executed, pending Owner DP-41~48 decisions + visual review)",
-  "next_action": "SHEEP-046",
+  "last_closed_task": "SHEEP-046",
+  "current_task": "SHEEP-047 (proposal pending approval)",
+  "next_action": "SHEEP-047",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -187,7 +187,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-046 (M3.2 Empty/Error/Loading States; pending Owner approval)",
+  "next_task": "SHEEP-047 (M3.2 Accessibility Baseline; pending Owner approval)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -926,15 +926,38 @@
   },
   "sheep_046": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
+    "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-046-report.json",
     "states_doc": "docs\\fast-sheep-empty-error-loading-states.md",
     "visual_evidence": ["reports\\visual-evidence\\sheep-046-workbench.png", "reports\\visual-evidence\\sheep-046-state-gallery.png"],
-    "decisions": ["DP-41..DP-48 (implemented per Controller recommendation; final = Owner visual review + PASS pending)"],
+    "decisions": ["DP-41..DP-48 (OWNER_DECIDED 2026-08-27 after visual review PASS)"],
     "no_topology_change": true,
     "next_per_roadmap": "SHEEP-047 (M3.2 Accessibility Baseline; pending Owner visual review + PASS)",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-27",
+    "visual_review_passed": true
+  },
+  "fast_sheep_state_pattern_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-27",
+    "visual_review": "PASS",
+    "dp_41_presentation_families": "MINIMAL_PRESENTATION_FAMILIES_WITH_EXPLICIT_STATE_MEANING",
+    "dp_42_loading": "QUIET_TEXTUAL_PROGRESS_WITH_OPTIONAL_MINIMAL_INDICATOR",
+    "dp_43_error_scope": "ERROR_PLACEMENT_FOLLOWS_FAILURE_SCOPE",
+    "dp_44_adoption": "LIMITED_REAL_CONSUMER_ADOPTION",
+    "dp_45_refresh_preserve": "PRESERVE_LAST_KNOWN_USEFUL_CONTENT_DURING_REFRESH",
+    "dp_46_thin_patterns": "THIN_STATE_PATTERNS_NO_MEGA_STATE_COMPONENT",
+    "dp_47_failure_contained": "FAILURE_IS_CONTAINED_TO_AFFECTED_SCOPE",
+    "dp_48_absence_boundary": "ABSENCE_MUST_NOT_CONCEAL_DENIAL_UNAVAILABILITY_OR_NOT_CONFIGURED",
+    "state_gallery_visual_review": "PASS (visual weight + scope hierarchy match CALM_PROFESSIONAL_AI_NATIVE_CLARITY; AI-assistance failure preserves source facts + manual path per DP-47)",
+    "future_design_notes": [
+        "Initial Loading pure \"...\" is minimal baseline only; later Accessibility/real consumer may evaluate a minimal progress indicator",
+        "Quiet Refresh Gallery \"preserve last known content\" is concept evidence, not final product copy",
+        "Workspace error standalone \"错误:\" label to be validated for redundancy in real pages later",
+        "AI failure preserving source facts/manual path is a future Conversation Workspace constraint; Gallery layout/copy does not lock Phase 4 final UI"
+    ],
+    "note": "PASS does not change NO_TOPOLOGY_CHANGE; current clean-room Workspace is NOT approved as final page design"
   }
 }
