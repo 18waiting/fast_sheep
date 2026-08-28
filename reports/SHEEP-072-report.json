@@ -1,0 +1,94 @@
+{
+  "task": "SHEEP-072",
+  "codex_result": "PARTIAL",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.4",
+  "status": "NOT_READY / DEFER (Handoff Reason / Queue Fact-Readiness; no schema v11, no IPC/UI/service/queue mutation)",
+  "summary": "Handoff Reason / Queue Fact-Readiness Read First：HANDOFF_OCCURRENCE_SEMANTICS=NOT_READY（无 occurrence entity；HandoffDecision 为 runtime 响应；I-89）、HANDOFF_REASON_FACT=PARTIAL（DP-163 verified free-form reason 可是事实；无 verified producer 持久化）、HANDOFF_REASON_TAXONOMY=NOT_READY（I-86 不从 keyword/rule/free text 发明 taxonomy）、HANDOFF_TARGET_SELECTOR_SEMANTICS=PARTIAL（DP-168 selector != resolved assignee）、HANDOFF_RESOLVED_ASSIGNEE=NOT_READY（无 verified Member/operator assignee；I-91）、HANDOFF_QUEUE_DIMENSION=NOT_READY（conversations.list 无 handoff 维度；I-92/I-93）、HANDOFF_OWNERSHIP_STATE_LINK=NOT_READY（HANDOFF_REQUIRED 无 production writer；DP-167/I-90/I-94）、HANDOFF_CURRENTNESS_SEMANTICS=NOT_READY（无 currentness；约束 #15）、HANDOFF_PRODUCER=NOT_READY（worker handoff.evaluate/orchestrator TransferDecision 为 runtime；legacy transfer_rules 为 rule 配置；I-85）、HANDOFF_PERSISTENCE=NOT_READY（无 handoff 持久化；约束 #19 区分 snapshot vs occurrence/history）、HANDOFF_IPC=NOT_READY、HANDOFF_DETAIL_PRESENTATION=NOT_READY（I-87 三态/I-88/I-95 trace 不提升/I-96 不进 logs）、HANDOFF_QUEUE_PRESENTATION=NOT_READY、HANDOFF_IMPLEMENTATION=NOT_READY。不授权 conversation.handoff_reason/handoff target fields/handoff event|request table/Queue ordering|filter schema/v11 migration；不实现 handoff IPC/UI/service/queue mutation；DEFER 至 verified handoff producer + occurrence semantics + reason/target fact contract + HANDOFF_REQUIRED producer/currentness + resolved assignee identity。DP-163~168 + I-85~I-96 已记录",
+  "completed_requirements": 23,
+  "total_requirements": 23,
+  "owner_tightening": {
+    "dp163": "遵守：HANDOFF_REASON_FACT_REQUIRES_VERIFIED_PRODUCER_WHILE_NORMALIZED_REASON_CLASSIFICATION_REQUIRES_SEPARATE_EVIDENCE（verified free-form source reason 可为事实；未从 free text/rule keyword/order_state 推导 taxonomy）",
+    "dp164": "遵守：HANDOFF_QUEUE_IS_A_CONVERSATION_QUERY_DIMENSION_DISTINCT_FROM_HANDOFF_MUTATION",
+    "dp165": "遵守：HANDOFF_REASON_AND_HANDOFF_TARGET_ARE_SEPARATE_FACTS",
+    "dp166": "遵守：HANDOFF_REASON_IS_SCOPED_TO_A_SPECIFIC_HANDOFF_OCCURRENCE_WITHIN_AN_AUTHORIZED_CONVERSATION（未预设 conversation.handoff_reason 单值模型）",
+    "i89": "遵守：HANDOFF_REASON_MUST_NOT_BE_STORED_AS_A_SINGLE_OVERWRITABLE_CONVERSATION_ATTRIBUTE_WITHOUT_OCCURRENCE_SEMANTICS",
+    "dp167": "遵守：HANDOFF_DECISION_HANDOFF_OCCURRENCE_AND_OWNERSHIP_STATE_ARE_DISTINCT_FACT_LAYERS",
+    "i85_i90": "遵守：I-85 worker/orchestrator handoff decision 非 normalized fact 无 producer contract；I-90 runtime decision 不自行 mutate/establish HANDOFF_REQUIRED ownership state",
+    "dp168": "遵守：HANDOFF_TARGET_SELECTOR_AND_RESOLVED_HUMAN_ASSIGNEE_ARE_DISTINCT_FACTS（人工/transfer_to 字符串未升级为 Member/operator target）",
+    "i91": "遵守：HANDOFF_TARGET_DOES_NOT_IMPLY_RESOLVED_OWNERSHIP_HOLDER",
+    "i86": "遵守：未从 keyword/rule/free text 发明 reason taxonomy",
+    "i87": "遵守：区分无 verified occurrence / occurrence 已知但 reason 缺失 / known reason；未统一伪装成无 handoff 或原因未知",
+    "i88": "遵守：HANDOFF_DETAIL_READS_ARE_ANCHORED_TO_THE_AUTHORIZED_CONVERSATION",
+    "i92": "遵守：HANDOFF_QUEUE_QUERIES_REMAIN_MERCHANT_SCOPED_WORK_SELECTION_PROJECTIONS_DISTINCT_FROM_ACTIVE_CONVERSATION_STATE（继承现有 merchant/store/platform query boundary）",
+    "i93": "遵守：HANDOFF_QUEUE_MEMBERSHIP_DOES_NOT_IMPLY_PRIORITY_ORDERING_OR_MUTATION_AUTHORITY",
+    "queue_requires_producer_currentness": "遵守：Handoff Queue readiness 依赖 verified HANDOFF_REQUIRED producer/currentness；未因 8-state vocabulary 存在直接建 Queue filter",
+    "i94": "遵守：HANDOFF_REQUIRED_STATE_DOES_NOT_IMPLY_A_KNOWN_HANDOFF_REASON_AND_HANDOFF_REASON_DOES_NOT_IMPLY_CURRENT_HANDOFF_REQUIRED_STATE",
+    "i95": "遵守：HandoffDecision.trace 未提升为用户可见 reason/normalized fact（无 explicit safe provenance contract）",
+    "i96": "遵守：HANDOFF_REASON_AND_TARGET_FACTS_ARE_NOT_EMITTED_TO_LOGS_OR_TELEMETRY_BY_DEFAULT",
+    "persistence_snapshot_vs_occurrence": "遵守：区分 current ownership snapshot 与 handoff occurrence/history lifecycle；未因该 distinction 创建 event/request table",
+    "no_migration": "遵守：不授权 conversation.handoff_reason、handoff target fields、handoff event/request table、Queue ordering/filter schema 或任何 v11 migration；schema v10 保持",
+    "fourteen_readiness_outputs": "遵守：14 项 readiness 分别输出（OCCURRENCE/REASON_FACT/REASON_TAXONOMY/TARGET_SELECTOR/RESOLVED_ASSIGNEE/QUEUE_DIMENSION/OWNERSHIP_STATE_LINK/CURRENTNESS/PRODUCER/PERSISTENCE/IPC/DETAIL_PRESENTATION/QUEUE_PRESENTATION/IMPLEMENTATION）",
+    "zero_code": "遵守：0 product code / 0 UI / 0 visual evidence；未建 handoff producer/service/event model/queue abstraction",
+    "controller_review_stop": "遵守：提交 Controller Review + Decision Package 并 STOP；由 Owner 决定 DEFER、最小 prerequisite 或窄 read-only projection"
+  },
+  "readiness": {
+    "HANDOFF_OCCURRENCE_SEMANTICS_READINESS": "NOT_READY (no occurrence entity; HandoffDecision is runtime response; I-89 no single overwritable attribute)",
+    "HANDOFF_REASON_FACT_READINESS": "PARTIAL (DP-163 verified free-form source reason could be fact; no verified producer persists it)",
+    "HANDOFF_REASON_TAXONOMY_READINESS": "NOT_READY (I-86 no taxonomy invented from keyword/rule/free text)",
+    "HANDOFF_TARGET_SELECTOR_SEMANTICS_READINESS": "PARTIAL (selector strings 人工/transfer_to are runtime/rule semantics; DP-168 selector != assignee)",
+    "HANDOFF_RESOLVED_ASSIGNEE_READINESS": "NOT_READY (no verified Member/operator assignee resolution; I-91 target != ownership holder)",
+    "HANDOFF_QUEUE_DIMENSION_READINESS": "NOT_READY (conversations.list has no handoff dimension; I-92/I-93)",
+    "HANDOFF_OWNERSHIP_STATE_LINK_READINESS": "NOT_READY (HANDOFF_REQUIRED no production writer; DP-167/I-90/I-94)",
+    "HANDOFF_CURRENTNESS_SEMANTICS_READINESS": "NOT_READY (no currentness; queue filter requires verified HANDOFF_REQUIRED producer/currentness)",
+    "HANDOFF_PRODUCER_READINESS": "NOT_READY (worker handoff.evaluate / orchestrator TransferDecision runtime; legacy transfer_rules is rule config; I-85)",
+    "HANDOFF_PERSISTENCE_READINESS": "NOT_READY (no handoff occurrence/reason/target persistence; snapshot vs occurrence/history lifecycle distinct)",
+    "HANDOFF_IPC_READINESS": "NOT_READY (no typed handoff IPC channel or handler)",
+    "HANDOFF_DETAIL_PRESENTATION_READINESS": "NOT_READY (I-87 three-way; I-88 authorized conversation; I-95 trace not user-visible; I-96 no logs/telemetry)",
+    "HANDOFF_QUEUE_PRESENTATION_READINESS": "NOT_READY (I-92/I-93 no handoff queue surface)",
+    "HANDOFF_IMPLEMENTATION_READINESS": "NOT_READY"
+  },
+  "decision_package": {
+    "no_migration": "conversation.handoff_reason / handoff target fields / handoff event|request table / Queue ordering|filter schema / v11 migration NOT authorized; schema stays v10",
+    "no_ipc_ui_service": "no handoff IPC/UI/service/queue mutation; no handoff producer/service/event model/queue abstraction; no worker/orchestrator runtime handoff decision wired as production fact; no Member/Auth/Capability/ResourceScope runtime",
+    "defer": "DEFER until verified handoff producer + occurrence semantics + reason/target fact contract (DP-163..168) + HANDOFF_REQUIRED producer/currentness + resolved assignee identity; then minimal prerequisite per DP-163..168 + I-85..I-96"
+  },
+  "evidence": {
+    "confirmed": [
+      "8-state ownership vocabulary incl HANDOFF_REQUIRED; ownership_records snapshot-only; NO production writer (SHEEP-070/071); HANDOFF_REQUIRED never produced in production",
+      "AI worker handoff domain (M9): handoff.evaluate RPC (production evaluation boundary) returns HandoffDecision {transfer,target,keyword,reason,operator,transfer_message,trace} as runtime response; NOT persisted",
+      "transfer_to_human builtin tool returns free-form reason (args.reason) - AI tool artifact, not a normalized fact",
+      "legacy transfer_rules (0001) is rule configuration (keyword/transfer_to/transfer_message/work_hours/source_agent/status/order_state/applicable_shops/sort_order/enabled) loaded read-only by handoff engine; NOT handoff occurrence/reason facts",
+      "orchestrator TransferDecision (worker-ai-engine-client/conversation-orchestrator/suggestion-manager) is in-memory runtime state; nothing persists handoff decision/occurrence/reason/target to SQLite",
+      "conversations.list queue (SHEEP-060) has merchant/store/platform query dimensions only; no handoff filter/ordering; Queue scope is a query dimension, not authority (I-17)",
+      "HandoffDecision.trace (steps/detail/matched) is internal trace, not user-visible reason (I-95)",
+      "No handoff typed IPC (desktop-ipc 42 canonical channels); no renderer handoff UI"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "desktop build/typecheck + desktop tests (regression; pure Read First turn - no new product code)",
+    "workspace typecheck/test PASS",
+    "m6 Electron smoke PASS (external_network_calls=0) - non-regression",
+    "check:boundary PASS; secret scan PASS"
+  ],
+  "negative_tests": [
+    "未改 schema v10；未授权 conversation.handoff_reason/handoff target fields/handoff event|request table/Queue ordering|filter schema/v11 migration",
+    "未实现 handoff IPC/UI/service/queue mutation；未建 handoff producer/service/event model/queue abstraction",
+    "未把 worker/orchestrator runtime handoff decision 写成 normalized handoff fact（I-85）；未把 runtime decision 当 HANDOFF_REQUIRED mutation（I-90）",
+    "未从 keyword/rule/free text 发明 reason taxonomy（I-86）；未把 trace 提升为用户可见 reason（I-95）",
+    "未把 target selector 升级为 Member/operator assignee（DP-168/I-91）",
+    "未把 queue membership 当 priority ordering 或 mutation authority（I-93）；未把 HANDOFF_REQUIRED 与 known reason 互相 imply（I-94）",
+    "未实现 Claim/Release（SHEEP-070 DEFER）、AI/Human Ownership（SHEEP-071 DEFER）、Supervisor Takeover（SHEEP-073）、Composer/Send/Attachments"
+  ],
+  "modified_files": [
+    "docs/fast-sheep-handoff-reason-queue-readiness.md (new)",
+    "reports/SHEEP-072-report.json (new)",
+    "project/PROJECT_STATE.json (sheep_072 record + decision package)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
