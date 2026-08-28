@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
-  "last_closed_task": "SHEEP-070",
-  "current_task": "SHEEP-071 (AI / Human Ownership State — Fact-Readiness executed; NOT_READY/DEFER; awaiting Owner disposition; not auto-executed)",
-  "next_action": "SHEEP-071 (AI / Human Ownership State) Fact-Readiness — awaiting Owner disposition; no next SHEEP without PASS",
+  "last_closed_task": "SHEEP-071",
+  "current_task": "SHEEP-072 (Handoff Reason / Queue — Fact-Readiness — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
+  "next_action": "SHEEP-072 (Handoff Reason / Queue) proposal — awaiting Owner approval; not auto-executed",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1956,9 +1956,9 @@
   },
   "sheep_071": {
     "codex_result": "PARTIAL",
-    "controller_decision": "PENDING_OWNER_PASS",
-    "status": "NOT_READY / DEFER (AI / Human Ownership State Fact-Readiness; no schema v11, no IPC/UI/service/state machine)",
-    "closed_date_candidate": null,
+    "controller_decision": "PASS",
+    "status": "CLOSED (AI / Human Ownership State implementation DEFER_PENDING_VERIFIED_OWNERSHIP_PRODUCER_CURRENTNESS_AND_HOLDER_SEMANTICS)",
+    "closed_date_candidate": "2026-08-29",
     "report": "reports\\SHEEP-071-report.json",
     "review_doc": "docs\\fast-sheep-ai-human-ownership-readiness.md",
     "readiness": {
@@ -1968,7 +1968,7 @@
       "AI_OWNERSHIP_HOLDER_SEMANTICS_READINESS": "NOT_READY (owner_kind=ai no identity/producer)",
       "HUMAN_OWNERSHIP_HOLDER_SEMANTICS_READINESS": "NOT_READY (DP-160)",
       "CURRENT_OPERATOR_SUBJECT_READINESS": "NOT_READY (no trusted human subject; I-68)",
-      "OWNERSHIP_AUTOMATION_LEVEL_SEPARATION_READINESS": "PARTIAL (I-77 separation maintained)",
+      "OWNERSHIP_AUTOMATION_LEVEL_SEPARATION_READINESS": "READY / CONTRACT_CONFIRMED (Owner correction: evidence confirms Ownership workflow/holder facts vs AutomationLevel/AI send authority/M5 runtime activity are distinct domains; missing piece is production projection -> ORCHESTRATOR_PROJECTION_READINESS stays NOT_READY)",
       "ORCHESTRATOR_PROJECTION_READINESS": "NOT_READY (M5 runtime control facts; I-78 no bridge producer)",
       "OWNERSHIP_SNAPSHOT_PRODUCER_READINESS": "NOT_READY (no production writer; test-only)",
       "OWNERSHIP_CURRENTNESS_SEMANTICS_READINESS": "NOT_READY (DP-162 no new schema)",
@@ -1977,19 +1977,45 @@
       "AI_HUMAN_OWNERSHIP_PRESENTATION_READINESS": "NOT_READY (I-79/I-80/I-82/I-83)",
       "AI_HUMAN_OWNERSHIP_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-158..DP-162 + I-77..I-83 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decisions": ["DP-158..DP-162 + I-77..I-84 (OWNER_DECIDED 2026-08-29)"],
+    "i_84": "OWNERSHIP_SNAPSHOT_WITHOUT_VERIFIED_PRODUCER_AND_CURRENTNESS_MUST_NOT_BE_PRESENTED_AS_CURRENT_OWNERSHIP",
+    "separation_precision_note": "Owner correction: OWNERSHIP_AUTOMATION_LEVEL_SEPARATION_READINESS = READY / CONTRACT_CONFIRMED (existing evidence confirms Ownership workflow/holder facts vs AutomationLevel, AI send authority, M5 runtime activity are different domains; what is missing is the production projection between them, so ORCHESTRATOR_PROJECTION_READINESS remains NOT_READY)",
+    "disposition": "DEFER_PENDING_VERIFIED_OWNERSHIP_PRODUCER_CURRENTNESS_AND_HOLDER_SEMANTICS",
+    "acceptance": {
+      "no_migration": "owner_ai_id / currentness|timestamp fields / state-holder CHECK / transition|event|audit table / v11 migration NOT authorized; schema stays v10",
+      "no_ipc_ui_service": "no ownership IPC/UI/service/state machine",
+      "no_read_only_projection": "read-only Ownership snapshot projection NOT approved this round",
+      "no_wiring_for_readiness": "Main ownership repository NOT wired merely for readiness",
+      "no_bridge_producer": "no M5 orchestrator -> ownership bridge producer",
+      "no_binary_mode": "no human|ai binary ownership mode",
+      "no_ai_active_inference": "AI_ACTIVE NOT inferred as owner_kind=ai / AI_AUTO_REPLY / AI send authority / real-time AI generation",
+      "no_non_ai_active_as_human": "non-AI_ACTIVE state NOT auto-classified as human ownership",
+      "no_unverified_current_ownership": "no current ownership claim from snapshot without verified producer/currentness"
+    },
+    "reopen_triggers": [
+      "production Ownership producer appears",
+      "state<->holder semantics established",
+      "snapshot currentness/freshness semantics established",
+      "verified Member/operator identity runtime established",
+      "first real Supervisor/multi-agent/AI ownership presentation consumer about to enable"
+    ],
+    "reopen_order_read_side": "producer -> state+holder semantics -> currentness/provenance -> trusted identities -> authorized Conversation projection -> typed IPC -> presentation",
+    "sheep070_mutation_contract": "Claim/Release mutation continues to obey SHEEP-070 frozen authority/transition/concurrency contract (DP-152..157 + I-68..I-76)",
+    "controller_pass_date": "2026-08-29",
     "decision_package": {
       "no_migration": "owner_ai_id / timestamp|currentness fields / state|holder CHECK / transition|event|audit tables / v11 migration NOT authorized; schema stays v10",
       "no_ipc_ui_service": "no ownership IPC/UI/service/state machine; no Main wiring; no M5->ownership bridge producer; no ai_agent/model identity; no Member/Auth/Capability/ResourceScope runtime",
       "defer": "DEFER until trusted operator subject + verified member reference semantics + production ownership producer + currentness semantics + state-holder relation evidence; then minimal prerequisite"
     },
-    "next_per_roadmap": "Owner decides DEFER vs minimal prerequisite vs read-only projection evidence; no AI/Human Ownership product implementation without PASS; no next SHEEP",
+    "next_per_roadmap": "CLOSED (DEFER_PENDING_VERIFIED_OWNERSHIP_PRODUCER_CURRENTNESS_AND_HOLDER_SEMANTICS); next = SHEEP-072 (Handoff Reason / Queue) proposal",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   },
   "fast_sheep_ai_human_ownership_fact_readiness_decisions": {
-    "status": "ADOPTED_PENDING_OWNER_PASS",
+    "status": "OWNER_DECIDED",
     "decided_date": "2026-08-29",
+    "disposition": "DEFER_PENDING_VERIFIED_OWNERSHIP_PRODUCER_CURRENTNESS_AND_HOLDER_SEMANTICS",
+    "separation_precision_note": "OWNERSHIP_AUTOMATION_LEVEL_SEPARATION_READINESS = READY / CONTRACT_CONFIRMED (distinct domains confirmed; production projection missing -> ORCHESTRATOR_PROJECTION stays NOT_READY)",
     "dp_158": "AI_HUMAN_OWNERSHIP_STATE_IS_A_FACT_DIMENSION_DISTINCT_FROM_AUTOMATION_LEVEL_AND_AI_SEND_AUTHORITY",
     "dp_159": "AI_ACTIVE_STATE_REQUIRES_EXPLICIT_PRODUCER_AND_CURRENTNESS_SEMANTICS",
     "dp_160": "HUMAN_OWNERSHIP_HOLDER_FACT_REQUIRES_VERIFIED_MEMBER_REFERENCE_SEMANTICS",
@@ -2002,7 +2028,8 @@
     "i_81": "AI_ACTIVE_DOES_NOT_IMPLY_OWNER_KIND_AI_AND_OWNER_KIND_AI_DOES_NOT_IMPLY_AI_ACTIVE",
     "i_82": "NON_AI_ACTIVE_STATE_MUST_NOT_BE_CLASSIFIED_AS_HUMAN_OWNERSHIP_WITHOUT_VERIFIED_HOLDER_FACTS",
     "i_83": "OWNERSHIP_AI_ACTIVE_MUST_NOT_BE_PRESENTED_AS_REAL_TIME_AI_GENERATION_ACTIVITY_WITHOUT_RUNTIME_ACTIVITY_EVIDENCE",
-    "readiness": "STATE_FACT=PARTIAL / STATE_HOLDER_RELATION=NOT_READY / AI_ACTIVE_SEMANTICS=NOT_READY / AI_OWNERSHIP_HOLDER=NOT_READY / HUMAN_OWNERSHIP_HOLDER=NOT_READY / CURRENT_OPERATOR_SUBJECT=NOT_READY / AUTOMATION_LEVEL_SEPARATION=PARTIAL / ORCHESTRATOR_PROJECTION=NOT_READY / SNAPSHOT_PRODUCER=NOT_READY / CURRENTNESS=NOT_READY / PERSISTENCE=PARTIAL / IPC=NOT_READY / PRESENTATION=NOT_READY / IMPLEMENTATION=NOT_READY",
-    "next": "Owner decides DEFER vs minimal prerequisite vs read-only projection evidence; no next SHEEP without PASS"
+    "i_84": "OWNERSHIP_SNAPSHOT_WITHOUT_VERIFIED_PRODUCER_AND_CURRENTNESS_MUST_NOT_BE_PRESENTED_AS_CURRENT_OWNERSHIP",
+    "readiness": "STATE_FACT=PARTIAL / STATE_HOLDER_RELATION=NOT_READY / AI_ACTIVE_SEMANTICS=NOT_READY / AI_OWNERSHIP_HOLDER=NOT_READY / HUMAN_OWNERSHIP_HOLDER=NOT_READY / CURRENT_OPERATOR_SUBJECT=NOT_READY / AUTOMATION_LEVEL_SEPARATION=READY|CONTRACT_CONFIRMED / ORCHESTRATOR_PROJECTION=NOT_READY / SNAPSHOT_PRODUCER=NOT_READY / CURRENTNESS=NOT_READY / PERSISTENCE=PARTIAL / IPC=NOT_READY / PRESENTATION=NOT_READY / IMPLEMENTATION=NOT_READY",
+    "next": "SHEEP-072 (Handoff Reason / Queue) proposal — awaiting Owner approval; not auto-executed"
   }
 }
