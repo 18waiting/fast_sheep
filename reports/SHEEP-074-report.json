@@ -1,0 +1,94 @@
+{
+  "task": "SHEEP-074",
+  "codex_result": "PARTIAL",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.5",
+  "status": "NOT_READY / DEFER (Reload / Crash Recovery Fact-Readiness; no schema v11, no recovery IPC/UI/service/engine; wiring gap)",
+  "summary": "Reload / Crash Recovery Fact-Readiness Read First：RUNTIME_STATE_INVENTORY=PARTIAL（逐 state 盘点 owner/durability/external side effect/recovery source）、RECOVERY_BOUNDARY_CLASSIFICATION=READY/CONTRACT_CONFIRMED（DP-174 三边界；无 watchdog）、PERSISTED_FACT_DURABILITY=READY/CONTRACT_CONFIRMED（SQLite close/reopen durable）、STARTUP_REHYDRATION_WIRING=NOT_READY（I-110：recoverInFlightAttempts/background job recover 未接入 production startup）、DELIVERY_ATTEMPT_RECOVERY=PARTIAL（DP-128 IN_FLIGHT->UNKNOWN；capability+测试；startup trigger 未接入）、BACKGROUND_JOB_RECOVERY=PARTIAL（recoverAll idempotent-only；startup trigger 未接入）、IMPORT_RECOVERY=PARTIAL（resumeSession capability；production 默认 in-memory session store）、BACKUP_DISASTER_RECOVERY_SEPARATION=READY/CONTRACT_CONFIRMED（DP-177；I-112 无自动 rollback）、RENDERER_RELOAD_RECOVERY=PARTIAL（boot re-bootstrap；in-memory；I-113 no-selection fallback）、MAIN_CRASH_RECOVERY=NOT_READY（无 startup wiring）、FULL_APP_RESTART_RECOVERY=PARTIAL、EPHEMERAL_STATE_RECOVERY=PARTIAL（DP-175/I-109）、EXTERNAL_SIDE_EFFECT_RECONCILIATION=PARTIAL（I-106/I-111）、RECOVERY_AUTHORIZATION=READY/CONTRACT_CONFIRMED（I-107/I-108/I-113）、RELOAD_CRASH_RECOVERY_IMPLEMENTATION=NOT_READY。不授权 active-selection persistence/runtime checkpoint/AI operation persistence/recovery table/v11 migration；不实现 recovery IPC/UI/service/engine；最小 prerequisite = 将既有 recovery helper 接入 production startup rehydration，否则 DEFER。DP-173~177 + I-105~I-114 已记录",
+  "completed_requirements": 22,
+  "total_requirements": 22,
+  "owner_tightening": {
+    "dp173": "遵守：RECOVERY_IS_FACT_BASED_AND_STATE_OWNER_SPECIFIC（逐项 state owner/durability/recovery source；未建万能 recovery engine）",
+    "dp174": "遵守：RENDERER_RELOAD_MAIN_PROCESS_CRASH_AND_FULL_APP_RESTART_ARE_DISTINCT_RECOVERY_BOUNDARIES（Main crash readiness = 下次 process startup state reconstruction；未授权 watchdog/auto relaunch）",
+    "dp175": "遵守：ephemeral state 无跨 restart durability promise；Renderer reload 恢复依真实 state owner，未一律要求 SQLite persistence",
+    "dp176": "遵守：RECOVERY_SEMANTICS_FOLLOW_STATE_DURABILITY_AND_EXTERNAL_SIDE_EFFECT_CLASS",
+    "i105": "遵守：Recovery 不得 fabricate state",
+    "i106": "遵守：仅可能产生外部/durable side effect 且 outcome 不可判定的 in-flight work 必须 UNKNOWN；纯 transient computation 未伪造 UNKNOWN business fact",
+    "i110": "遵守：DURABLE_ROW_EXISTENCE_DOES_NOT_PROVE_STARTUP_RECOVERY_WIRING_OR_RESUMABILITY（已核验 recoverInFlightAttempts/background job recover 未接入 production startup）",
+    "recover_in_flight_separate": "遵守：对 recoverInFlightAttempts 分开核验 recovery semantics/repository capability/production startup trigger/failure|idempotency；函数+测试存在 != production recovery READY",
+    "m10_m11_separate": "遵守：M10 job recovery / M11 import recovery 核验 production trigger/scope/idempotency/failure；smoke 存在不自动推广为所有任务或 startup recovery ready",
+    "i111": "遵守：RECOVERY_MUST_NOT_REPLAY_EXTERNAL_SIDE_EFFECTS_WITHOUT_IDEMPOTENCY_OR_RECONCILIATION",
+    "dp177": "遵守：BACKUP_RESTORE_IS_DISASTER_RECOVERY_NOT_ORDINARY_RUNTIME_CRASH_RECOVERY",
+    "i112": "遵守：ORDINARY_CRASH_MUST_NOT_TRIGGER_BACKUP_ROLLBACK_WITHOUT_CORRUPTION_EVIDENCE_OR_EXPLICIT_RESTORE_DECISION（普通 crash 默认 reopen current DB）",
+    "i107": "遵守：RECOVERED_ACTIVE_CONVERSATION_SELECTOR_IS_UNTRUSTED_UNTIL_REAUTHORIZED（重新 Conversation resolve + WorkspaceMerchant containment）",
+    "i113": "遵守：INVALID_OR_STALE_RECOVERED_SELECTION_FALLS_BACK_TO_NO_SELECTION_NOT_AN_INFERRED_WORK_ITEM",
+    "i108": "遵守：所有 recovery reads 锚定 trusted WorkspaceMerchantContext；未 first-row/count==1 推断 Merchant",
+    "i109": "遵守：DRAFT_SURVIVAL_ACROSS_RECOVERY_BOUNDARIES_FOLLOWS_VERIFIED_STATE_OWNERSHIP_AND_EXPLICIT_DURABILITY_CONTRACT；未借 074 实现 SHEEP-075 draft persistence",
+    "i114": "遵守：LATE_ASYNC_RESULTS_AFTER_RELOAD_OR_RESTART_MUST_MATCH_THE_CURRENT_OPERATION_AND_CONVERSATION_CONTEXT（核验 suggestion/generation late-result stale-context；未因此创建 durable operation framework）",
+    "state_inventory_by_state": "遵守：Runtime State Inventory 按 state 输出 owner/durable|ephemeral/外部副作用/Renderer reload 行为/Main|full restart 行为/recovery source/trigger",
+    "fifteen_readiness_outputs": "遵守：15 项 readiness 分别输出（INVENTORY/BOUNDARY_CLASSIFICATION/PERSISTED_FACT_DURABILITY/STARTUP_REHYDRATION_WIRING/DELIVERY_ATTEMPT/BACKGROUND_JOB/IMPORT/BACKUP_DISASTER_SEPARATION/RENDERER_RELOAD/MAIN_CRASH/FULL_APP_RESTART/EPHEMERAL_STATE/EXTERNAL_SIDE_EFFECT_RECONCILIATION/RECOVERY_AUTHORIZATION/IMPLEMENTATION）",
+    "no_migration": "遵守：不授权 active-selection persistence、runtime checkpoint、AI operation persistence、recovery table、v11 migration；Draft persistence 留 SHEEP-075、Audit 留 SHEEP-076",
+    "zero_code": "遵守：0 product code / 0 UI / 0 visual evidence；运行常规 regression",
+    "controller_review_stop": "遵守：提交 Controller Review + Decision Package 并 STOP；根据真实缺口决定最小 prerequisite、DEFER 或 recovery foundation"
+  },
+  "readiness": {
+    "RUNTIME_STATE_INVENTORY_READINESS": "PARTIAL (per-state inventory produced: owner/durability/external side effect/recovery source; not yet a maintained production artifact)",
+    "RECOVERY_BOUNDARY_CLASSIFICATION_READINESS": "READY / CONTRACT_CONFIRMED (DP-174 three distinct boundaries; Main crash = next process startup reconstruction; no watchdog/auto-relaunch)",
+    "PERSISTED_FACT_DURABILITY_READINESS": "READY / CONTRACT_CONFIRMED (SQLite close->reopen durable for normalized facts; not startup rehydration)",
+    "STARTUP_REHYDRATION_WIRING_READINESS": "NOT_READY (I-110: recoverInFlightAttempts / background job recover NOT wired into production startup)",
+    "DELIVERY_ATTEMPT_RECOVERY_READINESS": "PARTIAL (DP-128 IN_FLIGHT->UNKNOWN semantics correct; capability+tests exist; production startup trigger NOT wired)",
+    "BACKGROUND_JOB_RECOVERY_READINESS": "PARTIAL (recoverAll idempotent-only replay; M10 smoke PASS; production startup trigger NOT wired)",
+    "IMPORT_RECOVERY_READINESS": "PARTIAL (resumeSession idempotent resume capability; production composition defaults to InMemoryImportSessionStore; no startup trigger)",
+    "BACKUP_DISASTER_RECOVERY_SEPARATION_READINESS": "READY / CONTRACT_CONFIRMED (DP-177 backup/restore = disaster recovery not ordinary crash; I-112 no auto rollback on ordinary crash)",
+    "RENDERER_RELOAD_RECOVERY_READINESS": "PARTIAL (boot re-applies bootstrap; renderer in-memory only, no localStorage/sessionStorage; active selection/drafts lost -> no-selection fallback I-113)",
+    "MAIN_CRASH_RECOVERY_READINESS": "NOT_READY (recovery helpers not wired into next-process startup state reconstruction)",
+    "FULL_APP_RESTART_RECOVERY_READINESS": "PARTIAL (persisted facts durable; ephemeral state no cross-restart promise; rehydration wiring not ready)",
+    "EPHEMERAL_STATE_RECOVERY_READINESS": "PARTIAL (DP-175/I-109 drafts/suggestion/mode ephemeral; reload behavior depends on state owner; no SHEEP-075)",
+    "EXTERNAL_SIDE_EFFECT_RECONCILIATION_READINESS": "PARTIAL (delivery IN_FLIGHT->UNKNOWN DP-128/I-106; no replay without idempotency I-111; job idempotent-only; import resume idempotent)",
+    "RECOVERY_AUTHORIZATION_READINESS": "READY / CONTRACT_CONFIRMED (I-107/I-108 recovered selector untrusted until re-authorized; WorkspaceMerchant containment; I-113 no inferred work item)",
+    "RELOAD_CRASH_RECOVERY_IMPLEMENTATION_READINESS": "NOT_READY"
+  },
+  "decision_package": {
+    "no_migration": "active-selection persistence / runtime checkpoint / AI operation persistence / recovery table / v11 migration NOT authorized; schema stays v10; Draft persistence -> SHEEP-075; Audit -> SHEEP-076",
+    "no_ipc_ui_service": "no recovery IPC/UI/service/engine; no watchdog/auto-relaunch; no backup auto-rollback (I-112)",
+    "minimal_prerequisite_or_defer": "minimal prerequisite (if approved): wire existing recovery helpers (recoverInFlightAttempts DP-128 + background job recoverAll) into production startup rehydration with idempotency/failure/trigger semantics; otherwise DEFER; import durable session store decision deferred to then-current facts"
+  },
+  "evidence": {
+    "confirmed": [
+      "SQLite close->reopen durability verified for normalized conversations/messages/stores/platformAccounts/deliveryAttempts/workspaceMerchant (persistence durability tests PASS)",
+      "recoverInFlightAttempts (DP-128: unresolved IN_FLIGHT -> UNKNOWN, no auto-retry I-33) exists in persistence + exported + tested; NOT called anywhere in apps/desktop production code (only in-memory repo helper in bootstrap.ts) - I-110",
+      "background job recovery recoverAll/recoverJob (idempotent-only replay; non-idempotent RUNNING/CANCELLING -> FAILED) exists + M10 recovery smoke PASS; BackgroundJobService.recover() NOT invoked at production startup - I-110",
+      "legacy import ImportOrchestrator resumeSession (idempotent resume + backup_id reuse) capability exists; production composition defaults to InMemoryImportSessionStore; no startup trigger",
+      "backup-manager: VACUUM INTO snapshot + explicit restore + rotation; restore only on explicit decision; NO automatic rollback on ordinary crash (I-112); backup/restore is disaster recovery not runtime crash recovery (DP-177)",
+      "renderer has NO localStorage/sessionStorage persistence (grep zero matches); workbench-store is in-memory; boot re-applies bootstrap state on reload; active selection/drafts lost -> no-selection fallback (I-113)",
+      "M5 orchestrator mode/countdown/takeover/suggestion are Main in-memory transient runtime control (no external side effect class requiring UNKNOWN business fact - I-106)",
+      "No watchdog/auto-relaunch code; Main crash readiness would be next-process startup reconstruction (DP-174)"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "desktop build/typecheck + desktop tests (regression; pure Read First turn - no new product code)",
+    "workspace typecheck/test PASS",
+    "m6 Electron smoke PASS (external_network_calls=0) - non-regression",
+    "check:boundary PASS; secret scan PASS"
+  ],
+  "negative_tests": [
+    "未改 schema v10；未授权 active-selection persistence/runtime checkpoint/AI operation persistence/recovery table/v11 migration",
+    "未实现 recovery IPC/UI/service/engine；未建 watchdog/auto-relaunch；未实现 backup 自动 rollback（I-112）",
+    "未将 recoverInFlightAttempts/background job recover 假装为 production startup ready（I-110）",
+    "未把 durable row 存在当 startup wiring（I-110）；未把 smoke 存在推广为所有任务 recovery ready",
+    "未 replay 外部副作用无 idempotency/reconciliation（I-111）；未把纯 transient computation 伪造 UNKNOWN business fact（I-106）",
+    "未把 recovered selector 当 trusted（I-107）；未自动选 Queue 第一条/ambient Store 会话（I-113）",
+    "未实现 draft persistence（SHEEP-075）、Conversation Audit Trail（SHEEP-076）、Composer/Send/Attachments"
+  ],
+  "modified_files": [
+    "docs/fast-sheep-reload-crash-recovery-readiness.md (new)",
+    "reports/SHEEP-074-report.json (new)",
+    "project/PROJECT_STATE.json (sheep_074 record + decision package)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
