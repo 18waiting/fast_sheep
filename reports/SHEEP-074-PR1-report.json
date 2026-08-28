@@ -1,0 +1,83 @@
+{
+  "task": "SHEEP-074-PR1",
+  "codex_result": "COMPLETE",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.5 (independent prerequisite)",
+  "status": "COMPLETE (Startup Rehydration Wiring Foundation; awaiting Controller/Owner PASS)",
+  "summary": "Delivery Attempt production startup recovery wiring = mandatory, implemented: merchant-scoped recoverWorkspaceInFlightDeliveryAttempts (IN_FLIGHT->UNKNOWN, DP-128/I-33, conversation->merchant contained, no whole-DB unscoped update, idempotent I-116, fail-closed I-117) + wired into real production startup composition createWorkerBackedMainContext after trusted WorkspaceMerchantContext and before createMainContext exposure (DP-178/I-115/I-119); Background Job recovery = explicitly DEFER (evidence gate: JobRecord has no owner/scope field, idempotency is string-heuristic only, no per-job external-side-effect contract - constraints #7/#8); Import recovery NOT wired (constraint #9); no generic Recovery Engine / no schema change / no UI (schema v10). Restart integration evidence via real production composition (startup #1 legal IN_FLIGHT fixture, startup #2 auto-recovery): current merchant IN_FLIGHT->UNKNOWN, other merchant untouched, repeated startup idempotent, recovery failure fails closed not swallowed. DP-178 + I-115..I-119 adopted. persistence 89/89, desktop 303/303, typecheck PASS, m6 smoke PASS (external_network_calls=0), boundary+secrets PASS",
+  "completed_requirements": 15,
+  "total_requirements": 15,
+  "core_acceptance": {
+    "delivery_attempt_wiring": "mandatory - implemented (merchant-scoped, conversation->merchant contained)",
+    "background_job_recovery": "evidence-gated optional - explicitly DEFER (no direct evidence of job owner/idempotency/external-side-effect contract)",
+    "import_recovery": "explicitly excluded - not wired; no durable ImportSessionStore",
+    "schema": "v10 unchanged; no recovery table/checkpoint/status columns/v11",
+    "no_generic_engine_ui": "no generic Recovery Engine / no UI / no draft / no active-selection persistence"
+  },
+  "owner_constraints": {
+    "startup_ordering": "遵守：DB open/migrate/validate -> trusted WorkspaceMerchantContext -> repositories/composition -> eligible recovery -> affected subsystem exposure (DP-178)",
+    "merchant_containment": "遵守：Delivery recovery conversation->merchant contained; current workspace merchant recovers only its own unresolved IN_FLIGHT; no whole-DB unscoped UPDATE",
+    "unknown_outcome": "遵守：unresolved IN_FLIGHT -> UNKNOWN; never REJECTED/ACK/auto-retry",
+    "fixture_no_fake_adapter": "遵守：restart test startup #1 uses real v10 persistence/repository IN_FLIGHT fixture (no fake production delivery driver); startup #2 goes through real production startup composition",
+    "no_fake_port_in_production": "遵守：production composition never binds fake/test TextDeliveryPort (DP-129)",
+    "restart_integration": "遵守：covers current merchant IN_FLIGHT->UNKNOWN; other merchant untouched; repeated startup idempotent/no-op; recovery failure not swallowed with subsystem-ready claim",
+    "background_job_evidence_gate": "遵守：Background Job only wired with direct evidence of production job owner/durability/idempotency/external-side-effect contract; no direct evidence -> explicitly DEFER (not blocking PR1 PASS)",
+    "job_scope_by_owner": "遵守：Background Job recovery scope follows true state owner; owner/scope unclear (JobRecord has no owner field) -> not wired",
+    "import_excluded": "遵守：Import resumeSession not wired to startup; no durable ImportSessionStore",
+    "backup_excluded": "遵守：Backup/restore does not participate in ordinary startup recovery (DP-177/I-112)",
+    "no_ephemeral_persistence": "遵守：no active selection / draft / suggestion / AI operation persistence (SHEEP-075 boundary kept)",
+    "no_schema": "遵守：no recovery timestamp/checkpoint/status/schema fields; schema v10 unchanged",
+    "thin_wiring": "遵守：no RecoveryRegistry/Plugin/CheckpointEngine generic framework; thin wiring in existing production bootstrap/composition",
+    "real_startup_evidence": "遵守：production-composition-level restart evidence mandatory and provided; direct helper-only tests NOT used as wiring evidence",
+    "no_ui": "遵守：no UI / visual evidence required"
+  },
+  "evidence": {
+    "confirmed": [
+      "recoverWorkspaceInFlightDeliveryAttempts(conn, merchantId, resolvedAt): only workspace-merchant IN_FLIGHT attempts -> UNKNOWN; other/unknown-owner untouched; idempotent; propagates SQL failures",
+      "worker-runtime.ts createWorkerBackedMainContext wires recovery after workspaceMerchant, before createMainContext; no try/catch (fail closed); guarded by workspaceMerchant presence",
+      "production composition never binds fake TextDeliveryPort (DP-129)",
+      "Background Job recovery explicitly DEFER: JobRecord has no merchant/owner scope field; recoverJob idempotency is string-heuristic; no per-job external-side-effect contract evidence",
+      "Import resumeSession NOT wired; production uses InMemoryImportSessionStore (constraint #9)",
+      "Backup/restore does not participate in ordinary startup recovery (DP-177/I-112)"
+    ],
+    "inferred": []
+  },
+  "restart_integration": {
+    "scenario_1_current_merchant": "PASS: 2 workspace-merchant IN_FLIGHT attempts -> UNKNOWN via real startup #2 (resolvedAt set, no delivered fact)",
+    "scenario_2_other_merchant": "PASS: other-merchant IN_FLIGHT attempt stays IN_FLIGHT (I-119)",
+    "scenario_3_repeated_startup": "PASS: second startup no-op; resolvedAt not rewritten (I-116)",
+    "scenario_4_failure_fail_closed": "PASS: recovery-side failure (delivery_attempts table missing at startup) -> createWorkerBackedMainContext throws, not swallowed (I-117); closed-conn function also throws"
+  },
+  "tests": [
+    "desktop-ipc 9/9 PASS; desktop 303/303 PASS (298 baseline + 5 new PR1)",
+    "persistence 89/89 PASS (88 baseline + 1 new PR1)",
+    "workspace typecheck PASS (20 packages)",
+    "m6 Electron smoke PASS (external_network_calls=0)",
+    "check:boundary PASS; secret scan PASS"
+  ],
+  "negative_tests": [
+    "no whole-DB unscoped recovery UPDATE (merchant-scoped only)",
+    "IN_FLIGHT recovery is UNKNOWN only; never REJECTED/ACK/auto-retry; no delivered message fact",
+    "other merchant / unknown-owner attempts untouched (I-119)",
+    "recovery failure not swallowed; startup fails closed (I-117)",
+    "no fake/test TextDeliveryPort in production composition (DP-129)",
+    "no generic Recovery Engine / RecoveryRegistry / checkpoint / schema change / v11",
+    "Import recovery not wired; no durable ImportSessionStore; backup not in startup recovery",
+    "no draft/suggestion/AI-operation persistence (SHEEP-075 boundary)"
+  ],
+  "modified_files": [
+    "packages/persistence/src/delivery/delivery-attempt.ts (recoverWorkspaceInFlightDeliveryAttempts + result type)",
+    "packages/persistence/src/index.ts (exports)",
+    "apps/desktop/src/main/worker-runtime.ts (startup recovery wiring)",
+    "apps/desktop/tests/delivery-attempt-composition.test.ts (+5 PR1 restart integration tests)",
+    "packages/persistence/tests/delivery-attempt.test.ts (+1 PR1 merchant-scoped recovery test)",
+    "docs/fast-sheep-pr1-startup-rehydration-wiring.md (new)",
+    "reports/SHEEP-074-PR1-report.json (new)",
+    "project/PROJECT_STATE.json (sheep_074_pr1 record + decisions)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
   "last_closed_task": "SHEEP-074",
-  "current_task": "SHEEP-074-PR1 (Startup Rehydration Wiring Foundation — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
-  "next_action": "SHEEP-074-PR1 (Startup Rehydration Wiring Foundation) proposal — awaiting Owner approval; not auto-executed",
+  "current_task": "SHEEP-074-PR1 (Startup Rehydration Wiring Foundation — executed; COMPLETE; awaiting Controller/Owner PASS; not auto-executed)",
+  "next_action": "SHEEP-074-PR1 (Startup Rehydration Wiring Foundation) — awaiting Controller/Owner PASS; no SHEEP-075 without PASS",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -2255,5 +2255,34 @@
     "i_114": "LATE_ASYNC_RESULTS_AFTER_RELOAD_OR_RESTART_MUST_MATCH_THE_CURRENT_OPERATION_AND_CONVERSATION_CONTEXT",
     "readiness": "INVENTORY=PARTIAL / BOUNDARY_CLASSIFICATION=READY|CONTRACT_CONFIRMED / PERSISTED_FACT_DURABILITY=READY|CONTRACT_CONFIRMED / STARTUP_REHYDRATION_WIRING=NOT_READY / DELIVERY_ATTEMPT=PARTIAL / BACKGROUND_JOB=PARTIAL / IMPORT=PARTIAL / BACKUP_DISASTER_SEPARATION=READY|CONTRACT_CONFIRMED / RENDERER_RELOAD=PARTIAL / MAIN_CRASH=NOT_READY / FULL_APP_RESTART=PARTIAL / EPHEMERAL_STATE=PARTIAL / EXTERNAL_SIDE_EFFECT_RECONCILIATION=PARTIAL / RECOVERY_AUTHORIZATION=READY|CONTRACT_CONFIRMED / IMPLEMENTATION=NOT_READY",
     "next": "SHEEP-074-PR1 (Startup Rehydration Wiring Foundation) proposal — awaiting Owner approval; not auto-executed"
+  },
+  "sheep_074_pr1": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "COMPLETE (Startup Rehydration Wiring Foundation; awaiting Controller/Owner PASS)",
+    "closed_date_candidate": null,
+    "report": "reports\\SHEEP-074-PR1-report.json",
+    "review_doc": "docs\\fast-sheep-pr1-startup-rehydration-wiring.md",
+    "delivery_attempt_wiring": "mandatory - implemented (merchant-scoped, conversation->merchant contained, IN_FLIGHT->UNKNOWN, idempotent, fail-closed)",
+    "background_job_recovery": "evidence-gated optional - explicitly DEFER (no direct evidence of job owner/scope/idempotency/external-side-effect contract)",
+    "import_recovery": "explicitly excluded - not wired; no durable ImportSessionStore",
+    "decisions": ["DP-178 + I-115..I-119 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "restart_integration": "real production startup composition evidence: current merchant IN_FLIGHT->UNKNOWN; other merchant untouched; repeated startup idempotent; recovery failure fails closed not swallowed",
+    "schema": "v10 unchanged; no recovery table/checkpoint/status columns/v11",
+    "next_per_roadmap": "awaiting Controller/Owner PASS; no SHEEP-075 without PR1 PASS",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
+  },
+  "fast_sheep_pr1_startup_rehydration_wiring_decisions": {
+    "status": "ADOPTED_PENDING_OWNER_PASS",
+    "decided_date": "2026-08-29",
+    "dp_178": "STARTUP_REHYDRATION_RUNS_AFTER_TRUSTED_CONTEXT_ESTABLISHMENT_AND_BEFORE_AFFECTED_RUNTIME_EXPOSURE",
+    "i_115": "STARTUP_RECOVERY_MUST_COMPLETE_OR_FAIL_CLOSED_BEFORE_AFFECTED_STATE_IS_EXPOSED_AS_RECOVERED (complete = safe recovery/reconciliation classification done, not resumed work execution)",
+    "i_116": "STARTUP_RECOVERY_STEPS_MUST_BE_IDEMPOTENT_OR_RECOVERABLY_REPEATABLE",
+    "i_117": "STARTUP_RECOVERY_FAILURE_MUST_FAIL_CLOSED_FOR_THE_AFFECTED_SUBSYSTEM_NOT_FABRICATE_RECOVERY_SUCCESS",
+    "i_118": "RECOVERY_INTEGRATION_TEST_FIXTURES_MUST_NOT_REQUIRE_FAKE_PRODUCTION_SIDE_EFFECT_ADAPTERS",
+    "i_119": "STARTUP_RECOVERY_SCOPE_FOLLOWS_THE_RECOVERED_STATE_OWNER_AND_MUST_NOT_INFER_SCOPE_FROM_AN_UNRELATED_WORKSPACE_FILTER",
+    "background_job_defer": "Background Job startup recovery explicitly DEFER (evidence gate: JobRecord no owner/scope field; recoverJob idempotency string-heuristic; no per-job external-side-effect contract)",
+    "next": "awaiting Controller/Owner PASS; no SHEEP-075 without PR1 PASS"
   }
 }

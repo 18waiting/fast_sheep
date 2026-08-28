@@ -15,7 +15,7 @@ import {
   SqliteNormalizedConversationRepository, SqliteMessageRepository,
   SqliteDeliveryAttemptRepository,
   createAuthorizedDeliveryAttempt, runDeliveryAttempt, finalizeAcknowledgedDelivery,
-  recoverInFlightAttempts, generateDeliveryAttemptId, generateDeliveryMessageId,
+  recoverInFlightAttempts, recoverWorkspaceInFlightDeliveryAttempts, generateDeliveryAttemptId, generateDeliveryMessageId,
   DeliveryAttemptError,
   type DeliveryAttemptRecord, type TextDeliveryPort, type DeliveryAttemptAuthorizerPort,
 } from "../dist/index.js";
@@ -40,6 +40,18 @@ function seedConv(conn: SqliteConnection): { conversationId: string; storeId: st
   if (!pa.findById("pa-A1")) pa.save({ id: "pa-A1", merchantId: wsId, platform: "pdd" });
   if (!convs.findById("conv-1")) convs.save({ id: "conv-1", merchantId: wsId, storeId: "A1", platformAccountId: "pa-A1", externalRef: null });
   return { conversationId: "conv-1", storeId: "A1", platformAccountId: "pa-A1", wsId };
+}
+
+/** SHEEP-074-PR1: seed a merchant-scoped store/platform-account/conversation triple. */
+function seedConvFor(conn: SqliteConnection, merchantId: string, storeId: string, paId: string, convId: string): void {
+  const m = new SqliteMerchantRepository(conn);
+  const s = new SqliteStoreRepository(conn);
+  const pa = new SqlitePlatformAccountRepository(conn);
+  const convs = new SqliteNormalizedConversationRepository(conn);
+  if (!m.findById(merchantId)) m.save({ id: merchantId, name: null });
+  if (!s.findById(storeId)) s.save({ id: storeId, merchantId, name: storeId, platform: "pdd" });
+  if (!pa.findById(paId)) pa.save({ id: paId, merchantId, platform: "pdd" });
+  if (!convs.findById(convId)) convs.save({ id: convId, merchantId, storeId, platformAccountId: paId, externalRef: null });
 }
 
 function allowAll(): DeliveryAttemptAuthorizerPort {
@@ -224,5 +236,33 @@ test("I-41: attempt text payload is never emitted into error strings", async () 
       assert.ok(!String((e as Error).message).includes(secretText), "error must not contain payload (I-41)");
     }
     ctx.conn.close();
+  });
+});
+// ---- SHEEP-074-PR1: merchant-scoped startup recovery (DP-178/I-115..I-119) ----
+
+test("SHEEP-074-PR1: recoverWorkspaceInFlightDeliveryAttempts is merchant-scoped, idempotent, UNKNOWN-only", () => {
+  withTemp(async (r) => {
+    const { conn } = openDatabase(r);
+    const wsId = resolveOrBootstrapWorkspaceMerchantId(new SqliteWorkspaceIdentityBootstrap(conn));
+    seedConvFor(conn, wsId, "A1", "pa-A1", "conv-A1");
+    seedConvFor(conn, "mB", "B1", "pa-B1", "conv-B1");
+    const repo = new SqliteDeliveryAttemptRepository(conn);
+    const a = createAuthorizedDeliveryAttempt(conn, { id: generateDeliveryAttemptId(), conversationId: "conv-A1", textPayload: "A", createdAt: "2026-08-29T00:00:00Z" }, allowAll());
+    const b = createAuthorizedDeliveryAttempt(conn, { id: generateDeliveryAttemptId(), conversationId: "conv-B1", textPayload: "B", createdAt: "2026-08-29T00:00:00Z" }, allowAll());
+    repo.markInFlight(a.id, "2026-08-29T00:00:05Z");
+    repo.markInFlight(b.id, "2026-08-29T00:00:05Z");
+
+    const res = recoverWorkspaceInFlightDeliveryAttempts(conn, wsId, "2026-08-29T02:00:00Z");
+    assert.equal(res.recovered, 1, "only workspace merchant attempt recovered");
+    assert.equal(res.untouchedOtherOrUnknownOwner, 1, "other merchant attempt untouched (I-119)");
+    assert.equal(repo.findById(a.id)?.status, "UNKNOWN", "IN_FLIGHT -> UNKNOWN (DP-128, not REJECTED/ACK)");
+    assert.equal(repo.findById(a.id)?.deliveredMessageId, null, "no delivered message fact on recovery");
+    assert.equal(repo.findById(b.id)?.status, "IN_FLIGHT", "other merchant untouched");
+
+    // I-116: second recovery run is a no-op (nothing IN_FLIGHT for this merchant remains)
+    const again = recoverWorkspaceInFlightDeliveryAttempts(conn, wsId, "2026-08-29T03:00:00Z");
+    assert.equal(again.recovered, 0);
+    assert.equal(repo.findById(a.id)?.resolvedAt, "2026-08-29T02:00:00Z", "resolvedAt not rewritten");
+    conn.close();
   });
 });

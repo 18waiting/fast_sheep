@@ -66,8 +66,8 @@ export type { MerchantRecord, StoreRecord, PlatformAccountRecord, MemberRecord, 
 export { SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteMemberRepository, SqliteMembershipRepository, SqliteSeatRepository } from "./sqlite/sqlite-identity-repositories.js";
 
 // SHEEP-066-PR1: durable text delivery attempt journal (Send Attempt truth model / typed outcome / recovery).
-export { DeliveryAttemptError, SqliteDeliveryAttemptRepository, generateDeliveryAttemptId, generateDeliveryMessageId, createAuthorizedDeliveryAttempt, runDeliveryAttempt, finalizeAcknowledgedDelivery, recoverInFlightAttempts } from "./delivery/delivery-attempt.js";
-export type { DeliveryAttemptRecord, DeliveryAttemptRepository, DeliveryAttemptStatus, DeliveryOutcome, DeliveryResult, TextDeliveryPort, DeliveryAttemptAuthorizerPort, DeliveryAttemptAuthorizeResult } from "./delivery/delivery-attempt.js";
+export { DeliveryAttemptError, SqliteDeliveryAttemptRepository, generateDeliveryAttemptId, generateDeliveryMessageId, createAuthorizedDeliveryAttempt, runDeliveryAttempt, finalizeAcknowledgedDelivery, recoverInFlightAttempts, recoverWorkspaceInFlightDeliveryAttempts } from "./delivery/delivery-attempt.js";
+export type { DeliveryAttemptRecord, DeliveryAttemptRepository, DeliveryAttemptStatus, DeliveryOutcome, DeliveryResult, TextDeliveryPort, DeliveryAttemptAuthorizerPort, DeliveryAttemptAuthorizeResult, DeliveryAttemptRecoveryResult } from "./delivery/delivery-attempt.js";
 
 // SHEEP-063-PR2-PR1: local workspace merchant identity bootstrap.
 export { WORKSPACE_MERCHANT_ID_META_KEY, WorkspaceIdentityError, SqliteWorkspaceIdentityBootstrap, resolveOrBootstrapWorkspaceMerchantId, generateWorkspaceMerchantId } from "./workspace/workspace-identity.js";

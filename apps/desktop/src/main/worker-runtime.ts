@@ -9,7 +9,7 @@
 import { existsSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { AIWorkerClient } from "@fastwork/worker-rpc";
-import { resolveDataRoot, openDatabase, SqliteFeedbackRepository, SqliteJobRepository, SqliteProductRepository, SqliteNormalizedConversationRepository, SqliteMessageRepository, SqliteDeliveryAttemptRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteWorkspaceIdentityBootstrap, resolveOrBootstrapWorkspaceMerchantId } from "@fastwork/persistence";
+import { resolveDataRoot, openDatabase, SqliteFeedbackRepository, SqliteJobRepository, SqliteProductRepository, SqliteNormalizedConversationRepository, SqliteMessageRepository, SqliteDeliveryAttemptRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteWorkspaceIdentityBootstrap, resolveOrBootstrapWorkspaceMerchantId, recoverWorkspaceInFlightDeliveryAttempts } from "@fastwork/persistence";
 import { WorkerAiEngineClient, type WorkerGenerateReplyResponse } from "@fastwork/orchestrator";
 import { FeedbackService, PersistenceFeedbackRepository, WorkerKnowledgeFeedbackClient } from "@fastwork/feedback";
 import { WorkerJobClient } from "@fastwork/background-jobs";
@@ -140,6 +140,18 @@ export function createWorkerBackedMainContext(deps: WorkerBackedMainDeps, option
   // (never lazy-created on first Timeline query). Fails closed on dangling
   // pointer / ambiguous existing identity; never infers from ambient data.
   const workspaceMerchant = createWorkspaceMerchantContext(resolveOrBootstrapWorkspaceMerchantId(new SqliteWorkspaceIdentityBootstrap(m10Sqlite.conn)));
+  // SHEEP-074-PR1 (DP-178, I-115..I-119): eligible startup recovery runs AFTER the
+  // trusted WorkspaceMerchantContext is established and BEFORE affected runtime
+  // exposure (createMainContext). Only THIS workspace merchant's unresolved
+  // IN_FLIGHT delivery attempts are recovered -> UNKNOWN (conversation->merchant
+  // contained; NO whole-DB unscoped update). No try/catch: a recovery failure
+  // propagates and fails closed for the affected subsystem (I-117) instead of
+  // fabricating recovery success. Repeated startup is idempotent (I-116). When no
+  // trusted merchant context exists there is no recovery scope (I-119), so delivery
+  // recovery is skipped and the journal is not exposed as recovered.
+  if (workspaceMerchant) {
+    recoverWorkspaceInFlightDeliveryAttempts(m10Sqlite.conn, workspaceMerchant.merchantId, new Date().toISOString());
+  }
   const productSqlite = new SqliteProductRepository(m10Sqlite.conn);
   const productRepository: ProductRepositoryPort = {
     get: (id) => {

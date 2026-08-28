@@ -230,4 +230,47 @@ export function finalizeAcknowledgedDelivery(
 export function recoverInFlightAttempts(conn: SqliteConnection, resolvedAt: string): number {
   return new SqliteDeliveryAttemptRepository(conn).recoverInFlight(resolvedAt);
 }
+/**
+ * SHEEP-074-PR1: merchant-scoped startup recovery (DP-178, I-115..I-119).
+ *
+ * Recovers ONLY unresolved IN_FLIGHT delivery attempts whose conversation belongs
+ * to the given workspace merchant -> UNKNOWN (DP-128/I-33: never REJECTED/ACK,
+ * never auto-retry, no delivered fact). Attempts of OTHER merchants and attempts
+ * whose conversation owner cannot be determined are left untouched (I-119: recovery
+ * scope follows the recovered state owner; never inferred from an unrelated
+ * workspace filter). No whole-DB unscoped UPDATE is performed.
+ *
+ * Idempotent (I-116): resolve() only transitions PENDING/IN_FLIGHT, so repeated
+ * startup runs are no-ops. Failures propagate (I-117: fail closed for the affected
+ * subsystem; never swallow an error and claim recovery success).
+ */
+export interface DeliveryAttemptRecoveryResult {
+  /** Number of this workspace merchant's unresolved IN_FLIGHT attempts recovered to UNKNOWN. */
+  recovered: number;
+  /** IN_FLIGHT attempts left untouched (other merchant or unknown conversation owner). */
+  untouchedOtherOrUnknownOwner: number;
+}
 
+export function recoverWorkspaceInFlightDeliveryAttempts(
+  conn: SqliteConnection,
+  merchantId: string,
+  resolvedAt: string
+): DeliveryAttemptRecoveryResult {
+  const repo = new SqliteDeliveryAttemptRepository(conn);
+  const convRepo = new SqliteNormalizedConversationRepository(conn);
+  let recovered = 0;
+  let untouched = 0;
+  for (const attempt of repo.listInFlight()) {
+    const conv = convRepo.findById(attempt.conversationId);
+    if (!conv || conv.merchantId !== merchantId) {
+      untouched += 1;
+      continue;
+    }
+    if (repo.resolve(attempt.id, "UNKNOWN", resolvedAt)) {
+      recovered += 1;
+    } else {
+      untouched += 1; // concurrent/terminal change -> idempotent no-op
+    }
+  }
+  return { recovered, untouchedOtherOrUnknownOwner: untouched };
+}
