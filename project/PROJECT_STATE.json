@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
-  "last_closed_task": "SHEEP-063",
-  "current_task": "SHEEP-064 (COMPLETE: Composer with explicit submit-intent contract Option C; Controller Review + visual evidence submitted; awaiting Owner PASS — SHEEP-065 NOT started)",
-  "next_action": "SHEEP-064 awaiting Owner PASS (DP-105~110 + I-27~I-29 + visual review); no SHEEP-065 without PASS",
+  "last_closed_task": "SHEEP-064",
+  "current_task": "SHEEP-065 (Attachments — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
+  "next_action": "SHEEP-065 (Attachments) proposal — awaiting Owner approval; not auto-executed",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1406,9 +1406,9 @@
   },
   "sheep_064": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
-    "status": "EXECUTED_AWAITING_PASS",
-    "closed_date_candidate": null,
+    "controller_decision": "PASS",
+    "status": "CLOSED",
+    "closed_date_candidate": "2026-08-28",
     "report": "reports\\SHEEP-064-report.json",
     "review_doc": "docs\\fast-sheep-composer.md",
     "visual_evidence": [
@@ -1418,7 +1418,27 @@
       "reports\\visual-evidence\\sheep-064-composer-switch.png",
       "reports\\visual-evidence\\sheep-064-composer-unavailable.png"
     ],
-    "decisions": ["DP-105..DP-110 + I-27..I-30 (Option C submit-intent contract + REPAIR I-30 single agent reply surface; OWNER_DECIDED pending Owner PASS)"],
+    "decisions": ["DP-105..DP-110 + I-27..I-30 (OWNER_DECIDED 2026-08-28; visual review PASS)"],
+    "visual_review_passed": true,
+    "visual_confirmations": [
+        "Message Timeline and Composer coexist in the final composed DOM",
+        "Timeline is above Composer; Composer never replaces/overrides Timeline",
+        "populated Conversation actually shows Timeline facts + Composer",
+        "empty Conversation actually shows no-message Timeline + Composer",
+        "AI Suggestion keeps only 使用建议 + 取消生成; legacy 手动发送/不保存发送 removed",
+        "Composer is the single Agent reply submission surface",
+        "Send stays disabled/unavailable until SHEEP-066",
+        "per-conversation draft / AI explicit non-destructive apply / IME guard / I-27/I-28 hold",
+        "schema v9 unchanged; no Attachments/Send Pipeline/Unread/Product-Order"
+    ],
+    "future_notes": [
+        "Workspace final topology continues to converge later",
+        "AI Suggestion evolves per DP-18 contextual attachment",
+        "sending/success/failure/retry belongs to SHEEP-066",
+        "draft persistence belongs to SHEEP-075",
+        "future reply sources must keep converging into the Composer; never rebuild a second agent send path"
+    ],
+    "controller_pass_date": "2026-08-28",
     "repair_applied": "REPAIR #1 2026-08-28 (I-30 single agent reply surface; legacy send removed)",
     "repair_2_applied": "REPAIR #2 2026-08-28 (Timeline composition actual DOM fix): root cause = renderConversationPanel/MessageTimeline/Composer each clear(shared conversation-host), last surface wiped Timeline; fix = conversation-region.ts renders each into SEPARATE sub-containers; Timeline + Composer coexist, Timeline above Composer; final-composed-DOM guard test (populated + empty via DOM shim) + capture DOM_COMPOSITION order=[message-timeline, composer] passed in both states; desktop 295/295",
     "implemented": [
@@ -1441,6 +1461,31 @@
     "next_per_roadmap": "SHEEP-064 awaiting Owner PASS; no SHEEP-065 without PASS",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
+  },
+  "fast_sheep_composer_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-28",
+    "visual_review": "PASS (incl. two REPAIR rounds)",
+    "dp_105": "COMPOSER_IS_THE_MANUAL_PROFESSIONAL_FALLBACK_REPLY_INPUT",
+    "dp_106": "AI_SUGGESTION_APPLICATION_TO_COMPOSER_IS_EXPLICIT_AND_NON_DESTRUCTIVE",
+    "dp_107": "COMPOSER_SUBMIT_IS_EXPLICIT_INTENT_SEND_PIPELINE_OWNS_EXECUTION",
+    "dp_108": "COMPOSER_DRAFT_IS_BOUND_TO_CONVERSATION_IDENTITY",
+    "dp_109": "EPHEMERAL_DRAFTS_SURVIVE_CONVERSATION_SWITCHES_WITHIN_THE_MAIN_CONTEXT",
+    "dp_110": "COMPOSER_SUBMIT_CAPTURES_CONVERSATION_IDENTITY_AND_DRAFT_AT_INTENT_TIME",
+    "i_27": "SEND_INTENT_MUST_NOT_BE_PERSISTED_AS_DELIVERED_CONVERSATION_MESSAGE_FACT",
+    "i_28": "SEND_RESULT_MAY_MUTATE_ONLY_THE_DRAFT_FOR_ITS_CAPTURED_CONVERSATION",
+    "i_29": "IME_COMPOSITION_MUST_NEVER_TRIGGER_COMPOSER_SUBMIT",
+    "i_30": "COMPOSER_IS_THE_SINGLE_AGENT_REPLY_SUBMISSION_SURFACE",
+    "repair_history": [
+        "REPAIR #1 (2026-08-28): Timeline/Composer topology + legacy send-path convergence (I-30; suggestion panel legacy 手动发送/不保存发送 removed; resolveSuggestionKey deleted; 取消生成)",
+        "REPAIR #2 (2026-08-28): Timeline composition actual DOM fix (each render clear(shared host) clobbered Timeline; conversation-region.ts separate sub-containers; final-composed-DOM guard + capture DOM_COMPOSITION order=[message-timeline, composer])"
+    ],
+    "future_notes": [
+        "Workspace final topology converges later",
+        "AI Suggestion evolves per DP-18 contextual attachment",
+        "sending/success/failure/retry belongs to SHEEP-066",
+        "draft persistence belongs to SHEEP-075",
+        "future reply sources keep converging into the Composer; no second agent send path"
+    ]
   }
 }
-
