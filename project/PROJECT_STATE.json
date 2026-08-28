@@ -28,10 +28,10 @@
     "reviewed_version": "V1.0_REVIEWED"
   },
   "current_phase": "PHASE_4",
-  "current_milestone": "M4.1-COMPLETE",
-  "last_closed_task": "SHEEP-063-PR1",
-  "current_task": "SHEEP-063 (COMPLETE: Message Timeline on real Message Fact + Workspace Merchant authorization path; Controller Review + visual evidence submitted; awaiting Owner PASS — SHEEP-064 NOT started)",
-  "next_action": "SHEEP-063 awaiting Owner PASS (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 + visual review); no SHEEP-064 without PASS",
+  "current_milestone": "M4.2-COMPLETE",
+  "last_closed_task": "SHEEP-063",
+  "current_task": "SHEEP-064 (Composer — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
+  "next_action": "SHEEP-064 (Composer) proposal — awaiting Owner approval; not auto-executed",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1198,9 +1198,9 @@
   },
   "sheep_063": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
-    "status": "EXECUTED_AWAITING_PASS",
-    "closed_date_candidate": null,
+    "controller_decision": "PASS",
+    "status": "CLOSED",
+    "closed_date_candidate": "2026-08-28",
     "audit_chain": "Read First #1 (BLOCKED) -> PR1 (PASS) -> Read First #2 (BLOCKED) -> PR2 (PASS incl. REPAIR I-25) -> PR2-PR1 (PASS) -> SHEEP-063 Timeline execution",
     "read_first": "docs\\fast-sheep-message-timeline-read-first.md",
     "read_first_2_authorization_gap": "docs\\fast-sheep-message-timeline-authorization-gap.md",
@@ -1216,11 +1216,27 @@
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged; reader-progress still required; never auto-READY)"
     },
     "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28) + SHEEP-063-PR2-PR1 (closed 2026-08-28) + SHEEP-063-PR2 (closed 2026-08-28 incl. REPAIR I-25) — all PASS; BLOCKED audit history retained",
-    "decisions": ["DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 + I-26 (executed; OWNER_DECIDED pending Owner PASS)"],
-    "repair_applied": "REPAIR 2026-08-28 (Active Conversation presentation consistency; I-7 concretization / I-26 WORKSPACE_ACTIVE_CONVERSATION_PRESENTATION_MUST_NOT_FALL_BACK_TO_AMBIENT_SCOPE_FACTS): header/conversation-panel use activeConversationPresentation pure helper (identity anchor + store_id from active queue item + state/buyer only when viewModel.conversation matches); no Queue Scope / selected shop ambient backfill; header & Timeline same active identity; no-active only when activeConversationId==null; scope-change does not rewrite active header; populated-active + empty-active visual evidence re-captured; desktop 285/285",
-    "next_per_roadmap": "Awaiting Owner PASS (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 + I-26 + visual review); no SHEEP-064 without PASS",
+    "decisions": ["DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 + I-26 (OWNER_DECIDED 2026-08-28; visual review PASS)"],
+    "repair_applied": "REPAIR 2026-08-28 (Active Conversation presentation consistency; I-7 concretization / I-26 WORKSPACE_ACTIVE_CONVERSATION_PRESENTATION_MUST_NOT_FALL_BACK_TO_AMBIENT_SCOPE_FACTS): header/conversation-panel use activeConversationPresentation pure helper; no Queue Scope / selected shop ambient backfill; header & Timeline same active identity; no-active only when activeConversationId==null; scope-change does not rewrite active header; populated-active + empty-active visual evidence re-captured",
+    "visual_review_passed": true,
+    "visual_confirmations": [
+        "conv-populated active: Header / Store fact / Timeline identity consistent",
+        "conv-empty active: Header still acknowledges current Conversation; Timeline correctly shows no-message state",
+        "no Queue Scope / selected shop / ambient legacy facts used to fill Active Conversation presentation",
+        "no header/timeline mixed-context"
+    ],
+    "future_notes": [
+        "Raw StoreId later shown as friendly name via trusted presentation metadata",
+        "AI Suggestion continues converging to DP-18 contextual attachment; current sibling card is not final",
+        "Timeline is a fact-readability baseline; final chat skin not locked",
+        "Platform/Background Tasks/Offline Learning positions remain runtime baseline, not final Workspace IA",
+        "UNREAD_FACT_READINESS stays PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS"
+    ],
+    "next_per_roadmap": "SHEEP-064 (Composer) Acceptance Unit proposal — submitted; awaiting Owner approval; not auto-executed",
     "reference_tree_modified": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-08-28",
+    "m42_evidence_aware_complete": "M4.2 COMPLETE: Message Timeline implemented on real Message Fact + Workspace Merchant authorization path (SHEEP-063 incl. PR1/PR2/PR2-PR1/REPAIR chain); UNREAD_FACT_READINESS remains PARTIALLY_READY/STILL_BLOCKED_BY_READER_PROGRESS"
   },
   "sheep_063_pr1": {
     "codex_result": "COMPLETE",
@@ -1358,8 +1374,34 @@
     "i_19": "WORKSPACE_MERCHANT_CONTEXT_IS_STABLE_FOR_A_MAIN_CONTEXT_LIFETIME",
     "i_25": "MISSING_AUTHORIZATION_CONTEXT_MUST_NOT_BE_REPRESENTED_AS_EMPTY_DOMAIN_DATA (conversations.list unavailable -> desktop.workspace_unavailable; only authorized 0-row -> no-work Empty)",
     "repair_acceptance": "missing context -> desktop.workspace_unavailable (not empty success); authorized 0-row -> legitimate Empty; renderer distinguishes unavailable/error vs no-work Empty; cross-merchant NOT_FOUND hiding kept; schema v9 unchanged; desktop 269/269 + workspace + m6 smoke + boundary + secrets PASS"
+  },
+  "fast_sheep_message_timeline_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-28",
+    "visual_review": "PASS",
+    "dp_84": "TIMELINE_READS_FROM_NORMALIZED_PRODUCTION_MESSAGE_FACTS",
+    "dp_85": "TIMELINE_IS_BOUND_TO_ACTIVE_CONVERSATION_ONLY",
+    "dp_89": "TIMELINE_CONTENT_PRESERVATION_IS_ALLOWED_ONLY_WITHIN_THE_SAME_ACTIVE_CONVERSATION",
+    "dp_91": "TIMELINE_QUERY_AUTHORIZES_CONVERSATION_BEFORE_READING_MESSAGES",
+    "dp_92": "INCOMPLETE_HISTORICAL_MESSAGE_FACTS_ARE_NOT_PRESENTED_AS_NORMAL_MESSAGES",
+    "dp_93": "MESSAGE_TIME_DISPLAY_IS_PRESENTATION_OVER_EXPLICIT_TIME_FACTS",
+    "i_14": "TIMELINE_RESULTS_MUST_MATCH_CURRENT_ACTIVE_CONVERSATION",
+    "i_17": "ACTIVE_CONVERSATION_AUTHORIZATION_IS_INDEPENDENT_OF_AMBIENT_QUEUE_SCOPE",
+    "i_18": "CONVERSATION_BOUND_READS_REQUIRE_TRUSTED_WORKSPACE_MERCHANT_CONTAINMENT",
+    "i_19": "WORKSPACE_MERCHANT_CONTEXT_IS_STABLE_FOR_A_MAIN_CONTEXT_LIFETIME",
+    "i_26": "WORKSPACE_ACTIVE_CONVERSATION_PRESENTATION_MUST_NOT_FALL_BACK_TO_AMBIENT_SCOPE_FACTS",
+    "repair_visual_confirmations": [
+        "conv-populated active: Header / Store fact / Timeline identity consistent",
+        "conv-empty active: Header acknowledges current Conversation; Timeline shows no-message state",
+        "no Queue Scope / selected shop / ambient legacy facts used for Active Conversation presentation",
+        "no header/timeline mixed-context"
+    ],
+    "future_notes": [
+        "Raw StoreId later via trusted presentation metadata",
+        "AI Suggestion converges to DP-18 contextual attachment; sibling card not final",
+        "Timeline is fact-readability baseline; final chat skin not locked",
+        "Platform/Background Tasks/Offline Learning remain runtime baseline",
+        "UNREAD_FACT_READINESS stays PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS"
+    ]
   }
 }
-
-
-
