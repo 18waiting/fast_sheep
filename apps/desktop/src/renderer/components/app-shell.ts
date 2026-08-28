@@ -17,9 +17,7 @@ import { renderConversationList } from "./conversation-list.js";
 import { clear, el } from "./dom.js";
 import { renderAppNavbar } from "./app-navbar.js";
 import { renderWorkbenchHeader } from "./workbench-header.js";
-import { renderConversationPanel } from "./conversation-panel.js";
-import { renderMessageTimeline } from "./message-timeline.js";
-import { renderComposer } from "./composer.js";
+import { renderConversationRegion } from "./conversation-region.js";
 import { renderSuggestionPanel } from "./suggestion-panel.js";
 import { renderModeToggle } from "./mode-toggle.js";
 import { renderCountdownView } from "./countdown-view.js";
@@ -72,13 +70,10 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
 
   const panels = el("div", "panels");
   const conversationHost = el("div", "conversation-host");
-  renderConversationPanel(conversationHost, state);
-  // SHEEP-063: Message Timeline is the Conversation Main primary content surface
-  // (Phase-4 incremental topology convergence; bound to the active conversation).
-  renderMessageTimeline(conversationHost, state);
-  // SHEEP-064: Composer is the main reply surface BELOW the Timeline (DP-105/108),
-  // not an independent sibling card (incremental convergence; no final redesign).
-  renderComposer(conversationHost, state, actions);
+  // SHEEP-063/064: Conversation Main region = panel + Timeline (primary content) +
+  // Composer below (reply surface). Each surface renders into its own sub-container
+  // so components never clobber one another (REPAIR #2).
+  renderConversationRegion(conversationHost, state, actions);
   panels.appendChild(conversationHost);
   const suggestionHost = el("div", "suggestion-host");
   renderSuggestionPanel(suggestionHost, state, actions);
@@ -140,5 +135,6 @@ function noopM10Actions(): M10PanelActions {
     onCancelJob: () => {},
   };
 }
+
 
 

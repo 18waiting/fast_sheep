@@ -44,7 +44,15 @@
 - Composer Send 继续 native disabled + unavailable cue（未提前实现 SHEEP-066）。
 - **Visual evidence（重捕获，两张）**：`sheep-064-composer-apply.png`（populated Timeline + Composer + AI apply path，draft=亲,有的哦~）、`sheep-064-composer-empty.png`（empty Timeline + Composer）；legacy send path 不触发的自动化证据见测试。
 
-## 5. 边界（未实现/未改动）
+## 5. REPAIR #2（Owner 2026-08-28）：Timeline composition 实际 DOM 修正
+
+- **根因（Read First）**：`renderConversationPanel` / `renderMessageTimeline` / `renderComposer` 均以 `clear(root)` 开头并共享同一个 `conversation-host`——后调用者会清空先调用者的输出，最终 DOM 只剩最后一个 surface（Composer），Timeline 实际未渲染（此前仅凭 source 存在 helper 不足以证明）。
+- **修复**：新增 `conversation-region.ts` `renderConversationRegion`——panel / Timeline / Composer 各自渲染到独立子容器（`conversation-panel-host` / `conversation-timeline-host` / `composer-host`），任何组件 `clear()` 只影响自身容器，Timeline 与 Composer 共存且顺序为 Timeline 在上、Composer 在下。
+- **最终 DOM guard（非 source-scan）**：`renderer-conversation-region-dom.test.ts` 用最小 DOM shim 渲染最终 composed DOM，覆盖 populated（真实 timeline-message facts + composer）与 empty（timeline no-message empty + composer），断言两 surface 共存且 timeline 在 composer 上方。
+- **Actual renderer evidence（capture DOM 断言）**：`DOM_COMPOSITION {"order":["message-timeline","composer"],"tl":true,"co":true}`（apply 与 empty 两态均通过）。
+- 未重做 drafts/IME/AI apply/I-27~I-30；未改 schema；未实现 Attachments/Send Pipeline/Unread/Product-Order。
+
+## 6. 边界（未实现/未改动）
 
 - 未实现真正 send IPC / message ingestion / platform delivery / Outbox / sync（SHEEP-066）；Attachments（SHEEP-065）；draft persistence（SHEEP-075）；Unread/Priority/Risk；Customer/Product/Order（M4.3）；schema（v9 不变）；AI 自动发送。
 - 未用 `orchestrator.manual_send` 作为 Composer 临时替代（Option B 禁止）。

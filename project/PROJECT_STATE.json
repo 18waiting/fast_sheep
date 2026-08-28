@@ -1419,7 +1419,8 @@
       "reports\\visual-evidence\\sheep-064-composer-unavailable.png"
     ],
     "decisions": ["DP-105..DP-110 + I-27..I-30 (Option C submit-intent contract + REPAIR I-30 single agent reply surface; OWNER_DECIDED pending Owner PASS)"],
-    "repair_applied": "REPAIR 2026-08-28 (Timeline/Composer topology + legacy send-path convergence; I-30 COMPOSER_IS_THE_SINGLE_AGENT_REPLY_SUBMISSION_SURFACE): Message Timeline restored as Conversation Main primary content; Composer = connected reply surface below Timeline (not independent card); suggestion panel removed legacy 手动发送/不保存发送 + Enter/Alt+Enter->send mapping (resolveSuggestionKey deleted); only 使用建议->Composer remains; 取消->取消生成 (generation cancel distinct from send); negative tests prove composer Enter/Alt+Enter never reach legacy send path; apply + empty visual evidence re-captured; desktop 292/292",
+    "repair_applied": "REPAIR #1 2026-08-28 (I-30 single agent reply surface; legacy send removed)",
+    "repair_2_applied": "REPAIR #2 2026-08-28 (Timeline composition actual DOM fix): root cause = renderConversationPanel/MessageTimeline/Composer each clear(shared conversation-host), last surface wiped Timeline; fix = conversation-region.ts renders each into SEPARATE sub-containers; Timeline + Composer coexist, Timeline above Composer; final-composed-DOM guard test (populated + empty via DOM shim) + capture DOM_COMPOSITION order=[message-timeline, composer] passed in both states; desktop 295/295",
     "implemented": [
         "Composer = manual professional-fallback reply input below Timeline (DP-105/108)",
         "ephemeral drafts keyed by conversationId; survive switches in MainContext (DP-109)",

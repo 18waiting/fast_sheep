@@ -4,7 +4,7 @@
   "controller_decision": "PENDING_OWNER_PASS",
   "phase": "Phase 4",
   "milestone": "M4.2",
-  "summary": "Composer (Option C)：manual professional-fallback reply input（DP-105）成为 Timeline 下方主回复 surface；ephemeral drafts keyed by conversationId（DP-108/109）；AI suggestion 显式非破坏 apply（DP-106）；submit = explicit submit-intent contract（DP-107/I-27，不写 delivered message fact、不 delivery，执行留 SHEEP-066）；intent 原子捕获（DP-110）；I-28 send-result 只影响自身会话 draft；I-29 IME 不触发 submit；无真实 Send IPC → Send native disabled + 诚实 unavailable（不伪造成功）；native textarea/button + accessible label + focus-visible + 无 innerHTML；visual evidence 5 态（empty/draft/apply/switch/unavailable）经真实路径；desktop 294/294、workspace typecheck+test PASS、m6 smoke PASS（external_network_calls=0）、boundary+secrets PASS；REPAIR：恢复 Timeline 主内容 + Composer 作为其下方连接 reply surface（I-30 单一 agent reply surface）；移除 suggestion panel legacy 手动发送/不保存发送 与 Enter/Alt+Enter send 映射（resolveSuggestionKey 删除）；取消生成与发送取消语义分离；负测试证明 composer Enter/Alt+Enter 不触达 legacy send path；重捕获两张视觉证据（apply + empty）",
+  "summary": "Composer (Option C)：manual professional-fallback reply input（DP-105）成为 Timeline 下方主回复 surface；ephemeral drafts keyed by conversationId（DP-108/109）；AI suggestion 显式非破坏 apply（DP-106）；submit = explicit submit-intent contract（DP-107/I-27，不写 delivered message fact、不 delivery，执行留 SHEEP-066）；intent 原子捕获（DP-110）；I-28 send-result 只影响自身会话 draft；I-29 IME 不触发 submit；无真实 Send IPC → Send native disabled + 诚实 unavailable（不伪造成功）；native textarea/button + accessible label + focus-visible + 无 innerHTML；visual evidence 5 态（empty/draft/apply/switch/unavailable）经真实路径；desktop 294/294、workspace typecheck+test PASS、m6 smoke PASS（external_network_calls=0）、boundary+secrets PASS；REPAIR：恢复 Timeline 主内容 + Composer 作为其下方连接 reply surface（I-30 单一 agent reply surface）；移除 suggestion panel legacy 手动发送/不保存发送 与 Enter/Alt+Enter send 映射（resolveSuggestionKey 删除）；取消生成与发送取消语义分离；负测试证明 composer Enter/Alt+Enter 不触达 legacy send path；重捕获两张视觉证据（apply + empty）；REPAIR #2：定位并修复 Timeline 实际未渲染根因（各 render 函数 clear(共享 host) 互相覆盖）——conversation-region 拆分子容器，Timeline 与 Composer 共存且顺序正确；新增最终 composed DOM guard（populated + empty）+ capture DOM 断言（order=[message-timeline, composer] 两态通过）",
   "completed_requirements": 16,
   "total_requirements": 16,
   "owner_tightening": {
@@ -50,7 +50,7 @@
     "inferred": []
   },
   "tests": [
-    "desktop build/typecheck; desktop tests 292/292 (REPAIR: I-30 negative guards; legacy resolveSuggestionKey tests replaced)",
+    "desktop build/typecheck; desktop tests 295/295 (REPAIR #2: final-composed-DOM guard 2 + structure composition 1)",
     "workspace typecheck / test（全部 PASS）",
     "m6 Electron renderer smoke（PASS，external_network_calls=0）",
     "check:boundary PASS；secret scan PASS"
@@ -106,5 +106,13 @@
       "reports\\visual-evidence\\sheep-064-composer-empty.png (empty Timeline + Composer)"
     ],
     "kept": "draft keyed-by-conversation / switch preservation / AI explicit non-destructive apply / I-27/I-28/I-29; Send native disabled + unavailable cue (no SHEEP-066); schema v9 unchanged"
+  },
+  "repair_2_applied": {
+    "controller_decision": "REPAIR #2 -> re-submitted (Timeline composition actual DOM fix)",
+    "root_cause": "renderConversationPanel / renderMessageTimeline / renderComposer each start with clear(root) and shared the same conversation-host; the last surface (composer) wiped the timeline — actual renderer DOM had no Timeline despite the source containing the helper",
+    "fix": "conversation-region.ts renderConversationRegion: panel / Timeline / Composer render into SEPARATE sub-containers (conversation-panel-host / conversation-timeline-host / composer-host); each component's clear() only affects its own container; Timeline + Composer coexist, Timeline above Composer",
+    "dom_guard": "renderer-conversation-region-dom.test.ts renders the FINAL composed DOM via a minimal DOM shim; populated (real timeline-message facts + composer) and empty (timeline no-message empty + composer) both assert coexistence + order",
+    "actual_renderer_evidence": "capture DOM_COMPOSITION guard: {\"order\":[\"message-timeline\",\"composer\"],\"tl\":true,\"co\":true} for both conv-populated (apply) and conv-empty",
+    "kept": "drafts / IME / AI explicit apply / I-27~I-30 unchanged; schema v9 unchanged; no Attachments / Send Pipeline / Unread / Product-Order"
   }
 }

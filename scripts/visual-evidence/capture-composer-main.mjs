@@ -142,6 +142,14 @@ app.whenReady().then(async () => {
       console.log("COMPOSER_APPLIED_DRAFT " + JSON.stringify(applied));
     }
     await new Promise((r) => setTimeout(r, 300));
+    // REPAIR #2 final-DOM guard: Timeline AND Composer must coexist, Timeline above Composer.
+    const dom = await win.webContents.executeJavaScript("(function(){ var host=document.querySelector('.conversation-host'); if(!host) return {ok:false,err:'no conversation-host'}; var order=Array.prototype.map.call(host.querySelectorAll('.message-timeline, .composer'), function(n){return n.className;}); var tl=order.some(function(c){return c.indexOf('message-timeline')!==-1;}); var co=order.some(function(c){return c.indexOf('composer')!==-1;}); return {ok:tl&&co, order:order, tl:tl, co:co}; })()", true);
+    console.log("DOM_COMPOSITION " + JSON.stringify(dom));
+    if (!dom.ok || !dom.tl || !dom.co) {
+      console.error("DOM_COMPOSITION_FAIL " + JSON.stringify(dom));
+      app.exit(1);
+      return;
+    }
     const image = await win.webContents.capturePage();
     mkdirSync(dirname(OUT), { recursive: true });
     writeFileSync(OUT, image.toPNG());
