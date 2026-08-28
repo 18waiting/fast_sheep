@@ -23,6 +23,7 @@ import type { WorkerJobClientPort } from "@fastwork/background-jobs";
 import type { OptimizationWorkerClientPort, ProductRepositoryPort, ProductRow } from "@fastwork/product-optimization";
 import type { JobRepository, JobRecord, ProductRecord } from "@fastwork/persistence";
 import { PddPlatformService } from "./platforms/pdd/pdd-platform-service.js";
+import { createWorkspaceMerchantContext, type WorkspaceMerchantContext } from "./services/workspace-merchant-context.js";
 import { GenericPlatformService } from "./platforms/shared/generic-platform-service.js";
 import { PlatformSessionCoordinator } from "./platforms/platform-session-coordinator.js";
 import { createDoudianPlatformService } from "./platforms/doudian/doudian-platform-service.js";
@@ -85,8 +86,8 @@ export interface MainContext {
   orchestrator: ConversationOrchestrator;
   /** PR1: Conversation normalized repository port (production = SQLite via worker-backed composition). */
   conversations: NormalizedConversationRepository;
-  /** SHEEP-063-PR2-PR1: resolved local workspace merchant id (production = bootstrapped; test mode = synthetic; null = not established). */
-  workspaceMerchantId: string | null;
+  /** SHEEP-063-PR2: Main-owned workspace merchant authorization anchor (production = bootstrapped; test mode = synthetic; null = not established). */
+  workspaceMerchant: WorkspaceMerchantContext | null;
   /** SHEEP-063-PR1: Message normalized repository port (production = SQLite via worker-backed composition). */
   messages: MessageRepository;
   /** SHEEP-060: Store repository port (merchant boundary resolution for queue scope). */
@@ -144,8 +145,8 @@ export interface BootstrapOptions {
   importBackup?: DatabaseBackupPort;
   /** PR1: Conversation normalized repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
   conversationRepository?: NormalizedConversationRepository;
-  /** SHEEP-063-PR2-PR1: resolved workspace merchant id (production worker-backed composition runs the trusted bootstrap; test mode uses an explicit synthetic value). */
-  workspaceMerchantId?: string | null;
+  /** SHEEP-063-PR2: workspace merchant context (production worker-backed composition builds it from the trusted bootstrap; test mode may inject an explicit synthetic context). */
+  workspaceMerchant?: WorkspaceMerchantContext | null;
   /** SHEEP-063-PR1: Message repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
   messageRepository?: MessageRepository;
   /** SHEEP-060: Store repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
@@ -222,7 +223,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   // SHEEP-063-PR2-PR1: workspace merchant identity is Main-owned and explicit.
   // Production worker-backed composition bootstraps/resolves a trusted identity;
   // isolated test mode uses an explicit synthetic id (never persisted here).
-  const workspaceMerchantId = options.workspaceMerchantId !== undefined ? options.workspaceMerchantId : (testMode ? "merchant-test-1" : null);
+  const workspaceMerchant = options.workspaceMerchant ?? (testMode ? createWorkspaceMerchantContext("merchant-test-1") : null);
   const storeRepository = options.storeRepository ?? new InMemoryStoreRepositoryImpl();
   const platformAccountRepository = options.platformAccountRepository ?? new InMemoryPlatformAccountRepositoryImpl();
   const aiRaw = new FakeAiEngineClient([{ reply: "亲,有的哦~" }]);
@@ -464,7 +465,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   });
 
   void bumpRevision;
-  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, messages: messageRepository, workspaceMerchantId, stores: storeRepository, platformAccounts: platformAccountRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
+  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, messages: messageRepository, workspaceMerchant, stores: storeRepository, platformAccounts: platformAccountRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
 }
 
 /** Minimal in-memory import session store (isolated test mode). */
@@ -491,4 +492,5 @@ class InMemoryMainImportWriter implements MainImportWriterPort {
   hasIdentity(): boolean { return false; }
   foreignRefsValid(): boolean { return true; }
 }
+
 

@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { QUERY_HANDLERS } from "../dist/main/ipc/query-handlers.js";
+import { createWorkspaceMerchantContext } from "../dist/main/services/workspace-merchant-context.js";
 import type { QueryDeps } from "../dist/main/ipc/query-handlers.js";
 
 function makeDeps(overrides: Partial<QueryDeps> = {}): QueryDeps {
@@ -10,6 +11,7 @@ function makeDeps(overrides: Partial<QueryDeps> = {}): QueryDeps {
     worker: { status: () => ({ status: "ready", worker_version: "0.0.0", protocol_version: 1 }) } as unknown as QueryDeps["worker"],
     projection: { project: () => ({ revision: 1, shop_summaries: [], worker_status: { status: "ready" }, platform_capability: "none" }) } as unknown as QueryDeps["projection"],
     revision: () => 7,
+    workspaceMerchant: createWorkspaceMerchantContext("merchant-test-1"),
     ...overrides,
   };
 }
@@ -46,3 +48,4 @@ test("worker.status returns the safe worker status view", async () => {
   assert.equal(res.ok, true);
   if (res.ok) assert.equal(res.data.status, "ready");
 });
+

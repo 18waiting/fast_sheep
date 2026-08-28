@@ -181,7 +181,7 @@ test("DP-90 production composition binds SQLite (shared connection; cross-connec
 
     const fakeWorkerClient = { request: async () => ({ ok: true, data: {} }) } as never;
     const ctx = createWorkerBackedMainContext({ workerClient: fakeWorkerClient, dataRoot: root });
-    assert.equal(ctx.workspaceMerchantId, wsId, "composition resolves the same workspace merchant id");
+    assert.equal(ctx.workspaceMerchant?.merchantId, wsId, "composition resolves the same workspace merchant id");
     const convs: NormalizedConversationRepository = ctx.conversations;
     convs.save({ id: "pc1", merchantId: "m-A", storeId: "A1", platformAccountId: "pa-A1" });
     const ingestion = createMessageIngestion(ctx.messages);
@@ -271,4 +271,5 @@ test("DP-66 fail-closed: corrupt DB — production composition (message repo inc
     );
   });
 });
+
 

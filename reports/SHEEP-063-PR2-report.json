@@ -1,0 +1,88 @@
+{
+  "task": "SHEEP-063-PR2",
+  "codex_result": "COMPLETE",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.2 prerequisite chain (PR1 -> PR2-PR1 -> PR2)",
+  "summary": "Workspace Merchant Context Foundation：Main-owned frozen WorkspaceMerchantContext（minimal authorization anchor，DP-94/95/96/97/I-19）；DP-98 单一 Merchant authority source——conversations.list 迁移为以 workspaceMerchant 为唯一 merchant authority（all_stores = listByMerchant(workspaceMerchant.merchantId)；specific_store 先 containsMerchant(store.merchantId) 再读，跨 merchant 拒绝 NOT_FOUND；无 context fail closed 空结果）；selectedShopId 从 QueryDeps 移除（I-17 selected shop 非 authority）；Queue/UI semantics 不变；production composition 从 PR2-PR1 bootstrap 构建 context；test mode 显式 synthetic；5 个新 guard 测试（context 4 + queue fail-closed 1），desktop 267/267，workspace 全 PASS，m6 smoke PASS，boundary+secrets PASS",
+  "completed_requirements": 9,
+  "total_requirements": 9,
+  "owner_tightening": {
+    "dp94": "遵守：WORKSPACE_MERCHANT_CONTEXT_IS_MAIN_OWNED_AND_QUEUE_SCOPE_INDEPENDENT（frozen；Queue Scope/selected shop/active conversation 均非 authority）",
+    "dp95": "遵守：LOCAL_DESKTOP_RUNTIME_HAS_ONE_ACTIVE_MERCHANT_WORKSPACE_UNTIL_MULTI_MERCHANT_REQUIREMENT_EXISTS",
+    "dp96": "遵守：WORKSPACE_MERCHANT_IDENTITY_IS_EXPLICITLY_COMPOSED_NOT_INFERRED_FROM_AMBIENT_DATA（来自 PR2-PR1 bootstrap）",
+    "dp97": "遵守：WORKSPACE_MERCHANT_CONTEXT_IS_A_MINIMAL_AUTHORIZATION_ANCHOR_NOT_A_SESSION_FRAMEWORK（仅 merchantId + containsMerchant；测试断言无额外 surface）",
+    "dp98": "遵守：MERCHANT_AUTHORIZATION_HAS_ONE_MAIN_OWNED_SOURCE_OF_TRUTH（Queue merchant boundary 迁移共享 workspaceMerchant；Queue filter/UI semantics 不变）",
+    "i17": "遵守：ACTIVE_CONVERSATION_AUTHORIZATION_IS_INDEPENDENT_OF_AMBIENT_QUEUE_SCOPE（selectedShopId 从 QueryDeps 移除）",
+    "i18": "遵守：CONVERSATION_BOUND_READS_REQUIRE_TRUSTED_WORKSPACE_MERCHANT_CONTAINMENT（containsMerchant 最小 capability；无 authorization middleware）",
+    "i19": "遵守：WORKSPACE_MERCHANT_CONTEXT_IS_STABLE_FOR_A_MAIN_CONTEXT_LIFETIME（frozen + reopen 同 id）",
+    "test_injection": "遵守：test mode 显式 synthetic context；production 不 fallback",
+    "tests": "遵守：Main-owned/non-renderer-settable；Queue Scope 改变 merchant context 不变；same-merchant cross-store allowed；cross-merchant denied；A+B coexist 但 Workspace A 只授权 A；selected shop/platform/active conversation 不改变 authority；production identity failure fail-closed；test injection explicit",
+    "schema_v9": "遵守：schema v9 不变；未实现 auth/cloud/entitlement/session UI/multi-merchant selector",
+    "forbidden_kept": "遵守：未实现 Timeline IPC/UI、Composer、Attachments、Unread、platform producer、sync/Outbox"
+  },
+  "decisions": {
+    "dp94": "WORKSPACE_MERCHANT_CONTEXT_IS_MAIN_OWNED_AND_QUEUE_SCOPE_INDEPENDENT",
+    "dp95": "LOCAL_DESKTOP_RUNTIME_HAS_ONE_ACTIVE_MERCHANT_WORKSPACE_UNTIL_MULTI_MERCHANT_REQUIREMENT_EXISTS",
+    "dp96": "WORKSPACE_MERCHANT_IDENTITY_IS_EXPLICITLY_COMPOSED_NOT_INFERRED_FROM_AMBIENT_DATA",
+    "dp97": "WORKSPACE_MERCHANT_CONTEXT_IS_A_MINIMAL_AUTHORIZATION_ANCHOR_NOT_A_SESSION_FRAMEWORK",
+    "dp98": "MERCHANT_AUTHORIZATION_HAS_ONE_MAIN_OWNED_SOURCE_OF_TRUTH",
+    "i17": "ACTIVE_CONVERSATION_AUTHORIZATION_IS_INDEPENDENT_OF_AMBIENT_QUEUE_SCOPE",
+    "i18": "CONVERSATION_BOUND_READS_REQUIRE_TRUSTED_WORKSPACE_MERCHANT_CONTAINMENT",
+    "i19": "WORKSPACE_MERCHANT_CONTEXT_IS_STABLE_FOR_A_MAIN_CONTEXT_LIFETIME"
+  },
+  "evidence": {
+    "confirmed": [
+      "WorkspaceMerchantContext frozen + minimal (merchantId + containsMerchant only)",
+      "production composition builds context from trusted bootstrap; reopen resolves same id (I-19)",
+      "conversations.list uses workspaceMerchant as sole merchant authority; cross-merchant store denied (NOT_FOUND, no leak)",
+      "no workspace merchant -> fail closed empty result",
+      "test mode explicit synthetic context; offline composition -> null",
+      "selectedShopId removed from QueryDeps (selected shop not authority, I-17)",
+      "Queue filter/UI semantics unchanged (Store/Platform dimensions + intersection preserved; DP-77/DP-71 tests pass)"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "desktop build/typecheck; desktop tests 267/267 (5 new guards: workspace-merchant-context 4 + queue fail-closed 1; conversation-list-query updated)",
+    "workspace typecheck / test（全部 PASS）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS"
+  ],
+  "negative_tests": [
+    "无 renderer-settable / 无 IPC setter 改 workspace merchant（context frozen）",
+    "跨 merchant store 拒绝（B1 with workspace A -> NOT_FOUND）",
+    "selected shop / Queue Scope / active conversation 不改变 authority（selectedShopId 移除）",
+    "无 workspace merchant -> fail closed（空结果，不泄漏）",
+    "未实现 Timeline/Composer/Attachments/Unread/platform producer/sync/Outbox/auth/cloud/entitlement/session UI/multi-merchant selector；schema v9 不变"
+  ],
+  "modified_files": [
+    "apps/desktop/src/main/services/workspace-merchant-context.ts (new)",
+    "apps/desktop/src/main/bootstrap.ts (MainContext.workspaceMerchant context; replaces workspaceMerchantId)",
+    "apps/desktop/src/main/worker-runtime.ts (build context from bootstrap)",
+    "apps/desktop/src/main/ipc/query-handlers.ts (QueryDeps.workspaceMerchant; selectedShopId removed; conversations.list migration)",
+    "apps/desktop/src/main/index.ts (registerIpc workspaceMerchant)",
+    "apps/desktop/tests/workspace-merchant-context.test.ts (new, 4 guards)",
+    "apps/desktop/tests/conversation-list-query.test.ts (authority model update + fail-closed guard)",
+    "apps/desktop/tests/workspace-identity-bootstrap.test.ts / message-fact-foundation.test.ts / conversation-persistence-foundation.test.ts / ipc-query-handlers.test.ts (workspaceMerchant accessor)",
+    "docs/fast-sheep-workspace-merchant-context.md (new)",
+    "reports/SHEEP-063-PR2-report.json (new)",
+    "project/PROJECT_STATE.json (PR2 record + current_task)"
+  ],
+  "architecture_changes": [
+    "Main-owned WorkspaceMerchantContext as the single merchant authorization anchor; Queue merchant boundary migrated to shared source (DP-98)"
+  ],
+  "security_changes": [
+    "improvement: cross-merchant specific_store now denied (previously only store-merchant self-constrained); selected shop no longer merchant authority"
+  ],
+  "data_model_changes": [
+    "无（schema v9 不变）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

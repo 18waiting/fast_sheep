@@ -8,6 +8,7 @@ import type { WorkerStatusService } from "../services/worker-status-service.js";
 import type { WorkbenchProjectionService } from "../services/workbench-projection-service.js";
 import type { BackgroundJobService } from "../services/background-job-service.js";
 import type { LegacyImportService } from "../services/legacy-import-service.js";
+import type { WorkspaceMerchantContext } from "../services/workspace-merchant-context.js";
 import type { NormalizedConversationRepository, StoreRepository, PlatformAccountRepository } from "@fastwork/persistence";
 import { ok, err } from "./ipc-guard.js";
 
@@ -30,8 +31,12 @@ export interface QueryDeps {
   stores: StoreRepository;
   /** SHEEP-061: PlatformAccount repository port (canonical platform fact source). */
   platformAccounts: PlatformAccountRepository;
-  /** SHEEP-060: currently selected shop id (provisional queue scope merchant anchor). */
-  selectedShopId(): string | null;
+  /** SHEEP-063-PR2 (DP-94/98): Main-owned WorkspaceMerchantContext — the SINGLE merchant
+   *  authority source for Main-side merchant containment (Queue/Timeline). It is
+   *  independent of Queue Scope / selected shop / active conversation (DP-94/I-17).
+   *  null = no trusted merchant authority (offline/test composition without context);
+   *  handlers must fail closed (no merchant-contained results). */
+  workspaceMerchant: WorkspaceMerchantContext | null;
 }
 
 export const QUERY_HANDLERS = {
@@ -51,20 +56,28 @@ export const QUERY_HANDLERS = {
     if (!req || !req.scope) return err(new DesktopError(DESKTOP_ERROR_CODES.INVALID_REQUEST, "missing queue scope"));
     const scope = req.scope;
     const platform = req.platform;
-    let merchantId: string | null = null;
+    const workspace = deps.workspaceMerchant;
+    // DP-94/I-17/DP-98: merchant authority = Main-owned WorkspaceMerchantContext,
+    // NOT Queue Scope / selected shop / active conversation. Without a trusted
+    // workspace merchant, fail closed (no merchant-contained results, no leak).
+    if (!workspace) {
+      return ok({ items: [], scope, platform, stores: [], platforms: [] });
+    }
+    const workspaceMerchantId = workspace.merchantId;
     let rows: Array<{ id: string; storeId: string; platformAccountId: string; merchantId: string }> = [];
     if (scope.kind === "specific_store") {
       const store = deps.stores.findById(scope.storeId);
       if (!store) return err(new DesktopError(DESKTOP_ERROR_CODES.NOT_FOUND, "unknown store"));
-      merchantId = store.merchantId;
-      // Merchant boundary enforced Main-side (I-6); renderer never supplies merchant.
-      rows = deps.conversations.listByStore(store.id).filter((c) => c.merchantId === store.merchantId);
+      // I-18/DP-98: a store of another merchant is NOT in this workspace -> deny
+      // (cross-merchant); renderer never supplies merchant.
+      if (!workspace.containsMerchant(store.merchantId)) {
+        return err(new DesktopError(DESKTOP_ERROR_CODES.NOT_FOUND, "unknown store"));
+      }
+      rows = deps.conversations.listByStore(store.id);
     } else {
-      // all_stores: merchant boundary = currently selected shop's store (DP-72: All Stores is merchant-scoped queue query).
-      const sid = deps.selectedShopId();
-      const store = sid ? deps.stores.findById(sid) : null;
-      merchantId = store ? store.merchantId : null;
-      if (merchantId) rows = deps.conversations.listByMerchant(merchantId);
+      // all_stores: merchant boundary = workspace merchant (DP-72/98); All Stores
+      // is a merchant-scoped queue query, not a data ownership scope.
+      rows = deps.conversations.listByMerchant(workspaceMerchantId);
     }
     // Platform filter: resolve each conversation's platform via platform_accounts (DP-71 canonical fact source);
     // I-8: final query = merchant boundary ∩ Store Scope ∩ Platform Filter.
@@ -73,9 +86,7 @@ export const QUERY_HANDLERS = {
       .map((c) => ({ conversation_id: c.id, store_id: c.storeId }))
       .sort((a, b) => (a.conversation_id < b.conversation_id ? -1 : a.conversation_id > b.conversation_id ? 1 : 0));
     // Fact-backed filter options (DP-77): stores of the merchant + canonical platforms (Main capability set).
-    const stores = merchantId
-      ? deps.stores.listByMerchant(merchantId).map((s) => ({ store_id: s.id, name: s.name })).sort((a, b) => (a.store_id < b.store_id ? -1 : a.store_id > b.store_id ? 1 : 0))
-      : [];
+    const stores = deps.stores.listByMerchant(workspaceMerchantId).map((s) => ({ store_id: s.id, name: s.name })).sort((a, b) => (a.store_id < b.store_id ? -1 : a.store_id > b.store_id ? 1 : 0));
     const platforms = CANONICAL_PLATFORMS;
     return ok({ items, scope, platform, stores, platforms });
   },
@@ -120,3 +131,4 @@ export function toJobView(job: { job_id: string; type: string; state: string; pr
     error: typeof job.error === "string" ? job.error : job.error ? JSON.stringify(job.error) : null,
   };
 }
+

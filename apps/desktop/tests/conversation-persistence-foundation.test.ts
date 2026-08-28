@@ -72,7 +72,7 @@ test("production composition binds SQLite (PR1 layer 2, cross-connection proof, 
     seedCtx.conn.close();
     const fakeWorkerClient = { request: async () => ({ ok: true, data: {} }) } as never;
     const ctx = createWorkerBackedMainContext({ workerClient: fakeWorkerClient, dataRoot: root });
-    assert.equal(ctx.workspaceMerchantId, wsId, "composition resolves the same workspace merchant id");
+    assert.equal(ctx.workspaceMerchant?.merchantId, wsId, "composition resolves the same workspace merchant id");
     const ingestion = createConversationIngestion(ctx.conversations);
     ingestion.saveNormalizedConversation(record("pc1", "m-A", "A1"));
     ingestion.saveNormalizedConversation(record("pc2", "m-A", "A2"));
@@ -121,4 +121,5 @@ test("DP-66 fail-closed: corrupt DB and production composition never fall back t
     );
   });
 });
+
 

@@ -193,7 +193,9 @@ async function init(): Promise<void> {
     conversations: context.conversations,
     stores: context.stores,
     platformAccounts: context.platformAccounts,
-    selectedShopId: () => context!.projection.selectedShopId(),
+    // SHEEP-063-PR2 (DP-94/98): the SINGLE Main-owned merchant authority source.
+    // Production worker-backed composition always establishes it; null fails closed.
+    workspaceMerchant: context.workspaceMerchant,
   });
   wireBridges(mainWindow);
 
@@ -274,10 +276,4 @@ app.on("web-contents-created", (_event: Electron.Event, contents: WebContents) =
   contents.setWindowOpenHandler(() => ({ action: "deny" }));
   contents.on("will-attach-webview", denyWebview);
 });
-
-
-
-
-
-
 

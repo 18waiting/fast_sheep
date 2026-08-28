@@ -8,7 +8,7 @@ import { createWorkerBackedMainContext } from "../dist/main/worker-runtime.js";
 
 // SHEEP-063-PR2-PR1 production composition guards:
 //   - bootstrap runs at composition time (after migrations, before services/IPC ready)
-//   - MainContext.workspaceMerchantId is set from the trusted bootstrap
+//   - MainContext.workspaceMerchant is built from the trusted bootstrap
 //   - reopen resolves the SAME stable merchant id
 //   - ambiguous existing identity (merchants without pointer) fails closed
 //   - dangling pointer fails closed (no silent replacement)
@@ -22,8 +22,8 @@ const fakeWorkerClient = { request: async () => ({ ok: true, data: {} }) } as ne
 test("production composition bootstraps workspace merchant (Main-owned, name=NULL, pointer), stable on reopen", () => {
   withTemp((root) => {
     const ctx = createWorkerBackedMainContext({ workerClient: fakeWorkerClient, dataRoot: root });
-    assert.ok(/^merchant-[0-9a-f-]{36}$/.test(ctx.workspaceMerchantId ?? ""), "workspaceMerchantId set from trusted bootstrap");
-    const id1 = ctx.workspaceMerchantId as string;
+    assert.ok(/^merchant-[0-9a-f-]{36}$/.test(ctx.workspaceMerchant?.merchantId ?? ""), "workspaceMerchantId set from trusted bootstrap");
+    const id1 = ctx.workspaceMerchant?.merchantId as string;
 
     // probe the shared production DB: merchant row (name NULL) + app_meta pointer
     const probe = openDatabase(root);
@@ -35,7 +35,7 @@ test("production composition bootstraps workspace merchant (Main-owned, name=NUL
 
     // reopen same data root -> same stable id (I-19)
     const ctx2 = createWorkerBackedMainContext({ workerClient: fakeWorkerClient, dataRoot: root });
-    assert.equal(ctx2.workspaceMerchantId, id1, "reopen resolves the same workspace merchant id");
+    assert.equal(ctx2.workspaceMerchant?.merchantId, id1, "reopen resolves the same workspace merchant id");
   });
 });
 
@@ -64,3 +64,5 @@ test("production composition fails closed on dangling workspace pointer (no sile
     );
   });
 });
+
+

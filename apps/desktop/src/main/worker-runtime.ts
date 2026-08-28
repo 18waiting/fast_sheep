@@ -15,6 +15,7 @@ import { FeedbackService, PersistenceFeedbackRepository, WorkerKnowledgeFeedback
 import { WorkerJobClient } from "@fastwork/background-jobs";
 import { WorkerOptimizationClient, type ProductRepositoryPort } from "@fastwork/product-optimization";
 import { createMainContext, type BootstrapOptions } from "./bootstrap.js";
+import { createWorkspaceMerchantContext } from "./services/workspace-merchant-context.js";
 
 /** Packaged worker executable file name (PACK-002 onedir runtime). */
 export const PACKAGED_WORKER_EXE = "fastwork-ai-worker.exe";
@@ -133,7 +134,7 @@ export function createWorkerBackedMainContext(deps: WorkerBackedMainDeps, option
   // identity AFTER migrations complete and BEFORE Main services/IPC are ready
   // (never lazy-created on first Timeline query). Fails closed on dangling
   // pointer / ambiguous existing identity; never infers from ambient data.
-  const workspaceMerchantId = resolveOrBootstrapWorkspaceMerchantId(new SqliteWorkspaceIdentityBootstrap(m10Sqlite.conn));
+  const workspaceMerchant = createWorkspaceMerchantContext(resolveOrBootstrapWorkspaceMerchantId(new SqliteWorkspaceIdentityBootstrap(m10Sqlite.conn)));
   const productSqlite = new SqliteProductRepository(m10Sqlite.conn);
   const productRepository: ProductRepositoryPort = {
     get: (id) => {
@@ -153,7 +154,7 @@ export function createWorkerBackedMainContext(deps: WorkerBackedMainDeps, option
     productRepository,
     conversationRepository,
     messageRepository,
-    workspaceMerchantId,
+    workspaceMerchant,
     storeRepository,
     platformAccountRepository,
   });
