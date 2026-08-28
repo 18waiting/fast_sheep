@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1-COMPLETE",
   "last_closed_task": "SHEEP-063-PR1",
-  "current_task": "SHEEP-063-PR2 (Read First BLOCKED — DATA_IDENTITY_BOOTSTRAP_GAP-WORKSPACE_MERCHANT; SHEEP-063-PR2-PR1 identity-bootstrap proposal pending Owner decision; WorkspaceMerchantContext/Timeline NOT implemented)",
-  "next_action": "SHEEP-063-PR2-PR1 (Workspace Merchant Identity Bootstrap proposal — awaiting Owner decision; no auto-execution; no SHEEP-064)",
+  "current_task": "SHEEP-063-PR2-PR1 (Read First BLOCKED — DATA_CONTRACT_GAP-WORKSPACE_MERCHANT_NAME; merchants.name NOT NULL cannot be honestly provided; decision package pending Owner (neutral label vs authorized 0009); identity bootstrap NOT implemented)",
+  "next_action": "Owner decision on SHEEP-063-PR2-PR1 name contract (Option A neutral workspace label keeping v8 vs Option B authorized 0009 nullable name); no auto-execution; no SHEEP-064",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1210,8 +1210,8 @@
       "MESSAGE_FACT_PATH": "READY for Timeline foundation (PR1 closed: identity/actor/content/time/ordering/source-provenance persisted; production ingestion boundary + shared DB lifecycle)",
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (PR1 confirmed; never auto-READY)"
     },
-    "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28) + SHEEP-063-PR2 (approved 2026-08-28 but Read First BLOCKED on DATA_IDENTITY_BOOTSTRAP_GAP-WORKSPACE_MERCHANT; PR2-PR1 identity bootstrap proposal pending) + SHEEP-063-PR2-PR1 (Workspace Merchant Identity Bootstrap — proposal pending Owner decision)",
-    "next_per_roadmap": "Owner decides on SHEEP-063-PR2-PR1 (identity bootstrap); after bootstrap + PR2 land, re-submit SHEEP-063 Timeline execution on trusted authorization path (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19); NOT auto-executed; no SHEEP-064",
+    "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28) + SHEEP-063-PR2 (approved 2026-08-28; Read First BLOCKED on identity bootstrap gap) + SHEEP-063-PR2-PR1 (approved 2026-08-28; Read First BLOCKED on DATA_CONTRACT_GAP-WORKSPACE_MERCHANT_NAME — merchants.name NOT NULL; decision package pending)",
+    "next_per_roadmap": "Owner decides PR2-PR1 name contract (neutral label vs authorized 0009); then PR2-PR1 identity bootstrap -> PR2 WorkspaceMerchantContext (DP-98) -> SHEEP-063 Timeline (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19); NOT auto-executed; no SHEEP-064",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   },
@@ -1274,6 +1274,29 @@
         "Queue merchant-boundary migration to WorkspaceMerchantContext (DP-98; Queue filter/UI semantics unchanged)",
         "Timeline implementation (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19)"
     ],
+    "fact_readiness": {
+      "MESSAGE_FACT_PATH": "READY",
+      "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged)"
+    },
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
+  },
+  "sheep_063_pr2_pr1": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "BLOCKED",
+    "closed_date_candidate": null,
+    "gap": "DATA_CONTRACT_GAP-WORKSPACE_MERCHANT_NAME",
+    "read_first": "docs\\fast-sheep-workspace-merchant-name-contract-gap.md",
+    "report": "reports\\SHEEP-063-PR2-PR1-contract-gap-report.json",
+    "owner_decisions": ["creation authority MAIN_OWNED_LOCAL_WORKSPACE_IDENTITY_BOOTSTRAP; persistence merchants row + app_meta.workspace_merchant_id pointer; keep v8 (adopted from Owner approval; execution blocked on name contract)"],
+    "blocked_reason": "merchants.name TEXT NOT NULL (0005) cannot be honestly provided for the local workspace merchant (no onboarding/registration/config/env name source); per tightening #6/#12 STOP + contract gap; no fabricated merchant name; no self-issued 0009",
+    "decision_package": {
+      "option_a": "Owner approves neutral local-workspace label as bootstrap merchants.name (e.g. 本地工作区 / Local Workspace), recorded as workspace identity label NOT a claimed business name; schema stays v8",
+      "option_b": "Owner authorizes minimal 0009 making merchants.name nullable (or workspace-identity contract without business name); migration + tests",
+      "common": "atomic transaction; stable generated ID (DP-99); pointer-only app_meta (DP-100); dangling/ambiguous fail-closed (I-20/I-21); no member/auth fabrication; Platform attach-only (DP-102); Cloud future explicit migration (I-22)"
+    },
+    "design_ready": "atomic bootstrap module (merchant row + app_meta pointer) + production timing wiring (after openDatabase, before Main services/IPC ready) + tests (fresh create / reopen stable / pointer integrity / atomicity / dangling fail-closed / ambiguous fail-closed / no member fabrication / no silent replacement) — blocked only on name contract",
     "fact_readiness": {
       "MESSAGE_FACT_PATH": "READY",
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged)"

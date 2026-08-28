@@ -1,0 +1,67 @@
+{
+  "task": "SHEEP-063-PR2-PR1 (Workspace Merchant Identity Bootstrap)",
+  "codex_result": "PARTIAL",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "status": "BLOCKED",
+  "phase": "Phase 4",
+  "milestone": "M4.2 prerequisite chain",
+  "gap": "DATA_CONTRACT_GAP-WORKSPACE_MERCHANT_NAME",
+  "summary": "PR2-PR1 Read First：merchants.name TEXT NOT NULL（0005）要求商户名，但本地 workspace merchant 在无 onboarding/registration 可信输入时无法诚实提供业务名称（无 FASTWORK_MERCHANT_* env；无 onboarding/注册流；platform/import 不写 identity domain；test-mode 标签仅测试）。按收紧 #6/#12 明确指令 STOP + report contract gap；不编造商户名完成 bootstrap，不自行 0009",
+  "owner_decisions_consumed": {
+    "creation_authority": "MAIN_OWNED_LOCAL_WORKSPACE_IDENTITY_BOOTSTRAP (adopted; blocked on name contract)",
+    "persistence": "existing merchants row + app_meta.workspace_merchant_id pointer (adopted; blocked on name NOT NULL)",
+    "schema": "keep v8; no 0009 (adopted; contract gap now requires explicit Owner decision between neutral label vs authorized 0009)",
+    "dp_99": "LOCAL_WORKSPACE_MERCHANT_IDENTITY_IS_STABLE_GENERATED_IDENTITY_NOT_MAGIC_DEFAULT (design ready; execution blocked on name)",
+    "dp_100": "APP_META_STORES_WORKSPACE_IDENTITY_POINTER_NOT_MERCHANT_DOMAIN_DATA (design ready)",
+    "dp_101": "WORKSPACE_IDENTITY_ESTABLISHMENT_IS_ATOMIC (design ready)",
+    "i_20": "WORKSPACE_IDENTITY_BOOTSTRAP_CREATES_ONLY_ON_UNINITIALIZED_DATA_ROOT (design ready)",
+    "i_21": "EXISTING_IDENTITY_DATA_WITHOUT_WORKSPACE_POINTER_IS_AMBIGUOUS_NOT_BOOTSTRAPPABLE (design ready)",
+    "dp_102": "PLATFORM_CONNECTION_ATTACHES_TO_WORKSPACE_MERCHANT_IT_DOES_NOT_DEFINE_IT (future constraint recorded)",
+    "i_22": "FUTURE_CLOUD_IDENTITY_LINKS_TO_LOCAL_WORKSPACE_IDENTITY_WITH_EXPLICIT_MIGRATION (future constraint recorded)"
+  },
+  "contract_gap_evidence": {
+    "merchants_schema": "name TEXT NOT NULL, no default (0005_identity_domain.sql)",
+    "honest_business_name_source": "NONE (no onboarding/registration/config/env)",
+    "platform_import_name_source": "NONE (platform services legacy shops only; M11 import does not write identity domain)",
+    "test_mode_labels": "test-only legacy shop labels (测试店铺A etc.); not a normalized merchant business name; not usable in production bootstrap",
+    "null_or_invented_name": "PROHIBITED by #6 (fabrication) and impossible without default (NOT NULL)"
+  },
+  "reasoning": "bootstrap 需在首次未初始化 data root 创建 merchants 行（DP-99/101）且 pointer 指向 merchants.id（DP-100）；name NOT NULL 无法诚实填充 -> 收紧 #6/#12 明确 STOP + contract gap；不自行 0009",
+  "decision_package": {
+    "option_a": "Owner approves neutral local-workspace label as bootstrap merchants.name (e.g. 本地工作区 / Local Workspace), explicitly recorded as workspace identity label NOT a claimed business name; schema stays v8; rest of PR2-PR1 design unchanged",
+    "option_b": "Owner authorizes minimal 0009 to make merchants.name nullable (or introduce a workspace-identity contract without business name); migration + tests; requires explicit 0009 authorization",
+    "common": "creation authority MAIN_OWNED; app_meta pointer only; atomic transaction; dangling/ambiguous fail-closed; no member/auth fabrication; Platform attach-only (DP-102); Cloud future explicit migration (I-22)"
+  },
+  "not_implemented": [
+    "identity bootstrap module (merchant row + app_meta pointer + atomic transaction)",
+    "production bootstrap timing wiring (after openDatabase, before Main services/IPC ready)",
+    "WorkspaceMerchantContext (PR2, later)",
+    "Timeline IPC/UI / visual evidence",
+    "schema 0009 / auth / cloud / entitlement / session UI / multi-merchant selector / composer / attachments / producer / sync"
+  ],
+  "fact_readiness": {
+    "MESSAGE_FACT_PATH": "READY (PR1 closed)",
+    "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged)"
+  },
+  "tests": [
+    "desktop build/typecheck + desktop tests 259/259 (regression; pure Read First turn — no new product code)",
+    "workspace typecheck/test PASS",
+    "m6 Electron smoke PASS (external_network_calls=0) — non-regression",
+    "check:boundary PASS; secret scan PASS"
+  ],
+  "negative_tests": [
+    "未编造商户名/member/auth 完成 bootstrap（#6）",
+    "未自行 0009 / config / UI convenience 绕过（#12）",
+    "未改 schema / Queue / 未实现 Timeline / unread/priority/risk/composer/attachments/producer/sync",
+    "未读 reference/nixiang；未联网；无 secret/credential；Renderer 不接触 SQLite"
+  ],
+  "modified_files": [
+    "docs/fast-sheep-workspace-merchant-name-contract-gap.md (new)",
+    "reports/SHEEP-063-PR2-PR1-contract-gap-report.json (new)",
+    "project/PROJECT_STATE.json (PR2-PR1 gap record + decision package)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
