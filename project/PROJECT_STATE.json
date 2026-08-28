@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1-COMPLETE",
   "last_closed_task": "SHEEP-063-PR1",
-  "current_task": "SHEEP-063-PR2 (COMPLETE: WorkspaceMerchantContext + DP-98 single merchant authority; Controller Review submitted; awaiting Owner PASS — Timeline NOT resumed)",
-  "next_action": "SHEEP-063-PR2 awaiting Owner PASS; after PASS restore SHEEP-063 Timeline (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19); not auto-executed; no SHEEP-064",
+  "current_task": "SHEEP-063 (Message Timeline; executing on real Message Fact path + Main-owned Workspace Merchant authorization path; DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19; Controller Review + visual evidence pending)",
+  "next_action": "SHEEP-063 (Message Timeline; awaiting Controller Review + visual evidence; STOP for Owner PASS; no SHEEP-064)",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1260,14 +1260,13 @@
   },
   "sheep_063_pr2": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
-    "status": "EXECUTED_AWAITING_PASS",
-    "closed_date_candidate": null,
+    "controller_decision": "PASS",
+    "closed_date_candidate": "2026-08-28",
     "gap_resolved": "DATA_IDENTITY_BOOTSTRAP_GAP-WORKSPACE_MERCHANT resolved by SHEEP-063-PR2-PR1 (closed, Owner PASS)",
     "read_first": "docs\\fast-sheep-workspace-merchant-identity-gap.md",
     "report": "reports\\SHEEP-063-PR2-report.json",
     "review_doc": "docs\\fast-sheep-workspace-merchant-context.md",
-    "owner_decisions": ["DP-94..DP-98 + I-17..I-19 (executed; OWNER_DECIDED pending Owner PASS)"],
+    "owner_decisions": ["DP-94..DP-98 + I-17..I-19 + I-25 (OWNER_DECIDED 2026-08-28)"],
     "implemented": [
         "WorkspaceMerchantContext (frozen, minimal: merchantId + containsMerchant; DP-94/95/96/97/I-19)",
         "DP-98 single Main-owned merchant authority: conversations.list uses workspaceMerchant (all_stores = listByMerchant(workspaceMerchant.merchantId); specific_store containsMerchant check; cross-merchant denied; no context fail closed)",
@@ -1281,6 +1280,13 @@
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged)"
     },
     "repair_applied": "REPAIR 2026-08-28 (I-25 MISSING_AUTHORIZATION_CONTEXT_MUST_NOT_BE_REPRESENTED_AS_EMPTY_DOMAIN_DATA, DP-48): conversations.list without trusted WorkspaceMerchantContext now returns explicit desktop.workspace_unavailable failure (typed error contract), NOT successful empty Queue; only authorized 0-row produces no-work Empty; renderer queueError vs empty distinguishable; cross-merchant NOT_FOUND policy kept; Queue/UI semantics + schema v9 unchanged",
+    "future_constraints": [
+        "all future merchant-bound reads must never express authorization-context unavailable as Empty domain data",
+        "Queue/Timeline/Customer/Product/Order Main-side authorization must continue sharing the WorkspaceMerchantContext single authority source",
+        "offline/null context is allowed but merchant-bound features must explicitly fail-closed/degraded",
+        "multi-merchant runtime switching, if it becomes a real requirement, requires a separate lifecycle/product decision"
+    ],
+    "controller_pass_date": "2026-08-28",
     "next_per_roadmap": "After PR2 Owner PASS: restore SHEEP-063 Timeline (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 on trusted authorization path); NOT auto-executed; no SHEEP-064",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
@@ -1331,12 +1337,19 @@
     "i_22": "FUTURE_CLOUD_IDENTITY_LINKS_TO_LOCAL_WORKSPACE_IDENTITY_WITH_EXPLICIT_MIGRATION (future constraint)",
     "i_23": "PRESENTATION_FALLBACK_LABELS_MUST_NOT_BE_PERSISTED_AS_UNKNOWN_DOMAIN_FACTS (UI fallback never written back to merchant.name)",
     "i_24": "UNKNOWN_OPTIONAL_IDENTITY_FACTS_USE_NULL_NOT_MAGIC_OR_EMPTY_VALUES (NULL only)"
+  },
+  "fast_sheep_workspace_merchant_context_decisions": {
+    "status": "OWNER_DECIDED",
+    "decided_date": "2026-08-28",
+    "dp_94": "WORKSPACE_MERCHANT_CONTEXT_IS_MAIN_OWNED_AND_QUEUE_SCOPE_INDEPENDENT (frozen context; Queue Scope/selected shop/active conversation are NOT merchant authority)",
+    "dp_95": "LOCAL_DESKTOP_RUNTIME_HAS_ONE_ACTIVE_MERCHANT_WORKSPACE_UNTIL_MULTI_MERCHANT_REQUIREMENT_EXISTS",
+    "dp_96": "WORKSPACE_MERCHANT_IDENTITY_IS_EXPLICITLY_COMPOSED_NOT_INFERRED_FROM_AMBIENT_DATA",
+    "dp_97": "WORKSPACE_MERCHANT_CONTEXT_IS_A_MINIMAL_AUTHORIZATION_ANCHOR_NOT_A_SESSION_FRAMEWORK",
+    "dp_98": "MERCHANT_AUTHORIZATION_HAS_ONE_MAIN_OWNED_SOURCE_OF_TRUTH (Queue merchant boundary migrated to WorkspaceMerchantContext; Queue/UI semantics unchanged)",
+    "i_17": "ACTIVE_CONVERSATION_AUTHORIZATION_IS_INDEPENDENT_OF_AMBIENT_QUEUE_SCOPE (selectedShopId removed from QueryDeps)",
+    "i_18": "CONVERSATION_BOUND_READS_REQUIRE_TRUSTED_WORKSPACE_MERCHANT_CONTAINMENT",
+    "i_19": "WORKSPACE_MERCHANT_CONTEXT_IS_STABLE_FOR_A_MAIN_CONTEXT_LIFETIME",
+    "i_25": "MISSING_AUTHORIZATION_CONTEXT_MUST_NOT_BE_REPRESENTED_AS_EMPTY_DOMAIN_DATA (conversations.list unavailable -> desktop.workspace_unavailable; only authorized 0-row -> no-work Empty)",
+    "repair_acceptance": "missing context -> desktop.workspace_unavailable (not empty success); authorized 0-row -> legitimate Empty; renderer distinguishes unavailable/error vs no-work Empty; cross-merchant NOT_FOUND hiding kept; schema v9 unchanged; desktop 269/269 + workspace + m6 smoke + boundary + secrets PASS"
   }
 }
-
-
-
-
-
-
-
