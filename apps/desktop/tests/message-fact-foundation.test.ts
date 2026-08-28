@@ -8,15 +8,16 @@ import {
   openDatabase, SqliteConnection, MigrationRunner, MIGRATIONS_DIR, DB_FILENAME,
   SqliteNormalizedConversationRepository, SqliteMessageRepository,
   SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountRepository,
+  SqliteWorkspaceIdentityBootstrap, resolveOrBootstrapWorkspaceMerchantId,
   type NormalizedConversationRepository,
 } from "@fastwork/persistence";
 import { createWorkerBackedMainContext } from "../dist/main/worker-runtime.js";
 import { createMessageIngestion } from "../dist/main/services/message-ingestion.js";
 
 // SHEEP-063-PR1 Message Fact + Runtime Ingestion Foundation guards:
-//   - fresh 0001->0008: schema v8 + typed message fact columns; external_ref stays
+//   - fresh 0001->0009: schema v9 + typed message fact columns; external_ref stays
 //     OPAQUE (no invented UNIQUE, I-13); actor/content_kind CHECKs present.
-//   - v7->v8 upgrade: legacy fact-less normalized_messages rows keep NULL facts
+//   - v7->v9 upgrade: legacy fact-less normalized_messages rows keep NULL facts
 //     (I-16 — migration never fabricates historical message facts).
 //   - DP-83/86/87/88 + I-15: typed text-first content; conversation actor != LLM role;
 //     occurred_at (source, may be unknown) distinct from observed_at (Fast Sheep,
@@ -56,11 +57,11 @@ function withTemp(fn: (root: string) => void) {
 
 const THRU_0007 = ["0001_initial.sql","0002_feedback_effect_tracking.sql","0003_learning_review_audit_optimization.sql","0004_legacy_import_tracking.sql","0005_identity_domain.sql","0006_conversation_domain.sql","0007_commerce_domain.sql"];
 
-test("fresh 0001->0008: schema v8, typed message fact columns; external_ref opaque (no UNIQUE); CHECKs present", () => {
+test("fresh 0001->0009: schema v9, typed message fact columns; external_ref opaque (no UNIQUE); CHECKs present", () => {
   withTemp((root) => {
     const ctx = openDatabase(root);
-    assert.equal(ctx.schemaVersion, 8, "fresh DB must be schema v8");
-    assert.equal(ctx.conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 8, "0001-0008 applied");
+    assert.equal(ctx.schemaVersion, 9, "fresh DB must be schema v9");
+    assert.equal(ctx.conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 9, "0001-0009 applied");
 
     const cols = ctx.conn.all<{ name: string }>("PRAGMA table_info(normalized_messages)").map((c) => c.name);
     for (const col of ["id","conversation_id","external_ref","actor","content_kind","content_text","occurred_at","observed_at"]) {
@@ -75,7 +76,7 @@ test("fresh 0001->0008: schema v8, typed message fact columns; external_ref opaq
   });
 });
 
-test("v7->v8 upgrade: legacy fact-less normalized_messages rows keep NULL facts (I-16); checksums unchanged", () => {
+test("v7->v9 upgrade (0008+0009): legacy fact-less normalized_messages rows keep NULL facts (I-16); checksums unchanged", () => {
   withTemp((root) => {
     const dbPath = join(root, DB_FILENAME);
     const mig7 = mkdtempSync(join(tmpdir(), "fs-msgv7-"));
@@ -95,9 +96,9 @@ test("v7->v8 upgrade: legacy fact-less normalized_messages rows keep NULL facts 
 
     const runner = new MigrationRunner();
     const res = runner.migrate(conn, join(root, "backups", "db"));
-    assert.equal(res.migratedCount, 1, "0008 applied (v7 -> v8)");
+    assert.equal(res.migratedCount, 2, "0008+0009 applied (v7 -> v9)");
     assert.equal(res.backedUp, true, "backup created before upgrade");
-    assert.equal(conn.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "8");
+    assert.equal(conn.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "9");
 
     // I-16: unknown historical facts remain unknown — no system/empty/migration-time backfill
     const row = conn.get<{ actor: string | null; content_kind: string | null; content_text: string | null; occurred_at: string | null; observed_at: string | null }>(
@@ -170,11 +171,17 @@ test("ingestion boundary: typed text-first (DP-88), actor customer|agent (DP-86/
 test("DP-90 production composition binds SQLite (shared connection; cross-connection proof; no memory fallback)", () => {
   withTemp((root) => {
     const seedCtx = openDatabase(root);
+    // SHEEP-063-PR2-PR1: establish the trusted workspace merchant identity FIRST
+    // (I-20/I-21: a merchants row without a pointer is ambiguous and fails closed),
+    // then seed the message-fixture parent identity rows (FK sources).
+    const wsId = resolveOrBootstrapWorkspaceMerchantId(new SqliteWorkspaceIdentityBootstrap(seedCtx.conn));
+    assert.ok(/^merchant-/.test(wsId), "workspace merchant identity bootstrapped");
     seedIdentity(seedCtx.conn, [{ id: "A1", merchantId: "m-A", platform: "pdd" }]);
     seedCtx.conn.close();
 
     const fakeWorkerClient = { request: async () => ({ ok: true, data: {} }) } as never;
     const ctx = createWorkerBackedMainContext({ workerClient: fakeWorkerClient, dataRoot: root });
+    assert.equal(ctx.workspaceMerchantId, wsId, "composition resolves the same workspace merchant id");
     const convs: NormalizedConversationRepository = ctx.conversations;
     convs.save({ id: "pc1", merchantId: "m-A", storeId: "A1", platformAccountId: "pa-A1" });
     const ingestion = createMessageIngestion(ctx.messages);

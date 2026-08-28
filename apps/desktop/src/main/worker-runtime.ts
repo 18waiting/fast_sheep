@@ -9,7 +9,7 @@
 import { existsSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { AIWorkerClient } from "@fastwork/worker-rpc";
-import { resolveDataRoot, openDatabase, SqliteFeedbackRepository, SqliteJobRepository, SqliteProductRepository, SqliteNormalizedConversationRepository, SqliteMessageRepository, SqliteStoreRepository, SqlitePlatformAccountRepository } from "@fastwork/persistence";
+import { resolveDataRoot, openDatabase, SqliteFeedbackRepository, SqliteJobRepository, SqliteProductRepository, SqliteNormalizedConversationRepository, SqliteMessageRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteWorkspaceIdentityBootstrap, resolveOrBootstrapWorkspaceMerchantId } from "@fastwork/persistence";
 import { WorkerAiEngineClient, type WorkerGenerateReplyResponse } from "@fastwork/orchestrator";
 import { FeedbackService, PersistenceFeedbackRepository, WorkerKnowledgeFeedbackClient } from "@fastwork/feedback";
 import { WorkerJobClient } from "@fastwork/background-jobs";
@@ -129,6 +129,11 @@ export function createWorkerBackedMainContext(deps: WorkerBackedMainDeps, option
   const messageRepository = new SqliteMessageRepository(m10Sqlite.conn);
   const storeRepository = new SqliteStoreRepository(m10Sqlite.conn);
   const platformAccountRepository = new SqlitePlatformAccountRepository(m10Sqlite.conn);
+  // SHEEP-063-PR2-PR1: resolve-or-bootstrap the trusted local workspace merchant
+  // identity AFTER migrations complete and BEFORE Main services/IPC are ready
+  // (never lazy-created on first Timeline query). Fails closed on dangling
+  // pointer / ambiguous existing identity; never infers from ambient data.
+  const workspaceMerchantId = resolveOrBootstrapWorkspaceMerchantId(new SqliteWorkspaceIdentityBootstrap(m10Sqlite.conn));
   const productSqlite = new SqliteProductRepository(m10Sqlite.conn);
   const productRepository: ProductRepositoryPort = {
     get: (id) => {
@@ -148,6 +153,7 @@ export function createWorkerBackedMainContext(deps: WorkerBackedMainDeps, option
     productRepository,
     conversationRepository,
     messageRepository,
+    workspaceMerchantId,
     storeRepository,
     platformAccountRepository,
   });

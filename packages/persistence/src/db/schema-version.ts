@@ -2,9 +2,10 @@
 // and frozen contracts. Do not consult original proprietary source/binaries.
 // M1 (TASK-016) + M9 (TASK-024): supported DB schema version + compatibility checks (future-schema rejection).
 // SHEEP-063-PR1: v7 -> v8 (0008_message_facts.sql, message fact contract).
+// SHEEP-063-PR2-PR1: v8 -> v9 (0009_relax_merchant_name.sql, merchant name UNKNOWN support).
 import { PersistenceError, ERROR_CODES } from "./errors.js";
 
-export const SUPPORTED_DB_SCHEMA_VERSION = 8;
+export const SUPPORTED_DB_SCHEMA_VERSION = 9;
 
 export function isSchemaSupported(version: number): boolean {
   return version === SUPPORTED_DB_SCHEMA_VERSION;
@@ -18,3 +19,4 @@ export function assertSchemaSupported(version: number): void {
     );
   }
 }
+

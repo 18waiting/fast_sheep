@@ -3,13 +3,13 @@ import assert from "node:assert/strict";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { openDatabase, SqliteNormalizedConversationRepository, SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, type NormalizedConversationRecord } from "@fastwork/persistence";
+import { openDatabase, SqliteNormalizedConversationRepository, SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteWorkspaceIdentityBootstrap, resolveOrBootstrapWorkspaceMerchantId, type NormalizedConversationRecord } from "@fastwork/persistence";
 import { createWorkerBackedMainContext } from "../dist/main/worker-runtime.js";
 import { createConversationIngestion } from "../dist/main/services/conversation-ingestion.js";
 import type { SqliteConnection } from "@fastwork/persistence";
 
 // SHEEP-060-PR1 foundation guards:
-//   - persistence durability: fresh schema-v8 DB -> ingestion -> close -> reopen -> read
+//   - persistence durability: fresh schema-v9 DB -> ingestion -> close -> reopen -> read
 //   - production composition: createWorkerBackedMainContext binds SQLite (cross-connection proof)
 //   - I-6 merchant boundary: listByMerchant/listByStore isolation, no cross-merchant leak
 //   - DP-66: corrupt DB / production composition fail closed (never fall back to memory)
@@ -39,10 +39,10 @@ function withTemp(fn: (root: string) => void) {
   }
 }
 
-test("persistence durability: fresh v8 DB -> ingestion -> close -> reopen -> repository reads (PR1 layer 1)", () => {
+test("persistence durability: fresh v9 DB -> ingestion -> close -> reopen -> repository reads (PR1 layer 1)", () => {
   withTemp((root) => {
     const ctx1 = openDatabase(root);
-    assert.equal(ctx1.schemaVersion, 8, "fresh DB must be schema v8");
+    assert.equal(ctx1.schemaVersion, 9, "fresh DB must be schema v9");
     const repo1 = new SqliteNormalizedConversationRepository(ctx1.conn);
     seedIdentity(ctx1.conn, [{ id: "A1", merchantId: "m-A", platform: "pdd" }, { id: "A2", merchantId: "m-A", platform: "pdd" }, { id: "B1", merchantId: "m-B", platform: "doudian" }]);
     const ingestion = createConversationIngestion(repo1);
@@ -64,10 +64,15 @@ test("persistence durability: fresh v8 DB -> ingestion -> close -> reopen -> rep
 test("production composition binds SQLite (PR1 layer 2, cross-connection proof, DP-68)", () => {
   withTemp((root) => {
     const seedCtx = openDatabase(root);
+    // SHEEP-063-PR2-PR1: establish the trusted workspace merchant identity FIRST
+    // (a merchants row without a pointer is ambiguous and fails closed, I-21).
+    const wsId = resolveOrBootstrapWorkspaceMerchantId(new SqliteWorkspaceIdentityBootstrap(seedCtx.conn));
+    assert.ok(/^merchant-/.test(wsId), "workspace merchant identity bootstrapped");
     seedIdentity(seedCtx.conn, [{ id: "A1", merchantId: "m-A", platform: "pdd" }, { id: "A2", merchantId: "m-A", platform: "pdd" }]);
     seedCtx.conn.close();
     const fakeWorkerClient = { request: async () => ({ ok: true, data: {} }) } as never;
     const ctx = createWorkerBackedMainContext({ workerClient: fakeWorkerClient, dataRoot: root });
+    assert.equal(ctx.workspaceMerchantId, wsId, "composition resolves the same workspace merchant id");
     const ingestion = createConversationIngestion(ctx.conversations);
     ingestion.saveNormalizedConversation(record("pc1", "m-A", "A1"));
     ingestion.saveNormalizedConversation(record("pc2", "m-A", "A2"));

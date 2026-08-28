@@ -57,16 +57,26 @@ export class MigrationRunner {
 
     const backedUp = backupDatabase(conn.path, backupDir) !== null;
 
-    for (const mig of pending) {
-      try {
-        conn.transaction(() => {
-          conn.exec(mig.sql);
-          conn.run("INSERT INTO schema_migrations (version, name, checksum, applied_at) VALUES (?, ?, ?, ?)",
-                   mig.version, mig.name, mig.checksum, new Date().toISOString());
-        });
-      } catch (e) {
-        throw new PersistenceError(ERROR_CODES.MIGRATION_FAILED, `migration ${mig.version} (${mig.name}) failed: ${String(e)}`);
+    // SQLite schema-change procedure: table-rebuild migrations (e.g. relaxing a
+    // NOT NULL column) require foreign key enforcement to be suspended OUTSIDE
+    // the transaction. PRAGMA foreign_keys is a no-op inside a transaction, so
+    // it is toggled around the whole pending-migration run and re-enabled
+    // afterwards. FK integrity is re-validated by subsequent queries under ON.
+    conn.exec("PRAGMA foreign_keys = OFF");
+    try {
+      for (const mig of pending) {
+        try {
+          conn.transaction(() => {
+            conn.exec(mig.sql);
+            conn.run("INSERT INTO schema_migrations (version, name, checksum, applied_at) VALUES (?, ?, ?, ?)",
+                     mig.version, mig.name, mig.checksum, new Date().toISOString());
+          });
+        } catch (e) {
+          throw new PersistenceError(ERROR_CODES.MIGRATION_FAILED, `migration ${mig.version} (${mig.name}) failed: ${String(e)}`);
+        }
       }
+    } finally {
+      conn.exec("PRAGMA foreign_keys = ON");
     }
     conn.run("INSERT OR REPLACE INTO app_meta (key, value) VALUES ('database_schema_version', ?)", String(maxMigrationVersion(this.migrationsDir)));
     conn.run("INSERT OR REPLACE INTO app_meta (key, value) VALUES ('updated_at', ?)", new Date().toISOString());

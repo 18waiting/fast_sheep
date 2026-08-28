@@ -9,7 +9,7 @@ import type {
   MemberRepository, MembershipRepository, SeatRepository,
 } from "../repositories/identity-repositories.js";
 
-interface MerchantRow { id: string; name: string; }
+interface MerchantRow { id: string; name: string | null; }
 interface StoreRow { id: string; merchant_id: string; name: string; platform: string; }
 interface PlatformAccountRow { id: string; merchant_id: string; platform: string; external_ref: string | null; }
 interface MemberRow { id: string; account_ref_kind: string; account_ref_value: string; }
@@ -101,3 +101,4 @@ export class SqliteSeatRepository implements SeatRepository {
       .map((r) => ({ id: r.id, merchantId: r.merchant_id }));
   }
 }
+

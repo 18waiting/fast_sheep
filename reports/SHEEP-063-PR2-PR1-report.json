@@ -1,0 +1,102 @@
+{
+  "task": "SHEEP-063-PR2-PR1",
+  "codex_result": "COMPLETE",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.2 prerequisite chain (PR1 closed -> PR2 -> PR2-PR1)",
+  "summary": "Workspace Merchant Identity Bootstrap (Option B)：forward migration 0009（merchants.name 放宽为可空，table rebuild 保留 PK/FK/index）+ SUPPORTED_DB_SCHEMA_VERSION 8->9；migration runner 迁移期 FK 挂起/恢复（标准 schema-change 流程）；SqliteWorkspaceIdentityBootstrap 原子建立 merchant(name=NULL)+app_meta.workspace_merchant_id pointer（DP-99~101/I-20/I-21/I-23/I-24）；稳定生成 MerchantId（merchant-<uuid>，非 magic default）；production composition 在 openDatabase 后、services/IPC ready 前 resolve/bootstrap（不 lazy-create）；v8->v9 传播全部同步；12 个新 guard 测试（persistence 9 + desktop 3）",
+  "completed_requirements": 12,
+  "total_requirements": 12,
+  "owner_tightening": {
+    "option_b_0009": "遵守：授权 0009 使 merchants.name 可空表示 UNKNOWN；未持久化 本地工作区/Local Workspace 中性 placeholder",
+    "dp103": "遵守：MERCHANT_IDENTITY_DOES_NOT_REQUIRE_KNOWN_DISPLAY_NAME（name=NULL 不影响 identity 有效性）",
+    "dp104": "遵守：0009 仅放宽 name required；未新增 display/legal/cloud/status/owner/onboarding/profile 字段",
+    "name_preserved": "遵守：v8->v9 既有非空 name 原样保留（测试断言 既有商户甲）；无 migration-time 改写/backfill",
+    "unknown_null": "遵守：unknown 用 NULL；无 \"\" / 本地工作区 / default / generated ID 持久化（bootstrap 测试断言 name=NULL）",
+    "presentation_fallback": "遵守：I-23 记录——UI 未来显示 本地工作区 仅 presentation fallback，不反写 merchant.name",
+    "table_rebuild_integrity": "遵守：0009 table rebuild 完整保留 PK/FK/index；fresh + v8->v9 migration integrity tests（FK 仍强制）",
+    "schema_v9": "遵守：SUPPORTED_DB_SCHEMA_VERSION=9；migration matrix/checksum/backup/restore/future-version guards 同步更新（M12 matrix PASS）",
+    "dp99_101_i20_21": "遵守：稳定生成 MerchantId；merchant+pointer 原子建立；fresh-only bootstrap；dangling/ambiguous fail-closed；无 member/membership/auth fabrication",
+    "first_bootstrap_null_name": "遵守：首次 bootstrap merchant name=NULL；unknown name 不阻止 local workspace identity 建立",
+    "tests": "遵守：fresh->v9 / v8->v9 / existing name preservation / NULL-name insert / no-empty-magic bootstrap value / FK integrity / atomic establishment / stable reopen / dangling+ambiguous fail-closed 全覆盖",
+    "forbidden_kept": "遵守：未实现 WorkspaceMerchantContext、Timeline、auth/cloud/platform-created merchant、multi-merchant selector；未改 Queue/UI semantics"
+  },
+  "decisions": {
+    "creation_authority": "MAIN_OWNED_LOCAL_WORKSPACE_IDENTITY_BOOTSTRAP",
+    "persistence": "existing merchants row + app_meta.workspace_merchant_id pointer",
+    "dp99": "LOCAL_WORKSPACE_MERCHANT_IDENTITY_IS_STABLE_GENERATED_IDENTITY_NOT_MAGIC_DEFAULT",
+    "dp100": "APP_META_STORES_WORKSPACE_IDENTITY_POINTER_NOT_MERCHANT_DOMAIN_DATA",
+    "dp101": "WORKSPACE_IDENTITY_ESTABLISHMENT_IS_ATOMIC",
+    "dp102": "PLATFORM_CONNECTION_ATTACHES_TO_WORKSPACE_MERCHANT_IT_DOES_NOT_DEFINE_IT (future constraint recorded)",
+    "dp103": "MERCHANT_IDENTITY_DOES_NOT_REQUIRE_KNOWN_DISPLAY_NAME",
+    "dp104": "MIGRATION_0009_ONLY_RELAXES_UNEVIDENCED_MERCHANT_NAME_REQUIREMENT",
+    "i20": "WORKSPACE_IDENTITY_BOOTSTRAP_CREATES_ONLY_ON_UNINITIALIZED_DATA_ROOT",
+    "i21": "EXISTING_IDENTITY_DATA_WITHOUT_WORKSPACE_POINTER_IS_AMBIGUOUS_NOT_BOOTSTRAPPABLE",
+    "i22": "FUTURE_CLOUD_IDENTITY_LINKS_TO_LOCAL_WORKSPACE_IDENTITY_WITH_EXPLICIT_MIGRATION (future constraint recorded)",
+    "i23": "PRESENTATION_FALLBACK_LABELS_MUST_NOT_BE_PERSISTED_AS_UNKNOWN_DOMAIN_FACTS",
+    "i24": "UNKNOWN_OPTIONAL_IDENTITY_FACTS_USE_NULL_NOT_MAGIC_OR_EMPTY_VALUES"
+  },
+  "evidence": {
+    "confirmed": [
+      "0009 applied on fresh (schema v9, 9 migrations) and v8->v9 (1 migration, backup, checksums 0001-0008 unchanged)",
+      "v8->v9 rebuild preserves existing non-null merchant name verbatim; FK still enforced (invalid child merchant_id rejected)",
+      "bootstrap creates merchant(name=NULL) + app_meta pointer atomically; no member/membership/seat fabrication",
+      "stable generated MerchantId (merchant-<uuid>, not default); reopen resolves same id, no duplicate",
+      "dangling pointer + ambiguous existing identity fail closed (no first-row/count==1 inference)",
+      "atomicity: trigger-forced failure rolls back merchant row (no orphan)",
+      "production composition (createWorkerBackedMainContext) bootstraps at composition time; workspaceMerchantId exposed; fail-closed on ambiguous/dangling",
+      "migration runner suspends FK during migration run and re-enables; M12 matrix fresh/v1~v3->v9/v9 no-op/checksum/future-version/reopen PASS"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "persistence build/typecheck; persistence tests 79/79 (incl. 9 new workspace-identity guards)",
+    "desktop build/typecheck; desktop tests 262/262 (incl. 3 new workspace-identity composition guards + updated message/conversation foundation tests)",
+    "workspace typecheck / test（全部 PASS；secret-store 修正 v9 后全绿）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "M12 migration matrix（PASS：fresh->v9 / v1~v3->v9 / v9 no-op / checksum / future-version / reopen）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS",
+    "run-m12-migration-matrix：PASS"
+  ],
+  "negative_tests": [
+    "无 magic default / 本地工作区 / 空串 / generated ID 持久化为 merchant.name（I-23/I-24）",
+    "无 first-row / count==1 / selected-shop 推断（DP-96/I-21）",
+    "无 dangling pointer silent replacement（I-20）",
+    "无 member/membership/auth fabrication；无 WorkspaceMerchantContext/Timeline/auth/cloud/platform-created merchant/multi-merchant selector",
+    "0009 未新增任何 profile 字段（DP-104）；schema v9；未改 Queue/UI semantics；Renderer 不接触 SQLite；未联网"
+  ],
+  "modified_files": [
+    "packages/persistence/migrations/0009_relax_merchant_name.sql (new)",
+    "packages/persistence/src/db/schema-version.ts (SUPPORTED 8->9)",
+    "packages/persistence/src/migrations/migration-runner.ts (FK suspend/resume around migration run)",
+    "packages/persistence/src/workspace/workspace-identity.ts (new)",
+    "packages/persistence/src/db/errors.ts (WORKSPACE_IDENTITY code)",
+    "packages/persistence/src/repositories/identity-repositories.ts + sqlite (MerchantRecord.name nullable)",
+    "packages/persistence/src/index.ts (workspace identity exports)",
+    "apps/desktop/src/main/bootstrap.ts (MainContext.workspaceMerchantId + option + synthetic test-mode default)",
+    "apps/desktop/src/main/worker-runtime.ts (production bootstrap at composition time)",
+    "packages/persistence/tests/workspace-identity.test.ts (new, 9 guards)",
+    "apps/desktop/tests/workspace-identity-bootstrap.test.ts (new, 3 guards)",
+    "apps/desktop/tests/message-fact-foundation.test.ts / conversation-persistence-foundation.test.ts (v9 + bootstrap-first fixture)",
+    "v8->v9 propagation: migrations/commerce/conversation/identity/legacy-compat/backup-manager tests, secret-store test, M12 scripts",
+    "docs/fast-sheep-workspace-merchant-identity-bootstrap.md (new)",
+    "reports/SHEEP-063-PR2-PR1-report.json (new)",
+    "project/PROJECT_STATE.json (PR2-PR1 record + current_task)"
+  ],
+  "architecture_changes": [
+    "local workspace merchant identity bootstrap (Main-owned, atomic, fail-closed); migration runner FK suspend/resume for schema rebuilds; schema v9"
+  ],
+  "security_changes": [
+    "无（CSP 保持；external_network_calls=0；Renderer 不接触 SQLite；无 secret/credential；identity bootstrap 不伪造业务事实）"
+  ],
+  "data_model_changes": [
+    "schema v8 -> v9（0009：merchants.name NOT NULL -> nullable，UNKNOWN 用 NULL）"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

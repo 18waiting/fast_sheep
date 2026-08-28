@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1-COMPLETE",
   "last_closed_task": "SHEEP-063-PR1",
-  "current_task": "SHEEP-063-PR2-PR1 (Read First BLOCKED — DATA_CONTRACT_GAP-WORKSPACE_MERCHANT_NAME; merchants.name NOT NULL cannot be honestly provided; decision package pending Owner (neutral label vs authorized 0009); identity bootstrap NOT implemented)",
-  "next_action": "Owner decision on SHEEP-063-PR2-PR1 name contract (Option A neutral workspace label keeping v8 vs Option B authorized 0009 nullable name); no auto-execution; no SHEEP-064",
+  "current_task": "SHEEP-063-PR2-PR1 (COMPLETE: 0009 migration + workspace merchant identity bootstrap; Controller Review submitted; awaiting Owner PASS — PR2 NOT restored, Timeline NOT implemented)",
+  "next_action": "SHEEP-063-PR2-PR1 awaiting Owner PASS; after PASS restore SHEEP-063-PR2 (WorkspaceMerchantContext + DP-98 single authority source); not auto-executed; no SHEEP-064",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1210,8 +1210,8 @@
       "MESSAGE_FACT_PATH": "READY for Timeline foundation (PR1 closed: identity/actor/content/time/ordering/source-provenance persisted; production ingestion boundary + shared DB lifecycle)",
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (PR1 confirmed; never auto-READY)"
     },
-    "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28) + SHEEP-063-PR2 (approved 2026-08-28; Read First BLOCKED on identity bootstrap gap) + SHEEP-063-PR2-PR1 (approved 2026-08-28; Read First BLOCKED on DATA_CONTRACT_GAP-WORKSPACE_MERCHANT_NAME — merchants.name NOT NULL; decision package pending)",
-    "next_per_roadmap": "Owner decides PR2-PR1 name contract (neutral label vs authorized 0009); then PR2-PR1 identity bootstrap -> PR2 WorkspaceMerchantContext (DP-98) -> SHEEP-063 Timeline (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19); NOT auto-executed; no SHEEP-064",
+    "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28) + SHEEP-063-PR2 (approved 2026-08-28; Read First BLOCKED on identity bootstrap gap) + SHEEP-063-PR2-PR1 (executed 2026-08-28 Option B 0009 + identity bootstrap; Controller Review submitted — awaiting Owner PASS)",
+    "next_per_roadmap": "After PR2-PR1 Owner PASS: restore SHEEP-063-PR2 (WorkspaceMerchantContext + DP-98 single Main-owned authority source) -> PR2 PASS -> SHEEP-063 Timeline (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19); NOT auto-executed; no SHEEP-064",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   },
@@ -1282,26 +1282,32 @@
     "next_stage_not_executed": true
   },
   "sheep_063_pr2_pr1": {
-    "codex_result": "PARTIAL",
+    "codex_result": "COMPLETE",
     "controller_decision": "PENDING_OWNER_PASS",
-    "status": "BLOCKED",
+    "status": "EXECUTED_AWAITING_PASS",
     "closed_date_candidate": null,
-    "gap": "DATA_CONTRACT_GAP-WORKSPACE_MERCHANT_NAME",
+    "gap_resolved": "DATA_CONTRACT_GAP-WORKSPACE_MERCHANT_NAME resolved by Owner Option B (authorized 0009; merchants.name nullable = UNKNOWN)",
     "read_first": "docs\\fast-sheep-workspace-merchant-name-contract-gap.md",
-    "report": "reports\\SHEEP-063-PR2-PR1-contract-gap-report.json",
-    "owner_decisions": ["creation authority MAIN_OWNED_LOCAL_WORKSPACE_IDENTITY_BOOTSTRAP; persistence merchants row + app_meta.workspace_merchant_id pointer; keep v8 (adopted from Owner approval; execution blocked on name contract)"],
-    "blocked_reason": "merchants.name TEXT NOT NULL (0005) cannot be honestly provided for the local workspace merchant (no onboarding/registration/config/env name source); per tightening #6/#12 STOP + contract gap; no fabricated merchant name; no self-issued 0009",
-    "decision_package": {
-      "option_a": "Owner approves neutral local-workspace label as bootstrap merchants.name (e.g. 本地工作区 / Local Workspace), recorded as workspace identity label NOT a claimed business name; schema stays v8",
-      "option_b": "Owner authorizes minimal 0009 making merchants.name nullable (or workspace-identity contract without business name); migration + tests",
-      "common": "atomic transaction; stable generated ID (DP-99); pointer-only app_meta (DP-100); dangling/ambiguous fail-closed (I-20/I-21); no member/auth fabrication; Platform attach-only (DP-102); Cloud future explicit migration (I-22)"
-    },
-    "design_ready": "atomic bootstrap module (merchant row + app_meta pointer) + production timing wiring (after openDatabase, before Main services/IPC ready) + tests (fresh create / reopen stable / pointer integrity / atomicity / dangling fail-closed / ambiguous fail-closed / no member fabrication / no silent replacement) — blocked only on name contract",
+    "report": "reports\\SHEEP-063-PR2-PR1-report.json",
+    "review_doc": "docs\\fast-sheep-workspace-merchant-identity-bootstrap.md",
+    "owner_decisions": ["creation authority MAIN_OWNED_LOCAL_WORKSPACE_IDENTITY_BOOTSTRAP; persistence merchants row + app_meta.workspace_merchant_id pointer; Option B 0009 (merchants.name nullable); DP-99..104 + I-20..I-24 (executed; OWNER_DECIDED pending Owner PASS)"],
+    "schema_change": "v8 -> v9 (0009_relax_merchant_name.sql: merchants.name NOT NULL -> nullable; table rebuild preserves PK/FK/index; migration runner suspends/resumes FK around migration run)",
+    "implemented": [
+        "0009 migration + SUPPORTED_DB_SCHEMA_VERSION=9",
+        "SqliteWorkspaceIdentityBootstrap (atomic merchant(name=NULL)+app_meta.workspace_merchant_id pointer; DP-101)",
+        "generateWorkspaceMerchantId (merchant-<uuid>, DP-99) + resolveOrBootstrapWorkspaceMerchantId (I-20/I-21 fail-closed)",
+        "production composition bootstrap at createWorkerBackedMainContext (after openDatabase, before services/IPC ready; never lazy)",
+        "MainContext.workspaceMerchantId exposure; test-mode synthetic merchant-test-1"
+    ],
+    "tests": "persistence 79/79 (9 new workspace-identity guards) + desktop 262/262 (3 new composition guards) + workspace typecheck/test PASS + m6 smoke PASS (external_network_calls=0) + M12 migration matrix PASS + boundary/secrets PASS",
     "fact_readiness": {
       "MESSAGE_FACT_PATH": "READY",
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged)"
     },
+    "next_per_roadmap": "After PR2-PR1 Owner PASS: restore SHEEP-063-PR2 (WorkspaceMerchantContext + DP-98 single Main-owned authority source; Queue/UI semantics unchanged) -> PR2 PASS -> SHEEP-063 Timeline (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19)",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   }
 }
+
+

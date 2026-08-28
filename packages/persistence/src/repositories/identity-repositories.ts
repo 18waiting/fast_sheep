@@ -7,7 +7,9 @@
 // - Member has NO merchantId (Membership is the single Member<->Merchant ownership source).
 // - No sync/revision/deleted_at/remote_id/Outbox fields.
 
-export interface MerchantRecord { id: string; name: string; }
+// name = NULL means no trusted business/display-name fact (DP-103/I-24; unknown
+// optional identity facts use NULL, never magic/empty values).
+export interface MerchantRecord { id: string; name: string | null; }
 
 export interface StoreRecord { id: string; merchantId: string; name: string; platform: string; }
 
@@ -65,3 +67,4 @@ export interface SeatRepository {
   findById(id: string): SeatRecord | null;
   listByMerchant(merchantId: string): SeatRecord[];
 }
+

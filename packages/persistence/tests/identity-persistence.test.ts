@@ -22,11 +22,11 @@ function copyRange(target: string, names: string[]): void {
   for (const f of names) copyFileSync(join(MIGRATIONS_DIR, f), join(target, f));
 }
 
-test("fresh DB: migrates to schema v8, new identity tables + legacy tables coexist", () => {
+test("fresh DB: migrates to schema v9, new identity tables + legacy tables coexist", () => {
   const r = root();
   const { conn, schemaVersion } = openDatabase(r);
-  assert.equal(schemaVersion, 8);
-  assert.equal(conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 8);
+  assert.equal(schemaVersion, 9);
+  assert.equal(conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 9);
   for (const t of ["merchants","stores","platform_accounts","members","memberships","seats"]) {
     assert.ok(conn.get("SELECT name FROM sqlite_master WHERE type='table' AND name=?", t), `table ${t}`);
   }
@@ -36,7 +36,7 @@ test("fresh DB: migrates to schema v8, new identity tables + legacy tables coexi
   conn.close();
 });
 
-test("upgrade path: 0001-0004 DB migrates to 0005/0006/0007/0008; historical checksums unchanged; backup created", () => {
+test("upgrade path: 0001-0004 DB migrates to 0005/0006/0007/0008/0009; historical checksums unchanged; backup created", () => {
   const r = root();
   const conn = new SqliteConnection(join(r, DB_FILENAME));
   const mig4 = mkdtempSync(join(tmpdir(), "fs-mig4-"));
@@ -48,7 +48,7 @@ test("upgrade path: 0001-0004 DB migrates to 0005/0006/0007/0008; historical che
 
   const runner = new MigrationRunner();
   const res = runner.migrate(conn, join(r, "backups", "db"));
-  assert.equal(res.migratedCount, 4);
+  assert.equal(res.migratedCount, 5);
   assert.equal(res.backedUp, true, "backup safety mechanism must run for pending migration");
 
   const applied = runner.applied(conn);
@@ -137,3 +137,4 @@ test("repositories expose NO delete/remove/tombstone operations", () => {
   }
   conn.close();
 });
+

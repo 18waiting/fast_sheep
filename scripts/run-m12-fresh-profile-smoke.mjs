@@ -16,7 +16,7 @@ const dataRoot = mkdtempSync(join(tmpdir(), "fw-m12-fresh-"));
 let worker, db;
 try {
   db = openDatabase(dataRoot);
-  check("fresh DB schema v8", db.schemaVersion === 8);
+  check("fresh DB schema v9", db.schemaVersion === 9);
   const groups = db.conn.get("SELECT COUNT(*) AS n FROM config_groups").n;
   check("default seed present", groups >= 9);
   worker = new AIWorkerClient({
@@ -33,7 +33,7 @@ try {
   check("integrity after reopen", true);
   db.conn.close(); db = null;
   const b = openDatabase(dataRoot);
-  check("reopen schema v8", b.schemaVersion === 8);
+  check("reopen schema v9", b.schemaVersion === 9);
   b.conn.close();
 } finally {
   await worker?.stop().catch(() => undefined);
@@ -43,4 +43,5 @@ try {
 writeFileSync(join(ROOT, "reports", "m12-profile-smoke-report.json"), JSON.stringify({ milestone: "M12", fresh: true, upgraded: true, imported: true, all_passed: failed === 0 }, null, 2) + "\n", "utf-8");
 if (failed > 0) process.exit(1);
 console.log("M12 fresh profile smoke PASS.");
+
 
