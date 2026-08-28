@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
-  "last_closed_task": "SHEEP-066 (Read First)",
-  "current_task": "SHEEP-066-PR1 (COMPLETE: Text Delivery Attempt & Outcome Foundation v10; Controller Review submitted; awaiting Owner PASS — SHEEP-066 product implementation NOT resumed, Composer Send stays disabled)",
-  "next_action": "SHEEP-066-PR1 awaiting Owner PASS; after PASS restore SHEEP-066 product implementation (text-only; real delivery adapter + ack contract required); no SHEEP-067 without PASS",
+  "last_closed_task": "SHEEP-066-PR1",
+  "current_task": "SHEEP-066-PR2 (Manual Text Send Authorization Contract Readiness — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed; no Composer Send enable)",
+  "next_action": "SHEEP-066-PR2 (Manual Text Send Authorization Contract Readiness) proposal — awaiting Owner approval; not auto-executed; no SHEEP-067 without PASS",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1585,13 +1585,35 @@
   },
   "sheep_066_pr1": {
     "codex_result": "COMPLETE",
-    "controller_decision": "PENDING_OWNER_PASS",
-    "status": "EXECUTED_AWAITING_PASS",
-    "closed_date_candidate": null,
+    "controller_decision": "PASS",
+    "status": "CLOSED",
+    "closed_date_candidate": "2026-08-29",
     "report": "reports\\SHEEP-066-PR1-report.json",
     "review_doc": "docs\\fast-sheep-text-delivery-attempt-foundation.md",
     "schema_change": "v9 -> v10 (0010_delivery_attempts.sql: durable text delivery attempt journal; immutable text payload snapshot; captured target identity; typed status/lifecycle; FK/CHECK/index; no reconciliation_note/attachment/Outbox fields)",
-    "decisions": ["DP-119/120/122/124/125/126/127/128/129/130 + I-33..I-41 (executed; OWNER_DECIDED pending Owner PASS)"],
+    "decisions": ["DP-119/120/122/124/125/126/127/128/129/130 + I-33..I-41 (OWNER_DECIDED 2026-08-29)"],
+    "acceptance_confirmations": [
+        "v10 durable Delivery Attempt journal separate from normalized Message facts / Sync Outbox",
+        "immutable text payload snapshot + immutable Conversation/Store/PlatformAccount target (I-34/I-37)",
+        "authorization-before-attempt contract holds",
+        "IN_FLIGHT durable before any external delivery side effect (I-39)",
+        "unresolved IN_FLIGHT recovery -> UNKNOWN (not failed, no auto-retry; DP-128)",
+        "ACKNOWLEDGED/REJECTED/UNKNOWN typed outcome; terminal attempts not rewritten by retry (I-38)",
+        "only ACKNOWLEDGED may produce an outbound delivered Message fact (I-35)",
+        "ACK finalization + Message fact persistence atomic and per-attempt idempotent (DP-130/I-40)",
+        "occurred_at only from trusted source time; unknown stays NULL",
+        "attempt payload not in default logs/telemetry/error strings (I-41)",
+        "production Main binds only the durable repository, not fake/test delivery adapter",
+        "Composer Send stays disabled; no premature real Send Pipeline",
+        "schema v10 scope not extended to Attachment/Outbox/retry/cloud/capability taxonomy"
+    ],
+    "future_hardening": [
+        "real TextDeliveryPort: a rejected Promise / unexpected exception AFTER durable IN_FLIGHT with no authoritative rejection must resolve as UNKNOWN, not REJECTED; guard required before the first production adapter",
+        "if v4~v8 are supported real starting schemas, later M12 matrix should add corresponding direct-upgrade coverage"
+    ],
+    "v10_migration_audit": "0010_delivery_attempts.sql (v9->v10): fresh + upgrade + integrity/FK/CHECK + checksum/future-version/reopen/backup + failure rollback verified; append-only; 0001-0009 unchanged",
+    "controller_pass_date": "2026-08-29",
+    "do_not_resume_send_implementation": "Composer Send implementation must NOT be resumed directly; next = SHEEP-066-PR2 (Manual Text Send Authorization Contract Readiness)",
     "implemented": [
         "SqliteDeliveryAttemptRepository + TextDeliveryPort + DeliveryAttemptAuthorizerPort",
         "createAuthorizedDeliveryAttempt (DP-120/I-37 target capture); runDeliveryAttempt (I-39/I-33/I-35)",
@@ -1610,3 +1632,4 @@
     "next_stage_not_executed": true
   }
 }
+
