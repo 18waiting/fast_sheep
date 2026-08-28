@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
   "last_closed_task": "SHEEP-069",
-  "current_task": "SHEEP-070 (Ownership / Handoff — Claim / Release UX Fact-Readiness — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
-  "next_action": "SHEEP-070 (Ownership / Handoff — Claim / Release UX) proposal — awaiting Owner approval; not auto-executed",
+  "current_task": "SHEEP-070 (Ownership / Handoff — Claim / Release Fact-Readiness executed; NOT_READY/DEFER; awaiting Owner disposition; not auto-executed)",
+  "next_action": "SHEEP-070 (Ownership / Handoff — Claim / Release UX) Fact-Readiness — awaiting Owner disposition; no next SHEEP without PASS",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1880,5 +1880,56 @@
     "i_67": "SCHEMA_RELATION_SHAPE_DOES_NOT_BY_ITSELF_ESTABLISH_A_PRODUCTION_RELATION_FACT",
     "readiness": "CONV_RELATION=NOT_READY / ORDER_LOGISTICS_RELATION=PARTIAL|PRODUCER_NOT_READY / ORDER_IDENTITY=NOT_READY|PLATFORM_EVIDENCE_REQUIRED / LOGISTICS_IDENTITY=NOT_READY|PLATFORM_EVIDENCE_REQUIRED / ORDER_IDENTITY_FACT=PARTIAL / ORDER_BUSINESS_FACT=NOT_READY / LOGISTICS_FACT=NOT_READY / TEMPORAL_SEMANTICS=NOT_READY / INGESTION_PRODUCER=NOT_READY / PRESENTATION=NOT_READY / IMPLEMENTATION=NOT_READY",
     "next": "SHEEP-070 (Ownership / Handoff — Claim / Release UX) proposal — awaiting Owner approval; not auto-executed"
+  },
+  "sheep_070": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "NOT_READY / DEFER (Ownership / Claim / Release Fact-Readiness; no schema v11, no IPC/UI, no runtime)",
+    "closed_date_candidate": null,
+    "report": "reports\\SHEEP-070-report.json",
+    "review_doc": "docs\\fast-sheep-ownership-claim-release-readiness.md",
+    "readiness": {
+      "OWNERSHIP_STATE_FACT_READINESS": "PARTIAL (8-state typed vocabulary; state TEXT no CHECK; I-72)",
+      "OWNERSHIP_HOLDER_SEMANTICS_READINESS": "NOT_READY (DP-156/DP-157)",
+      "OWNERSHIP_ACTOR_SUBJECT_READINESS": "NOT_READY (Member domain type only; I-68)",
+      "CLAIM_RELEASE_AUTHORITY_READINESS": "NOT_READY (DP-154; SHEEP-012 not implemented)",
+      "OWNERSHIP_TRANSITION_SEMANTICS_READINESS": "NOT_READY (I-73; DP-155)",
+      "OWNERSHIP_CONCURRENCY_CONTROL_READINESS": "NOT_READY (INSERT OR REPLACE last-write-wins; I-74)",
+      "OWNERSHIP_PERSISTENCE_READINESS": "PARTIAL (snapshot table+repo tested; not wired in Main; I-69)",
+      "CLAIM_RELEASE_IPC_READINESS": "NOT_READY (no typed channel)",
+      "OWNERSHIP_SNAPSHOT_PRESENTATION_READINESS": "NOT_READY (I-70/I-71)",
+      "CLAIM_RELEASE_ACTION_PRESENTATION_READINESS": "NOT_READY (M5 takeover_status is AI-interruption surface)",
+      "CLAIM_RELEASE_UX_IMPLEMENTATION_READINESS": "NOT_READY"
+    },
+    "decisions": ["DP-152..DP-157 + I-68..I-75 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decision_package": {
+      "no_migration": "ownership state CHECK / transition|event|audit table / version|CAS / v11 migration NOT authorized; schema stays v10 (I-74)",
+      "no_ipc_ui_runtime": "no Claim/Release IPC/UI, no ownership service/state machine; no Member/Auth/Capability/ResourceScope runtime",
+      "defer": "DEFER until trusted human Member/operator subject + claim/release authority (SHEEP-012 Capability+ResourceScope) + transition/concurrency semantics; then minimal prerequisite",
+      "read_only_note": "minimal read-only snapshot presentation would still require authorized active conversation anchor + snapshot IPC + I-70/I-71 semantics; NOT auto-approved this round"
+    },
+    "next_per_roadmap": "Owner decides minimal prerequisite vs Product Decision vs DEFER vs minimal read-only implementation; no Claim/Release product implementation without PASS; no next SHEEP",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
+  },
+  "fast_sheep_ownership_claim_release_fact_readiness_decisions": {
+    "status": "ADOPTED_PENDING_OWNER_PASS",
+    "decided_date": "2026-08-29",
+    "dp_152": "CLAIM_RELEASE_UX_STARTS_FROM_THE_AUTHORIZED_ACTIVE_CONVERSATION",
+    "dp_153": "OWNERSHIP_ACTOR_IS_A_DOMAIN_FACT_DISTINCT_FROM_LLM_ROLES_AND_AUTOMATION_LEVEL",
+    "dp_154": "CLAIM_RELEASE_AUTHORITY_IS_NOT_IMPLIED_BY_ACTOR_IDENTITY",
+    "dp_155": "OWNERSHIP_STATE_VOCABULARY_REMAINS_TYPED_WITHOUT_UNVERIFIED_TRANSITION_ENGINE",
+    "dp_156": "OWNERSHIP_STATE_AND_HOLDER_FIELDS_FORM_SEPARATE_FACT_DIMENSIONS_UNTIL_VALID_COMBINATIONS_ARE_EVIDENCED",
+    "dp_157": "OWNERSHIP_HOLDER_AND_OWNERSHIP_MUTATION_ACTOR_ARE_DISTINCT_FACTS",
+    "i_68": "MISSING_HUMAN_MEMBER_SUBJECT_MUST_FAIL_CLOSED_NOT_IMPLY_LOCAL_OWNER",
+    "i_69": "OWNERSHIP_SNAPSHOT_IS_NOT_AN_AUDIT_TRAIL",
+    "i_70": "CLAIM_RELEASE_READS_ARE_ANCHORED_TO_THE_AUTHORIZED_ACTIVE_CONVERSATION",
+    "i_71": "ABSENT_OWNERSHIP_STATE_MUST_NOT_BE_PRESENTED_AS_UNASSIGNED_WITHOUT_EVIDENCE",
+    "i_72": "OWNERSHIP_STATE_NAMES_DO_NOT_IMPLY_TRANSITION_EDGES_OR_STATE_EQUIVALENCE",
+    "i_73": "ACTION_TARGET_STATE_MAPPING_DOES_NOT_ESTABLISH_COMPLETE_OWNERSHIP_MUTATION_SEMANTICS",
+    "i_74": "CLAIM_RELEASE_MUTATION_MUST_NOT_USE_UNCONDITIONAL_LAST_WRITE_WINS",
+    "i_75": "AI_ACTIVE_OWNERSHIP_STATE_DOES_NOT_IMPLY_AI_SEND_AUTHORITY_OR_AUTOMATION_LEVEL",
+    "readiness": "STATE_FACT=PARTIAL / HOLDER_SEMANTICS=NOT_READY / ACTOR_SUBJECT=NOT_READY / AUTHORITY=NOT_READY / TRANSITION=NOT_READY / CONCURRENCY_CONTROL=NOT_READY / PERSISTENCE=PARTIAL / IPC=NOT_READY / SNAPSHOT_PRESENTATION=NOT_READY / ACTION_PRESENTATION=NOT_READY / UX_IMPLEMENTATION=NOT_READY",
+    "next": "Owner decides minimal prerequisite vs Product Decision vs DEFER vs minimal read-only implementation; no next SHEEP without PASS"
   }
 }

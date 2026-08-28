@@ -1,0 +1,87 @@
+{
+  "task": "SHEEP-070",
+  "codex_result": "PARTIAL",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.4",
+  "status": "NOT_READY / DEFER (Ownership / Claim / Release Fact-Readiness; no schema v11, no IPC/UI, no runtime)",
+  "summary": "Ownership / Claim / Release Fact-Readiness Read First：OWNERSHIP_STATE_FACT=PARTIAL（SHEEP-014 8-state typed vocabulary + ownership_records.state TEXT 无 CHECK；I-72 不推导 edges/equivalence）、OWNERSHIP_HOLDER_SEMANTICS=NOT_READY（owner_kind/owner_member_id 组合未验证；DP-156/DP-157）、OWNERSHIP_ACTOR_SUBJECT=NOT_READY（Member 仅 domain type；无 trusted human subject；I-68 fail-closed）、CLAIM_RELEASE_AUTHORITY=NOT_READY（DP-154 actor!=authority；SHEEP-012 未实现）、OWNERSHIP_TRANSITION_SEMANTICS=NOT_READY（I-73 target-state mapping 不完整；DP-155）、OWNERSHIP_CONCURRENCY_CONTROL=NOT_READY（INSERT OR REPLACE 无条件 last-write-wins；I-74 不新增 CAS schema）、OWNERSHIP_PERSISTENCE=PARTIAL（snapshot 表+repo 有测试；Main 未接线；I-69 非 audit）、CLAIM_RELEASE_IPC=NOT_READY（无 typed channel）、OWNERSHIP_SNAPSHOT_PRESENTATION=NOT_READY（I-70/I-71）、CLAIM_RELEASE_ACTION_PRESENTATION=NOT_READY（M5 takeover_status 为 AI 中断 surface 非 claim/release）、CLAIM_RELEASE_UX_IMPLEMENTATION=NOT_READY。不授权 ownership state CHECK/transition|event|audit table/version|CAS/v11 migration；不实现 Claim/Release IPC/UI、不建 Member/Auth/Capability/ResourceScope runtime；DEFER 至 trusted human Member subject + claim/release authority + transition/concurrency semantics。DP-152~157 + I-68~I-75 已记录",
+  "completed_requirements": 20,
+  "total_requirements": 20,
+  "owner_tightening": {
+    "dp152": "遵守：CLAIM_RELEASE_UX_STARTS_FROM_THE_AUTHORIZED_ACTIVE_CONVERSATION（Renderer 不提供/授权 ownership target）",
+    "dp153": "遵守：Ownership actor/holder domain 与 LLM role / AutomationLevel 分离",
+    "dp154": "遵守：CLAIM_RELEASE_AUTHORITY_IS_NOT_IMPLIED_BY_ACTOR_IDENTITY",
+    "dp155": "遵守：OWNERSHIP_STATE_VOCABULARY_REMAINS_TYPED_WITHOUT_UNVERIFIED_TRANSITION_ENGINE",
+    "dp156": "遵守：OWNERSHIP_STATE_AND_HOLDER_FIELDS_FORM_SEPARATE_FACT_DIMENSIONS_UNTIL_VALID_COMBINATIONS_ARE_EVIDENCED（未自行补 CHECK）",
+    "dp157": "遵守：OWNERSHIP_HOLDER_AND_OWNERSHIP_MUTATION_ACTOR_ARE_DISTINCT_FACTS",
+    "i68": "遵守：缺可信 human Member/operator subject 时 fail closed，不推断 local Owner/default Member，不创建 synthetic Member",
+    "i69": "遵守：ownership_records snapshot 不是 transition/audit history",
+    "i70_i71": "遵守：读取锚定 authorized Active Conversation；缺 row 不自动等于 UNASSIGNED",
+    "i72": "遵守：OWNERSHIP_STATE_NAMES_DO_NOT_IMPLY_TRANSITION_EDGES_OR_STATE_EQUIVALENCE（未推导 CLAIMED->ACTIVE、RELEASED=UNASSIGNED 等）",
+    "i73": "遵守：ACTION_TARGET_STATE_MAPPING_DOES_NOT_ESTABLISH_COMPLETE_OWNERSHIP_MUTATION_SEMANTICS（不证明 source-state precondition/authority/holder mutation/并发）",
+    "concurrency_readiness": "遵守：新增 OWNERSHIP_CONCURRENCY_CONTROL_READINESS 并核验（INSERT OR REPLACE 无条件 upsert；无 CAS/atomic precondition）",
+    "i74": "遵守：CLAIM_RELEASE_MUTATION_MUST_NOT_USE_UNCONDITIONAL_LAST_WRITE_WINS（未因此新增 version/CAS schema）",
+    "i75": "遵守：AI_ACTIVE_OWNERSHIP_STATE_DOES_NOT_IMPLY_AI_SEND_AUTHORITY_OR_AUTOMATION_LEVEL",
+    "read_vs_mutation_presentation": "遵守：分开 OWNERSHIP_SNAPSHOT_PRESENTATION_READINESS 与 CLAIM_RELEASE_ACTION_PRESENTATION_READINESS",
+    "eleven_readiness_outputs": "遵守：STATE_FACT / HOLDER_SEMANTICS / ACTOR_SUBJECT / AUTHORITY / TRANSITION / CONCURRENCY / PERSISTENCE / IPC / SNAPSHOT_PRESENTATION / ACTION_PRESENTATION / UX_IMPLEMENTATION 分别输出",
+    "ai_active_not_authority": "遵守：AI_ACTIVE、owner_kind=ai 不解释为 AI_AUTO_REPLY/ALLOW_AUTO",
+    "no_migration": "遵守：不授权 ownership state CHECK、transition/event/audit table 或其它 v11 migration；未因 snapshot repo 存在创建 state machine/service",
+    "zero_code": "遵守：0 product code / 0 UI / 0 visual evidence；运行常规 regression",
+    "controller_review_stop": "遵守：提交 Controller Review + Decision Package 并 STOP；由 Owner 决定最小 prerequisite、Product Decision、DEFER 或最小 read-only implementation"
+  },
+  "readiness": {
+    "OWNERSHIP_STATE_FACT_READINESS": "PARTIAL (SHEEP-014 8-state typed vocabulary; ownership_records.state TEXT no CHECK; I-72 no edges/equivalence)",
+    "OWNERSHIP_HOLDER_SEMANTICS_READINESS": "NOT_READY (owner_kind/owner_member_id combination semantics unverified; DP-156/DP-157)",
+    "OWNERSHIP_ACTOR_SUBJECT_READINESS": "NOT_READY (Member is domain type only; no trusted human subject; I-68 fail-closed)",
+    "CLAIM_RELEASE_AUTHORITY_READINESS": "NOT_READY (DP-154 actor!=authority; SHEEP-012 Capability+ResourceScope not implemented)",
+    "OWNERSHIP_TRANSITION_SEMANTICS_READINESS": "NOT_READY (I-73 target-state mapping incomplete; DP-155 no transition engine)",
+    "OWNERSHIP_CONCURRENCY_CONTROL_READINESS": "NOT_READY (INSERT OR REPLACE unconditional last-write-wins; no CAS; I-74 no new schema)",
+    "OWNERSHIP_PERSISTENCE_READINESS": "PARTIAL (ownership_records snapshot + SqliteOwnershipRepository tested; NOT wired in Main; I-69 not audit)",
+    "CLAIM_RELEASE_IPC_READINESS": "NOT_READY (no typed claim/release/ownership IPC channel or handler)",
+    "OWNERSHIP_SNAPSHOT_PRESENTATION_READINESS": "NOT_READY (I-70 anchor authorized active conversation + stale guard; I-71 absent row != UNASSIGNED)",
+    "CLAIM_RELEASE_ACTION_PRESENTATION_READINESS": "NOT_READY (no action UI; M5 takeover_status is AI-interruption surface, not claim/release)",
+    "CLAIM_RELEASE_UX_IMPLEMENTATION_READINESS": "NOT_READY"
+  },
+  "decision_package": {
+    "no_migration": "ownership state CHECK / transition|event|audit table / version|CAS / v11 migration NOT authorized; schema stays v10 (I-74)",
+    "no_ipc_ui_runtime": "no Claim/Release IPC/UI, no ownership service/state machine; no Member/Auth/Capability/ResourceScope runtime",
+    "defer": "DEFER until trusted human Member/operator subject + claim/release authority (SHEEP-012 Capability+ResourceScope) + transition/concurrency semantics; then minimal prerequisite per DP-152..157 + I-68..I-75",
+    "read_only_note": "minimal read-only snapshot presentation would still require authorized active conversation anchor + snapshot IPC + I-70/I-71 semantics; NOT auto-approved this round"
+  },
+  "evidence": {
+    "confirmed": [
+      "ownership_records (0006): snapshot-only (conversation_id PK, state TEXT no CHECK, owner_kind, owner_member_id); no transition/audit",
+      "SqliteOwnershipRepository.save = INSERT OR REPLACE (unconditional last-write-wins upsert by conversation); no atomic precondition/CAS; no authority validation",
+      "SHEEP-014 ownership domain: 8-state typed vocabulary + OwnershipActorRef member|ai; vocabulary only, no transition matrix",
+      "M1.5-R02 ownership execution: 4 actions (claim/release/handoff/supervisor_takeover) -> target-state mapping only; actor != authority (SHEEP-012 deferred); no source-state precondition/concurrency semantics",
+      "Member/Membership/Seat are domain types only (SHEEP-011); no runtime/persistence; SHEEP-066-PR2 MANUAL_SEND_AUTHORIZATION_SUBJECT_READINESS=NOT_READY (no trusted human operator subject); WorkspaceMerchantContext != human subject",
+      "OwnershipRepository NOT wired into production Main composition (bootstrap.ts); no claim/release/ownership typed IPC channel (desktop-ipc 42 canonical channels); no renderer Claim/Release UI",
+      "M5 orchestrator takeover_status (ManualTakeoverController/TakeoverBreakerPolicy) is AI-send interruption semantics; NOT normalized ownership claim/release; not persisted to ownership_records"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "desktop build/typecheck + desktop tests (regression; pure Read First turn - no new product code)",
+    "workspace typecheck/test PASS",
+    "m6 Electron smoke PASS (external_network_calls=0) - non-regression",
+    "check:boundary PASS; secret scan PASS"
+  ],
+  "negative_tests": [
+    "未改 schema v10；未授权 ownership state CHECK/transition|event|audit table/version|CAS/v11 migration",
+    "未实现 Claim/Release IPC/UI / ownership service/state machine / Member/Auth/Capability/ResourceScope runtime",
+    "未推断 local Owner/default Member/synthetic Member（I-68）；未把 snapshot 当 audit（I-69）",
+    "未推导 state transition edges/equivalence（I-72）；未把 action target-state mapping 当完整 mutation semantics（I-73）",
+    "未用无条件 last-write-wins 作为 claim/release 设计（I-74，仅记录现状）；未把 AI_ACTIVE 当 AI send authority（I-75）",
+    "未实现 Handoff Reason/Queue、Supervisor Takeover（SHEEP-071~073）、Composer/Send/Attachments"
+  ],
+  "modified_files": [
+    "docs/fast-sheep-ownership-claim-release-readiness.md (new)",
+    "reports/SHEEP-070-report.json (new)",
+    "project/PROJECT_STATE.json (sheep_070 record + decision package)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
