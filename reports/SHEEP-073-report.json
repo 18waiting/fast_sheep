@@ -1,0 +1,94 @@
+{
+  "task": "SHEEP-073",
+  "codex_result": "PARTIAL",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.4",
+  "status": "NOT_READY / DEFER (Supervisor Takeover Fact-Readiness; no schema v11, no IPC/UI/service/state machine)",
+  "summary": "Supervisor Takeover Fact-Readiness Read First：SUPERVISOR_TAKEOVER_STATE_FACT=PARTIAL（8-state vocabulary 含 SUPERVISOR_TAKEOVER；state TEXT 可容纳；无 producer/currentness）、ACTION_SEMANTICS=PARTIAL（M1.5-R02 mapping evidence only）、ACTION_OCCURRENCE=NOT_READY（DP-172 occurrence != state）、TRANSITION_PRECONDITION=NOT_READY（DP-171 verified current ownership preconditions 缺失）、RESULTING_HOLDER_SEMANTICS=NOT_READY（ownerRef=actor 证据强度低）、ACTION_AUTHORITY=NOT_READY（I-102 Capability+ResourceScope 未实现）、OPERATOR_SUBJECT=NOT_READY（SHEEP-066-PR2；I-98 fail-closed）、CONCURRENCY_CONTROL=NOT_READY（I-103/I-74/I-76 last-write-wins）、OWNERSHIP_LINK=NOT_READY（I-101 ownership facts 不可绕过）、M5_TAKEOVER_PROJECTION_SEPARATION=READY/CONTRACT_CONFIRMED（候选：M5 ManualTakeover 为 AI 发送中断 runtime，domain separation 成立；不建 projection）、PRODUCER=NOT_READY（无 production writer）、CURRENTNESS=NOT_READY、PERSISTENCE=PARTIAL（snapshot shape 可容纳 ≠ occurrence/history persistence）、IPC=NOT_READY、PRESENTATION=NOT_READY（I-99/I-100 三态）、IMPLEMENTATION=NOT_READY。不授权 taken_over_by/taken_over_at/previous_owner/takeover_reason、event/audit table、ownership version/CAS 或任何 v11 migration；不实现 Supervisor Takeover IPC/UI/service/state machine；DEFER 至 verified takeover occurrence producer + action authority + trusted operator subject + transition preconditions + concurrency + ownership currentness。DP-169~172 + I-97~I-103 已记录",
+  "completed_requirements": 22,
+  "total_requirements": 22,
+  "owner_tightening": {
+    "dp169": "遵守：SUPERVISOR_TAKEOVER_FACTS_REQUIRE_VERIFIED_PRODUCER_AND_AUTHORITY_SOURCE_NOT_ROLE_VOCABULARY",
+    "dp170": "遵守：SUPERVISOR_TAKEOVER_IS_DISTINCT_FROM_M5_AI_SEND_INTERRUPTION_TAKEOVER；未建 M5 ManualTakeover -> ownership takeover bridge",
+    "dp171": "遵守：SUPERVISOR_TAKEOVER_REQUIRES_AN_AUTHORIZED_CONVERSATION_AND_VERIFIED_CURRENT_OWNERSHIP_PRECONDITIONS",
+    "i101": "遵守：UNREADY_HANDOFF_FACTS_MAY_NOT_BE_ASSUMED_AS_TAKEOVER_PRECONDITIONS_AND_UNREADY_OWNERSHIP_FACTS_MAY_NOT_BE_BYPASSED（Takeover 不要求 Handoff Queue/occurrence 必然先成立，但 Ownership current/transition facts 不可绕过）",
+    "dp172": "遵守：SUPERVISOR_TAKEOVER_ACTION_OCCURRENCE_AND_SUPERVISOR_TAKEOVER_OWNERSHIP_STATE_ARE_DISTINCT_FACTS",
+    "mapping_evidence_only": "遵守：supervisor_takeover -> SUPERVISOR_TAKEOVER + ownerRef=actor 仅作 M1.5-R02 mapping evidence；未宣称 source-state/authority/holder mutation/producer contract ready",
+    "resulting_holder_readiness": "遵守：新增 SUPERVISOR_TAKEOVER_RESULTING_HOLDER_SEMANTICS_READINESS 并单独核验 ownerRef=actor 证据强度",
+    "i97": "遵守：ROLE_SUPERVISOR_DOES_NOT_IMPLY_TAKEOVER_AUTHORITY",
+    "i102": "遵守：SUPERVISOR_TAKEOVER_ACTION_NAME_DOES_NOT_IMPLY_ROLE_SUPERVISOR_IS_THE_ONLY_AUTHORIZED_ACTOR（authority 服从 Capability + ResourceScope）",
+    "i98": "遵守：无 trusted human operator subject 时 fail closed，未推断 local Owner/Supervisor，未造 synthetic Member",
+    "authority_readiness_rename": "遵守：SUPERVISOR_ROLE_AUTHORITY_READINESS 改为 SUPERVISOR_TAKEOVER_ACTION_AUTHORITY_READINESS（核验 action authority 而非 role enum）",
+    "transition_and_concurrency": "遵守：新增 SUPERVISOR_TAKEOVER_TRANSITION_PRECONDITION_READINESS 与 SUPERVISOR_TAKEOVER_CONCURRENCY_CONTROL_READINESS",
+    "i103": "遵守：SUPERVISOR_TAKEOVER_MUTATION_REQUIRES_AN_ATOMIC_EXPECTED_CURRENT_OWNERSHIP_PRECONDITION（继承 I-74/I-76；未新增 version/CAS schema）",
+    "i99": "遵守：detail/readiness 读取锚定 authorized Active Conversation + stale-result discipline",
+    "i100": "遵守：区分无 verified occurrence / occurrence 已知但 detail 缺失 / current ownership takeover state；未统一呈现为无接管/未知",
+    "vocabulary_not_evidence": "遵守：SUPERVISOR_TAKEOVER vocabulary value 未单独作为主管已接管 presentation evidence（受 SHEEP-071 producer/currentness/state-holder semantics 约束）",
+    "m5_separation_output": "遵守：M5_TAKEOVER_PROJECTION_SEPARATION_READINESS 单独输出（READY/CONTRACT_CONFIRMED 候选；未因此建立 projection）",
+    "persistence_shape_vs_occurrence": "遵守：区分 snapshot shape 能容纳 SUPERVISOR_TAKEOVER 与真实 takeover occurrence/history persistence；前者不证明后者",
+    "no_migration": "遵守：不授权 taken_over_by/taken_over_at/previous_owner/takeover_reason、event/audit table、ownership version/CAS 或任何 v11 migration；schema v10 保持",
+    "sixteen_readiness_outputs": "遵守：16 项 readiness 分别输出（STATE_FACT/ACTION_SEMANTICS/ACTION_OCCURRENCE/TRANSITION_PRECONDITION/RESULTING_HOLDER/ACTION_AUTHORITY/OPERATOR_SUBJECT/CONCURRENCY_CONTROL/OWNERSHIP_LINK/M5_PROJECTION_SEPARATION/PRODUCER/CURRENTNESS/PERSISTENCE/IPC/PRESENTATION/IMPLEMENTATION）",
+    "zero_code": "遵守：0 product code / 0 UI / 0 visual evidence；未创建 supervisor/takeover/ownership abstraction",
+    "controller_review_stop": "遵守：提交 Controller Review + Decision Package 并 STOP；由 Owner 决定 DEFER、最小 prerequisite 或窄 implementation"
+  },
+  "readiness": {
+    "SUPERVISOR_TAKEOVER_STATE_FACT_READINESS": "PARTIAL (8-state vocabulary incl SUPERVISOR_TAKEOVER; state TEXT can hold; no producer/currentness)",
+    "SUPERVISOR_TAKEOVER_ACTION_SEMANTICS_READINESS": "PARTIAL (M1.5-R02 action->target mapping evidence only; not complete source-state/authority/holder/producer)",
+    "SUPERVISOR_TAKEOVER_ACTION_OCCURRENCE_READINESS": "NOT_READY (DP-172 action occurrence != ownership state; no occurrence entity)",
+    "SUPERVISOR_TAKEOVER_TRANSITION_PRECONDITION_READINESS": "NOT_READY (DP-171 verified current ownership preconditions missing)",
+    "SUPERVISOR_TAKEOVER_RESULTING_HOLDER_SEMANTICS_READINESS": "NOT_READY (ownerRef=actor mapping evidence weak; no verified holder semantics)",
+    "SUPERVISOR_TAKEOVER_ACTION_AUTHORITY_READINESS": "NOT_READY (action authority not role enum, I-102; Capability+ResourceScope SHEEP-012 not implemented)",
+    "SUPERVISOR_OPERATOR_SUBJECT_READINESS": "NOT_READY (no trusted human Member/operator subject; I-98 fail-closed)",
+    "SUPERVISOR_TAKEOVER_CONCURRENCY_CONTROL_READINESS": "NOT_READY (last-write-wins snapshot upsert; no CAS; I-103/I-74/I-76; no new schema)",
+    "SUPERVISOR_TAKEOVER_OWNERSHIP_LINK_READINESS": "NOT_READY (no ownership producer/currentness/mutation; I-101 ownership facts not bypassable)",
+    "M5_TAKEOVER_PROJECTION_SEPARATION_READINESS": "READY / CONTRACT_CONFIRMED (candidate: M5 ManualTakeover is AI-send interruption runtime, distinct domain; no projection built)",
+    "SUPERVISOR_TAKEOVER_PRODUCER_READINESS": "NOT_READY (no production writer of SUPERVISOR_TAKEOVER ownership state; no takeover occurrence producer)",
+    "SUPERVISOR_TAKEOVER_CURRENTNESS_READINESS": "NOT_READY (no currentness/freshness semantics)",
+    "SUPERVISOR_TAKEOVER_PERSISTENCE_READINESS": "PARTIAL (snapshot shape can hold SUPERVISOR_TAKEOVER; NOT takeover occurrence/history persistence; no event/audit table)",
+    "SUPERVISOR_TAKEOVER_IPC_READINESS": "NOT_READY (no typed takeover IPC channel or handler)",
+    "SUPERVISOR_TAKEOVER_PRESENTATION_READINESS": "NOT_READY (I-99 authorized conversation anchor; I-100 three-way absence)",
+    "SUPERVISOR_TAKEOVER_IMPLEMENTATION_READINESS": "NOT_READY"
+  },
+  "decision_package": {
+    "no_migration": "taken_over_by / taken_over_at / previous_owner / takeover_reason / event|audit table / ownership version|CAS / v11 migration NOT authorized; schema stays v10",
+    "no_ipc_ui_service": "no Supervisor Takeover IPC/UI/service/state machine; no M5->ownership takeover bridge; no Member/Auth/Capability/ResourceScope runtime; no supervisor/takeover/ownership abstraction",
+    "defer": "DEFER until verified takeover occurrence producer + action authority (SHEEP-012 Capability+ResourceScope) + trusted operator subject + transition preconditions + concurrency (I-103) + ownership currentness; then minimal prerequisite per DP-169..172 + I-97..I-103"
+  },
+  "evidence": {
+    "confirmed": [
+      "8-state ownership vocabulary incl SUPERVISOR_TAKEOVER (SHEEP-014); ownership_records snapshot-only (state TEXT no CHECK); NO production writer (SHEEP-070/071)",
+      "M1.5-R02 supervisor_takeover -> SUPERVISOR_TAKEOVER + ownerRef=actor is a pure action->target-state mapping; explicit note: does NOT mean every role=supervisor has takeover authority; no role consulted; authority validation deferred",
+      "ROLE_SUPERVISOR is vocabulary only (DEC-011); Master §7 Member->Role->Capabilities->ResourceScope; SHEEP-012 Capability+ResourceScope NOT implemented",
+      "M5 ManualTakeoverController / TakeoverBreakerPolicy / onHumanTakeover = AI-send interruption runtime control; NOT ownership takeover; NOT persisted to ownership_records",
+      "No trusted human Member/operator subject runtime (SHEEP-066-PR2 MANUAL_SEND_AUTHORIZATION_SUBJECT_READINESS=NOT_READY)",
+      "ownership_records snapshot upsert = INSERT OR REPLACE (unconditional last-write-wins); no CAS/atomic precondition (I-74/I-76/I-103)",
+      "No takeover typed IPC (desktop-ipc 42 canonical channels); no renderer supervisor takeover UI"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "desktop build/typecheck + desktop tests (regression; pure Read First turn - no new product code)",
+    "workspace typecheck/test PASS",
+    "m6 Electron smoke PASS (external_network_calls=0) - non-regression",
+    "check:boundary PASS; secret scan PASS"
+  ],
+  "negative_tests": [
+    "未改 schema v10；未授权 taken_over_by/taken_over_at/previous_owner/takeover_reason、event/audit table、ownership version/CAS、v11 migration",
+    "未实现 Supervisor Takeover IPC/UI/service/state machine；未建 M5->ownership takeover bridge；未创建 supervisor/takeover/ownership abstraction",
+    "未把 ROLE_SUPERVISOR 当 takeover authority（I-97/I-102）；未推断 local Owner/Supervisor/synthetic Member（I-98）",
+    "未把 M1.5-R02 mapping 当完整 source-state/authority/holder mutation/producer contract（约束 #6）",
+    "未把 snapshot shape 容纳 SUPERVISOR_TAKEOVER 当 occurrence/history persistence（约束 #18）",
+    "未绕过未 ready 的 Ownership current/transition facts（I-101）；未假定 Handoff Queue/occurrence 为 takeover precondition（I-101）",
+    "未实现 Claim/Release（SHEEP-070 DEFER）、AI/Human Ownership（SHEEP-071 DEFER）、Handoff Reason/Queue（SHEEP-072 DEFER）、Composer/Send/Attachments"
+  ],
+  "modified_files": [
+    "docs/fast-sheep-supervisor-takeover-readiness.md (new)",
+    "reports/SHEEP-073-report.json (new)",
+    "project/PROJECT_STATE.json (sheep_073 record + decision package)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

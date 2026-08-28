@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
   "last_closed_task": "SHEEP-072",
-  "current_task": "SHEEP-073 (Supervisor Takeover — Fact-Readiness — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
-  "next_action": "SHEEP-073 (Supervisor Takeover) proposal — awaiting Owner approval; not auto-executed",
+  "current_task": "SHEEP-073 (Supervisor Takeover — Fact-Readiness executed; NOT_READY/DEFER; awaiting Owner disposition; not auto-executed)",
+  "next_action": "SHEEP-073 (Supervisor Takeover) Fact-Readiness — awaiting Owner disposition; no next SHEEP without PASS",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -2114,5 +2114,57 @@
     "i_96": "HANDOFF_REASON_AND_TARGET_FACTS_ARE_NOT_EMITTED_TO_LOGS_OR_TELEMETRY_BY_DEFAULT",
     "readiness": "OCCURRENCE=NOT_READY / REASON_FACT=PARTIAL|PRODUCER_NOT_READY / REASON_TAXONOMY=NOT_READY / TARGET_SELECTOR=PARTIAL|RUNTIME_ONLY / RESOLVED_ASSIGNEE=NOT_READY / QUEUE_DIMENSION=NOT_READY / OWNERSHIP_STATE_LINK=NOT_READY / CURRENTNESS=NOT_READY / PRODUCER=NOT_READY / PERSISTENCE=NOT_READY / IPC=NOT_READY / DETAIL_PRESENTATION=NOT_READY / QUEUE_PRESENTATION=NOT_READY / IMPLEMENTATION=NOT_READY",
     "next": "SHEEP-073 (Supervisor Takeover) proposal — awaiting Owner approval; not auto-executed"
+  },
+  "sheep_073": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "NOT_READY / DEFER (Supervisor Takeover Fact-Readiness; no schema v11, no IPC/UI/service/state machine)",
+    "closed_date_candidate": null,
+    "report": "reports\\SHEEP-073-report.json",
+    "review_doc": "docs\\fast-sheep-supervisor-takeover-readiness.md",
+    "readiness": {
+      "SUPERVISOR_TAKEOVER_STATE_FACT_READINESS": "PARTIAL (8-state vocabulary incl SUPERVISOR_TAKEOVER; no producer/currentness)",
+      "SUPERVISOR_TAKEOVER_ACTION_SEMANTICS_READINESS": "PARTIAL (M1.5-R02 mapping evidence only)",
+      "SUPERVISOR_TAKEOVER_ACTION_OCCURRENCE_READINESS": "NOT_READY (DP-172 occurrence != state)",
+      "SUPERVISOR_TAKEOVER_TRANSITION_PRECONDITION_READINESS": "NOT_READY (DP-171)",
+      "SUPERVISOR_TAKEOVER_RESULTING_HOLDER_SEMANTICS_READINESS": "NOT_READY (ownerRef=actor evidence weak)",
+      "SUPERVISOR_TAKEOVER_ACTION_AUTHORITY_READINESS": "NOT_READY (I-102; SHEEP-012 not implemented)",
+      "SUPERVISOR_OPERATOR_SUBJECT_READINESS": "NOT_READY (I-98 fail-closed)",
+      "SUPERVISOR_TAKEOVER_CONCURRENCY_CONTROL_READINESS": "NOT_READY (I-103/I-74/I-76)",
+      "SUPERVISOR_TAKEOVER_OWNERSHIP_LINK_READINESS": "NOT_READY (I-101 ownership facts not bypassable)",
+      "M5_TAKEOVER_PROJECTION_SEPARATION_READINESS": "READY / CONTRACT_CONFIRMED (candidate: M5 ManualTakeover is AI-send interruption runtime; no projection built)",
+      "SUPERVISOR_TAKEOVER_PRODUCER_READINESS": "NOT_READY (no production writer)",
+      "SUPERVISOR_TAKEOVER_CURRENTNESS_READINESS": "NOT_READY",
+      "SUPERVISOR_TAKEOVER_PERSISTENCE_READINESS": "PARTIAL (snapshot shape can hold; NOT occurrence/history persistence)",
+      "SUPERVISOR_TAKEOVER_IPC_READINESS": "NOT_READY (no typed channel)",
+      "SUPERVISOR_TAKEOVER_PRESENTATION_READINESS": "NOT_READY (I-99/I-100)",
+      "SUPERVISOR_TAKEOVER_IMPLEMENTATION_READINESS": "NOT_READY"
+    },
+    "decisions": ["DP-169..DP-172 + I-97..I-103 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decision_package": {
+      "no_migration": "taken_over_by / taken_over_at / previous_owner / takeover_reason / event|audit table / ownership version|CAS / v11 migration NOT authorized; schema stays v10",
+      "no_ipc_ui_service": "no Supervisor Takeover IPC/UI/service/state machine; no M5->ownership takeover bridge; no Member/Auth/Capability/ResourceScope runtime; no supervisor/takeover/ownership abstraction",
+      "defer": "DEFER until verified takeover occurrence producer + action authority (SHEEP-012 Capability+ResourceScope) + trusted operator subject + transition preconditions + concurrency (I-103) + ownership currentness; then minimal prerequisite"
+    },
+    "next_per_roadmap": "Owner decides DEFER vs minimal prerequisite vs narrow implementation; no Supervisor Takeover product implementation without PASS; no next SHEEP",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
+  },
+  "fast_sheep_supervisor_takeover_fact_readiness_decisions": {
+    "status": "ADOPTED_PENDING_OWNER_PASS",
+    "decided_date": "2026-08-29",
+    "dp_169": "SUPERVISOR_TAKEOVER_FACTS_REQUIRE_VERIFIED_PRODUCER_AND_AUTHORITY_SOURCE_NOT_ROLE_VOCABULARY",
+    "dp_170": "SUPERVISOR_TAKEOVER_IS_DISTINCT_FROM_M5_AI_SEND_INTERRUPTION_TAKEOVER",
+    "dp_171": "SUPERVISOR_TAKEOVER_REQUIRES_AN_AUTHORIZED_CONVERSATION_AND_VERIFIED_CURRENT_OWNERSHIP_PRECONDITIONS",
+    "dp_172": "SUPERVISOR_TAKEOVER_ACTION_OCCURRENCE_AND_SUPERVISOR_TAKEOVER_OWNERSHIP_STATE_ARE_DISTINCT_FACTS",
+    "i_97": "ROLE_SUPERVISOR_DOES_NOT_IMPLY_TAKEOVER_AUTHORITY",
+    "i_98": "SUPERVISOR_TAKEOVER_REQUIRES_TRUSTED_OPERATOR_SUBJECT_FAIL_CLOSED",
+    "i_99": "SUPERVISOR_TAKEOVER_READS_ARE_ANCHORED_TO_THE_AUTHORIZED_ACTIVE_CONVERSATION",
+    "i_100": "SUPERVISOR_TAKEOVER_ABSENCE_IS_THREE_WAY (no verified occurrence / occurrence known but detail missing / current ownership takeover state); must not uniformly present no-takeover or unknown",
+    "i_101": "UNREADY_HANDOFF_FACTS_MAY_NOT_BE_ASSUMED_AS_TAKEOVER_PRECONDITIONS_AND_UNREADY_OWNERSHIP_FACTS_MAY_NOT_BE_BYPASSED",
+    "i_102": "SUPERVISOR_TAKEOVER_ACTION_NAME_DOES_NOT_IMPLY_ROLE_SUPERVISOR_IS_THE_ONLY_AUTHORIZED_ACTOR",
+    "i_103": "SUPERVISOR_TAKEOVER_MUTATION_REQUIRES_AN_ATOMIC_EXPECTED_CURRENT_OWNERSHIP_PRECONDITION",
+    "readiness": "STATE_FACT=PARTIAL / ACTION_SEMANTICS=PARTIAL / ACTION_OCCURRENCE=NOT_READY / TRANSITION_PRECONDITION=NOT_READY / RESULTING_HOLDER=NOT_READY / ACTION_AUTHORITY=NOT_READY / OPERATOR_SUBJECT=NOT_READY / CONCURRENCY_CONTROL=NOT_READY / OWNERSHIP_LINK=NOT_READY / M5_PROJECTION_SEPARATION=READY|CONTRACT_CONFIRMED / PRODUCER=NOT_READY / CURRENTNESS=NOT_READY / PERSISTENCE=PARTIAL / IPC=NOT_READY / PRESENTATION=NOT_READY / IMPLEMENTATION=NOT_READY",
+    "next": "Owner decides DEFER vs minimal prerequisite vs narrow implementation; no next SHEEP without PASS"
   }
 }
