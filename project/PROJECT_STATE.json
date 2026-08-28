@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
-  "last_closed_task": "SHEEP-066-PR1",
-  "current_task": "SHEEP-066-PR2 (Manual Text Send Authorization Contract Readiness — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed; no Composer Send enable)",
-  "next_action": "SHEEP-066-PR2 (Manual Text Send Authorization Contract Readiness) proposal — awaiting Owner approval; not auto-executed; no SHEEP-067 without PASS",
+  "last_closed_task": "SHEEP-066-PR2",
+  "current_task": "SHEEP-067 (Customer Context — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
+  "next_action": "SHEEP-067 (Customer Context) proposal — awaiting Owner approval; not auto-executed",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1633,9 +1633,9 @@
   },
   "sheep_066_pr2": {
     "codex_result": "PARTIAL",
-    "controller_decision": "PENDING_OWNER_PASS",
-    "status": "NOT_READY / PRODUCT_DECISION_REQUIRED (pure Read First; 0 product code)",
-    "closed_date_candidate": null,
+    "controller_decision": "PASS",
+    "status": "CLOSED (Manual Send Authorization implementation + SHEEP-066 Product Send DEFER)",
+    "closed_date_candidate": "2026-08-29",
     "report": "reports\\SHEEP-066-PR2-report.json",
     "review_doc": "docs\\fast-sheep-manual-send-authorization-readiness.md",
     "readiness": {
@@ -1647,7 +1647,32 @@
       "PLATFORM_TEXT_SEND_TECHNICAL_CAPABILITY_READINESS": "PARTIAL (session ready is technical only, #11)",
       "MANUAL_SEND_AUTHORIZATION_COMPOSITION_READINESS": "NOT_READY (production Send unavailable, DP-129)"
     },
-    "decisions": ["DP-131/132 + I-42/I-43 + DP-124 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decisions": ["DP-131/132/133/134/135 + I-42/I-43/I-44/I-45 + DP-124 (OWNER_DECIDED 2026-08-29)"],
+    "owner_product_decisions": {
+        "dp_133": "MANUAL_TEXT_SEND_IS_A_BASELINE_OPERATIONAL_CAPABILITY_NOT_A_DEDICATED_FEATURE_ENTITLEMENT (no manual_send feature entitlement; global subscription/license/lease availability may later gate workspace/product-level, not per-action)",
+        "dp_134": "MANUAL_TEXT_SEND_REQUIRES_EXPLICIT_HUMAN_ACTION_AUTHORITY (future trusted human subject + explicit manual conversation-reply authority required; no concrete Capability identifier invented this round)",
+        "dp_135": "MANUAL_SEND_RESOURCE_AUTHORITY_IS_EVALUATED_AGAINST_THE_CONVERSATION_RESOLVED_TARGET (ResourceScope judged on Main-resolved Store/PlatformAccount target, not ambient Queue scope)"
+    },
+    "owner_invariants": {
+        "i_44": "MANUAL_SEND_AUTHORIZATION_MUST_NOT_INFER_AN_IMPLICIT_LOCAL_OWNER_OR_DEFAULT_MEMBER",
+        "i_45": "MISSING_TRUSTED_AUTHORIZATION_FACTS_MUST_FAIL_CLOSED_NOT_FALL_BACK_TO_WORKSPACE_CONTAINMENT"
+    },
+    "acceptance": {
+        "MANUAL_SEND_AUTHORIZATION_SUBJECT_READINESS": "NOT_READY (no trusted current Member/Agent authorization subject runtime; WorkspaceMerchantContext != human subject)",
+        "disposition": "No SHEEP-066-PR3; Manual Send Authorization implementation and real SHEEP-066 Product Send DEFER",
+        "reopen_triggers": [
+            "first real authenticated Member/operator session established",
+            "first production text delivery adapter satisfies authoritative ACK contract and Composer Send is ready to enable",
+            "whichever occurs first reopens Manual Send Authorization readiness"
+        ],
+        "blockers": [
+            "trusted human Authorization Capability + ResourceScope runtime = NOT_READY",
+            "real platform delivery + authoritative ACK = NOT_READY"
+        ],
+        "dp_129_continues": "Composer Send stays disabled"
+    },
+    "controller_pass_date": "2026-08-29",
+    "sheep_066_product_send_marker": "DEFERRED_PENDING_AUTH_IDENTITY_SCOPE_AND_REAL_PLATFORM_ACK (must not implicitly resume real sending)",
     "decision_package": {
       "no_permission_system": "no authorization service / policy engine / entitlement checker built (0 code)",
       "composer_send_disabled": "Composer Send stays disabled (DP-129); no delivery driver; ACK still NOT_READY (inherited)",
@@ -1658,3 +1683,4 @@
     "next_stage_not_executed": true
   }
 }
+
