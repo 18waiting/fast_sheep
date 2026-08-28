@@ -78,6 +78,25 @@ test("store: activation is navigation state; scope change re-queries and keeps a
   assert.equal(store.getState().queueLoading, false, "queue re-queried after scope change");
 });
 
+test("I-25: downstream distinguishes workspace-unavailable (error state) from real empty queue (empty state)", async () => {
+  // unavailable: Main returns an explicit typed failure (never empty success)
+  const apiUnavailable = makeApi();
+  apiUnavailable.listConversations = async () => ({ ok: false, error: { code: "desktop.workspace_unavailable", category: "internal", message: "workspace merchant context unavailable", retryable: false } });
+  const storeUnavailable = new WorkbenchStore(apiUnavailable);
+  await storeUnavailable.boot();
+  await storeUnavailable.refreshQueue({ kind: "all_stores" });
+  assert.ok(storeUnavailable.getState().queueError, "unavailable -> queue error state (NOT empty)");
+  assert.equal(storeUnavailable.getState().queueItems.length, 0);
+
+  // real empty: authorized query with 0 rows -> legitimate no-work empty
+  const apiEmpty = makeApi([]);
+  const storeEmpty = new WorkbenchStore(apiEmpty);
+  await storeEmpty.boot();
+  await storeEmpty.refreshQueue({ kind: "all_stores" });
+  assert.equal(storeEmpty.getState().queueError, null, "real empty queue -> no error");
+  assert.equal(storeEmpty.getState().queueItems.length, 0, "real empty queue -> no-work empty");
+});
+
 test("store: queue failure surfaces contained inline error (DP-55/47), active conversation preserved", async () => {
   const api = makeApi();
   api.listConversations = async () => ({ ok: false, error: { code: "x", category: "internal", message: "queue unavailable", retryable: true } });

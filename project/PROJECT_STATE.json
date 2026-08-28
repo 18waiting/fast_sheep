@@ -1280,6 +1280,7 @@
       "MESSAGE_FACT_PATH": "READY",
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged)"
     },
+    "repair_applied": "REPAIR 2026-08-28 (I-25 MISSING_AUTHORIZATION_CONTEXT_MUST_NOT_BE_REPRESENTED_AS_EMPTY_DOMAIN_DATA, DP-48): conversations.list without trusted WorkspaceMerchantContext now returns explicit desktop.workspace_unavailable failure (typed error contract), NOT successful empty Queue; only authorized 0-row produces no-work Empty; renderer queueError vs empty distinguishable; cross-merchant NOT_FOUND policy kept; Queue/UI semantics + schema v9 unchanged",
     "next_per_roadmap": "After PR2 Owner PASS: restore SHEEP-063 Timeline (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 on trusted authorization path); NOT auto-executed; no SHEEP-064",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
@@ -1332,6 +1333,7 @@
     "i_24": "UNKNOWN_OPTIONAL_IDENTITY_FACTS_USE_NULL_NOT_MAGIC_OR_EMPTY_VALUES (NULL only)"
   }
 }
+
 
 
 

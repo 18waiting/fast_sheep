@@ -4,7 +4,7 @@
   "controller_decision": "PENDING_OWNER_PASS",
   "phase": "Phase 4",
   "milestone": "M4.2 prerequisite chain (PR1 -> PR2-PR1 -> PR2)",
-  "summary": "Workspace Merchant Context Foundation：Main-owned frozen WorkspaceMerchantContext（minimal authorization anchor，DP-94/95/96/97/I-19）；DP-98 单一 Merchant authority source——conversations.list 迁移为以 workspaceMerchant 为唯一 merchant authority（all_stores = listByMerchant(workspaceMerchant.merchantId)；specific_store 先 containsMerchant(store.merchantId) 再读，跨 merchant 拒绝 NOT_FOUND；无 context fail closed 空结果）；selectedShopId 从 QueryDeps 移除（I-17 selected shop 非 authority）；Queue/UI semantics 不变；production composition 从 PR2-PR1 bootstrap 构建 context；test mode 显式 synthetic；5 个新 guard 测试（context 4 + queue fail-closed 1），desktop 267/267，workspace 全 PASS，m6 smoke PASS，boundary+secrets PASS",
+  "summary": "Workspace Merchant Context Foundation：Main-owned frozen WorkspaceMerchantContext（minimal authorization anchor，DP-94/95/96/97/I-19）；DP-98 单一 Merchant authority source——conversations.list 迁移为以 workspaceMerchant 为唯一 merchant authority（all_stores = listByMerchant(workspaceMerchant.merchantId)；specific_store 先 containsMerchant(store.merchantId) 再读，跨 merchant 拒绝 NOT_FOUND；无 context fail closed 空结果）；selectedShopId 从 QueryDeps 移除（I-17 selected shop 非 authority）；Queue/UI semantics 不变；production composition 从 PR2-PR1 bootstrap 构建 context；test mode 显式 synthetic；5 个新 guard 测试（context 4 + queue fail-closed 1），desktop 267/267，workspace 全 PASS，m6 smoke PASS，boundary+secrets PASS；REPAIR：I-25 授权缺失不再伪装为空数据——无 trusted WorkspaceMerchantContext 时 conversations.list 返回显式 desktop.workspace_unavailable failure（非成功空 Queue）；only authorized 0-row 才产生 no-work Empty；renderer queueError vs empty 可区分",
   "completed_requirements": 9,
   "total_requirements": 9,
   "owner_tightening": {
@@ -44,7 +44,7 @@
     "inferred": []
   },
   "tests": [
-    "desktop build/typecheck; desktop tests 267/267 (5 new guards: workspace-merchant-context 4 + queue fail-closed 1; conversation-list-query updated)",
+    "desktop build/typecheck; desktop tests 269/269 (REPAIR added 3 guards: I-25 unavailable failure, legitimate-empty success, downstream distinction)",
     "workspace typecheck / test（全部 PASS）",
     "m6 Electron renderer smoke（PASS，external_network_calls=0）",
     "check:boundary PASS；secret scan PASS"
@@ -84,5 +84,17 @@
   "old_rebuild_modified": false,
   "original_reference_modified": false,
   "secrets_detected": false,
-  "next_stage_not_executed": true
+  "next_stage_not_executed": true,
+  "repair_applied": {
+    "controller_decision": "REPAIR -> re-submitted (I-25 missing authorization context must not be represented as empty domain data, DP-48)",
+    "i25": "MISSING_AUTHORIZATION_CONTEXT_MUST_NOT_BE_REPRESENTED_AS_EMPTY_DOMAIN_DATA",
+    "fix": "conversations.list with no trusted WorkspaceMerchantContext now returns explicit typed failure desktop.workspace_unavailable (DesktopResult error contract), NOT successful empty Queue; only authorized 0-row queries produce no-work Empty",
+    "renderer_distinction": "queueError state (SHEEP-046 error pattern) vs no-work empty state; store already maps !res.ok -> queueError; downstream distinction test added",
+    "not_found_information_hiding": "cross-merchant specific Store NOT_FOUND policy kept",
+    "tests_added": [
+      "missing context -> explicit failure desktop.workspace_unavailable (not empty success)",
+      "valid workspace merchant + 0 conversations -> legitimate empty success",
+      "downstream store distinguishes workspace-unavailable (error state) from real empty queue (empty state)"
+    ]
+  }
 }

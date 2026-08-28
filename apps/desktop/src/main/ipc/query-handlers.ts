@@ -58,10 +58,12 @@ export const QUERY_HANDLERS = {
     const platform = req.platform;
     const workspace = deps.workspaceMerchant;
     // DP-94/I-17/DP-98: merchant authority = Main-owned WorkspaceMerchantContext,
-    // NOT Queue Scope / selected shop / active conversation. Without a trusted
-    // workspace merchant, fail closed (no merchant-contained results, no leak).
+    // NOT Queue Scope / selected shop / active conversation.
+    // I-25 (DP-48): missing authorization context must NOT be represented as empty
+    // domain data — return an explicit unavailable failure via the typed query
+    // failure contract, so the renderer can distinguish it from a real no-work queue.
     if (!workspace) {
-      return ok({ items: [], scope, platform, stores: [], platforms: [] });
+      return err(new DesktopError(DESKTOP_ERROR_CODES.WORKSPACE_UNAVAILABLE, "workspace merchant context unavailable"));
     }
     const workspaceMerchantId = workspace.merchantId;
     let rows: Array<{ id: string; storeId: string; platformAccountId: string; merchantId: string }> = [];

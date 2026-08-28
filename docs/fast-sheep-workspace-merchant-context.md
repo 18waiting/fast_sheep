@@ -32,7 +32,15 @@
 - `apps/desktop/tests/conversation-list-query.test.ts`（更新 + 新增）：specific_store workspace-merchant-contained（跨 merchant store B1 → NOT_FOUND，I-18/DP-98）；all_stores 由 workspace merchant 约束（B 不泄漏）；无 workspace merchant → fail closed 空结果；Store/Platform filter 交集、DP-77 options、DP-71 canonical platform 保持。
 - 回归：desktop 267/267、workspace typecheck+test 全 PASS、m6 Electron smoke PASS（external_network_calls=0）、check:boundary + secret scan PASS。
 
-## 4. 边界（未实现/未改动）
+## 4. REPAIR（Owner 2026-08-28）：I-25 授权缺失不得伪装为空数据
+
+- 新增 **I-25** `MISSING_AUTHORIZATION_CONTEXT_MUST_NOT_BE_REPRESENTED_AS_EMPTY_DOMAIN_DATA`（DP-48）。
+- 修复前：`workspaceMerchant == null` 时 `conversations.list` 返回普通成功空 Queue（把 authorization/unavailable 伪装成"没有会话"）。
+- 修复后：无 trusted `WorkspaceMerchantContext` → 返回显式 typed failure `desktop.workspace_unavailable`（现有 `DesktopResult` error contract），**不返回成功空结果**；只有真正 authorized 且 0 rows 的查询才产生 no-work Empty。
+- Renderer/Store 已能区分（复用 SHEEP-046 error vs no-work empty）：`!res.ok` → `queueError` error state；`ok + items:[]` → no-work empty state；新增下游区分测试。
+- Cross-merchant specific Store 的 NOT_FOUND information-hiding 保持；Queue/UI semantics 不变；schema v9 不变。
+
+## 5. 边界（未实现/未改动）
 
 - 未实现 Timeline IPC/UI（SHEEP-063 恢复后）、Composer、Attachments（SHEEP-065）、Unread、真实 platform producer、sync/Outbox。
 - 未实现 auth/cloud/entitlement/session UI/multi-merchant selector；未改 Queue filter/UI semantics；schema v9 不变。

@@ -93,16 +93,28 @@ test("conversations.list unknown store => NOT_FOUND; all_stores bounded by works
   }
 });
 
-test("no trusted workspace merchant fails closed (empty, no leak)", async () => {
+test("I-25: no trusted workspace merchant -> explicit unavailable failure, NOT empty success (DP-48)", async () => {
   const root = tempRoot();
   try {
     const { conversations, stores, platformAccounts } = seed(root);
     const handler = QUERY_HANDLERS["conversations.list"](deps(conversations, stores, null, platformAccounts));
     const all = await handler({ scope: { kind: "all_stores" } });
-    assert.equal(all.ok, true);
+    assert.equal(all.ok, false, "missing authorization context must not be a successful empty queue");
+    if (!all.ok) assert.equal(all.error.code, "desktop.workspace_unavailable");
+  } finally { try { rmSync(root, { recursive: true, force: true }); } catch { } }
+});
+
+test("valid workspace merchant + 0 conversations -> legitimate empty success (no-work)", async () => {
+  const root = tempRoot();
+  try {
+    const { conversations, stores } = seed(root);
+    // new workspace merchant with NO conversations under it
+    const handler = QUERY_HANDLERS["conversations.list"](deps(conversations, stores, "m-empty"));
+    const all = await handler({ scope: { kind: "all_stores" } });
+    assert.equal(all.ok, true, "authorized query with 0 rows is a legitimate empty success");
     if (all.ok) {
-      assert.deepEqual(all.data.items, [], "no merchant authority -> no results");
-      assert.deepEqual(all.data.stores, [], "no merchant authority -> no store options");
+      assert.deepEqual(all.data.items, [], "no-work queue");
+      assert.ok(Array.isArray(all.data.stores));
     }
   } finally { try { rmSync(root, { recursive: true, force: true }); } catch { } }
 });
