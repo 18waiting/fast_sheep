@@ -4,7 +4,7 @@
   "controller_decision": "PENDING_OWNER_PASS",
   "phase": "Phase 4",
   "milestone": "M4.2",
-  "summary": "Composer (Option C)：manual professional-fallback reply input（DP-105）成为 Timeline 下方主回复 surface；ephemeral drafts keyed by conversationId（DP-108/109）；AI suggestion 显式非破坏 apply（DP-106）；submit = explicit submit-intent contract（DP-107/I-27，不写 delivered message fact、不 delivery，执行留 SHEEP-066）；intent 原子捕获（DP-110）；I-28 send-result 只影响自身会话 draft；I-29 IME 不触发 submit；无真实 Send IPC → Send native disabled + 诚实 unavailable（不伪造成功）；native textarea/button + accessible label + focus-visible + 无 innerHTML；visual evidence 5 态（empty/draft/apply/switch/unavailable）经真实路径；desktop 294/294、workspace typecheck+test PASS、m6 smoke PASS（external_network_calls=0）、boundary+secrets PASS",
+  "summary": "Composer (Option C)：manual professional-fallback reply input（DP-105）成为 Timeline 下方主回复 surface；ephemeral drafts keyed by conversationId（DP-108/109）；AI suggestion 显式非破坏 apply（DP-106）；submit = explicit submit-intent contract（DP-107/I-27，不写 delivered message fact、不 delivery，执行留 SHEEP-066）；intent 原子捕获（DP-110）；I-28 send-result 只影响自身会话 draft；I-29 IME 不触发 submit；无真实 Send IPC → Send native disabled + 诚实 unavailable（不伪造成功）；native textarea/button + accessible label + focus-visible + 无 innerHTML；visual evidence 5 态（empty/draft/apply/switch/unavailable）经真实路径；desktop 294/294、workspace typecheck+test PASS、m6 smoke PASS（external_network_calls=0）、boundary+secrets PASS；REPAIR：恢复 Timeline 主内容 + Composer 作为其下方连接 reply surface（I-30 单一 agent reply surface）；移除 suggestion panel legacy 手动发送/不保存发送 与 Enter/Alt+Enter send 映射（resolveSuggestionKey 删除）；取消生成与发送取消语义分离；负测试证明 composer Enter/Alt+Enter 不触达 legacy send path；重捕获两张视觉证据（apply + empty）",
   "completed_requirements": 16,
   "total_requirements": 16,
   "owner_tightening": {
@@ -50,7 +50,7 @@
     "inferred": []
   },
   "tests": [
-    "desktop build/typecheck; desktop tests 294/294 (9 new composer guards)",
+    "desktop build/typecheck; desktop tests 292/292 (REPAIR: I-30 negative guards; legacy resolveSuggestionKey tests replaced)",
     "workspace typecheck / test（全部 PASS）",
     "m6 Electron renderer smoke（PASS，external_network_calls=0）",
     "check:boundary PASS；secret scan PASS"
@@ -90,5 +90,21 @@
   "old_rebuild_modified": false,
   "original_reference_modified": false,
   "secrets_detected": false,
-  "next_stage_not_executed": true
+  "next_stage_not_executed": true,
+  "repair_applied": {
+    "controller_decision": "REPAIR -> re-submitted (Timeline/Composer topology + legacy send-path convergence; new I-30)",
+    "i30": "COMPOSER_IS_THE_SINGLE_AGENT_REPLY_SUBMISSION_SURFACE",
+    "fix_topology": "Message Timeline restored as Conversation Main primary content; Composer is the connected reply surface BELOW the timeline (conversation-host column; .composer = reply bar with top divider, not an independent small card)",
+    "fix_legacy_send": "suggestion panel removed 手动发送 (Enter) / 不保存发送 (Alt+Enter) buttons + Enter/Alt+Enter->send keydown mapping (resolveSuggestionKey deleted); only 使用建议 -> Composer remains as agent reply path; 取消 relabeled 取消生成 (AI generation cancel, distinct from send)",
+    "negative_tests": [
+      "composer focused Enter/Alt+Enter must NOT call legacy orchestrator.manual_send / other old send path (source scan composer.ts + suggestion-panel.ts; store.submitComposer never calls manualSend/noSaveSend)",
+      "suggestion panel has no legacy send mapping (keyboard-shortcuts I-30)",
+      "IME/Shift+Enter constraints continue PASS (I-29)"
+    ],
+    "visual_evidence_recaptured": [
+      "reports\\visual-evidence\\sheep-064-composer-apply.png (populated Timeline + Composer + AI apply path; draft=亲,有的哦~)",
+      "reports\\visual-evidence\\sheep-064-composer-empty.png (empty Timeline + Composer)"
+    ],
+    "kept": "draft keyed-by-conversation / switch preservation / AI explicit non-destructive apply / I-27/I-28/I-29; Send native disabled + unavailable cue (no SHEEP-066); schema v9 unchanged"
+  }
 }

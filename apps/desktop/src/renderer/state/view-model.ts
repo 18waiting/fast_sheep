@@ -240,17 +240,6 @@ export function clearPendingCommand(state: UiState): UiState {
 }
 
 /**
- * Pure keyboard mapping for suggestion actions (renderer UI convention).
- * Enter => manual send; Alt+Enter => no-save send. Any other key => null.
- * This maps a key event to a UI intent only; Main remains the authority and
- * still validates the request.
- */
-export function resolveSuggestionKey(e: { key: string; altKey: boolean }): "manual_send" | "no_save_send" | null {
-  if (e.key !== "Enter") return null;
-  return e.altKey ? "no_save_send" : "manual_send";
-}
-
-/**
  * Pure stale-event predicate (renderer side, non-authoritative).
  * Main's monotonic projection revision is the source of truth.
  */

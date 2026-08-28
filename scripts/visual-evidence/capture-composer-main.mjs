@@ -27,13 +27,10 @@ import { createMessageIngestion } from "../../apps/desktop/dist/main/services/me
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const PRELOAD = join(ROOT, "apps", "desktop", "dist", "preload", "index.js");
 const RENDERER_HTML = join(ROOT, "apps", "desktop", "dist", "renderer", "index.html");
-const STATE = process.env.FS_VISUAL_COMPOSER_STATE || "empty";
+const STATE = process.env.FS_VISUAL_COMPOSER_STATE || "apply";
 const OUT = join(ROOT, "reports", "visual-evidence",
-  STATE === "draft" ? "sheep-064-composer-draft.png"
-  : STATE === "apply" ? "sheep-064-composer-apply.png"
-  : STATE === "switch" ? "sheep-064-composer-switch.png"
-  : STATE === "unavailable" ? "sheep-064-composer-unavailable.png"
-  : "sheep-064-composer-empty.png");
+  STATE === "empty" ? "sheep-064-composer-empty.png"
+  : "sheep-064-composer-apply.png");
 
 const dataRoot = mkdtempSync(join(tmpdir(), "fs-composer-evidence-"));
 const fakeWorkerClient = { request: async () => ({ ok: true, data: {} }) };
@@ -128,28 +125,23 @@ app.whenReady().then(async () => {
     };
 
     await waitFor(".conversation-list-row", 2);
-    await clickRow(0); // conv-populated
-    await waitFor(".composer-input", 1);
-
-    if (STATE === "draft") {
-      await typeDraft("亲，我手动回复你：明天就发。");
-    } else if (STATE === "apply") {
+    if (STATE === "empty") {
+      // REPAIR evidence: empty Timeline + Composer (conv-empty, row 1)
+      await clickRow(1);
+      await waitFor(".message-timeline .fs-state--empty", 1);
+      await waitFor(".composer-input", 1);
+    } else {
+      // REPAIR evidence: populated Timeline + Composer + AI apply path (conv-populated, row 0)
+      await clickRow(0);
+      await waitFor(".timeline-message", 2);
+      await waitFor(".composer-input", 1);
       await waitFor(".btn-apply-suggestion", 1);
       await win.webContents.executeJavaScript("document.querySelector('.btn-apply-suggestion').click(); true", true);
-      await new Promise((r) => setTimeout(r, 300));
-    } else if (STATE === "switch") {
-      await typeDraft("这是 conv-populated 的草稿");
-      await new Promise((r) => setTimeout(r, 200));
-      await clickRow(1); // conv-empty
-      await waitFor(".composer-input", 1);
-      await new Promise((r) => setTimeout(r, 200));
-      await clickRow(0); // back to conv-populated -> draft preserved (DP-109)
-      await waitFor(".composer-input", 1);
-    } else if (STATE === "unavailable") {
-      // type a draft -> Send stays disabled ONLY because the pipeline is unavailable
-      await typeDraft("即使有草稿，发送也不可用");
+      await new Promise((r) => setTimeout(r, 400));
+      const applied = await win.webContents.executeJavaScript("document.querySelector('.composer-input') ? document.querySelector('.composer-input').value : ''", true);
+      console.log("COMPOSER_APPLIED_DRAFT " + JSON.stringify(applied));
     }
-    await new Promise((r) => setTimeout(r, 400));
+    await new Promise((r) => setTimeout(r, 300));
     const image = await win.webContents.capturePage();
     mkdirSync(dirname(OUT), { recursive: true });
     writeFileSync(OUT, image.toPNG());

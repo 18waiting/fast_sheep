@@ -1,10 +1,12 @@
-// M6 suggestion panel (clean-room).
-// Actions map ONLY to typed IPC commands (manual_send / no_save_send / cancel).
-// Enter -> manual send, Alt+Enter -> no-save send, but ONLY within this panel
-// and ONLY when a pending suggestion is visible (UI context). The renderer
-// never decides business eligibility; Main remains the correctness authority.
+// SHEEP-064 REPAIR (I-30): the Composer is the SINGLE agent reply submission
+// surface. The AI suggestion panel provides only:
+//   - 使用建议: EXPLICIT, NON-DESTRUCTIVE apply of the suggestion into the Composer
+//     draft (DP-106) — never async-auto-applies; non-empty drafts are never silently
+//     replaced;
+//   - 取消生成: AI generation cancel (semantically separate from send cancel).
+// There are NO direct agent-send actions here (I-30): the only agent reply path is
+// apply -> Composer. Old direct-send actions are not reachable as an agent reply path.
 import type { UiState } from "../state/view-model.js";
-import { resolveSuggestionKey } from "../state/view-model.js";
 import type { WorkbenchActions } from "./actions.js";
 import { button, clear, el } from "./dom.js";
 import { emptyState } from "./states/empty.js";
@@ -27,38 +29,17 @@ export function renderSuggestionPanel(root: HTMLElement, state: UiState, actions
   body.appendChild(el("span", "suggestion-meta", `generation #${suggestion.generation} · ${suggestion.status}`));
   panel.appendChild(body);
 
-  const sendBusy = state.pendingCommand === "manual_send" || state.pendingCommand === "no_save_send";
   const cancelBusy = state.pendingCommand === "cancel";
   const modeBusy = state.pendingCommand === "set_mode";
 
   const controls = el("div", "suggestion-controls");
-  // SHEEP-064 (DP-106): EXPLICIT, NON-DESTRUCTIVE apply of the AI suggestion into the
-  // composer draft (never async-auto-applies; non-empty drafts are never silently replaced).
+  // I-30: the ONLY agent reply path is 使用建议 -> Composer (explicit, non-destructive).
   controls.appendChild(button("btn btn-apply-suggestion", "使用建议", () => actions.onApplySuggestion()));
-  const manual = button("btn btn-manual", "手动发送 (Enter)", () => actions.onManualSend());
-  manual.disabled = sendBusy || modeBusy;
-  const noSave = button("btn btn-no-save", "不保存发送 (Alt+Enter)", () => actions.onNoSaveSend());
-  noSave.disabled = sendBusy || modeBusy;
-  const cancelBtn = button("btn btn-cancel", "取消", () => actions.onCancel());
+  // 取消生成 = AI generation cancel (distinct from any send cancellation; no send here).
+  const cancelBtn = button("btn btn-cancel", "取消生成", () => actions.onCancel());
   cancelBtn.disabled = cancelBusy || modeBusy;
-  controls.appendChild(manual);
-  controls.appendChild(noSave);
   controls.appendChild(cancelBtn);
   panel.appendChild(controls);
-
-  // Keyboard: only active in the suggestion context, never a global hijack.
-  panel.addEventListener("keydown", (event) => {
-    if (sendBusy || modeBusy) return;
-    const action = resolveSuggestionKey({ key: event.key, altKey: event.altKey });
-    if (action === "manual_send") {
-      event.preventDefault();
-      actions.onManualSend();
-    } else if (action === "no_save_send") {
-      event.preventDefault();
-      actions.onNoSaveSend();
-    }
-  });
-  panel.tabIndex = 0;
   root.appendChild(panel);
 }
 

@@ -35,7 +35,16 @@
 - 回归：desktop 294/294、workspace typecheck+test 全 PASS、m6 Electron smoke PASS（external_network_calls=0）、check:boundary + secret scan PASS。
 - **Visual evidence**（真实路径）：`sheep-064-composer-empty.png`、`-draft.png`、`-apply.png`（显式使用建议 → 草稿）、`-switch.png`（c1→c2→c1 草稿保留）、`-unavailable.png`（有草稿但 Send 因 pipeline 未接入而 disabled + cue）。
 
-## 4. 边界（未实现/未改动）
+## 4. REPAIR（Owner 2026-08-28）：Timeline/Composer topology + legacy send-path convergence（I-30）
+
+- **I-30** `COMPOSER_IS_THE_SINGLE_AGENT_REPLY_SUBMISSION_SURFACE`：Manual/AI-assisted reply draft 最终统一进入 Composer；**不得有绕过 Composer draft 的 legacy agent-send path**。
+- **Topology 修复**：Message Timeline 恢复为 Conversation Main 主内容；Composer 作为 Timeline **下方连接的 reply surface**（`conversation-host` 纵向堆叠，`.composer` 改为 timeline 下沿 reply bar：仅顶部分隔、非独立小 card）。
+- **Legacy send path 移除**：AI suggestion panel 移除 `手动发送 (Enter)` / `不保存发送 (Alt+Enter)` 及 Enter/Alt+Enter→send 的 keydown 映射（`resolveSuggestionKey` 删除）；Agent reply path 仅 `使用建议 → Composer`；`取消` 改标 `取消生成`（AI generation cancel，与发送取消语义分离）。
+- **负测试**：Composer focused 时 Enter/Alt+Enter 不得调用 legacy `orchestrator.manual_send` / 其它旧 send path（composer.ts / suggestion-panel.ts 源扫描 + store.submitComposer 不触发 manualSend/noSaveSend）；IME/Shift+Enter 既有约束继续 PASS（I-29）。
+- Composer Send 继续 native disabled + unavailable cue（未提前实现 SHEEP-066）。
+- **Visual evidence（重捕获，两张）**：`sheep-064-composer-apply.png`（populated Timeline + Composer + AI apply path，draft=亲,有的哦~）、`sheep-064-composer-empty.png`（empty Timeline + Composer）；legacy send path 不触发的自动化证据见测试。
+
+## 5. 边界（未实现/未改动）
 
 - 未实现真正 send IPC / message ingestion / platform delivery / Outbox / sync（SHEEP-066）；Attachments（SHEEP-065）；draft persistence（SHEEP-075）；Unread/Priority/Risk；Customer/Product/Order（M4.3）；schema（v9 不变）；AI 自动发送。
 - 未用 `orchestrator.manual_send` 作为 Composer 临时替代（Option B 禁止）。

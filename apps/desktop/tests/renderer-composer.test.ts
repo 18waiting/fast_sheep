@@ -145,6 +145,27 @@ test("I-29: IME composition must never trigger composer submit; Shift+Enter is n
   assert.equal(shouldSubmitComposerOnEnter({ isComposing: false, shiftKey: false }), true, "plain Enter submits");
 });
 
+test("I-30: Composer is the single agent reply surface — Enter/Alt+Enter must NOT reach legacy orchestrator.manual_send / other old send paths", async () => {
+  // source scan: composer + suggestion panel contain no legacy send wiring
+  for (const f of ["composer.ts", "suggestion-panel.ts"]) {
+    const src = readFileSync(join(R, f), "utf-8");
+    for (const t of ["manualSend", "noSaveSend", "onManualSend", "onNoSaveSend", "orchestrator.manual_send", "manual_send"]) {
+      assert.ok(!src.includes(t), f + " must not reference legacy send path: " + t);
+    }
+  }
+  // behavior: submitComposer (the composer's Enter path) must never call legacy send IPC
+  const calls: string[] = [];
+  const api = makeApi();
+  api.manualSend = async () => { calls.push("manualSend"); return { ok: true, data: { ok: true } }; };
+  api.noSaveSend = async () => { calls.push("noSaveSend"); return { ok: true, data: { ok: true } }; };
+  const store = new WorkbenchStore(api);
+  store.activateConversation("c1");
+  store.updateComposerDraft("回复内容");
+  store.submitComposer(); // composer Enter/Alt+Enter submit path
+  assert.deepEqual(calls, [], "composer submit must not call legacy manual_send / no_save_send");
+  assert.equal(store.getState().composerNote, "发送功能暂不可用", "honest unavailable (SHEEP-066 owns execution)");
+});
+
 test("composer uses native textarea/button + accessible label; no innerHTML; unavailable state honest", () => {
   const src = readFileSync(join(R, "composer.ts"), "utf-8");
   assert.ok(src.includes("el(\"textarea\""), "native textarea");

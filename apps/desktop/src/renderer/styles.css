@@ -152,7 +152,8 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 
 
 /* ===== SHEEP-064 Composer (manual reply input below the Timeline) ===== */
-.composer { background: var(--fs-color-bg-surface); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); border-radius: var(--fs-radius-md); padding: var(--fs-space-3); margin-top: var(--fs-space-2); }
+.conversation-host { display: flex; flex-direction: column; min-width: 360px; flex: 1 1 520px; }
+.composer { background: var(--fs-color-bg-surface); border: 0; border-top: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); border-radius: 0 0 var(--fs-radius-md) var(--fs-radius-md); padding: var(--fs-space-3); }
 .composer-label { display: block; font-size: var(--fs-font-size-sm); color: var(--fs-color-text-secondary); margin-bottom: var(--fs-space-1); }
 .composer-input { width: 100%; min-height: 72px; padding: var(--fs-space-2); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); border-radius: var(--fs-radius-sm); font-size: var(--fs-font-size-md); font-family: inherit; resize: vertical; }
 .composer-input:focus-visible { outline: 2px solid var(--fs-color-primary); outline-offset: 1px; }

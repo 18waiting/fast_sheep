@@ -1,6 +1,5 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { resolveSuggestionKey } from "../dist/renderer/state/view-model.js";
 import { WorkbenchStore, type WorkbenchApiLike } from "../dist/renderer/state/workbench-store.js";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -39,17 +38,15 @@ function makeApi(overrides: Partial<WorkbenchApiLike> = {}): WorkbenchApiLike {
   };
 }
 
-test("Enter/Alt+Enter map to suggestion intents only", () => {
-  assert.equal(resolveSuggestionKey({ key: "Enter", altKey: false }), "manual_send");
-  assert.equal(resolveSuggestionKey({ key: "Enter", altKey: true }), "no_save_send");
-  assert.equal(resolveSuggestionKey({ key: "Tab", altKey: false }), null);
-});
-
-test("keyboard handler is attached to the suggestion panel, never globally", () => {
+test("I-30: no legacy agent-send keyboard mapping exists in the suggestion panel (Composer is the single reply surface)", () => {
   const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "src", "renderer", "components", "suggestion-panel.ts"), "utf-8");
-  assert.match(src, /panel\.addEventListener\("keydown"/);
-  assert.doesNotMatch(src, /document\.addEventListener\("keydown"/);
-  assert.doesNotMatch(src, /window\.addEventListener\("keydown"/);
+  // legacy send path is gone: no manual_send / no_save_send actions, no keydown->send mapping
+  for (const t of ["手动发送", "不保存发送", "manual_send", "no_save_send", "onManualSend", "onNoSaveSend", "addEventListener(\"keydown\")"]) {
+    assert.ok(!src.includes(t), "suggestion-panel must not contain legacy send path: " + t);
+  }
+  // the ONLY agent reply path is apply-suggestion -> composer
+  assert.ok(src.includes("使用建议"), "explicit apply to composer remains");
+  assert.ok(src.includes("取消生成"), "generation cancel remains, semantically separate from send");
 });
 
 test("duplicate keypress UX is guarded while the same command is pending", async () => {

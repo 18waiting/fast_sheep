@@ -1,25 +1,30 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { resolveSuggestionKey } from "../dist/renderer/state/view-model.js";
+import { WorkbenchStore, type WorkbenchApiLike } from "../dist/renderer/state/workbench-store.js";
 
-test("Enter maps to manual_send only in suggestion context", () => {
-  assert.equal(resolveSuggestionKey({ key: "Enter", altKey: false }), "manual_send");
-  assert.equal(resolveSuggestionKey({ key: "Enter", altKey: true }), "no_save_send");
-});
+// SHEEP-064 REPAIR (I-30): the Composer is the SINGLE agent reply submission surface.
+// The AI suggestion panel provides only explicit apply -> Composer draft (DP-106) and
+// AI generation cancel; no legacy 手动发送 / 不保存发送 agent-send path is reachable.
 
-test("other keys never trigger sends", () => {
-  for (const key of ["a", "ArrowDown", "Tab", "Escape", "Shift", " "]) {
-    assert.equal(resolveSuggestionKey({ key, altKey: false }), null);
-    assert.equal(resolveSuggestionKey({ key, altKey: true }), null);
-  }
-});
+function vm() {
+  return {
+    revision: 1,
+    shop_summaries: [{ shop_id: "s1", name: "n", type: "pdd", enabled: true }],
+    selected_shop_id: "s1",
+    conversation: { conversation_id: "c1", shop_id: "s1", state: "suggestion_pending" },
+    suggestion: { reply: "AI 建议内容", generation: 1, status: "pending" },
+    mode: "human_review",
+    countdown: null,
+    worker_status: { status: "ready" },
+    platform_capability: "none",
+  };
+}
 
-test("renderer suggestion actions map only to typed IPC (store adapter)", async () => {
-  const { WorkbenchStore } = await import("../dist/renderer/state/workbench-store.js");
+test("I-30: suggestion panel explicit apply routes ONLY to the composer draft (no legacy send)", async () => {
   const calls: string[] = [];
   const api = {
-    bootstrap: async () => ({ ok: true, data: { revision: 1, worker_status: { status: "ready" }, shops: [], view_model: { revision: 1, shop_summaries: [{ shop_id: "s1", name: "n", type: "pdd", enabled: true }], selected_shop_id: "s1", conversation: { conversation_id: "c1", shop_id: "s1", state: "suggestion_pending" }, suggestion: { reply: "r", generation: 1, status: "pending" }, mode: "human_review", countdown: null, worker_status: { status: "ready" }, platform_capability: "none" } } }),
-    getSnapshot: async () => ({ ok: true, data: { revision: 2, shop_summaries: [{ shop_id: "s1", name: "n", type: "pdd", enabled: true }], selected_shop_id: "s1", conversation: { conversation_id: "c1", shop_id: "s1", state: "suggestion_pending" }, suggestion: { reply: "r", generation: 1, status: "pending" }, mode: "human_review", countdown: null, worker_status: { status: "ready" }, platform_capability: "none" } }),
+    bootstrap: async () => ({ ok: true, data: { revision: 1, worker_status: { status: "ready" }, shops: [], view_model: vm() } }),
+    getSnapshot: async () => ({ ok: true, data: vm() }),
     setMode: async () => { calls.push("setMode"); return { ok: true, data: { ok: true } }; },
     manualSend: async () => { calls.push("manualSend"); return { ok: true, data: { ok: true } }; },
     noSaveSend: async () => { calls.push("noSaveSend"); return { ok: true, data: { ok: true } }; },
@@ -36,8 +41,11 @@ test("renderer suggestion actions map only to typed IPC (store adapter)", async 
   } as unknown as WorkbenchApiLike;
   const store = new WorkbenchStore(api);
   await store.boot();
-  await store.manualSend();
-  await store.noSaveSend();
+  store.activateConversation("c1");
+  store.applySuggestion();
+  assert.equal(store.getState().composerDrafts["c1"], "AI 建议内容", "apply fills the composer draft");
+  assert.deepEqual(calls, [], "apply must NOT call any legacy send / cancel IPC");
+  // generation cancel is a distinct action (cancels AI generation, not a send)
   await store.cancel();
-  assert.deepEqual(calls, ["manualSend", "noSaveSend", "cancel"]);
+  assert.deepEqual(calls, ["cancel"], "generation cancel is separate from any send");
 });
