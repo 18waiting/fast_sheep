@@ -21,11 +21,11 @@ for (const target of [1, 2, 3]) {
   const conn2 = new SqliteConnection(join(r, "fast_sheep.sqlite3"));
   new MigrationRunner().migrate(conn2, join(r, "backups", "db"));
   const v = Number(conn2.get("SELECT value FROM app_meta WHERE key = 'database_schema_version'").value);
-  check("v" + target + " upgraded to v9", v === 9);
+  check("v" + target + " upgraded to v10", v === 10);
   conn2.exec("PRAGMA quick_check");
   conn2.close();
   const b = openDatabase(r);
-  check("v" + target + " reopen v9", b.schemaVersion === 9);
+  check("v" + target + " reopen v10", b.schemaVersion === 10);
   b.conn.close();
   rmSync(r, { recursive: true, force: true });
 }

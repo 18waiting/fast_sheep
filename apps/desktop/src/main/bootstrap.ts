@@ -15,7 +15,7 @@ import {
   type PlatformAdapter,
   type TransferDecision,
 } from "@fastwork/orchestrator";
-import { InMemorySettingsRepository, type NormalizedConversationRepository, type NormalizedConversationRecord, type StoreRepository, type StoreRecord, type PlatformAccountRepository, type PlatformAccountRecord, type MessageRepository, type MessageRecord } from "@fastwork/persistence";
+import { InMemorySettingsRepository, type NormalizedConversationRepository, type NormalizedConversationRecord, type StoreRepository, type StoreRecord, type PlatformAccountRepository, type PlatformAccountRecord, type MessageRepository, type MessageRecord, type DeliveryAttemptRepository, type DeliveryAttemptRecord } from "@fastwork/persistence";
 import { VirtualClock, FakeAiEngineClient, FakePlatformAdapter, CapturingEventBus, FakeFeedbackSink, InMemoryConversationRepositoryPort } from "@fastwork/test-kit";
 import { OrchestratorFeedbackSink, type FeedbackService } from "@fastwork/feedback";
 import type { PlatformStatusChangedEvent, PlatformSessionStatus } from "@fastwork/desktop-ipc";
@@ -90,6 +90,8 @@ export interface MainContext {
   workspaceMerchant: WorkspaceMerchantContext | null;
   /** SHEEP-063-PR1: Message normalized repository port (production = SQLite via worker-backed composition). */
   messages: MessageRepository;
+  /** SHEEP-066-PR1: durable Text Delivery Attempt journal port (production = SQLite via worker-backed composition). */
+  deliveryAttempts: DeliveryAttemptRepository;
   /** SHEEP-060: Store repository port (merchant boundary resolution for queue scope). */
   stores: StoreRepository;
   /** SHEEP-061: PlatformAccount repository port (canonical platform fact source for queue platform filter). */
@@ -149,6 +151,8 @@ export interface BootstrapOptions {
   workspaceMerchant?: WorkspaceMerchantContext | null;
   /** SHEEP-063-PR1: Message repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
   messageRepository?: MessageRepository;
+  /** SHEEP-066-PR1: Delivery Attempt repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
+  deliveryAttemptRepository?: DeliveryAttemptRepository;
   /** SHEEP-060: Store repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
   storeRepository?: StoreRepository;
   /** SHEEP-061: PlatformAccount repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
@@ -186,6 +190,37 @@ class InMemoryNormalizedConversationRepositoryImpl implements NormalizedConversa
 }
 
 /** SHEEP-063-PR1: minimal in-memory MessageRepository test double (isolated test mode only). */
+/** SHEEP-066-PR1: minimal in-memory DeliveryAttemptRepository test double (isolated test mode only). */
+class InMemoryDeliveryAttemptRepositoryImpl implements DeliveryAttemptRepository {
+  private readonly map = new Map<string, DeliveryAttemptRecord>();
+  create(a: DeliveryAttemptRecord): void { this.map.set(a.id, { ...a }); }
+  findById(id: string): DeliveryAttemptRecord | null { const r = this.map.get(id); return r ? { ...r } : null; }
+  markInFlight(id: string, dispatchedAt: string): DeliveryAttemptRecord | null {
+    const r = this.map.get(id);
+    if (!r || r.status !== "PENDING") return null;
+    const next = { ...r, status: "IN_FLIGHT" as const, dispatchedAt };
+    this.map.set(id, next); return { ...next };
+  }
+  resolve(id: string, status: "REJECTED" | "UNKNOWN", resolvedAt: string): DeliveryAttemptRecord | null {
+    const r = this.map.get(id);
+    if (!r || (r.status !== "PENDING" && r.status !== "IN_FLIGHT")) return null;
+    const next = { ...r, status, resolvedAt };
+    this.map.set(id, next); return { ...next };
+  }
+  listInFlight(): DeliveryAttemptRecord[] { return [...this.map.values()].filter((a) => a.status === "IN_FLIGHT").map((a) => ({ ...a })); }
+  recoverInFlight(resolvedAt: string): number {
+    const inFlight = [...this.map.values()].filter((a) => a.status === "IN_FLIGHT");
+    for (const a of inFlight) this.map.set(a.id, { ...a, status: "UNKNOWN", resolvedAt });
+    return inFlight.length;
+  }
+  updateAcknowledged(id: string, f: { resolvedAt: string; deliveredMessageId: string; ackSourceRef: string | null; ackOccurredAt: string | null }): DeliveryAttemptRecord | null {
+    const r = this.map.get(id);
+    if (!r || r.status !== "IN_FLIGHT") return null;
+    const next = { ...r, status: "ACKNOWLEDGED" as const, resolvedAt: f.resolvedAt, deliveredMessageId: f.deliveredMessageId, ackSourceRef: f.ackSourceRef, ackOccurredAt: f.ackOccurredAt };
+    this.map.set(id, next); return { ...next };
+  }
+}
+
 class InMemoryMessageRepositoryImpl implements MessageRepository {
   private readonly map = new Map<string, MessageRecord>();
   save(m: MessageRecord): void { this.map.set(m.id, { ...m, externalRef: m.externalRef ?? null, actor: m.actor ?? null, contentKind: m.contentKind ?? null, contentText: m.contentText ?? null, occurredAt: m.occurredAt ?? null, observedAt: m.observedAt ?? null }); }
@@ -220,6 +255,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   const repo = new InMemoryConversationRepositoryPort();
   const conversationRepository = options.conversationRepository ?? new InMemoryNormalizedConversationRepositoryImpl();
   const messageRepository = options.messageRepository ?? new InMemoryMessageRepositoryImpl();
+  const deliveryAttemptRepository = options.deliveryAttemptRepository ?? new InMemoryDeliveryAttemptRepositoryImpl();
   // SHEEP-063-PR2-PR1: workspace merchant identity is Main-owned and explicit.
   // Production worker-backed composition bootstraps/resolves a trusted identity;
   // isolated test mode uses an explicit synthetic id (never persisted here).
@@ -465,7 +501,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   });
 
   void bumpRevision;
-  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, messages: messageRepository, workspaceMerchant, stores: storeRepository, platformAccounts: platformAccountRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
+  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, messages: messageRepository, deliveryAttempts: deliveryAttemptRepository, workspaceMerchant, stores: storeRepository, platformAccounts: platformAccountRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
 }
 
 /** Minimal in-memory import session store (isolated test mode). */

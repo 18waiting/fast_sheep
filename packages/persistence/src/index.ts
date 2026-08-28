@@ -65,6 +65,10 @@ export { InMemoryJobRepository } from "./memory/memory-job-repository.js";
 export type { MerchantRecord, StoreRecord, PlatformAccountRecord, MemberRecord, MembershipRecord, SeatRecord, MerchantRepository, StoreRepository, PlatformAccountRepository, MemberRepository, MembershipRepository, SeatRepository } from "./repositories/identity-repositories.js";
 export { SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteMemberRepository, SqliteMembershipRepository, SqliteSeatRepository } from "./sqlite/sqlite-identity-repositories.js";
 
+// SHEEP-066-PR1: durable text delivery attempt journal (Send Attempt truth model / typed outcome / recovery).
+export { DeliveryAttemptError, SqliteDeliveryAttemptRepository, generateDeliveryAttemptId, generateDeliveryMessageId, createAuthorizedDeliveryAttempt, runDeliveryAttempt, finalizeAcknowledgedDelivery, recoverInFlightAttempts } from "./delivery/delivery-attempt.js";
+export type { DeliveryAttemptRecord, DeliveryAttemptRepository, DeliveryAttemptStatus, DeliveryOutcome, DeliveryResult, TextDeliveryPort, DeliveryAttemptAuthorizerPort, DeliveryAttemptAuthorizeResult } from "./delivery/delivery-attempt.js";
+
 // SHEEP-063-PR2-PR1: local workspace merchant identity bootstrap.
 export { WORKSPACE_MERCHANT_ID_META_KEY, WorkspaceIdentityError, SqliteWorkspaceIdentityBootstrap, resolveOrBootstrapWorkspaceMerchantId, generateWorkspaceMerchantId } from "./workspace/workspace-identity.js";
 export type { WorkspaceIdentityBootstrap } from "./workspace/workspace-identity.js";
@@ -80,4 +84,5 @@ export { SqliteCustomerRepository, SqliteDomainProductRepository, SqliteSkuRepos
 // M1.5-R06: Backup/Restore Foundation.
 export { BACKUP_METADATA_FILENAME, createBackup, listBackups, restoreBackup, rotateBackups } from "./backup/backup-manager.js";
 export type { BackupMetadata } from "./backup/backup-manager.js";
+
 

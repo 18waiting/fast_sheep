@@ -16,7 +16,7 @@ const dataRoot = mkdtempSync(join(tmpdir(), "fw-m12-fresh-"));
 let worker, db;
 try {
   db = openDatabase(dataRoot);
-  check("fresh DB schema v9", db.schemaVersion === 9);
+  check("fresh DB schema v10", db.schemaVersion === 10);
   const groups = db.conn.get("SELECT COUNT(*) AS n FROM config_groups").n;
   check("default seed present", groups >= 9);
   worker = new AIWorkerClient({
@@ -33,7 +33,7 @@ try {
   check("integrity after reopen", true);
   db.conn.close(); db = null;
   const b = openDatabase(dataRoot);
-  check("reopen schema v9", b.schemaVersion === 9);
+  check("reopen schema v10", b.schemaVersion === 10);
   b.conn.close();
 } finally {
   await worker?.stop().catch(() => undefined);

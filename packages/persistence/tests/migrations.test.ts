@@ -9,10 +9,10 @@ import { openDatabase, resolveDataRoot, provisionDataRoot, SqliteConnection, Mig
 
 function root() { return mkdtempSync(join(tmpdir(), "fw-t-")); }
 
-test("fresh database migrates to schema v9 and seeds defaults", () => {
+test("fresh database migrates to schema v10 and seeds defaults", () => {
   const { conn, schemaVersion } = openDatabase(root());
-  assert.equal(schemaVersion, 9);
-  assert.equal(conn.get("SELECT value FROM app_meta WHERE key = 'database_schema_version'").value, "9");
+  assert.equal(schemaVersion, 10);
+  assert.equal(conn.get("SELECT value FROM app_meta WHERE key = 'database_schema_version'").value, "10");
   assert.ok(conn.all("SELECT group_name FROM config_groups").length >= 9);
   conn.close();
 });
@@ -21,7 +21,7 @@ test("migration rerun is a no-op (no duplicate effects)", () => {
   const r = root();
   openDatabase(r).conn.close();
   const b = openDatabase(r);
-  assert.equal(b.conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 9);
+  assert.equal(b.conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 10);
   b.conn.close();
 });
 

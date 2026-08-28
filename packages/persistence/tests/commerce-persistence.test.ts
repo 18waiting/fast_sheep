@@ -26,11 +26,11 @@ function seedParents(conn: SqliteConnection, merchantId: string, paId: string): 
   conn.run("INSERT OR IGNORE INTO platform_accounts (id, merchant_id, platform) VALUES (?, ?, 'pdd')", paId, merchantId);
 }
 
-test("fresh DB: schema v9, new commerce tables + legacy coexist (products legacy untouched)", () => {
+test("fresh DB: schema v10, new commerce tables + legacy coexist (products legacy untouched)", () => {
   const r = root();
   const { conn, schemaVersion } = openDatabase(r);
-  assert.equal(schemaVersion, 9);
-  assert.equal(conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 9);
+  assert.equal(schemaVersion, 10);
+  assert.equal(conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 10);
   for (const t of ["customers","domain_products","skus","orders","logistics"]) {
     assert.ok(conn.get("SELECT name FROM sqlite_master WHERE type='table' AND name=?", t), `table ${t}`);
   }
@@ -38,7 +38,7 @@ test("fresh DB: schema v9, new commerce tables + legacy coexist (products legacy
   conn.close();
 });
 
-test("upgrade path: 0001-0006 DB migrates to 0007/0008/0009; historical checksums unchanged; backup created", () => {
+test("upgrade path: 0001-0006 DB migrates to 0007/0008/0009/0010; historical checksums unchanged; backup created", () => {
   const r = root();
   const conn = new SqliteConnection(join(r, DB_FILENAME));
   const mig6 = mkdtempSync(join(tmpdir(), "fs-mig6-"));
@@ -47,7 +47,7 @@ test("upgrade path: 0001-0006 DB migrates to 0007/0008/0009; historical checksum
 
   const runner = new MigrationRunner();
   const res = runner.migrate(conn, join(r, "backups", "db"));
-  assert.equal(res.migratedCount, 3);
+  assert.equal(res.migratedCount, 4);
   assert.equal(res.backedUp, true);
 
   const applied = runner.applied(conn);

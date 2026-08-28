@@ -26,9 +26,11 @@ export const ERROR_CODES = {
   INVALID_CONFIG: "persistence.invalid_config",
   MIGRATION_METADATA_CORRUPT: "persistence.migration_metadata_corrupt",
   WORKSPACE_IDENTITY: "persistence.workspace_identity",
+  DELIVERY_ATTEMPT: "persistence.delivery_attempt",
 } as const;
 
 export function notFound(message = "record not found"): PersistenceError {
   return new PersistenceError(ERROR_CODES.NOT_FOUND, message);
 }
+
 

@@ -9,7 +9,7 @@ import { createConversationIngestion } from "../dist/main/services/conversation-
 import type { SqliteConnection } from "@fastwork/persistence";
 
 // SHEEP-060-PR1 foundation guards:
-//   - persistence durability: fresh schema-v9 DB -> ingestion -> close -> reopen -> read
+//   - persistence durability: fresh schema-v10 DB -> ingestion -> close -> reopen -> read
 //   - production composition: createWorkerBackedMainContext binds SQLite (cross-connection proof)
 //   - I-6 merchant boundary: listByMerchant/listByStore isolation, no cross-merchant leak
 //   - DP-66: corrupt DB / production composition fail closed (never fall back to memory)
@@ -39,10 +39,10 @@ function withTemp(fn: (root: string) => void) {
   }
 }
 
-test("persistence durability: fresh v9 DB -> ingestion -> close -> reopen -> repository reads (PR1 layer 1)", () => {
+test("persistence durability: fresh v10 DB -> ingestion -> close -> reopen -> repository reads (PR1 layer 1)", () => {
   withTemp((root) => {
     const ctx1 = openDatabase(root);
-    assert.equal(ctx1.schemaVersion, 9, "fresh DB must be schema v9");
+    assert.equal(ctx1.schemaVersion, 10, "fresh DB must be schema v10");
     const repo1 = new SqliteNormalizedConversationRepository(ctx1.conn);
     seedIdentity(ctx1.conn, [{ id: "A1", merchantId: "m-A", platform: "pdd" }, { id: "A2", merchantId: "m-A", platform: "pdd" }, { id: "B1", merchantId: "m-B", platform: "doudian" }]);
     const ingestion = createConversationIngestion(repo1);

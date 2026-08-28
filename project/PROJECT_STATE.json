@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
   "last_closed_task": "SHEEP-066 (Read First)",
-  "current_task": "SHEEP-066-PR1 (Text Delivery Attempt & Outcome Foundation — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed; Composer Send stays disabled)",
-  "next_action": "SHEEP-066-PR1 (Text Delivery Attempt & Outcome Foundation) proposal — awaiting Owner approval; not auto-executed; no SHEEP-067 without PASS",
+  "current_task": "SHEEP-066-PR1 (COMPLETE: Text Delivery Attempt & Outcome Foundation v10; Controller Review submitted; awaiting Owner PASS — SHEEP-066 product implementation NOT resumed, Composer Send stays disabled)",
+  "next_action": "SHEEP-066-PR1 awaiting Owner PASS; after PASS restore SHEEP-066 product implementation (text-only; real delivery adapter + ack contract required); no SHEEP-067 without PASS",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1582,6 +1582,31 @@
     "next_per_roadmap": "Owner decides delivery prerequisite vs DEFER; no Send implementation; no SHEEP-067 without PASS",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
+  },
+  "sheep_066_pr1": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "EXECUTED_AWAITING_PASS",
+    "closed_date_candidate": null,
+    "report": "reports\\SHEEP-066-PR1-report.json",
+    "review_doc": "docs\\fast-sheep-text-delivery-attempt-foundation.md",
+    "schema_change": "v9 -> v10 (0010_delivery_attempts.sql: durable text delivery attempt journal; immutable text payload snapshot; captured target identity; typed status/lifecycle; FK/CHECK/index; no reconciliation_note/attachment/Outbox fields)",
+    "decisions": ["DP-119/120/122/124/125/126/127/128/129/130 + I-33..I-41 (executed; OWNER_DECIDED pending Owner PASS)"],
+    "implemented": [
+        "SqliteDeliveryAttemptRepository + TextDeliveryPort + DeliveryAttemptAuthorizerPort",
+        "createAuthorizedDeliveryAttempt (DP-120/I-37 target capture); runDeliveryAttempt (I-39/I-33/I-35)",
+        "finalizeAcknowledgedDelivery (DP-130/I-40 atomic single transaction); recoverInFlightAttempts (DP-128)",
+        "production composition shares m10Sqlite.conn (no second DB lifecycle); no delivery port bound (DP-129; Composer Send stays disabled)"
+    ],
+    "tests": "persistence 88/88 (9 new) + desktop 298/298 (3 new) + workspace typecheck/test PASS + m6 smoke PASS (external_network_calls=0) + M12 matrix PASS + boundary/secrets PASS",
+    "future_constraints": [
+        "PR1 PASS 后 Composer Send 仍 disabled; production Send enable requires real platform delivery adapter + authoritative ACK contract + manual authorization readiness (DP-129)",
+        "SHEEP-066 product implementation (text-only) restores only after PR1 PASS",
+        "I-32 text-only; attachments stay out",
+        "UNKNOWN requires reconciliation or explicit human decision before retry (I-36)"
+    ],
+    "next_per_roadmap": "SHEEP-066-PR1 awaiting Owner PASS; no SHEEP-067 without PASS",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }
-

@@ -3,7 +3,7 @@
 // SHEEP-020: Legacy/Existing Data Compatibility Smoke.
 // - Legacy data is SYNTHETIC representative legacy-shaped test data ONLY (no real
 //   FastWork/user data; External Reference Access = 0).
-// - Core migration expectation: legacy 0001-0004 -> schema v9 (4 -> 9), with
+// - Core migration expectation: legacy 0001-0004 -> schema v10 (4 -> 10), with
 //   intermediate versions verifiable.
 // - Includes post-migration reopen smoke and same-ID collision negative test.
 import { test } from "node:test";
@@ -34,7 +34,7 @@ function seedLegacy(conn: SqliteConnection): void {
   conn.run("INSERT OR IGNORE INTO config_groups (group_name, schema_version, payload_json, updated_at) VALUES ('RAGConfig','1','{}','2026-01-01T00:00:00Z')");
 }
 
-test("compat: legacy v4 DB + synthetic data -> v9; data preserved; checksums unchanged; reopen smoke", () => {
+test("compat: legacy v4 DB + synthetic data -> v10; data preserved; checksums unchanged; reopen smoke", () => {
   const r = root();
   const dbPath = join(r, DB_FILENAME);
   const mig4 = mkdtempSync(join(tmpdir(), "fs-leg4-"));
@@ -48,11 +48,11 @@ test("compat: legacy v4 DB + synthetic data -> v9; data preserved; checksums unc
 
   const runner = new MigrationRunner();
   const res = runner.migrate(conn, join(r, "backups", "db"));
-  assert.equal(res.migratedCount, 5, "0005+0006+0007+0008+0009 applied");
+  assert.equal(res.migratedCount, 6, "0005+0006+0007+0008+0009+0010 applied");
   assert.equal(res.backedUp, true);
-  assert.equal(conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 9, "end: 9 migrations (0001-0009)");
+  assert.equal(conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 10, "end: 10 migrations (0001-0010)");
   const appliedVersions = runner.applied(conn).map((a) => a.version).sort((x, y) => x - y);
-  assert.deepEqual(appliedVersions, [1, 2, 3, 4, 5, 6, 7, 8, 9], "intermediate versions verifiable");
+  assert.deepEqual(appliedVersions, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], "intermediate versions verifiable");
 
   // checksums 0001-0004 unchanged
   for (const f of LEGACY4) {
@@ -71,7 +71,7 @@ test("compat: legacy v4 DB + synthetic data -> v9; data preserved; checksums unc
 
   // post-migration reopen smoke
   const reopened = openDatabase(r);
-  assert.equal(reopened.schemaVersion, 9);
+  assert.equal(reopened.schemaVersion, 10);
   const shopRepo = new SqliteShopRepository(reopened.conn);
   assert.equal(shopRepo.list().length, 2);
   const prodRepo = new SqliteProductRepository(reopened.conn);
@@ -82,7 +82,7 @@ test("compat: legacy v4 DB + synthetic data -> v9; data preserved; checksums unc
   reopened.conn.close();
 });
 
-test("compat: fresh v9 — legacy + domain coexist; same text ID collision is isolated per table", () => {
+test("compat: fresh v10 — legacy + domain coexist; same text ID collision is isolated per table", () => {
   const r = root();
   const { conn } = openDatabase(r);
   seedLegacy(conn);

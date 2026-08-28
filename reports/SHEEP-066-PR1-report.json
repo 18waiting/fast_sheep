@@ -1,0 +1,111 @@
+{
+  "task": "SHEEP-066-PR1",
+  "codex_result": "COMPLETE",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.2 prerequisite (before SHEEP-066 product implementation)",
+  "summary": "Text Delivery Attempt & Outcome Foundation：v10 migration（0010_delivery_attempts.sql，durable text delivery attempt journal——immutable text payload snapshot + captured target identity + typed status/outcome + lifecycle times）；SqliteDeliveryAttemptRepository + TextDeliveryPort + DeliveryAttemptAuthorizerPort + createAuthorizedDeliveryAttempt（DP-120/I-37）+ runDeliveryAttempt（I-39/I-33/I-35）+ finalizeAcknowledgedDelivery（DP-130/I-40 单事务原子）+ recoverInFlightAttempts（DP-128）；production composition 共享 m10Sqlite.conn（无第二 DB lifecycle），不绑定 delivery port（DP-129，Composer Send 保持 disabled）；12 个新 guard（persistence 9 + desktop 3）；persistence 88/88、desktop 298/298、workspace typecheck+test PASS、m6 smoke PASS（external_network_calls=0）、M12 matrix PASS、boundary+secrets PASS",
+  "completed_requirements": 20,
+  "total_requirements": 20,
+  "owner_tightening": {
+    "immutable_text_payload_snapshot": "遵守：delivery_attempts.text_payload 存完整文本快照（非 hash）；recovery 不依赖 ephemeral Composer draft；未建无 consumer 的 payload_hash",
+    "i37": "遵守：DELIVERY_ATTEMPT_TARGET_IS_IMMUTABLE_AFTER_CREATION（createAuthorizedDeliveryAttempt 从已授权 conversation 捕获 store/platform_account）",
+    "state_machine": "遵守：PENDING/IN_FLIGHT/ACKNOWLEDGED/REJECTED/UNKNOWN 完整模型；terminal 不再进入 delivery",
+    "i38": "遵守：TERMINAL_DELIVERY_ATTEMPTS_ARE_IMMUTABLE_RETRY_CREATES_A_NEW_ATTEMPT",
+    "i39": "遵守：IN_FLIGHT_IS_DURABLE_BEFORE_EXTERNAL_DELIVERY_SIDE_EFFECT（markInFlight 先持久化再 port.deliver）",
+    "dp130": "遵守：ACKNOWLEDGED_ATTEMPT_FINALIZATION_AND_DELIVERED_MESSAGE_FACT_PERSISTENCE_ARE_ATOMIC_OR_RECOVERABLY_IDEMPOTENT（单事务）",
+    "i40": "遵守：ACK_FINALIZATION_IS_IDEMPOTENT_PER_DELIVERY_ATTEMPT（重复 finalize no-op，无重复 Timeline Message）",
+    "ack_source_typed": "遵守：ack_source_ref/ack_occurred_at 仅 typed driver source facts；无 raw response JSON；source time 未知 -> occurred_at=NULL",
+    "no_reconciliation_note": "遵守：不建自由文本 reconciliation_note（后续用 contract/audit 建模）",
+    "lifecycle_times": "遵守：created/dispatched/resolved 为本地事实；不冒充 Message.occurred_at",
+    "journal_separate": "遵守：delivery_attempts 与 normalized_messages / Sync Outbox 分离；无 attachment/blob/cloud/sync/retry-job 字段",
+    "v10_filename": "遵守：0010_delivery_attempts.sql（固定宽度 0008/0009 延续）",
+    "migration_matrix": "遵守：fresh→v10、v9→v10、integrity/FK/index/CHECK、checksum/future-version/reopen/backup、failure rollback（既有 migration tests + 新增）",
+    "shared_lifecycle": "遵守：repository/production composition 共享 m10Sqlite.conn；无第二 DB connection；production 不绑定 fake adapter",
+    "text_delivery_port": "遵守：TextDeliveryPort + 受控 test adapters（ACK/REJECT/UNKNOWN）验证状态机；test adapter 不进 production composition",
+    "auth_before_attempt": "遵守：authorization-before-attempt 为 contract（DeliveryAttemptAuthorizerPort 极薄）；production 未就绪 Send 仍 unavailable；未发明 taxonomy",
+    "i33_i36_i35": "遵守：UNKNOWN 不自动 retry、不写 delivered fact；reconciliation/显式人类决策后才可 retry；仅 ACKNOWLEDGED 写 delivered fact",
+    "i28_sent_defined": "遵守：sent = authoritative ACKNOWLEDGED；REJECTED/UNKNOWN 保留 draft；c1 不影响 c2（本单元只测 contract，不接生产 Composer Send）",
+    "i41": "遵守：DELIVERY_ATTEMPT_PAYLOAD_MUST_NOT_BE_EMITTED_TO_LOGS_TELEMETRY_OR_ERROR_STRINGS_BY_DEFAULT（测试断言错误不含 payload）",
+    "send_stays_disabled": "遵守：PR1 后 Composer Send 仍 disabled；enable 需真实 adapter + authoritative ACK + manual authorization readiness"
+  },
+  "decisions": {
+    "dp119": "SEND_PIPELINE_CONSUMES_COMPOSER_SUBMIT_INTENT",
+    "dp120": "SEND_AUTHORIZATION_PRECEDES_DELIVERY_AND_MESSAGE_PERSISTENCE",
+    "dp122_125": "SEND_OUTCOME_IS_EXPLICIT_AND_TYPED_NOT_BOOLEAN",
+    "dp124": "MANUAL_AGENT_SEND_AUTHORITY_IS_DISTINCT_FROM_AI_AUTOMATION_LEVEL",
+    "dp126": "DELIVERED_MESSAGE_FACT_REQUIRES_AUTHORITATIVE_DELIVERY_OUTCOME",
+    "dp127": "DELIVERY_ATTEMPT_JOURNAL_IS_DISTINCT_FROM_DELIVERED_MESSAGE_FACT_AND_SYNC_OUTBOX",
+    "dp128": "UNRESOLVED_IN_FLIGHT_ATTEMPTS_RECOVER_AS_UNKNOWN_NOT_FAILED",
+    "dp129": "PRODUCTION_SEND_REMAINS_DISABLED_UNTIL_A_REAL_PLATFORM_DELIVERY_ADAPTER_SATISFIES_ACK_CONTRACT",
+    "dp130": "ACKNOWLEDGED_ATTEMPT_FINALIZATION_AND_DELIVERED_MESSAGE_FACT_PERSISTENCE_ARE_ATOMIC_OR_RECOVERABLY_IDEMPOTENT",
+    "i33": "UNKNOWN_DELIVERY_OUTCOME_MUST_NOT_AUTO_RETRY_OR_PERSIST_AS_SENT",
+    "i34": "DELIVERY_ATTEMPT_PAYLOAD_IS_IMMUTABLE_AFTER_CREATION",
+    "i35": "ONLY_ACKNOWLEDGED_DELIVERY_MAY_CREATE_DELIVERED_OUTBOUND_MESSAGE_FACT",
+    "i36": "UNKNOWN_DELIVERY_REQUIRES_RECONCILIATION_OR_EXPLICIT_HUMAN_DECISION_BEFORE_RETRY",
+    "i37": "DELIVERY_ATTEMPT_TARGET_IS_IMMUTABLE_AFTER_CREATION",
+    "i38": "TERMINAL_DELIVERY_ATTEMPTS_ARE_IMMUTABLE_RETRY_CREATES_A_NEW_ATTEMPT",
+    "i39": "IN_FLIGHT_IS_DURABLE_BEFORE_EXTERNAL_DELIVERY_SIDE_EFFECT",
+    "i40": "ACK_FINALIZATION_IS_IDEMPOTENT_PER_DELIVERY_ATTEMPT",
+    "i41": "DELIVERY_ATTEMPT_PAYLOAD_MUST_NOT_BE_EMITTED_TO_LOGS_TELEMETRY_OR_ERROR_STRINGS_BY_DEFAULT"
+  },
+  "evidence": {
+    "confirmed": [
+      "v10 delivery_attempts journal: immutable text payload snapshot, captured target, typed status + lifecycle times, FK/CHECK/index",
+      "authorization-before-attempt: DENIED/UNAVAILABLE creates no attempt (DP-120)",
+      "I-39: IN_FLIGHT durable before port.deliver; DP-128 recovery -> UNKNOWN",
+      "DP-130/I-40: atomic finalize (message fact + ACK in one transaction); repeat finalize no-op (no duplicate message)",
+      "REJECTED/UNKNOWN terminal: no delivered fact; terminal immutable; retry = new attempt (I-38)",
+      "I-41: payload never in error strings",
+      "production composition binds SqliteDeliveryAttemptRepository on shared m10Sqlite.conn; no delivery port (DP-129)",
+      "persistence 88/88, desktop 298/298, workspace typecheck+test, m6 smoke (external_network_calls=0), M12 matrix PASS, boundary+secrets PASS"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "persistence build/typecheck; persistence tests 88/88 (9 new delivery-attempt guards)",
+    "desktop build/typecheck; desktop tests 298/298 (3 new composition guards)",
+    "workspace typecheck / test（全部 PASS）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "M12 migration matrix（PASS：fresh->v10 / v1~v3->v10 / v10 no-op / checksum / future-version / reopen）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS",
+    "run-m12-migration-matrix：PASS"
+  ],
+  "negative_tests": [
+    "未实现真实 platform delivery / retry UI / busy-success-failure UI / attachments / Cloud Sync Outbox / Composer Send enable",
+    "未用 click/attempt time 冒充 occurred_at（source 未知 -> NULL）；observed_at 由 delivery finalization boundary 产生",
+    "无 free-text reconciliation_note；无 attachment/blob/cloud/sync/retry 字段进 v10",
+    "无第二 DB connection；production 不绑定 fake delivery adapter",
+    "未改已 PASS Composer/I-27~I-30；I-32 text-only"
+  ],
+  "modified_files": [
+    "packages/persistence/migrations/0010_delivery_attempts.sql (new)",
+    "packages/persistence/src/db/schema-version.ts (SUPPORTED 9->10)",
+    "packages/persistence/src/delivery/delivery-attempt.ts (new)",
+    "packages/persistence/src/db/errors.ts (DELIVERY_ATTEMPT code)",
+    "packages/persistence/src/index.ts (delivery-attempt exports)",
+    "apps/desktop/src/main/bootstrap.ts + worker-runtime.ts (MainContext.deliveryAttempts; shared m10Sqlite.conn; no delivery port)",
+    "packages/persistence/tests/delivery-attempt.test.ts (new, 9 guards)",
+    "apps/desktop/tests/delivery-attempt-composition.test.ts (new, 3 guards)",
+    "v9->v10 propagation: migrations/commerce/conversation/identity/legacy-compat/backup-manager/workspace-identity tests, secret-store test, message-fact-foundation + conversation-persistence-foundation desktop tests, M12 scripts",
+    "docs/fast-sheep-text-delivery-attempt-foundation.md (new)",
+    "reports/SHEEP-066-PR1-report.json (new)",
+    "project/PROJECT_STATE.json (sheep_066_pr1 record + current_task)"
+  ],
+  "architecture_changes": [
+    "durable Text Delivery Attempt journal (v10): platform-independent Send Attempt truth model / typed outcome / durable recovery; production Send remains disabled (DP-129)"
+  ],
+  "security_changes": [
+    "I-41: attempt payload (customer business text) never emitted to logs/telemetry/error strings by default"
+  ],
+  "data_model_changes": [
+    "schema v9 -> v10 (0010_delivery_attempts.sql: durable text delivery attempt journal)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

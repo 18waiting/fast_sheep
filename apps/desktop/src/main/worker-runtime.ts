@@ -9,7 +9,7 @@
 import { existsSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { AIWorkerClient } from "@fastwork/worker-rpc";
-import { resolveDataRoot, openDatabase, SqliteFeedbackRepository, SqliteJobRepository, SqliteProductRepository, SqliteNormalizedConversationRepository, SqliteMessageRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteWorkspaceIdentityBootstrap, resolveOrBootstrapWorkspaceMerchantId } from "@fastwork/persistence";
+import { resolveDataRoot, openDatabase, SqliteFeedbackRepository, SqliteJobRepository, SqliteProductRepository, SqliteNormalizedConversationRepository, SqliteMessageRepository, SqliteDeliveryAttemptRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteWorkspaceIdentityBootstrap, resolveOrBootstrapWorkspaceMerchantId } from "@fastwork/persistence";
 import { WorkerAiEngineClient, type WorkerGenerateReplyResponse } from "@fastwork/orchestrator";
 import { FeedbackService, PersistenceFeedbackRepository, WorkerKnowledgeFeedbackClient } from "@fastwork/feedback";
 import { WorkerJobClient } from "@fastwork/background-jobs";
@@ -128,6 +128,11 @@ export function createWorkerBackedMainContext(deps: WorkerBackedMainDeps, option
   // connection/lifecycle (m10Sqlite.conn); no second openDatabase / second connection
   // ownership, and production persistence failure never falls back to memory (DP-66).
   const messageRepository = new SqliteMessageRepository(m10Sqlite.conn);
+  // SHEEP-066-PR1 (DP-90-style shared lifecycle): durable Delivery Attempt journal SHARES
+  // the production DB connection/lifecycle (m10Sqlite.conn). No second connection
+  // ownership; NO delivery port is bound here (DP-129: production Send stays disabled
+  // until a real platform delivery adapter satisfies the ack contract).
+  const deliveryAttemptRepository = new SqliteDeliveryAttemptRepository(m10Sqlite.conn);
   const storeRepository = new SqliteStoreRepository(m10Sqlite.conn);
   const platformAccountRepository = new SqlitePlatformAccountRepository(m10Sqlite.conn);
   // SHEEP-063-PR2-PR1: resolve-or-bootstrap the trusted local workspace merchant
@@ -154,9 +159,12 @@ export function createWorkerBackedMainContext(deps: WorkerBackedMainDeps, option
     productRepository,
     conversationRepository,
     messageRepository,
+    deliveryAttemptRepository,
     workspaceMerchant,
     storeRepository,
     platformAccountRepository,
   });
 }
+
+
 

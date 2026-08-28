@@ -26,11 +26,11 @@ function sha256(path: string): string { return createHash("sha256").update(readF
 
 const THRU_0008 = ["0001_initial.sql","0002_feedback_effect_tracking.sql","0003_learning_review_audit_optimization.sql","0004_legacy_import_tracking.sql","0005_identity_domain.sql","0006_conversation_domain.sql","0007_commerce_domain.sql","0008_message_facts.sql"];
 
-test("fresh 0001->0009: schema v9, migration count 9, merchants.name nullable (no NOT NULL)", () => {
+test("fresh 0001->0010: schema v10, migration count 10, merchants.name nullable (no NOT NULL)", () => {
   withTemp((r) => {
     const ctx = openDatabase(r);
-    assert.equal(ctx.schemaVersion, 9, "fresh DB must be schema v9");
-    assert.equal(ctx.conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 9, "0001-0009 applied");
+    assert.equal(ctx.schemaVersion, 10, "fresh DB must be schema v10");
+    assert.equal(ctx.conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 10, "0001-0010 applied");
     const ddl = ctx.conn.get<{ sql: string }>("SELECT sql FROM sqlite_master WHERE name='merchants'").sql;
     assert.ok(!/name\s+TEXT\s+NOT\s+NULL/i.test(ddl), "merchants.name must be nullable after 0009");
     // NULL-name insert allowed (DP-103/I-24)
@@ -40,7 +40,7 @@ test("fresh 0001->0009: schema v9, migration count 9, merchants.name nullable (n
   });
 });
 
-test("v8->v9 upgrade: existing non-null merchant names preserved verbatim; checksums 0001-0008 unchanged", () => {
+test("v8->v10 upgrade (0009+0010): existing non-null merchant names preserved verbatim; checksums 0001-0008 unchanged", () => {
   withTemp((r) => {
     const dbPath = join(r, DB_FILENAME);
     const mig8 = mkdtempSync(join(tmpdir(), "fs-wsid8-"));
@@ -55,9 +55,9 @@ test("v8->v9 upgrade: existing non-null merchant names preserved verbatim; check
 
     const runner = new MigrationRunner();
     const res = runner.migrate(conn, join(r, "backups", "db"));
-    assert.equal(res.migratedCount, 1, "0009 applied (v8 -> v9)");
+    assert.equal(res.migratedCount, 2, "0009+0010 applied (v8 -> v10)");
     assert.equal(res.backedUp, true);
-    assert.equal(conn.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "9");
+    assert.equal(conn.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "10");
     // existing name preserved verbatim (no rewrite/backfill)
     assert.equal(conn.get<{ name: string }>("SELECT name FROM merchants WHERE id='m1'").name, "既有商户甲");
     // FK reference still resolves after rebuild

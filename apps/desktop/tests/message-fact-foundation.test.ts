@@ -15,9 +15,9 @@ import { createWorkerBackedMainContext } from "../dist/main/worker-runtime.js";
 import { createMessageIngestion } from "../dist/main/services/message-ingestion.js";
 
 // SHEEP-063-PR1 Message Fact + Runtime Ingestion Foundation guards:
-//   - fresh 0001->0009: schema v9 + typed message fact columns; external_ref stays
+//   - fresh 0001->0010: schema v10 + typed message fact columns; external_ref stays
 //     OPAQUE (no invented UNIQUE, I-13); actor/content_kind CHECKs present.
-//   - v7->v9 upgrade: legacy fact-less normalized_messages rows keep NULL facts
+//   - v7->v10 upgrade: legacy fact-less normalized_messages rows keep NULL facts
 //     (I-16 — migration never fabricates historical message facts).
 //   - DP-83/86/87/88 + I-15: typed text-first content; conversation actor != LLM role;
 //     occurred_at (source, may be unknown) distinct from observed_at (Fast Sheep,
@@ -57,11 +57,11 @@ function withTemp(fn: (root: string) => void) {
 
 const THRU_0007 = ["0001_initial.sql","0002_feedback_effect_tracking.sql","0003_learning_review_audit_optimization.sql","0004_legacy_import_tracking.sql","0005_identity_domain.sql","0006_conversation_domain.sql","0007_commerce_domain.sql"];
 
-test("fresh 0001->0009: schema v9, typed message fact columns; external_ref opaque (no UNIQUE); CHECKs present", () => {
+test("fresh 0001->0010: schema v10, typed message fact columns; external_ref opaque (no UNIQUE); CHECKs present", () => {
   withTemp((root) => {
     const ctx = openDatabase(root);
-    assert.equal(ctx.schemaVersion, 9, "fresh DB must be schema v9");
-    assert.equal(ctx.conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 9, "0001-0009 applied");
+    assert.equal(ctx.schemaVersion, 10, "fresh DB must be schema v10");
+    assert.equal(ctx.conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 10, "0001-0010 applied");
 
     const cols = ctx.conn.all<{ name: string }>("PRAGMA table_info(normalized_messages)").map((c) => c.name);
     for (const col of ["id","conversation_id","external_ref","actor","content_kind","content_text","occurred_at","observed_at"]) {
@@ -76,7 +76,7 @@ test("fresh 0001->0009: schema v9, typed message fact columns; external_ref opaq
   });
 });
 
-test("v7->v9 upgrade (0008+0009): legacy fact-less normalized_messages rows keep NULL facts (I-16); checksums unchanged", () => {
+test("v7->v10 upgrade (0008+0009+0010): legacy fact-less normalized_messages rows keep NULL facts (I-16); checksums unchanged", () => {
   withTemp((root) => {
     const dbPath = join(root, DB_FILENAME);
     const mig7 = mkdtempSync(join(tmpdir(), "fs-msgv7-"));
@@ -96,9 +96,9 @@ test("v7->v9 upgrade (0008+0009): legacy fact-less normalized_messages rows keep
 
     const runner = new MigrationRunner();
     const res = runner.migrate(conn, join(root, "backups", "db"));
-    assert.equal(res.migratedCount, 2, "0008+0009 applied (v7 -> v9)");
+    assert.equal(res.migratedCount, 3, "0008+0009+0010 applied (v7 -> v10)");
     assert.equal(res.backedUp, true, "backup created before upgrade");
-    assert.equal(conn.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "9");
+    assert.equal(conn.get("SELECT value FROM app_meta WHERE key='database_schema_version'").value, "10");
 
     // I-16: unknown historical facts remain unknown — no system/empty/migration-time backfill
     const row = conn.get<{ actor: string | null; content_kind: string | null; content_text: string | null; occurred_at: string | null; observed_at: string | null }>(
