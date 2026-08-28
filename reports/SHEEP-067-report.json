@@ -1,0 +1,76 @@
+{
+  "task": "SHEEP-067",
+  "codex_result": "PARTIAL",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.3",
+  "status": "NOT_READY / DEFER (Customer Context Fact-Readiness; no schema migration, no UI)",
+  "summary": "Customer Context Fact-Readiness Read First：CUSTOMER_CONVERSATION_RELATION=NOT_READY（normalized_conversations 无 customer 关联，cardinality/owner/lifecycle 未知）、CUSTOMER_IDENTITY_SEMANTICS=NOT_READY/PRODUCT_DECISION_REQUIRED（legacy buyer 仅候选；跨平台不 dedup DP-139）、CUSTOMER_IDENTITY_FACT=PARTIAL（customers 表 identity-only 但 Main 未接线）、CUSTOMER_PROFILE_FACT=NOT_READY（无 profile；known identity != known profile）、CUSTOMER_INGESTION_PRODUCER=NOT_READY（无 production ingestion）、CUSTOMER_CONTEXT_PRESENTATION=NOT_READY（I-48 锚定 active conversation + stale guard；I-47 无 relation 不呈现为 unknown-profile）、CUSTOMER_CONTEXT_IMPLEMENTATION=NOT_READY。不授权 conversation.customer_id/relation/profile migration；不实现 Customer Context UI；DEFER 至真实 production Customer ingestion + Conversation relation producer。DP-136~140 + I-46~I-49 已记录",
+  "completed_requirements": 18,
+  "total_requirements": 18,
+  "owner_tightening": {
+    "objective_readiness": "遵守：Objective = 建立 Active Conversation 的 Customer Context Fact Readiness，不预设本轮呈现 Customer Context",
+    "dp136": "遵守：CUSTOMER_CONTEXT_RESOLUTION_STARTS_FROM_THE_AUTHORIZED_CONVERSATION（Main 从已授权 Conversation 开始解析；Renderer 不提供 customer target）",
+    "cardinality_owner_lifecycle": "遵守：Conversation<->Customer relation cardinality/owner/lifecycle 未知，不预设 1:1",
+    "i46": "遵守：LEGACY_BUYER_FIELDS_DO_NOT_BECOME_CUSTOMER_FACTS_WITHOUT_VERIFIED_IDENTITY_SEMANTICS（legacy buyer/buyer_id 仅候选证据）",
+    "dp139": "遵守：CUSTOMER_IDENTITY_IS_NOT_DEDUPLICATED_ACROSS_PLATFORM_ACCOUNTS_WITHOUT_EVIDENCE（不按 display name/字符串/ambient Store 猜跨账号同一 Customer）",
+    "dp137": "遵守：KNOWN_CUSTOMER_IDENTITY_DOES_NOT_IMPLY_KNOWN_PROFILE_FACTS",
+    "i47": "遵守：ABSENT_CONVERSATION_CUSTOMER_RELATION_MUST_NOT_BE_PRESENTED_AS_A_CUSTOMER_WITH_UNKNOWN_PROFILE",
+    "no_fake_unknown_fields": "遵守：缺失 profile 维度不呈现，不制造大量未知字段；不伪造 name/avatar/level",
+    "dp138": "遵守：CUSTOMER_CONTEXT_IS_DISTINCT_FROM_MESSAGE_RICH_PAYLOADS_AND_PRODUCT_ORDER_CONTEXT（不借本单元实现 SHEEP-068/069）",
+    "dp140": "遵守：CUSTOMER_CONTEXT_IS_A_CONVERSATION_BOUND_FACT_PROJECTION_NOT_A_GENERAL_CRM_MODEL（不扩展 CRM tags/profile/跨店画像/customer-management framework）",
+    "no_profile_json_bag": "遵守：不提前枚举/建立 profile metadata JSON bag；仅真实 producer 证明的 typed facts 可进后续 migration proposal",
+    "i48": "遵守：CUSTOMER_CONTEXT_READS_MUST_BE_ANCHORED_TO_THE_AUTHORIZED_ACTIVE_CONVERSATION（无 Renderer customerId / ambient Queue 旁路；stale guard：c1 不落 c2）",
+    "i49": "遵守：CUSTOMER_PERSONAL_FACTS_ARE_NOT_EMITTED_TO_LOGS_OR_TELEMETRY_BY_DEFAULT",
+    "no_migration": "遵守：不授权 conversation.customer_id / relation table / profile fields migration",
+    "persistence_needs_producer": "遵守：若未来提 persistence，必须同时说明 production Customer ingestion + Conversation relation establishment path（禁止先建表无 producer）",
+    "seven_readiness_outputs": "遵守：RELATION / IDENTITY_SEMANTICS / IDENTITY_FACT / PROFILE_FACT / INGESTION_PRODUCER / PRESENTATION / IMPLEMENTATION 分别输出",
+    "zero_code": "遵守：0 product code / 0 UI / 0 visual evidence；未创建 Customer service/card/repository abstraction"
+  },
+  "readiness": {
+    "CUSTOMER_CONVERSATION_RELATION_READINESS": "NOT_READY (normalized_conversations has no customer relation; cardinality/owner/lifecycle unknown)",
+    "CUSTOMER_IDENTITY_SEMANTICS_READINESS": "NOT_READY / PRODUCT_DECISION_REQUIRED (legacy buyer/buyer_id candidate only, I-46; no cross-platform dedup without evidence, DP-139)",
+    "CUSTOMER_IDENTITY_FACT_READINESS": "PARTIAL (customers table identity-only exists but not wired in Main)",
+    "CUSTOMER_PROFILE_FACT_READINESS": "NOT_READY (no profile fields; known identity != known profile, DP-137)",
+    "CUSTOMER_INGESTION_PRODUCER_READINESS": "NOT_READY (no production customer ingestion/producer)",
+    "CUSTOMER_CONTEXT_PRESENTATION_READINESS": "NOT_READY (no facts; I-48 anchored to authorized active conversation + stale guard; I-47 no relation != unknown-profile customer; I-49 no personal facts in logs)",
+    "CUSTOMER_CONTEXT_IMPLEMENTATION_READINESS": "NOT_READY (relation/identity-semantics/profile/ingestion missing -> not implementable)"
+  },
+  "decision_package": {
+    "no_migration": "conversation.customer_id / relation table / profile fields migration NOT authorized",
+    "no_ui": "no Customer Context UI / service / card / repository abstraction this round",
+    "defer": "DEFER until real production Customer ingestion + Conversation relation establishment producer; then minimal prerequisite/migration proposal per DP-136~140 + I-46~I-49"
+  },
+  "evidence": {
+    "confirmed": [
+      "normalized_conversations (0006) has no customer_id/buyer relation",
+      "customers table (0007) identity-only (id/merchant/platform_account/external_ref); SqliteCustomerRepository NOT wired into Main",
+      "legacy buyer/buyer_id + frozen baseline NormalizedInboundMessage.buyer_id/buyer are candidate evidence only (I-46)",
+      "platform event stream carries buyer_id/buyer (generic-platform-service / pdd-orchestrator-bridge) but never persisted as customer facts",
+      "no production customer ingestion/producer; no customer profile fields; no dedup semantics"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "desktop build/typecheck + desktop tests 298/298 (regression; pure Read First turn — no new product code)",
+    "workspace typecheck/test PASS",
+    "m6 Electron smoke PASS (external_network_calls=0) — non-regression",
+    "check:boundary PASS; secret scan PASS"
+  ],
+  "negative_tests": [
+    "未改 schema v10；未授权 conversation.customer_id/relation/profile migration",
+    "未实现 Customer Context UI / service / card / repository abstraction",
+    "未把 legacy buyer/buyer_id 当作 verified customer facts（I-46）",
+    "未做跨平台账号 customer dedup（DP-139）",
+    "未实现 Product/Order Context / Attachments / Send / Outbox / sync"
+  ],
+  "modified_files": [
+    "docs/fast-sheep-customer-context-readiness.md (new)",
+    "reports/SHEEP-067-report.json (new)",
+    "project/PROJECT_STATE.json (sheep_067 record + decision package)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

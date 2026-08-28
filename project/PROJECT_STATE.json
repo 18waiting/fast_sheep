@@ -1681,6 +1681,46 @@
     "next_per_roadmap": "Owner decides minimal authorization prerequisite / Product Decision / DEFER; no SHEEP-066 product send implementation without PASS; no SHEEP-067",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
+  },
+  "sheep_067": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "NOT_READY / DEFER (Customer Context Fact-Readiness; no schema migration, no UI)",
+    "closed_date_candidate": null,
+    "report": "reports\\SHEEP-067-report.json",
+    "review_doc": "docs\\fast-sheep-customer-context-readiness.md",
+    "readiness": {
+      "CUSTOMER_CONVERSATION_RELATION_READINESS": "NOT_READY (no normalized relation; cardinality/owner/lifecycle unknown)",
+      "CUSTOMER_IDENTITY_SEMANTICS_READINESS": "NOT_READY / PRODUCT_DECISION_REQUIRED (legacy buyer candidate only; no cross-platform dedup, DP-139)",
+      "CUSTOMER_IDENTITY_FACT_READINESS": "PARTIAL (customers table identity-only; not wired in Main)",
+      "CUSTOMER_PROFILE_FACT_READINESS": "NOT_READY (no profile fields; known identity != known profile)",
+      "CUSTOMER_INGESTION_PRODUCER_READINESS": "NOT_READY (no production ingestion)",
+      "CUSTOMER_CONTEXT_PRESENTATION_READINESS": "NOT_READY (I-48 anchor active conversation + stale guard; I-47; I-49)",
+      "CUSTOMER_CONTEXT_IMPLEMENTATION_READINESS": "NOT_READY"
+    },
+    "decisions": ["DP-136..DP-140 + I-46..I-49 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decision_package": {
+      "no_migration": "conversation.customer_id / relation table / profile fields migration NOT authorized",
+      "no_ui": "no Customer Context UI / service / card / repository abstraction",
+      "defer": "DEFER until real production Customer ingestion + Conversation relation establishment producer; then minimal prerequisite/migration proposal"
+    },
+    "next_per_roadmap": "Owner decides prerequisite/migration vs DEFER vs minimal typed Customer Context implementation; no Customer Context product implementation without PASS; no SHEEP-068",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
+  },
+  "fast_sheep_customer_context_fact_readiness_decisions": {
+    "status": "ADOPTED_PENDING_OWNER_PASS",
+    "decided_date": "2026-08-29",
+    "dp_136": "CUSTOMER_CONTEXT_RESOLUTION_STARTS_FROM_THE_AUTHORIZED_CONVERSATION",
+    "dp_137": "KNOWN_CUSTOMER_IDENTITY_DOES_NOT_IMPLY_KNOWN_PROFILE_FACTS",
+    "dp_138": "CUSTOMER_CONTEXT_IS_DISTINCT_FROM_MESSAGE_RICH_PAYLOADS_AND_PRODUCT_ORDER_CONTEXT",
+    "dp_139": "CUSTOMER_IDENTITY_IS_NOT_DEDUPLICATED_ACROSS_PLATFORM_ACCOUNTS_WITHOUT_EVIDENCE",
+    "dp_140": "CUSTOMER_CONTEXT_IS_A_CONVERSATION_BOUND_FACT_PROJECTION_NOT_A_GENERAL_CRM_MODEL",
+    "i_46": "LEGACY_BUYER_FIELDS_DO_NOT_BECOME_CUSTOMER_FACTS_WITHOUT_VERIFIED_IDENTITY_SEMANTICS",
+    "i_47": "ABSENT_CONVERSATION_CUSTOMER_RELATION_MUST_NOT_BE_PRESENTED_AS_A_CUSTOMER_WITH_UNKNOWN_PROFILE",
+    "i_48": "CUSTOMER_CONTEXT_READS_MUST_BE_ANCHORED_TO_THE_AUTHORIZED_ACTIVE_CONVERSATION (stale guard: c1 must not land on c2)",
+    "i_49": "CUSTOMER_PERSONAL_FACTS_ARE_NOT_EMITTED_TO_LOGS_OR_TELEMETRY_BY_DEFAULT",
+    "readiness": "RELATION=NOT_READY / IDENTITY_SEMANTICS=NOT_READY|PRODUCT_DECISION_REQUIRED / IDENTITY_FACT=PARTIAL / PROFILE_FACT=NOT_READY / INGESTION_PRODUCER=NOT_READY / PRESENTATION=NOT_READY / IMPLEMENTATION=NOT_READY",
+    "next": "Owner decides prerequisite/migration vs DEFER vs minimal typed implementation; no SHEEP-068 without PASS"
   }
 }
-
