@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
-  "last_closed_task": "SHEEP-068",
-  "current_task": "SHEEP-069 (Order / Logistics Context — Fact-Readiness executed; NOT_READY/DEFER; awaiting Owner disposition; not auto-executed)",
-  "next_action": "SHEEP-069 (Order / Logistics Context) Fact-Readiness — awaiting Owner disposition; no next SHEEP without PASS",
+  "last_closed_task": "SHEEP-069",
+  "current_task": "SHEEP-070 (Ownership / Handoff — Claim / Release UX Fact-Readiness — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
+  "next_action": "SHEEP-070 (Ownership / Handoff — Claim / Release UX) proposal — awaiting Owner approval; not auto-executed",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1807,14 +1807,14 @@
   },
   "sheep_069": {
     "codex_result": "PARTIAL",
-    "controller_decision": "PENDING_OWNER_PASS",
-    "status": "NOT_READY / DEFER (Order / Logistics Context Fact-Readiness; no schema migration, no UI)",
-    "closed_date_candidate": null,
+    "controller_decision": "PASS",
+    "status": "CLOSED (Order / Logistics Context implementation DEFER_TO_REAL_ORDER_LOGISTICS_INGESTION_AND_RELATION_EVIDENCE)",
+    "closed_date_candidate": "2026-08-29",
     "report": "reports\\SHEEP-069-report.json",
     "review_doc": "docs\\fast-sheep-order-logistics-context-readiness.md",
     "readiness": {
       "ORDER_CONVERSATION_RELATION_READINESS": "NOT_READY (no relation; I-58/I-59/I-64)",
-      "ORDER_LOGISTICS_RELATION_READINESS": "NOT_READY (DP-151; logistics FK structural only; I-65)",
+      "ORDER_LOGISTICS_RELATION_READINESS": "PARTIAL / PRODUCER_NOT_READY (logistics.order_id FK proves schema relation shape; production relation establishment/cardinality/lifecycle/source NOT_READY; I-67)",
       "ORDER_IDENTITY_SEMANTICS_READINESS": "NOT_READY / PLATFORM_EVIDENCE_REQUIRED (DP-147)",
       "LOGISTICS_IDENTITY_SEMANTICS_READINESS": "NOT_READY / PLATFORM_EVIDENCE_REQUIRED (I-60/I-65)",
       "ORDER_IDENTITY_FACT_READINESS": "PARTIAL (orders identity-only; not wired in Main)",
@@ -1825,19 +1825,43 @@
       "ORDER_LOGISTICS_CONTEXT_PRESENTATION_READINESS": "NOT_READY (I-61/I-62/I-63)",
       "ORDER_LOGISTICS_CONTEXT_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-146..DP-151 + I-58..I-66 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decisions": ["DP-146..DP-151 + I-58..I-67 (OWNER_DECIDED 2026-08-29)"],
+    "relation_precision_note": "Owner correction: ORDER_LOGISTICS_RELATION_READINESS = PARTIAL / PRODUCER_NOT_READY (logistics.order_id FK directly proves current schema has Logistics->Order relation shape; production relation establishment, cardinality/lifecycle, platform fact source remain NOT_READY; schema relation shape != production relation fact, I-67)",
+    "i_67": "SCHEMA_RELATION_SHAPE_DOES_NOT_BY_ITSELF_ESTABLISH_A_PRODUCTION_RELATION_FACT",
+    "disposition": "DEFER_TO_REAL_ORDER_LOGISTICS_INGESTION_AND_RELATION_EVIDENCE",
+    "acceptance": {
+      "no_migration": "conversation.order_id / relation|event tables / Order/Logistics business columns / v11 migration NOT authorized; schema stays v10",
+      "no_ui": "no Order/Logistics Context UI / service / card / OMS/WMS abstraction",
+      "no_wiring_for_readiness": "orders/logistics repositories NOT wired into production Main merely for readiness",
+      "no_legacy_upgrade": "legacy order_context DOM snapshot / message order refs / tracking refs / reference UI fragments NOT upgraded to authoritative Order/Logistics facts",
+      "no_cross_account_identity_guess": "no cross-PlatformAccount Order/Logistics identity dedup",
+      "no_implicit_current_order": "no implicit current order auto-selection",
+      "no_state_as_message_time": "no current status presented as message-time state",
+      "no_synthetic_tracking_history": "no tracking-event history synthesized from current logistics state"
+    },
+    "reopen_triggers": [
+      "real Order producer",
+      "real Logistics producer",
+      "verified Conversation->Order relation producer",
+      "verified Order->Logistics production relation path",
+      "first real platform integration is about to consume this Context"
+    ],
+    "reopen_order": "producer -> identity semantics -> verified relations -> typed temporal facts -> persistence -> authorized projection -> presentation; Owner separately decides migration",
+    "controller_pass_date": "2026-08-29",
     "decision_package": {
       "no_migration": "conversation.order_id / relation|event table / Order/Logistics business fields / v11 migration NOT authorized; schema stays v10",
       "no_ui": "no Order/Logistics Context UI / service / card / OMS/WMS abstraction; orders/logistics repos NOT wired into Main for readiness",
       "defer": "DEFER until real production Order/Logistics producer + verified Conversation->Order and Order->Logistics relation path; then minimal prerequisite/migration proposal"
     },
-    "next_per_roadmap": "Owner decides migration prerequisite vs DEFER vs minimal typed implementation; no Order/Logistics Context product implementation without PASS; no next SHEEP",
+    "next_per_roadmap": "CLOSED (DEFER_TO_REAL_ORDER_LOGISTICS_INGESTION_AND_RELATION_EVIDENCE); next = SHEEP-070 (Ownership / Handoff — Claim / Release UX) proposal",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   },
   "fast_sheep_order_logistics_context_fact_readiness_decisions": {
-    "status": "ADOPTED_PENDING_OWNER_PASS",
+    "status": "OWNER_DECIDED",
     "decided_date": "2026-08-29",
+    "disposition": "DEFER_TO_REAL_ORDER_LOGISTICS_INGESTION_AND_RELATION_EVIDENCE",
+    "relation_precision_note": "ORDER_LOGISTICS_RELATION_READINESS = PARTIAL / PRODUCER_NOT_READY (schema relation shape != production relation fact, I-67)",
     "dp_146": "ORDER_LOGISTICS_CONTEXT_RESOLUTION_STARTS_FROM_THE_AUTHORIZED_CONVERSATION",
     "dp_147": "ORDER_AND_LOGISTICS_IDENTITIES_REMAIN_OPAQUE_AND_SCOPE_BOUND_UNTIL_PRODUCER_SEMANTICS_ARE_VERIFIED",
     "dp_148": "ORDER_LOGISTICS_CONTEXT_IS_A_CONVERSATION_BOUND_FACT_PROJECTION_NOT_AN_ORDER_MANAGEMENT_MODEL",
@@ -1853,7 +1877,8 @@
     "i_64": "MULTIPLE_RELATED_ORDERS_MUST_NOT_BE_COLLAPSED_TO_AN_IMPLICIT_CURRENT_ORDER_WITHOUT_VERIFIED_SELECTION_AUTHORITY",
     "i_65": "TRACKING_REFERENCE_IS_NOT_LOGISTICS_IDENTITY_WITHOUT_VERIFIED_PLATFORM_SEMANTICS",
     "i_66": "CURRENT_LOGISTICS_STATE_MUST_NOT_BE_EXPANDED_INTO_SYNTHETIC_TRACKING_EVENT_HISTORY",
-    "readiness": "CONV_RELATION=NOT_READY / ORDER_LOGISTICS_RELATION=NOT_READY / ORDER_IDENTITY=NOT_READY|PLATFORM_EVIDENCE_REQUIRED / LOGISTICS_IDENTITY=NOT_READY|PLATFORM_EVIDENCE_REQUIRED / ORDER_IDENTITY_FACT=PARTIAL / ORDER_BUSINESS_FACT=NOT_READY / LOGISTICS_FACT=NOT_READY / TEMPORAL_SEMANTICS=NOT_READY / INGESTION_PRODUCER=NOT_READY / PRESENTATION=NOT_READY / IMPLEMENTATION=NOT_READY",
-    "next": "Owner decides migration prerequisite vs DEFER vs minimal typed implementation; no next SHEEP without PASS"
+    "i_67": "SCHEMA_RELATION_SHAPE_DOES_NOT_BY_ITSELF_ESTABLISH_A_PRODUCTION_RELATION_FACT",
+    "readiness": "CONV_RELATION=NOT_READY / ORDER_LOGISTICS_RELATION=PARTIAL|PRODUCER_NOT_READY / ORDER_IDENTITY=NOT_READY|PLATFORM_EVIDENCE_REQUIRED / LOGISTICS_IDENTITY=NOT_READY|PLATFORM_EVIDENCE_REQUIRED / ORDER_IDENTITY_FACT=PARTIAL / ORDER_BUSINESS_FACT=NOT_READY / LOGISTICS_FACT=NOT_READY / TEMPORAL_SEMANTICS=NOT_READY / INGESTION_PRODUCER=NOT_READY / PRESENTATION=NOT_READY / IMPLEMENTATION=NOT_READY",
+    "next": "SHEEP-070 (Ownership / Handoff — Claim / Release UX) proposal — awaiting Owner approval; not auto-executed"
   }
 }
