@@ -1741,6 +1741,51 @@
     "i_50": "CONVERSATION_CUSTOMER_RELATION_MUST_BE_ESTABLISHED_BY_VERIFIED_PRODUCER_FACTS_NOT_PRESENTATION_INFERENCE",
     "disposition": "DEFER_TO_REAL_CUSTOMER_INGESTION_AND_RELATION_EVIDENCE",
     "next": "SHEEP-068 (Product Context) proposal — awaiting Owner approval; no SHEEP-069 without PASS"
+  },
+  "sheep_068": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "NOT_READY / DEFER (Product Context Fact-Readiness; no schema migration, no UI)",
+    "closed_date_candidate": null,
+    "report": "reports\\SHEEP-068-report.json",
+    "review_doc": "docs\\fast-sheep-product-context-readiness.md",
+    "readiness": {
+      "PRODUCT_CONVERSATION_RELATION_READINESS": "NOT_READY (no relation; I-51/I-52)",
+      "PRODUCT_IDENTITY_SEMANTICS_READINESS": "NOT_READY / PLATFORM_EVIDENCE_REQUIRED (DP-142)",
+      "PRODUCT_SKU_IDENTITY_SEMANTICS_READINESS": "NOT_READY / PLATFORM_EVIDENCE_REQUIRED (I-53)",
+      "PRODUCT_IDENTITY_FACT_READINESS": "PARTIAL (domain_products/skus identity-only; not wired in Main)",
+      "PRODUCT_CATALOG_FACT_READINESS": "NOT_READY (DP-143 no PIM/catalog)",
+      "PRODUCT_CATALOG_TEMPORAL_SEMANTICS_READINESS": "NOT_READY (DP-145/I-54)",
+      "PRODUCT_INGESTION_PRODUCER_READINESS": "NOT_READY",
+      "PRODUCT_CONTEXT_PRESENTATION_READINESS": "NOT_READY (I-55/I-56/I-57)",
+      "PRODUCT_CONTEXT_IMPLEMENTATION_READINESS": "NOT_READY"
+    },
+    "decisions": ["DP-141..DP-145 + I-51..I-57 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decision_package": {
+      "no_migration": "conversation.product_id / relation table / domain_products catalog fields / v11 migration NOT authorized",
+      "no_ui": "no Product Context UI / service / card / catalog abstraction",
+      "defer": "DEFER until real production Product producer + Conversation relation path; then minimal prerequisite/migration proposal"
+    },
+    "next_per_roadmap": "Owner decides migration prerequisite vs DEFER vs minimal typed implementation; no Product Context product implementation without PASS; no SHEEP-069",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
+  },
+  "fast_sheep_product_context_fact_readiness_decisions": {
+    "status": "ADOPTED_PENDING_OWNER_PASS",
+    "decided_date": "2026-08-29",
+    "dp_141": "PRODUCT_CONTEXT_RESOLUTION_STARTS_FROM_THE_AUTHORIZED_CONVERSATION",
+    "dp_142": "PRODUCT_AND_SKU_IDENTITIES_REMAIN_OPAQUE_AND_SCOPE_BOUND_UNTIL_PRODUCER_SEMANTICS_ARE_VERIFIED",
+    "dp_143": "PRODUCT_CONTEXT_IS_A_CONVERSATION_BOUND_FACT_PROJECTION_NOT_A_CATALOG_MODEL",
+    "dp_144": "PRODUCT_CONTEXT_IS_DISTINCT_FROM_MESSAGE_RICH_PAYLOADS_AND_ORDER_CONTEXT",
+    "dp_145": "MUTABLE_PRODUCT_FACTS_REQUIRE_EXPLICIT_OBSERVATION_OR_SOURCE_TIME_SEMANTICS",
+    "i_51": "MESSAGE_PRODUCT_REFERENCE_OR_ORDER_ITEM_DOES_NOT_IMPLICITLY_ESTABLISH_CONVERSATION_PRODUCT_CONTEXT",
+    "i_52": "CONVERSATION_PRODUCT_RELATION_MUST_BE_ESTABLISHED_BY_VERIFIED_PRODUCER_FACTS_NOT_PRESENTATION_INFERENCE",
+    "i_53": "PRODUCT_EXTERNAL_REFERENCE_AND_SKU_EXTERNAL_REFERENCE_ARE_DISTINCT_IDENTITY_DOMAINS",
+    "i_54": "CURRENT_PRODUCT_STATE_MUST_NOT_BE_PRESENTED_AS_MESSAGE_TIME_PRODUCT_STATE_WITHOUT_SNAPSHOT_EVIDENCE",
+    "i_55": "ABSENT_CONVERSATION_PRODUCT_RELATION_MUST_NOT_BE_PRESENTED_AS_AN_UNKNOWN_PRODUCT",
+    "i_56": "PRODUCT_CONTEXT_READS_MUST_BE_ANCHORED_TO_THE_AUTHORIZED_ACTIVE_CONVERSATION",
+    "i_57": "PRODUCT_BUSINESS_FACTS_ARE_NOT_EMITTED_TO_LOGS_OR_TELEMETRY_BY_DEFAULT",
+    "readiness": "RELATION=NOT_READY / PRODUCT_IDENTITY=NOT_READY|PLATFORM_EVIDENCE_REQUIRED / SKU_IDENTITY=NOT_READY|PLATFORM_EVIDENCE_REQUIRED / IDENTITY_FACT=PARTIAL / CATALOG_FACT=NOT_READY / CATALOG_TEMPORAL=NOT_READY / INGESTION_PRODUCER=NOT_READY / PRESENTATION=NOT_READY / IMPLEMENTATION=NOT_READY",
+    "next": "Owner decides migration prerequisite vs DEFER vs minimal typed implementation; no SHEEP-069 without PASS"
   }
 }
-
