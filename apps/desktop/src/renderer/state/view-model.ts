@@ -131,6 +131,37 @@ export function clearTimeline(state: UiState): UiState {
   return { ...state, timelineConversationId: null, timelineMessages: [], timelineLoading: false, timelineError: null };
 }
 
+// ---- SHEEP-063 REPAIR (I-7 concretization / I-26): Active Conversation presentation ----
+
+/** Authoritative active-conversation presentation facts (I-7/I-26). Only
+ *  conversation-bound trusted facts: the active conversation identity (navigation
+ *  anchor, DP-69), store_id from the ACTIVE queue item (Main-projected conversation
+ *  fact), and viewModel.conversation facts ONLY when they match the active identity.
+ *  Never falls back to selectedShop / Queue Scope / other ambient state. */
+export interface ActiveConversationPresentation {
+  conversationId: string;
+  storeId: string | null;
+  state: string | null;
+  buyer: string | null;
+}
+
+/** I-26 WORKSPACE_ACTIVE_CONVERSATION_PRESENTATION_MUST_NOT_FALL_BACK_TO_AMBIENT_SCOPE_FACTS:
+ *  returns the active-conversation presentation, or null when there is NO active
+ *  conversation (activeConversationId == null). A non-null result always reflects
+ *  the active conversation identity — never a queue/selected-shop ambient fact. */
+export function activeConversationPresentation(state: UiState): ActiveConversationPresentation | null {
+  if (state.activeConversationId === null) return null;
+  const item = state.queueItems.find((i) => i.conversation_id === state.activeConversationId);
+  const conv = state.viewModel?.conversation;
+  const trustedConv = conv && conv.conversation_id === state.activeConversationId ? conv : null;
+  return {
+    conversationId: state.activeConversationId,
+    storeId: item?.store_id ?? null,
+    state: trustedConv?.state ?? null,
+    buyer: trustedConv?.buyer ?? null,
+  };
+}
+
 export function setPendingCommand(state: UiState, command: UiState["pendingCommand"]): UiState {
   return { ...state, pendingCommand: command };
 }

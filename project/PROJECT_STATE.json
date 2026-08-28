@@ -1216,8 +1216,9 @@
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged; reader-progress still required; never auto-READY)"
     },
     "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28) + SHEEP-063-PR2-PR1 (closed 2026-08-28) + SHEEP-063-PR2 (closed 2026-08-28 incl. REPAIR I-25) — all PASS; BLOCKED audit history retained",
-    "decisions": ["DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 (executed; OWNER_DECIDED pending Owner PASS)"],
-    "next_per_roadmap": "Awaiting Owner PASS (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 + visual review); no SHEEP-064 without PASS",
+    "decisions": ["DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 + I-26 (executed; OWNER_DECIDED pending Owner PASS)"],
+    "repair_applied": "REPAIR 2026-08-28 (Active Conversation presentation consistency; I-7 concretization / I-26 WORKSPACE_ACTIVE_CONVERSATION_PRESENTATION_MUST_NOT_FALL_BACK_TO_AMBIENT_SCOPE_FACTS): header/conversation-panel use activeConversationPresentation pure helper (identity anchor + store_id from active queue item + state/buyer only when viewModel.conversation matches); no Queue Scope / selected shop ambient backfill; header & Timeline same active identity; no-active only when activeConversationId==null; scope-change does not rewrite active header; populated-active + empty-active visual evidence re-captured; desktop 285/285",
+    "next_per_roadmap": "Awaiting Owner PASS (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 + I-26 + visual review); no SHEEP-064 without PASS",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   },
@@ -1359,5 +1360,6 @@
     "repair_acceptance": "missing context -> desktop.workspace_unavailable (not empty success); authorized 0-row -> legitimate Empty; renderer distinguishes unavailable/error vs no-work Empty; cross-merchant NOT_FOUND hiding kept; schema v9 unchanged; desktop 269/269 + workspace + m6 smoke + boundary + secrets PASS"
   }
 }
+
 
 

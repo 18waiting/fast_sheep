@@ -37,7 +37,15 @@
 - 回归：desktop 280/280、workspace typecheck+test 全 PASS、m6 Electron smoke PASS（external_network_calls=0）、check:boundary + secret scan PASS。
 - **Visual evidence**（真实 persistence/ingestion→Main→typed IPC→Renderer）：`sheep-063-timeline-populated.png`（含 customer/agent + 时间未知 + incomplete historical）、`sheep-063-timeline-empty.png`（production-real no-work empty）、`sheep-063-timeline-switch.png`（active 切换后旧 facts 无残留）。
 
-## 4. 边界（未实现/未改动）
+## 4. REPAIR（Owner 2026-08-28）：Active Conversation presentation consistency（I-7 具体化 / 新增 I-26）
+
+- **I-26** `WORKSPACE_ACTIVE_CONVERSATION_PRESENTATION_MUST_NOT_FALL_BACK_TO_AMBIENT_SCOPE_FACTS`（I-7 具体化）：active conversation 存在时，Workspace header / conversation panel 必须反映 authoritative active identity；Store/Platform 等 header facts 仅来自 active Conversation 的可信 projection（active queue item 的 store_id、匹配 active identity 的 viewModel.conversation），**不得从 Queue Scope / selected shop / 其它 ambient state 回填**；事实不可用时省略或明确 未知。
+- 修复：新增 `activeConversationPresentation(state)` 纯 helper（identity anchor + store_id from active queue item + state/buyer only when viewModel.conversation matches）；`workbench-header.ts` / `conversation-panel.ts` 重构为 active 分支（`当前会话: <id>`）与 no-active 分支（`activeConversationId == null` 才显示 无会话/暂无活动会话）。
+- 不变量：header 与 Timeline 始终同一 active identity（无 header=c1/timeline=c2 mixed context）；Queue Store/Platform Scope 改变不改写 active header identity。
+- 测试（5 guard）：active exists != no-conversation；c1→c2 header/timeline 一致；scope-change 不改 active header；no-active 仅 activeConversationId==null；组件使用 helper 且 no-conversation copy 以 active===null 为门。
+- Visual evidence（重捕获，最小两张）：`sheep-063-timeline-populated.png` / `sheep-063-timeline-empty.png`（header 显示 active 会话 identity）。
+
+## 5. 边界（未实现/未改动）
 
 - 未实现 Composer、Attachments（SHEEP-065）、Unread、Priority、Risk、真实平台 producer、sync/Outbox、auth/cloud/session/multi-merchant selector、最终 Conversation-centered Workspace redesign。
 - `UNREAD_FACT_READINESS = PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS`（不变；未实现 unread boolean/count）。

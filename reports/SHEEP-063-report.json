@@ -4,7 +4,7 @@
   "controller_decision": "PENDING_OWNER_PASS",
   "phase": "Phase 4",
   "milestone": "M4.2",
-  "summary": "Message Timeline：在真实 Message Fact path（PR1）+ Main-owned Workspace Merchant authorization path（PR2/PR2-PR1）上实施 conversations.listMessages typed IPC（DP-91/I-18 授权先行、DP-84 只读 normalized production facts、I-12 排序）、purpose-built TimelineMessageView（无 observed_at/external metadata）、renderer timeline 状态 + I-14 stale guard + DP-89/I-7 active 切换清空、message-timeline 组件（textContent only、DP-92 presentability、DP-93 时间展示、Conversation Main 主内容 surface）、preload/desktop-ipc typed surface、styles；visual evidence（populated / empty / switch 无残留）经真实 persistence→Main→IPC→Renderer 路径；desktop 280/280、workspace typecheck+test PASS、m6 smoke PASS（external_network_calls=0）、boundary+secrets PASS",
+  "summary": "Message Timeline：在真实 Message Fact path（PR1）+ Main-owned Workspace Merchant authorization path（PR2/PR2-PR1）上实施 conversations.listMessages typed IPC（DP-91/I-18 授权先行、DP-84 只读 normalized production facts、I-12 排序）、purpose-built TimelineMessageView（无 observed_at/external metadata）、renderer timeline 状态 + I-14 stale guard + DP-89/I-7 active 切换清空、message-timeline 组件（textContent only、DP-92 presentability、DP-93 时间展示、Conversation Main 主内容 surface）、preload/desktop-ipc typed surface、styles；visual evidence（populated / empty / switch 无残留）经真实 persistence→Main→IPC→Renderer 路径；desktop 280/280、workspace typecheck+test PASS、m6 smoke PASS（external_network_calls=0）、boundary+secrets PASS；REPAIR：Active Conversation presentation consistency（I-7 具体化 / I-26）——header/conversation-panel 以 activeConversationPresentation 纯 helper 反映 active identity，不再显示 无会话/暂无活动会话；不依赖 Queue Scope / selected shop ambient；header 与 Timeline 同一 identity；scope-change 不改 active header；重捕获 populated-active + empty-active 两张最小证据",
   "completed_requirements": 15,
   "total_requirements": 15,
   "owner_tightening": {
@@ -53,8 +53,8 @@
     "inferred": []
   },
   "tests": [
-    "desktop build/typecheck; desktop tests 280/280 (11 new guards: timeline-query 5 + renderer-timeline 6)",
-    "workspace typecheck / test（全部 PASS；desktop-ipc channel registry 41->42）",
+    "desktop build/typecheck; desktop tests 285/285 (REPAIR added 5 active-conversation presentation guards)",
+    "workspace typecheck / test（全部 PASS）",
     "m6 Electron renderer smoke（PASS，external_network_calls=0）",
     "check:boundary PASS；secret scan PASS"
   ],
@@ -98,5 +98,26 @@
   "old_rebuild_modified": false,
   "original_reference_modified": false,
   "secrets_detected": false,
-  "next_stage_not_executed": true
+  "next_stage_not_executed": true,
+  "repair_applied": {
+    "controller_decision": "REPAIR -> re-submitted (Active Conversation presentation consistency; I-7 concretization / new I-26)",
+    "i26": "WORKSPACE_ACTIVE_CONVERSATION_PRESENTATION_MUST_NOT_FALL_BACK_TO_AMBIENT_SCOPE_FACTS",
+    "fix": "activeConversationPresentation(state) pure helper (identity anchor + store_id from active queue item + state/buyer only when viewModel.conversation matches active); workbench-header.ts + conversation-panel.ts active branch (当前会话: <id>) vs no-active branch (activeConversationId == null only); no ambient Queue Scope / selected shop backfill",
+    "invariants": [
+      "header and Timeline always share the active conversation identity (no header=c1/timeline=c2 mixed context)",
+      "Queue Store/Platform Scope change does not rewrite the active header identity",
+      "no-active state only when activeConversationId == null"
+    ],
+    "tests_added": [
+      "active exists != no-conversation",
+      "c1->c2 header presentation follows active identity (no mixed context)",
+      "scope-change does not change active header identity",
+      "no-active only when activeConversationId == null",
+      "header/conversation-panel use the helper; no-conversation copy gated on active === null"
+    ],
+    "visual_evidence_recaptured": [
+      "reports\\visual-evidence\\sheep-063-timeline-populated.png (active header)",
+      "reports\\visual-evidence\\sheep-063-timeline-empty.png (active header)"
+    ]
+  }
 }
