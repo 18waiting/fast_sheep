@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
   "last_closed_task": "SHEEP-070",
-  "current_task": "SHEEP-071 (AI / Human Ownership State — Fact-Readiness — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
-  "next_action": "SHEEP-071 (AI / Human Ownership State) proposal — awaiting Owner approval; not auto-executed",
+  "current_task": "SHEEP-071 (AI / Human Ownership State — Fact-Readiness executed; NOT_READY/DEFER; awaiting Owner disposition; not auto-executed)",
+  "next_action": "SHEEP-071 (AI / Human Ownership State) Fact-Readiness — awaiting Owner disposition; no next SHEEP without PASS",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1953,5 +1953,56 @@
     "i_76": "OWNERSHIP_MUTATION_REQUIRES_AN_ATOMIC_EXPECTED_CURRENT_STATE_PRECONDITION",
     "readiness": "STATE_FACT=PARTIAL / HOLDER_SEMANTICS=NOT_READY / ACTOR_SUBJECT=NOT_READY / AUTHORITY=NOT_READY / TRANSITION=NOT_READY / CONCURRENCY_CONTROL=NOT_READY / PERSISTENCE=PARTIAL / IPC=NOT_READY / SNAPSHOT_PRESENTATION=NOT_READY / ACTION_PRESENTATION=NOT_READY / UX_IMPLEMENTATION=NOT_READY",
     "next": "SHEEP-071 (AI / Human Ownership State) proposal — awaiting Owner approval; not auto-executed"
+  },
+  "sheep_071": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "NOT_READY / DEFER (AI / Human Ownership State Fact-Readiness; no schema v11, no IPC/UI/service/state machine)",
+    "closed_date_candidate": null,
+    "report": "reports\\SHEEP-071-report.json",
+    "review_doc": "docs\\fast-sheep-ai-human-ownership-readiness.md",
+    "readiness": {
+      "AI_HUMAN_OWNERSHIP_STATE_FACT_READINESS": "PARTIAL (8-state vocabulary incl AI_ACTIVE; state TEXT no CHECK; no production fact path)",
+      "OWNERSHIP_STATE_HOLDER_RELATION_READINESS": "NOT_READY (DP-161; I-81/I-82)",
+      "AI_ACTIVE_SEMANTICS_READINESS": "NOT_READY (DP-159)",
+      "AI_OWNERSHIP_HOLDER_SEMANTICS_READINESS": "NOT_READY (owner_kind=ai no identity/producer)",
+      "HUMAN_OWNERSHIP_HOLDER_SEMANTICS_READINESS": "NOT_READY (DP-160)",
+      "CURRENT_OPERATOR_SUBJECT_READINESS": "NOT_READY (no trusted human subject; I-68)",
+      "OWNERSHIP_AUTOMATION_LEVEL_SEPARATION_READINESS": "PARTIAL (I-77 separation maintained)",
+      "ORCHESTRATOR_PROJECTION_READINESS": "NOT_READY (M5 runtime control facts; I-78 no bridge producer)",
+      "OWNERSHIP_SNAPSHOT_PRODUCER_READINESS": "NOT_READY (no production writer; test-only)",
+      "OWNERSHIP_CURRENTNESS_SEMANTICS_READINESS": "NOT_READY (DP-162 no new schema)",
+      "OWNERSHIP_PERSISTENCE_READINESS": "PARTIAL (snapshot table+repo tested; not wired; I-69)",
+      "AI_HUMAN_OWNERSHIP_IPC_READINESS": "NOT_READY (no typed channel)",
+      "AI_HUMAN_OWNERSHIP_PRESENTATION_READINESS": "NOT_READY (I-79/I-80/I-82/I-83)",
+      "AI_HUMAN_OWNERSHIP_IMPLEMENTATION_READINESS": "NOT_READY"
+    },
+    "decisions": ["DP-158..DP-162 + I-77..I-83 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decision_package": {
+      "no_migration": "owner_ai_id / timestamp|currentness fields / state|holder CHECK / transition|event|audit tables / v11 migration NOT authorized; schema stays v10",
+      "no_ipc_ui_service": "no ownership IPC/UI/service/state machine; no Main wiring; no M5->ownership bridge producer; no ai_agent/model identity; no Member/Auth/Capability/ResourceScope runtime",
+      "defer": "DEFER until trusted operator subject + verified member reference semantics + production ownership producer + currentness semantics + state-holder relation evidence; then minimal prerequisite"
+    },
+    "next_per_roadmap": "Owner decides DEFER vs minimal prerequisite vs read-only projection evidence; no AI/Human Ownership product implementation without PASS; no next SHEEP",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
+  },
+  "fast_sheep_ai_human_ownership_fact_readiness_decisions": {
+    "status": "ADOPTED_PENDING_OWNER_PASS",
+    "decided_date": "2026-08-29",
+    "dp_158": "AI_HUMAN_OWNERSHIP_STATE_IS_A_FACT_DIMENSION_DISTINCT_FROM_AUTOMATION_LEVEL_AND_AI_SEND_AUTHORITY",
+    "dp_159": "AI_ACTIVE_STATE_REQUIRES_EXPLICIT_PRODUCER_AND_CURRENTNESS_SEMANTICS",
+    "dp_160": "HUMAN_OWNERSHIP_HOLDER_FACT_REQUIRES_VERIFIED_MEMBER_REFERENCE_SEMANTICS",
+    "dp_161": "OWNERSHIP_WORKFLOW_STATE_AND_HOLDER_KIND_ARE_ORTHOGONAL_FACT_DIMENSIONS_UNTIL_RELATION_SEMANTICS_ARE_EVIDENCED",
+    "dp_162": "CURRENT_OWNERSHIP_PRESENTATION_REQUIRES_DEFINED_PRODUCER_AND_FRESHNESS_SEMANTICS",
+    "i_77": "AI_ACTIVE_OR_HUMAN_STATE_NAME_DOES_NOT_IMPLY_AUTOMATION_POLICY_RESULT",
+    "i_78": "M5_ORCHESTRATOR_MODE_COUNTDOWN_TAKEOVER_STATUS_ARE_NOT_OWNERSHIP_FACTS_WITHOUT_PROJECTION_EVIDENCE",
+    "i_79": "ABSENT_OWNERSHIP_ROW_MUST_NOT_BE_PRESENTED_AS_AI_ACTIVE_OR_HUMAN_STATE",
+    "i_80": "AI_HUMAN_OWNERSHIP_READS_ARE_ANCHORED_TO_THE_AUTHORIZED_ACTIVE_CONVERSATION",
+    "i_81": "AI_ACTIVE_DOES_NOT_IMPLY_OWNER_KIND_AI_AND_OWNER_KIND_AI_DOES_NOT_IMPLY_AI_ACTIVE",
+    "i_82": "NON_AI_ACTIVE_STATE_MUST_NOT_BE_CLASSIFIED_AS_HUMAN_OWNERSHIP_WITHOUT_VERIFIED_HOLDER_FACTS",
+    "i_83": "OWNERSHIP_AI_ACTIVE_MUST_NOT_BE_PRESENTED_AS_REAL_TIME_AI_GENERATION_ACTIVITY_WITHOUT_RUNTIME_ACTIVITY_EVIDENCE",
+    "readiness": "STATE_FACT=PARTIAL / STATE_HOLDER_RELATION=NOT_READY / AI_ACTIVE_SEMANTICS=NOT_READY / AI_OWNERSHIP_HOLDER=NOT_READY / HUMAN_OWNERSHIP_HOLDER=NOT_READY / CURRENT_OPERATOR_SUBJECT=NOT_READY / AUTOMATION_LEVEL_SEPARATION=PARTIAL / ORCHESTRATOR_PROJECTION=NOT_READY / SNAPSHOT_PRODUCER=NOT_READY / CURRENTNESS=NOT_READY / PERSISTENCE=PARTIAL / IPC=NOT_READY / PRESENTATION=NOT_READY / IMPLEMENTATION=NOT_READY",
+    "next": "Owner decides DEFER vs minimal prerequisite vs read-only projection evidence; no next SHEEP without PASS"
   }
 }
