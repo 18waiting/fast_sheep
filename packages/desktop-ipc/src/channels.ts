@@ -4,6 +4,7 @@ export const IPC = {
   listShops: "shops.list",
   snapshot: "orchestrator.snapshot",
   conversationsList: "conversations.list",
+  conversationsListMessages: "conversations.listMessages",
   workerStatus: "worker.status",
   setMode: "orchestrator.set_mode",
   manualSend: "orchestrator.manual_send",
@@ -45,7 +46,7 @@ export const IPC = {
 
 export type IpcChannel = (typeof IPC)[keyof typeof IPC];
 
-export const QUERY_CHANNELS: readonly string[] = [IPC.bootstrap, IPC.listShops, IPC.snapshot, IPC.workerStatus, IPC.conversationsList, IPC.platformStatus, IPC.jobsList, IPC.jobsGet, IPC.legacyImportStatus];
+export const QUERY_CHANNELS: readonly string[] = [IPC.bootstrap, IPC.listShops, IPC.snapshot, IPC.workerStatus, IPC.conversationsList, IPC.conversationsListMessages, IPC.platformStatus, IPC.jobsList, IPC.jobsGet, IPC.legacyImportStatus];
 export const COMMAND_CHANNELS: readonly string[] = [IPC.setMode, IPC.manualSend, IPC.noSaveSend, IPC.cancel, IPC.focus, IPC.platformActivateShop, IPC.platformSetViewBounds, IPC.platformReload, IPC.jobsCancel, IPC.learningStart, IPC.reviewPropose, IPC.reviewApply, IPC.reviewRestore, IPC.auditDecide, IPC.optimizationPropose, IPC.optimizationApply, IPC.legacyImportSelect, IPC.legacyImportScan, IPC.legacyImportPlan, IPC.legacyImportDryRun, IPC.legacyImportApply, IPC.legacyImportCancel];
 export const EVENT_CHANNELS: readonly string[] = [IPC.orchestratorEvent, IPC.workerStatusChanged, IPC.shopsChanged, IPC.platformStatusChanged, IPC.jobsChanged, IPC.learningChanged, IPC.reviewChanged, IPC.auditChanged, IPC.optimizationChanged, IPC.legacyImportChanged];
 export const ALL_CHANNELS: readonly string[] = [...QUERY_CHANNELS, ...COMMAND_CHANNELS, ...EVENT_CHANNELS];
@@ -53,3 +54,4 @@ export const ALL_CHANNELS: readonly string[] = [...QUERY_CHANNELS, ...COMMAND_CH
 export function isAllowedChannel(channel: string): boolean {
   return (ALL_CHANNELS as readonly string[]).includes(channel);
 }
+

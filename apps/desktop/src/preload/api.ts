@@ -29,6 +29,8 @@ import type {
   LegacyImportPlanRequest,
   LegacyImportApplyAction,
   LegacyImportStatusView,
+  ConversationTimelineRequest,
+  ConversationTimelineResult,
 } from "@fastwork/desktop-ipc";
 
 /** Minimal ipcRenderer.invoke-compatible adapter (dependency injection). */
@@ -40,6 +42,7 @@ export interface DesktopApiInvokeSurface {
   listShops(): Promise<DesktopResult<{ shops: Array<{ shop_id: string; name: string; type: string; enabled: boolean }> }>>;
   getSnapshot(req: { shop_id?: string }): Promise<DesktopResult<WorkbenchViewModel>>;
   getWorkerStatus(): Promise<DesktopResult<WorkerStatusView>>;
+  listConversationMessages(req: ConversationTimelineRequest): Promise<DesktopResult<ConversationTimelineResult>>;
   setMode(req: SetModeRequest): Promise<DesktopResult<{ ok: boolean }>>;
   manualSend(req: ManualSendRequest): Promise<DesktopResult<{ ok: boolean }>>;
   noSaveSend(req: NoSaveSendRequest): Promise<DesktopResult<{ ok: boolean }>>;
@@ -71,6 +74,7 @@ export function createApi(invoke: InvokeFn): DesktopApiInvokeSurface {
     listShops: () => invoke(IPC.listShops) as Promise<DesktopResult<{ shops: Array<{ shop_id: string; name: string; type: string; enabled: boolean }> }>>,
     getSnapshot: (req) => invoke(IPC.snapshot, req ?? {}) as Promise<DesktopResult<WorkbenchViewModel>>,
     getWorkerStatus: () => invoke(IPC.workerStatus) as Promise<DesktopResult<WorkerStatusView>>,
+    listConversationMessages: (req: ConversationTimelineRequest) => invoke(IPC.conversationsListMessages, req) as Promise<DesktopResult<ConversationTimelineResult>>,
     setMode: (req) => invoke(IPC.setMode, req) as Promise<DesktopResult<{ ok: boolean }>>,
     manualSend: (req) => invoke(IPC.manualSend, req) as Promise<DesktopResult<{ ok: boolean }>>,
     noSaveSend: (req) => invoke(IPC.noSaveSend, req) as Promise<DesktopResult<{ ok: boolean }>>,
@@ -96,3 +100,5 @@ export function createApi(invoke: InvokeFn): DesktopApiInvokeSurface {
     cancelLegacyImport: (req) => invoke(IPC.legacyImportCancel, req) as Promise<DesktopResult<{ ok: boolean }>>,
   };
 }
+
+

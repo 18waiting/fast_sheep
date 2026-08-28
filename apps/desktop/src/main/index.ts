@@ -191,6 +191,7 @@ async function init(): Promise<void> {
     optimization: context.optimization,
     legacyImport: context.legacyImport,
     conversations: context.conversations,
+    messages: context.messages,
     stores: context.stores,
     platformAccounts: context.platformAccounts,
     // SHEEP-063-PR2 (DP-94/98): the SINGLE Main-owned merchant authority source.
@@ -276,4 +277,5 @@ app.on("web-contents-created", (_event: Electron.Event, contents: WebContents) =
   contents.setWindowOpenHandler(() => ({ action: "deny" }));
   contents.on("will-attach-webview", denyWebview);
 });
+
 

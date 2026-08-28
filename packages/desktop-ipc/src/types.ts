@@ -29,6 +29,24 @@ export type QueuePlatformFilter = "pdd" | "doudian" | "jd" | "kuaishou" | "qiann
 export interface QueueStoreOption { store_id: string; name: string }
 export interface ConversationListRequest { scope: QueueScope; platform?: QueuePlatformFilter }
 export interface ConversationListResult { items: QueueItemView[]; scope: QueueScope; platform?: QueuePlatformFilter; stores: QueueStoreOption[]; platforms: QueuePlatformFilter[] }
+
+// ---- SHEEP-063 Message Timeline typed contract ----
+/** Purpose-built timeline message view (DP-61/84/88): only facts with explicit source.
+ *  actor = conversation actor (customer|agent), NULL = unknown (DP-86/I-15/I-16);
+ *  content typed text-first (DP-88), NULL = unknown content fact; occurred_at =
+ *  source/platform time (DP-87/93), NULL = unknown. observed_at (Fast Sheep
+ *  ingestion time) and external implementation metadata are NOT exposed. */
+export interface TimelineMessageView {
+  message_id: string;
+  actor: "customer" | "agent" | null;
+  content_kind: "text" | null;
+  content_text: string | null;
+  occurred_at: string | null;
+}
+/** Renderer-supplied conversation_id is an UNTRUSTED selector (DP-91); Main authorizes
+ *  via WorkspaceMerchantContext before reading messages (I-18). */
+export interface ConversationTimelineRequest { conversation_id: string }
+export interface ConversationTimelineResult { conversation_id: string; messages: TimelineMessageView[] }
 export interface WorkbenchViewModel {
   revision: number;
   shop_summaries: ShopSummary[];
@@ -109,6 +127,7 @@ export type RequestByChannel = {
   [IPC.listShops]: undefined;
   [IPC.snapshot]: { shop_id?: string };
   [IPC.conversationsList]: ConversationListRequest;
+  [IPC.conversationsListMessages]: ConversationTimelineRequest;
   [IPC.workerStatus]: undefined;
   [IPC.setMode]: SetModeRequest;
   [IPC.manualSend]: ManualSendRequest;

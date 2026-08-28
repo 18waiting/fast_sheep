@@ -16,6 +16,8 @@ import {
   SqliteStoreRepository,
   SqlitePlatformAccountRepository,
   SqliteNormalizedConversationRepository,
+  SqliteWorkspaceIdentityBootstrap,
+  resolveOrBootstrapWorkspaceMerchantId,
 } from "../../packages/persistence/dist/index.js";
 import { createWorkerBackedMainContext } from "../../apps/desktop/dist/main/worker-runtime.js";
 import { registerIpc } from "../../apps/desktop/dist/main/ipc/register-ipc.js";
@@ -40,22 +42,25 @@ const fakeWorkerClient = { request: async () => ({ ok: true, data: {} }) };
 
 function seedEvidence(dbRoot) {
   const ctx = openDatabase(dbRoot);
+  // SHEEP-063-PR2-PR1/PR2: trusted workspace merchant identity FIRST (I-20/I-21);
+  // all evidence identity lives under the workspace merchant so the queue shows it.
+  const wsId = resolveOrBootstrapWorkspaceMerchantId(new SqliteWorkspaceIdentityBootstrap(ctx.conn));
   const merchants = new SqliteMerchantRepository(ctx.conn);
   const stores = new SqliteStoreRepository(ctx.conn);
   const accounts = new SqlitePlatformAccountRepository(ctx.conn);
-  merchants.save({ id: "m-A", name: "merchant-A" });
-  stores.save({ id: "shop-test-1", merchantId: "m-A", name: "测试店铺A", platform: "pdd" });
-  stores.save({ id: "shop-test-2", merchantId: "m-A", name: "测试店铺B", platform: "pdd" });
-  stores.save({ id: "shop-doudian-1", merchantId: "m-A", name: "抖店测试店铺", platform: "doudian" });
-  accounts.save({ id: "pa-shop-test-1", merchantId: "m-A", platform: "pdd" });
-  accounts.save({ id: "pa-shop-test-2", merchantId: "m-A", platform: "pdd" });
-  accounts.save({ id: "pa-shop-doudian-1", merchantId: "m-A", platform: "doudian" });
+  stores.save({ id: "shop-test-1", merchantId: wsId, name: "测试店铺A", platform: "pdd" });
+  stores.save({ id: "shop-test-2", merchantId: wsId, name: "测试店铺B", platform: "pdd" });
+  stores.save({ id: "shop-doudian-1", merchantId: wsId, name: "抖店测试店铺", platform: "doudian" });
+  accounts.save({ id: "pa-shop-test-1", merchantId: wsId, platform: "pdd" });
+  accounts.save({ id: "pa-shop-test-2", merchantId: wsId, platform: "pdd" });
+  accounts.save({ id: "pa-shop-doudian-1", merchantId: wsId, platform: "doudian" });
   const conversations = new SqliteNormalizedConversationRepository(ctx.conn);
   const ingestion = createConversationIngestion(conversations);
-  ingestion.saveNormalizedConversation({ id: "conv-1001", merchantId: "m-A", storeId: "shop-test-1", platformAccountId: "pa-shop-test-1", externalRef: null });
-  ingestion.saveNormalizedConversation({ id: "conv-1002", merchantId: "m-A", storeId: "shop-test-1", platformAccountId: "pa-shop-test-1", externalRef: null });
-  ingestion.saveNormalizedConversation({ id: "conv-1003", merchantId: "m-A", storeId: "shop-test-2", platformAccountId: "pa-shop-test-2", externalRef: null });
-  ingestion.saveNormalizedConversation({ id: "conv-1004", merchantId: "m-A", storeId: "shop-doudian-1", platformAccountId: "pa-shop-doudian-1", externalRef: null });
+  ingestion.saveNormalizedConversation({ id: "conv-1001", merchantId: wsId, storeId: "shop-test-1", platformAccountId: "pa-shop-test-1", externalRef: null });
+  ingestion.saveNormalizedConversation({ id: "conv-1002", merchantId: wsId, storeId: "shop-test-1", platformAccountId: "pa-shop-test-1", externalRef: null });
+  ingestion.saveNormalizedConversation({ id: "conv-1003", merchantId: wsId, storeId: "shop-test-2", platformAccountId: "pa-shop-test-2", externalRef: null });
+  ingestion.saveNormalizedConversation({ id: "conv-1004", merchantId: wsId, storeId: "shop-doudian-1", platformAccountId: "pa-shop-doudian-1", externalRef: null });
+  return wsId;
 }
 
 app.setName("fast_sheep");
@@ -94,8 +99,10 @@ app.whenReady().then(async () => {
       optimization: context.optimization,
       legacyImport: context.legacyImport,
       conversations: context.conversations,
+      messages: context.messages,
       stores: context.stores,
-      selectedShopId: () => context.projection.selectedShopId(),
+      platformAccounts: context.platformAccounts,
+      workspaceMerchant: context.workspaceMerchant,
     });
     await win.loadFile(RENDERER_HTML);
     const deadline = Date.now() + 20000;
@@ -158,3 +165,4 @@ app.whenReady().then(async () => {
   try { rmSync(cleanupRoot, { recursive: true, force: true }); } catch { }
   app.exit(0);
 });
+

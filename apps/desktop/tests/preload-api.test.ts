@@ -6,6 +6,7 @@ import { IPC } from "@fastwork/desktop-ipc";
 const EXPECTED = [
   ["bootstrap", IPC.bootstrap, []],
   ["listShops", IPC.listShops, []],
+  ["listConversationMessages", IPC.conversationsListMessages, [{ conversation_id: "c1" }]],
   ["getSnapshot", IPC.snapshot, [{ shop_id: "s1" }]],
   ["getWorkerStatus", IPC.workerStatus, []],
   ["setMode", IPC.setMode, [{ shop_id: "s1", conversation_id: "c1", mode: "full_auto" }]],
@@ -22,7 +23,7 @@ const EXPECTED = [
   ["optimizationAction", IPC.optimizationPropose, [{ action: "propose" }]],
 ] as const;
 
-test("preload api maps all 16 invoke methods to the exact typed channels", async () => {
+test("preload api maps all 17 invoke methods to the exact typed channels", async () => {
   const calls: Array<{ channel: string; payload: unknown }> = [];
   const api = createApi(async (channel, payload) => {
     calls.push({ channel, payload });
@@ -41,7 +42,7 @@ test("preload api never exposes raw ipcRenderer or generic invoke", () => {
   assert.deepEqual(keys, [
     "activatePlatformShop", "applyLegacyImport", "auditAction", "bootstrap", "cancel", "cancelJob",
     "cancelLegacyImport", "dryRunLegacyImport", "focus", "getJob", "getLegacyImportStatus",
-    "getPlatformStatus", "getSnapshot", "getWorkerStatus", "listJobs", "listShops", "manualSend",
+    "getPlatformStatus", "getSnapshot", "getWorkerStatus", "listConversationMessages", "listJobs", "listShops", "manualSend",
     "noSaveSend", "optimizationAction", "planLegacyImport", "reloadPlatform", "reviewAction",
     "scanLegacyImport", "selectLegacyImportSource", "setMode", "setPlatformViewBounds", "startLearning",
   ]);

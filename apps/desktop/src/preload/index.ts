@@ -18,6 +18,7 @@ const CH = {
   listShops: "shops.list",
   snapshot: "orchestrator.snapshot",
   conversationsList: "conversations.list",
+  conversationsListMessages: "conversations.listMessages",
   workerStatus: "worker.status",
   setMode: "orchestrator.set_mode",
   manualSend: "orchestrator.manual_send",
@@ -70,6 +71,7 @@ const api = {
   listShops: () => ipcRenderer.invoke(CH.listShops),
   getSnapshot: (req?: { shop_id?: string }) => ipcRenderer.invoke(CH.snapshot, req ?? {}),
   listConversations: (req: { scope: { kind: "all_stores" } | { kind: "specific_store"; storeId: string } }) => ipcRenderer.invoke(CH.conversationsList, req),
+  listConversationMessages: (req: { conversation_id: string }) => ipcRenderer.invoke(CH.conversationsListMessages, req),
   getWorkerStatus: () => ipcRenderer.invoke(CH.workerStatus),
   setMode: (req: { shop_id: string; conversation_id?: string; mode: "human_review" | "full_auto" }) =>
     ipcRenderer.invoke(CH.setMode, req),
@@ -116,5 +118,6 @@ const api = {
 };
 
 contextBridge.exposeInMainWorld("fastworkDesktop", api);
+
 
 

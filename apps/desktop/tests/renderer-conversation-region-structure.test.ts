@@ -13,6 +13,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const R = join(HERE, "..", "src", "renderer", "components");
 const CONV = join(R, "conversation-panel.ts");
 const SUGG = join(R, "suggestion-panel.ts");
+const TIMELINE = join(R, "message-timeline.ts");
 const SHELL = join(R, "app-shell.ts");
 
 const BRIDGE_TOKENS = ["店铺API", "ipcRenderer", "fetch(", "WebSocket", "localStorage", "sessionStorage", "navigate(", "api_key", "credential"];
@@ -22,7 +23,7 @@ function baseName(p) {
 }
 
 test("conversation region keeps clean-room boundaries (no bridge/auth/network)", () => {
-  for (const f of [CONV, SUGG]) {
+  for (const f of [CONV, SUGG, TIMELINE]) {
     const src = readFileSync(f, "utf-8");
     for (const t of BRIDGE_TOKENS) {
       assert.ok(!src.includes(t), baseName(f) + " must not use " + t);
@@ -31,7 +32,7 @@ test("conversation region keeps clean-room boundaries (no bridge/auth/network)",
 });
 
 test("conversation region renders untrusted text safely (no innerHTML)", () => {
-  for (const f of [CONV, SUGG]) {
+  for (const f of [CONV, SUGG, TIMELINE]) {
     const src = readFileSync(f, "utf-8");
     assert.ok(!src.includes("innerHTML"), baseName(f) + " must not use innerHTML");
   }
@@ -43,4 +44,5 @@ test("app-shell composes conversation-host + suggestion-host (existing structure
   assert.ok(shell.includes("renderSuggestionPanel"), "must compose suggestion panel");
   assert.ok(shell.includes("conversation-host"), "must keep conversation-host");
   assert.ok(shell.includes("suggestion-host"), "must keep suggestion-host");
+  assert.ok(shell.includes("renderMessageTimeline"), "must compose message timeline (SHEEP-063 primary content surface)");
 });

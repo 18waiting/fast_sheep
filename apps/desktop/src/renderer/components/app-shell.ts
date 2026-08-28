@@ -18,6 +18,7 @@ import { clear, el } from "./dom.js";
 import { renderAppNavbar } from "./app-navbar.js";
 import { renderWorkbenchHeader } from "./workbench-header.js";
 import { renderConversationPanel } from "./conversation-panel.js";
+import { renderMessageTimeline } from "./message-timeline.js";
 import { renderSuggestionPanel } from "./suggestion-panel.js";
 import { renderModeToggle } from "./mode-toggle.js";
 import { renderCountdownView } from "./countdown-view.js";
@@ -71,6 +72,9 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
   const panels = el("div", "panels");
   const conversationHost = el("div", "conversation-host");
   renderConversationPanel(conversationHost, state);
+  // SHEEP-063: Message Timeline is the Conversation Main primary content surface
+  // (Phase-4 incremental topology convergence; bound to the active conversation).
+  renderMessageTimeline(conversationHost, state);
   panels.appendChild(conversationHost);
   const suggestionHost = el("div", "suggestion-host");
   renderSuggestionPanel(suggestionHost, state, actions);
@@ -132,3 +136,4 @@ function noopM10Actions(): M10PanelActions {
     onCancelJob: () => {},
   };
 }
+

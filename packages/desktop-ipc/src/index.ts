@@ -29,4 +29,6 @@ export type {
   LegacyImportSelectRequest, LegacyImportSelectResult, LegacyImportPlanRequest,
   LegacyImportApplyAction, LegacyImportStatusView, LegacyImportEvent,
   QueueScope, QueueItemView, ConversationListRequest, ConversationListResult, QueuePlatformFilter, QueueStoreOption,
+  TimelineMessageView, ConversationTimelineRequest, ConversationTimelineResult,
 } from "./types.js";
+

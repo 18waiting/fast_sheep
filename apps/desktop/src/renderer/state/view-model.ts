@@ -3,7 +3,7 @@
 // produced by Main. It never decides business rules (staleness, takeover
 // breaker, countdown send eligibility, feedback class, serialization, provider
 // route, handoff decision).
-import type { WorkbenchViewModel, OrchestratorEventPayload, QueueScope, QueueItemView, QueuePlatformFilter, QueueStoreOption } from "@fastwork/desktop-ipc";
+import type { WorkbenchViewModel, OrchestratorEventPayload, QueueScope, QueueItemView, QueuePlatformFilter, QueueStoreOption, TimelineMessageView } from "@fastwork/desktop-ipc";
 import type { PlatformViewState } from "./platform-view-state.js";
 import { EMPTY_PLATFORM_VIEW_STATE } from "./platform-view-state.js";
 import type { M10PanelViewModel } from "../components/m10-panel-types.js";
@@ -37,6 +37,13 @@ export interface UiState {
   queueOutOfScopeCue: boolean;
   /** SHEEP-060: active conversation navigation identity (DP-69: navigation state, not business mutation). */
   activeConversationId: string | null;
+  /** SHEEP-063: Message Timeline state — bound to the active conversation only (DP-85).
+   *  timelineConversationId is the conversation whose facts are displayed; when it
+   *  differs from activeConversationId the UI must not show old facts (I-7/I-14). */
+  timelineConversationId: string | null;
+  timelineMessages: TimelineMessageView[];
+  timelineLoading: boolean;
+  timelineError: string | null;
 }
 
 export const EMPTY_UI_STATE: UiState = {
@@ -57,6 +64,10 @@ export const EMPTY_UI_STATE: UiState = {
   availablePlatforms: [],
   queueOutOfScopeCue: false,
   activeConversationId: null,
+  timelineConversationId: null,
+  timelineMessages: [],
+  timelineLoading: false,
+  timelineError: null,
 };
 
 export function revisionOf(vm: WorkbenchViewModel | null): number {
@@ -96,6 +107,28 @@ export function setQueueError(state: UiState, message: string): UiState {
 /** SHEEP-060: activate conversation (DP-69 navigation state only; no business mutation / no IPC). */
 export function setActiveConversation(state: UiState, conversationId: string | null): UiState {
   return { ...state, activeConversationId: conversationId };
+}
+
+/** SHEEP-063: set timeline loading for a conversation (DP-45/89: same-conversation
+ *  refresh keeps last-known useful content; switching identity clears first). */
+export function setTimelineLoading(state: UiState, conversationId: string): UiState {
+  const keep = state.timelineConversationId === conversationId ? state.timelineMessages : [];
+  return { ...state, timelineConversationId: conversationId, timelineMessages: keep, timelineLoading: true, timelineError: null };
+}
+
+/** SHEEP-063: set timeline items for the bound conversation (authorized 0 rows -> no-work empty). */
+export function setTimelineItems(state: UiState, conversationId: string, messages: TimelineMessageView[]): UiState {
+  return { ...state, timelineConversationId: conversationId, timelineMessages: messages, timelineLoading: false, timelineError: null };
+}
+
+/** SHEEP-063: set timeline error (I-25/DP-47: failure contained to Timeline scope). */
+export function setTimelineError(state: UiState, conversationId: string, message: string): UiState {
+  return { ...state, timelineConversationId: conversationId, timelineLoading: false, timelineError: message };
+}
+
+/** SHEEP-063: clear timeline (active identity switch must not keep old conversation facts, DP-89/I-7). */
+export function clearTimeline(state: UiState): UiState {
+  return { ...state, timelineConversationId: null, timelineMessages: [], timelineLoading: false, timelineError: null };
 }
 
 export function setPendingCommand(state: UiState, command: UiState["pendingCommand"]): UiState {

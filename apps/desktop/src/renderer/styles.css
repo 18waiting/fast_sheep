@@ -138,3 +138,15 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 .conversation-list-controls { display: flex; flex-direction: column; gap: var(--fs-space-1); margin-bottom: var(--fs-space-3); }
 .conversation-list-scope-store, .conversation-list-scope-platform { padding: var(--fs-space-1) var(--fs-space-2); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); border-radius: var(--fs-radius-sm); background: var(--fs-color-bg-surface); font-size: var(--fs-font-size-sm); }
 .conversation-list-out-of-scope { margin: 0 0 var(--fs-space-2); }
+/* ===== SHEEP-063 Message Timeline (Conversation Main primary content surface) ===== */
+.message-timeline { background: var(--fs-color-bg-surface); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); border-radius: var(--fs-radius-md); padding: var(--fs-space-3); min-width: 360px; flex: 1 1 480px; }
+.timeline-list { list-style: none; margin: var(--fs-space-2) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--fs-space-2); }
+.timeline-message { display: grid; grid-template-columns: auto auto 1fr; gap: var(--fs-space-2); align-items: baseline; padding: var(--fs-space-2); border-radius: var(--fs-radius-sm); }
+.timeline-message--customer { background: var(--fs-color-bg-subtle); }
+.timeline-message--agent { background: var(--fs-color-bg-selected); }
+.timeline-message--unknown { border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); color: var(--fs-color-text-secondary); }
+.timeline-actor { font-size: var(--fs-font-size-sm); font-weight: 600; color: var(--fs-color-text-secondary); }
+.timeline-time { font-size: var(--fs-font-size-sm); color: var(--fs-color-text-muted); white-space: nowrap; }
+.timeline-content { font-size: var(--fs-font-size-md); color: var(--fs-color-text); word-break: break-word; }
+.timeline-message--unknown .timeline-content { color: var(--fs-color-text-secondary); font-style: italic; }
+

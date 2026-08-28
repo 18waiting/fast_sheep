@@ -3,9 +3,9 @@ import assert from "node:assert/strict";
 
 import { IPC, QUERY_CHANNELS, COMMAND_CHANNELS, EVENT_CHANNELS, ALL_CHANNELS, isAllowedChannel } from "../dist/index.js";
 
-test("channel registry has 41 canonical channels (M6/M7/M10 + M11 8 + SHEEP-060 conversations.list)", () => {
-  assert.equal(ALL_CHANNELS.length, 41);
-  assert.equal(QUERY_CHANNELS.length, 9);
+test("channel registry has 42 canonical channels (M6/M7/M10 + M11 8 + SHEEP-060 conversations.list + SHEEP-063 conversations.listMessages)", () => {
+  assert.equal(ALL_CHANNELS.length, 42);
+  assert.equal(QUERY_CHANNELS.length, 10);
   assert.equal(COMMAND_CHANNELS.length, 22);
   assert.equal(EVENT_CHANNELS.length, 10);
   assert.equal(IPC.bootstrap, "desktop.bootstrap");
@@ -34,6 +34,7 @@ test("channel registry has 41 canonical channels (M6/M7/M10 + M11 8 + SHEEP-060 
   assert.equal(IPC.legacyImportSelect, "legacy_import.select");
   assert.equal(IPC.legacyImportApply, "legacy_import.apply");
   assert.equal(IPC.legacyImportChanged, "legacy_import.changed");
+  assert.equal(IPC.conversationsListMessages, "conversations.listMessages");
 });
 
 test("isAllowedChannel rejects arbitrary channels", () => {
@@ -44,3 +45,5 @@ test("isAllowedChannel rejects arbitrary channels", () => {
   assert.ok(!isAllowedChannel("generic.anything"));
   assert.ok(!isAllowedChannel("ipcRenderer.invoke"));
 });
+
+

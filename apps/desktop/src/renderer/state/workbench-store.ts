@@ -36,8 +36,11 @@ import type {
   LegacyImportStatusView,
   ConversationListRequest,
   ConversationListResult,
+  ConversationTimelineRequest,
+  ConversationTimelineResult,
   QueueScope,
   QueuePlatformFilter,
+  TimelineMessageView,
 } from "@fastwork/desktop-ipc";
 import { EMPTY_PLATFORM_VIEW_STATE, type PlatformViewState } from "./platform-view-state.js";
 import type { M10PanelViewModel } from "../components/m10-panel-types.js";
@@ -57,6 +60,10 @@ import {
   setQueuePlatform as setQueuePlatformPure,
   setQueueOptions as setQueueOptionsPure,
   setActiveConversation as setActiveConversationPure,
+  setTimelineLoading as setTimelineLoadingPure,
+  setTimelineItems as setTimelineItemsPure,
+  setTimelineError as setTimelineErrorPure,
+  clearTimeline as clearTimelinePure,
   type UiState,
 } from "./view-model.js";
 import { reduceEvent, shouldResync } from "./event-reducer.js";
@@ -68,6 +75,7 @@ export interface WorkbenchApiLike {
   bootstrap(): Promise<DesktopResult<BootstrapState>>;
   getSnapshot(req: { shop_id?: string }): Promise<DesktopResult<WorkbenchViewModel>>;
   listConversations?(req: ConversationListRequest): Promise<DesktopResult<ConversationListResult>>;
+  listConversationMessages?(req: ConversationTimelineRequest): Promise<DesktopResult<ConversationTimelineResult>>;
   setMode(req: SetModeRequest): Promise<DesktopResult<{ ok: boolean }>>;
   manualSend(req: ManualSendRequest): Promise<DesktopResult<{ ok: boolean }>>;
   noSaveSend(req: NoSaveSendRequest): Promise<DesktopResult<{ ok: boolean }>>;
@@ -191,9 +199,40 @@ export class WorkbenchStore {
     await this.refreshQueue(undefined, platform);
   }
 
-  /** SHEEP-060: activate conversation (DP-60/69: pointer/Enter activates; navigation state only). */
+  /** SHEEP-060: activate conversation (DP-60/69: pointer/Enter activates; navigation state only).
+   *  SHEEP-063: activation binds the Message Timeline to the active conversation (DP-85);
+   *  switching identity clears old timeline facts first (DP-89/I-7), then loads. */
   activateConversation(conversationId: string | null): void {
     this.setState(setActiveConversationPure(this.state, conversationId));
+    if (conversationId === null) {
+      this.setState(clearTimelinePure(this.state));
+      return;
+    }
+    if (this.state.timelineConversationId !== conversationId) {
+      this.setState(clearTimelinePure(this.state));
+    }
+    void this.refreshTimeline(conversationId);
+  }
+
+  private timelineRequestSeq = 0;
+
+  /** SHEEP-063: refresh Message Timeline via Main typed projection (DP-84/85 + I-14 stale
+   *  protection: a stale response for a previous active conversation must not overwrite
+   *  the current one). Failure is contained to the Timeline scope (DP-47/I-25). */
+  async refreshTimeline(conversationId: string): Promise<void> {
+    this.setState(setTimelineLoadingPure(this.state, conversationId));
+    if (!this.api.listConversationMessages) {
+      this.setState(setTimelineErrorPure(this.state, conversationId, "会话消息不可用"));
+      return;
+    }
+    const seq = ++this.timelineRequestSeq;
+    const res = await this.api.listConversationMessages({ conversation_id: conversationId });
+    if (seq !== this.timelineRequestSeq) return; // I-14: stale response must not overwrite current active conversation
+    if (!res.ok) {
+      this.setState(setTimelineErrorPure(this.state, conversationId, safeMessage(res.error)));
+      return;
+    }
+    this.setState(setTimelineItemsPure(this.state, conversationId, res.data.messages));
   }
 
     async onEvent(event: OrchestratorEventPayload): Promise<void> {

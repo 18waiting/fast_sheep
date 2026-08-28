@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.1-COMPLETE",
   "last_closed_task": "SHEEP-063-PR1",
-  "current_task": "SHEEP-063 (Message Timeline; executing on real Message Fact path + Main-owned Workspace Merchant authorization path; DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19; Controller Review + visual evidence pending)",
-  "next_action": "SHEEP-063 (Message Timeline; awaiting Controller Review + visual evidence; STOP for Owner PASS; no SHEEP-064)",
+  "current_task": "SHEEP-063 (COMPLETE: Message Timeline on real Message Fact + Workspace Merchant authorization path; Controller Review + visual evidence submitted; awaiting Owner PASS — SHEEP-064 NOT started)",
+  "next_action": "SHEEP-063 awaiting Owner PASS (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 + visual review); no SHEEP-064 without PASS",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1197,21 +1197,27 @@
     "m41_evidence_aware_complete": "M4.1 COMPLETE: Queue + scopes implemented (SHEEP-060/061); Unread/Priority/Risk have explicit legal dispositions after fact-readiness review (SHEEP-062)"
   },
   "sheep_063": {
-    "codex_result": "PARTIAL",
+    "codex_result": "COMPLETE",
     "controller_decision": "PENDING_OWNER_PASS",
-    "status": "BLOCKED",
+    "status": "EXECUTED_AWAITING_PASS",
     "closed_date_candidate": null,
+    "audit_chain": "Read First #1 (BLOCKED) -> PR1 (PASS) -> Read First #2 (BLOCKED) -> PR2 (PASS incl. REPAIR I-25) -> PR2-PR1 (PASS) -> SHEEP-063 Timeline execution",
     "read_first": "docs\\fast-sheep-message-timeline-read-first.md",
     "read_first_2_authorization_gap": "docs\\fast-sheep-message-timeline-authorization-gap.md",
     "report": "reports\\SHEEP-063-report.json",
-    "authorization_gap_report": "reports\\SHEEP-063-authorization-gap-report.json",
-    "authorization_gap": "DATA_AUTHORIZATION_GAP-TIMELINE-WORKSPACE_MERCHANT_CONTEXT (Main has no independent trusted merchant/workspace context; only provisional selected shop / Queue Scope anchor exists, forbidden by I-17/DP-91 for Timeline authority)",
+    "review_doc": "docs\\fast-sheep-message-timeline.md",
+    "visual_evidence": [
+      "reports\\visual-evidence\\sheep-063-timeline-populated.png",
+      "reports\\visual-evidence\\sheep-063-timeline-empty.png",
+      "reports\\visual-evidence\\sheep-063-timeline-switch.png"
+    ],
     "fact_readiness": {
-      "MESSAGE_FACT_PATH": "READY for Timeline foundation (PR1 closed: identity/actor/content/time/ordering/source-provenance persisted; production ingestion boundary + shared DB lifecycle)",
-      "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (PR1 confirmed; never auto-READY)"
+      "MESSAGE_FACT_PATH": "READY (PR1 closed; Timeline reads normalized production message facts, DP-84)",
+      "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged; reader-progress still required; never auto-READY)"
     },
-    "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28) + SHEEP-063-PR2-PR1 (closed 2026-08-28, Owner PASS) + SHEEP-063-PR2 (executed 2026-08-28: WorkspaceMerchantContext + DP-98; Controller Review submitted — awaiting Owner PASS)",
-    "next_per_roadmap": "After PR2 Owner PASS: restore SHEEP-063 Timeline (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 on trusted authorization path); NOT auto-executed; no SHEEP-064",
+    "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28) + SHEEP-063-PR2-PR1 (closed 2026-08-28) + SHEEP-063-PR2 (closed 2026-08-28 incl. REPAIR I-25) — all PASS; BLOCKED audit history retained",
+    "decisions": ["DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 (executed; OWNER_DECIDED pending Owner PASS)"],
+    "next_per_roadmap": "Awaiting Owner PASS (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 + visual review); no SHEEP-064 without PASS",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   },
@@ -1353,3 +1359,5 @@
     "repair_acceptance": "missing context -> desktop.workspace_unavailable (not empty success); authorized 0-row -> legitimate Empty; renderer distinguishes unavailable/error vs no-work Empty; cross-merchant NOT_FOUND hiding kept; schema v9 unchanged; desktop 269/269 + workspace + m6 smoke + boundary + secrets PASS"
   }
 }
+
+

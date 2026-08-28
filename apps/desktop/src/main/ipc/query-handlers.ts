@@ -1,5 +1,5 @@
 // M6/M10 query handlers: bootstrap / shops / snapshot / worker.status / platform.status / jobs.
-import { IPC, DesktopError, DESKTOP_ERROR_CODES, type BootstrapState, type DesktopResult, type JobListResult, type JobRecordView, type LegacyImportStatusView, type PlatformStatusView, type WorkbenchViewModel, type WorkerStatusView, type ConversationListRequest, type ConversationListResult, type QueueItemView, type QueuePlatformFilter } from "@fastwork/desktop-ipc";
+import { IPC, DesktopError, DESKTOP_ERROR_CODES, type BootstrapState, type DesktopResult, type JobListResult, type JobRecordView, type LegacyImportStatusView, type PlatformStatusView, type WorkbenchViewModel, type WorkerStatusView, type ConversationListRequest, type ConversationListResult, type ConversationTimelineRequest, type ConversationTimelineResult, type QueueItemView, type QueuePlatformFilter, type TimelineMessageView } from "@fastwork/desktop-ipc";
 import type { PlatformSessionCoordinator } from "../platforms/platform-session-coordinator.js";
 import type { PlatformId } from "../platforms/platform-host-registry.js";
 import type { OrchestratorHost } from "../services/orchestrator-host.js";
@@ -9,7 +9,7 @@ import type { WorkbenchProjectionService } from "../services/workbench-projectio
 import type { BackgroundJobService } from "../services/background-job-service.js";
 import type { LegacyImportService } from "../services/legacy-import-service.js";
 import type { WorkspaceMerchantContext } from "../services/workspace-merchant-context.js";
-import type { NormalizedConversationRepository, StoreRepository, PlatformAccountRepository } from "@fastwork/persistence";
+import type { NormalizedConversationRepository, StoreRepository, PlatformAccountRepository, MessageRepository } from "@fastwork/persistence";
 import { ok, err } from "./ipc-guard.js";
 
 // SHEEP-061: canonical platform set for queue filter options (mirror of Main PLATFORM_IDS; validated by isPlatformId).
@@ -27,6 +27,8 @@ export interface QueryDeps {
   legacyImport: LegacyImportService;
   /** PR1/SHEEP-060: Conversation repository port (merchant-constrained Main-side queries). */
   conversations: NormalizedConversationRepository;
+  /** SHEEP-063-PR1: Message repository port (normalized production message facts, DP-84). */
+  messages: MessageRepository;
   /** SHEEP-060: Store repository port (merchant boundary resolution). */
   stores: StoreRepository;
   /** SHEEP-061: PlatformAccount repository port (canonical platform fact source). */
@@ -91,6 +93,29 @@ export const QUERY_HANDLERS = {
     const stores = deps.stores.listByMerchant(workspaceMerchantId).map((s) => ({ store_id: s.id, name: s.name })).sort((a, b) => (a.store_id < b.store_id ? -1 : a.store_id > b.store_id ? 1 : 0));
     const platforms = CANONICAL_PLATFORMS;
     return ok({ items, scope, platform, stores, platforms });
+  },
+  [IPC.conversationsListMessages]: (deps: QueryDeps) => async (req: ConversationTimelineRequest): Promise<DesktopResult<ConversationTimelineResult>> => {
+    if (!req || !req.conversation_id) return err(new DesktopError(DESKTOP_ERROR_CODES.INVALID_REQUEST, "missing conversation id"));
+    // DP-91/I-18: renderer conversation_id is an untrusted selector; Main authorizes
+    // BEFORE reading messages. I-25/DP-48: missing authorization context is NOT
+    // represented as empty data.
+    const workspace = deps.workspaceMerchant;
+    if (!workspace) return err(new DesktopError(DESKTOP_ERROR_CODES.WORKSPACE_UNAVAILABLE, "workspace merchant context unavailable"));
+    const conv = deps.conversations.findById(req.conversation_id);
+    if (!conv) return err(new DesktopError(DESKTOP_ERROR_CODES.NOT_FOUND, "unknown conversation"));
+    if (!workspace.containsMerchant(conv.merchantId)) {
+      // cross-merchant conversation: information-hiding (same as unknown).
+      return err(new DesktopError(DESKTOP_ERROR_CODES.NOT_FOUND, "unknown conversation"));
+    }
+    // DP-84: timeline reads normalized production message facts (I-12 ordering in repo).
+    const messages: TimelineMessageView[] = deps.messages.listByConversation(conv.id).map((m) => ({
+      message_id: m.id,
+      actor: m.actor ?? null,
+      content_kind: m.contentKind ?? null,
+      content_text: m.contentText ?? null,
+      occurred_at: m.occurredAt ?? null,
+    }));
+    return ok({ conversation_id: conv.id, messages });
   },
     [IPC.workerStatus]: (deps: QueryDeps) => async (): Promise<DesktopResult<WorkerStatusView>> => {
     return ok(deps.worker.status());
