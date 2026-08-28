@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
-  "last_closed_task": "SHEEP-064",
-  "current_task": "SHEEP-065 (Attachment Fact-Readiness Review = BLOCKED/DEFERRED; decision package submitted; awaiting Owner decision — no Attachment/Card implementation, no 00010)",
-  "next_action": "Owner decision on SHEEP-065 (authorize 00010/prerequisite vs DEFER); no auto-execution; no SHEEP-066 without PASS",
+  "last_closed_task": "SHEEP-065",
+  "current_task": "SHEEP-066 (Message Send Pipeline — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed; first version strictly text-only)",
+  "next_action": "SHEEP-066 (Message Send Pipeline) proposal — awaiting Owner approval; not auto-executed",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1490,9 +1490,9 @@
   },
   "sheep_065": {
     "codex_result": "PARTIAL",
-    "controller_decision": "PENDING_OWNER_PASS",
-    "status": "BLOCKED / DEFERRED (evidence-aware)",
-    "closed_date_candidate": null,
+    "controller_decision": "PASS",
+    "status": "CLOSED (Attachment implementation DEFER_TO_REAL_PLATFORM_ATTACHMENT_INGESTION)",
+    "closed_date_candidate": "2026-08-28",
     "report": "reports\\SHEEP-065-report.json",
     "review_doc": "docs\\fast-sheep-attachment-fact-readiness.md",
     "readiness": {
@@ -1501,7 +1501,18 @@
       "ATTACHMENT_BINARY_LIFECYCLE_READINESS": "NOT_READY (separate capability per DP-113)",
       "ATTACHMENT_PRESENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-111..DP-118 + I-31 (adopted per Owner 2026-08-28 renumbering; OWNER_DECIDED pending Owner PASS)"],
+    "decisions": ["DP-111..DP-118 + I-31 + I-32 (OWNER_DECIDED 2026-08-28)"],
+    "owner_disposition": "Attachment implementation = DEFER_TO_REAL_PLATFORM_ATTACHMENT_INGESTION; no 00010; no attachment repository/table; no Timeline attachment cards; no Composer attachment button/selector/placeholder; no download/cache/upload/binary lifecycle",
+    "i32": "SEND_PIPELINE_SUPPORT_IS_LIMITED_TO_FACT_KINDS_WITH_APPROVED_INGESTION_AND_DELIVERY_CONTRACTS (current sole allowed content kind into SHEEP-066 = text; attachment/image/file must NOT ride along with the Send Pipeline)",
+    "future_constraints": [
+        "reopen ATTACHMENT_FACT_READINESS when the first real non-text platform producer/delivery requirement appears",
+        "future 00010 (if authorized) must include typed repository + production ingestion boundary + fresh/upgrade/integrity/unknown-preservation evidence",
+        "remote source ref != renderer load authority",
+        "Composer attachment acquisition must wait until attachment + send contract ready",
+        "Product/Order message payload and M4.3 Context remain different domains"
+    ],
+    "controller_pass_date": "2026-08-28",
+    "correct_outcome": "no product code/UI output this round is the correct acceptance result, not a defect",
     "renumbered": "Owner re-approved SHEEP-065 Read First with corrected numbering (supersedes prior DP-111~117 + I-31/I-32 set)",
     "decision_package": {
       "no_00010": "migration 00010 NOT authorized; schema v9 kept",
@@ -1521,7 +1532,7 @@
     "next_stage_not_executed": true
   },
   "fast_sheep_attachment_fact_readiness_decisions": {
-    "status": "ADOPTED_PENDING_OWNER_PASS",
+    "status": "OWNER_DECIDED",
     "decided_date": "2026-08-28",
     "renumbered": "Owner 2026-08-28 re-approved with corrected numbering (supersedes prior set)",
     "dp_111": "ATTACHMENT_FACT_MODEL_IS_TYPED_EXTENSIBLE_NOT_METADATA_BAG",
@@ -1534,6 +1545,9 @@
     "dp_118": "ATTACHMENT_BINARY_STORAGE_IS_NOT_PART_OF_NORMALIZED_MESSAGE_FACTS_BY_DEFAULT (no bytes/blob in SQLite; Asset/Cache later)",
     "i_31": "MESSAGE_RICH_PAYLOADS_DO_NOT_DEFINE_PRODUCT_ORDER_CONTEXT_DOMAIN (M4.3 independent)",
     "readiness": "ATTACHMENT_FACT_CONTRACT=NOT_READY / ATTACHMENT_PRODUCER=NOT_READY / BINARY_LIFECYCLE=NOT_READY / PRESENTATION=NOT_READY",
-    "next": "Owner decides authorize 00010/prerequisite vs DEFER; no Attachment/Card implementation this round; no SHEEP-066 without PASS"
+    "i_32": "SEND_PIPELINE_SUPPORT_IS_LIMITED_TO_FACT_KINDS_WITH_APPROVED_INGESTION_AND_DELIVERY_CONTRACTS (sole allowed content kind into SHEEP-066 = text)",
+    "disposition": "DEFER_TO_REAL_PLATFORM_ATTACHMENT_INGESTION (no 00010; no repository/table; no cards; no Composer attachment control; no binary lifecycle)",
+    "next": "SHEEP-066 (Message Send Pipeline) text-only proposal — awaiting Owner approval; no SHEEP-067 without PASS"
   }
 }
+
