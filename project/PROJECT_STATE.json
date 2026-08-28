@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
   "last_closed_task": "SHEEP-065",
-  "current_task": "SHEEP-066 (Message Send Pipeline — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed; first version strictly text-only)",
-  "next_action": "SHEEP-066 (Message Send Pipeline) proposal — awaiting Owner approval; not auto-executed",
+  "current_task": "SHEEP-066 (Message Send Delivery-Contract Readiness = STOP/DEFER; Option A/B not approved; Composer Send stays disabled; decision package submitted; awaiting Owner decision)",
+  "next_action": "Owner decision on SHEEP-066 (delivery prerequisite vs DEFER); no Send implementation; no SHEEP-067 without PASS",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1548,6 +1548,36 @@
     "i_32": "SEND_PIPELINE_SUPPORT_IS_LIMITED_TO_FACT_KINDS_WITH_APPROVED_INGESTION_AND_DELIVERY_CONTRACTS (sole allowed content kind into SHEEP-066 = text)",
     "disposition": "DEFER_TO_REAL_PLATFORM_ATTACHMENT_INGESTION (no 00010; no repository/table; no cards; no Composer attachment control; no binary lifecycle)",
     "next": "SHEEP-066 (Message Send Pipeline) text-only proposal — awaiting Owner approval; no SHEEP-067 without PASS"
+  },
+  "sheep_066": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "STOP / DEFER (Message Send Delivery-Contract Readiness; Option A/B not approved; Composer Send disabled)",
+    "closed_date_candidate": null,
+    "report": "reports\\SHEEP-066-report.json",
+    "review_doc": "docs\\fast-sheep-send-pipeline-delivery-readiness.md",
+    "readiness": {
+      "MANUAL_SEND_AUTHORIZATION_READINESS": "PARTIAL (workspace merchant containment + conversation identity + session + declared send_text capability; Entitlement/ResourceScope absent; no invented taxonomy)",
+      "TEXT_DELIVERY_DRIVER_READINESS": "NOT_READY (DOM click + synthetic ack marker; uncertain unused; no authoritative delivery / read-back)",
+      "DELIVERY_ACK_READINESS": "NOT_READY (SendAttempt boolean+messageId; no ACKNOWLEDGED/REJECTED/UNKNOWN; ack synthetic; message_id falls back to commandId)",
+      "RETRY_IDEMPOTENCY_READINESS": "PARTIAL (commandId idempotency; no durable journal / reconciliation / UNKNOWN handling)",
+      "DURABLE_SEND_ATTEMPT_READINESS": "NOT_READY (no durable delivery journal; crash window unhandled)"
+    },
+    "decisions": ["DP-119/120/122/124/125/126 + I-33 + I-28 sent-definition (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decision_package": {
+      "option_a": "DEFER (real platform driver with authoritative delivery/ack semantics not provable)",
+      "option_b": "NOT APPROVED (send-record would fake the Send Pipeline)",
+      "composer_send": "stays disabled; no busy/success/failure/retry UI",
+      "prerequisite_if_pursued": "durable delivery-attempt journal + typed ACKNOWLEDGED/REJECTED/UNKNOWN + real platform ack read-back + reconciliation; separate Owner approval"
+    },
+    "evidence": [
+      "PddPlatformAdapter.sendText -> page bridge send_text -> sendText(doc,...) sets input + clicks send + reads [data-fw-pdd-send-ack] (synthetic/fixture)",
+      "SendAttempt = boolean + messageId; SendResult.uncertain unused",
+      "SendAckRegistry 60s in-memory (takeover detection, not delivery outcome)",
+      "no Entitlement/ResourceScope model; commandId bridge idempotency exists; no durable journal/Outbox"
+    ],
+    "next_per_roadmap": "Owner decides delivery prerequisite vs DEFER; no Send implementation; no SHEEP-067 without PASS",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }
-
