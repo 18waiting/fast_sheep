@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
   "last_closed_task": "SHEEP-064",
-  "current_task": "SHEEP-065 (Attachments — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
-  "next_action": "SHEEP-065 (Attachments) proposal — awaiting Owner approval; not auto-executed",
+  "current_task": "SHEEP-065 (Attachment Fact-Readiness Review = BLOCKED/DEFERRED; decision package submitted; awaiting Owner decision — no Attachment/Card implementation, no 00010)",
+  "next_action": "Owner decision on SHEEP-065 (authorize 00010/prerequisite vs DEFER); no auto-execution; no SHEEP-066 without PASS",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1487,5 +1487,51 @@
         "draft persistence belongs to SHEEP-075",
         "future reply sources keep converging into the Composer; no second agent send path"
     ]
+  },
+  "sheep_065": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "BLOCKED / DEFERRED (evidence-aware)",
+    "closed_date_candidate": null,
+    "report": "reports\\SHEEP-065-report.json",
+    "review_doc": "docs\\fast-sheep-attachment-fact-readiness.md",
+    "readiness": {
+      "ATTACHMENT_FACT_READINESS": "BLOCKED",
+      "ATTACHMENT_SOURCE_READINESS": "BLOCKED",
+      "ATTACHMENT_BINARY_LIFECYCLE_READINESS": "NOT_READY (separate capability per DP-113)",
+      "ATTACHMENT_PRESENTATION_READINESS": "NOT_READY"
+    },
+    "decisions": ["DP-111..DP-117 + I-31/I-32 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decision_package": {
+      "no_00010": "migration 00010 NOT authorized; schema v9 kept",
+      "no_product_impl": "no Attachment/Card UI; no Composer attachment placeholder/disabled control",
+      "defer": "fact foundation depends on future real platform-ingestion unit producing provable attachment facts (cardinality/source identity/locator sensitivity/completeness); then minimal prerequisite/00010 proposal",
+      "close": "evidence-aware BLOCKED/DEFERRED close (correct result, not a defect)"
+    },
+    "evidence": [
+      "normalized_messages (0008) text-only; no attachment columns/tables",
+      "legacy type/metadata is legacy reference; metadata JSON bag = DP-111 anti-pattern",
+      "platform normalizers hardcode message_type=text; no inbound attachment extraction",
+      "send_image = PARTIAL outbound DOM driver, not inbound fact source",
+      "no real platform producer/ingestion; renderer no remote fetch (I-31)"
+    ],
+    "next_per_roadmap": "Owner decides authorize 00010/prerequisite vs DEFER; no SHEEP-066 without PASS",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
+  },
+  "fast_sheep_attachment_fact_readiness_decisions": {
+    "status": "ADOPTED_PENDING_OWNER_PASS",
+    "decided_date": "2026-08-28",
+    "dp_111": "ATTACHMENT_FACT_MODEL_IS_TYPED_EXTENSIBLE_NOT_METADATA_BAG",
+    "dp_112": "MESSAGE_BODY_AND_ATTACHMENTS_ARE_ORTHOGONAL_FACTS",
+    "dp_113": "ATTACHMENT_FACT_METADATA_AND_BINARY_LIFECYCLE_ARE_SEPARATE_CAPABILITIES",
+    "dp_114": "ATTACHMENT_PRESENTATION_IS_THIN_TYPED_RENDERING_NOT_A_CARD_FRAMEWORK",
+    "dp_115": "ATTACHMENT_PRESENCE_AND_FACT_COMPLETENESS_MUST_BE_EXPLICIT",
+    "dp_116": "MESSAGE_ATTACHMENT_CARDS_ARE_DISTINCT_FROM_DOMAIN_CONTEXT_CARDS",
+    "dp_117": "ATTACHMENT_ACTIONS_REQUIRE_REAL_CAPABILITY_NOT_PRESENTATION_ASSUMPTION",
+    "i_31": "RENDERER_MUST_NOT_FETCH_REMOTE_ATTACHMENT_RESOURCES_DIRECTLY",
+    "i_32": "ABSENCE_OF_ATTACHMENT_FACTS_DOES_NOT_IMPLY_KNOWN_NO_ATTACHMENTS_WITHOUT_COMPLETENESS_EVIDENCE",
+    "readiness": "ATTACHMENT_FACT=BLOCKED / SOURCE=BLOCKED / BINARY_LIFECYCLE=NOT_READY / PRESENTATION=NOT_READY",
+    "next": "Owner decides authorize 00010/prerequisite vs DEFER; no Attachment/Card implementation this round"
   }
 }
