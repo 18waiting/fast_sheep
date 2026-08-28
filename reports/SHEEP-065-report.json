@@ -5,32 +5,37 @@
   "phase": "Phase 4",
   "milestone": "M4.2",
   "status": "BLOCKED / DEFERRED (evidence-aware; no Attachment/Card product implementation)",
-  "summary": "Attachment Fact-Readiness Review + Contract Decision Package：无真实 attachment 事实源/事实契约——normalized_messages 仅 text（0008）；legacy type/metadata 是 legacy 参考且含 DP-111 禁止的 JSON bag；平台消息规范化硬编码 message_type=text、无 inbound attachment 抽取；send_image 仅 PARTIAL outbound DOM 驱动；message+attachment cardinality / source identity / locator sensitivity / legacy completeness 均无证据。不授权 00010、不实现 Attachment/Card UI（Composer 不加附件占位控件）。SHEEP-065 以 evidence-aware BLOCKED/DEFERRED 关闭（合法结论）。DP-111~117 + I-31/I-32 契约已记录",
+  "summary": "Attachment Fact-Readiness Review + Contract Decision Package（Owner 2026-08-28 重编号 DP-111~118 + I-31）：无真实 attachment 事实源/事实契约——normalized_messages 仅 text；platform 规范化硬编码 message_type=text、无 inbound attachment 抽取；send_image 仅 PARTIAL outbound DOM 驱动；cardinality/source identity/locator sensitivity/completeness 无证据。ATTACHMENT_FACT_CONTRACT=NOT_READY / ATTACHMENT_PRODUCER=NOT_READY / BINARY_LIFECYCLE=NOT_READY / PRESENTATION=NOT_READY。不授权 00010、无 Attachment/Card UI、无 Composer attachment 控件；DEFER 至未来真实 platform-ingestion 单元。SHEEP-065 evidence-aware BLOCKED/DEFERRED 关闭。",
   "completed_requirements": 15,
   "total_requirements": 15,
   "owner_tightening": {
-    "dp111": "遵守：ATTACHMENT_FACT_MODEL_IS_TYPED_EXTENSIBLE_NOT_METADATA_BAG（禁止 metadata JSON bag；legacy metadata/product_context/order_context 为反例不复制）",
-    "dp112": "遵守：MESSAGE_BODY_AND_ATTACHMENTS_ARE_ORTHOGONAL_FACTS（未预设 content_kind 互斥模型；cardinality 证据缺失）",
-    "dp113": "遵守：ATTACHMENT_FACT_METADATA_AND_BINARY_LIFECYCLE_ARE_SEPARATE_CAPABILITIES（fact != binary ownership；未实现 download/cache/upload/cleanup）",
-    "dp114": "遵守：ATTACHMENT_PRESENTATION_IS_THIN_TYPED_RENDERING_NOT_A_CARD_FRAMEWORK",
-    "dp115": "遵守：ATTACHMENT_PRESENCE_AND_FACT_COMPLETENESS_MUST_BE_EXPLICIT",
+    "dp111": "遵守：ATTACHMENT_FACT_MODEL_IS_TYPED_EXTENSIBLE_NOT_METADATA_BAG（禁止万能 metadata JSON）",
+    "dp112": "遵守：ATTACHMENT_STORAGE_FOLLOWS_MESSAGE_FACT_SEMANTICS（Read First 先核验 owner/lifecycle/cardinality/source identity/authoritative metadata；未确认前不 00010）",
+    "dp113": "遵守：TYPED_ATTACHMENT_PRESENTERS_ARE_THIN_AND_KIND_SPECIFIC（禁 CardRegistry/variant engine/plugin/rich-content framework）",
+    "dp114": "遵守：HISTORICAL_UNKNOWN_ATTACHMENTS_STAY_UNKNOWN（无 fake filename/MIME/type/size/thumbnail；0 child rows != 已知无附件）",
+    "dp115": "遵守：ATTACHMENT_FACTS_AND_CARD_PRESENTATION_ARE_SEPARATE_CONTRACTS",
     "i32": "遵守：ABSENCE_OF_ATTACHMENT_FACTS_DOES_NOT_IMPLY_KNOWN_NO_ATTACHMENTS_WITHOUT_COMPLETENESS_EVIDENCE",
-    "dp116": "遵守：MESSAGE_ATTACHMENT_CARDS_ARE_DISTINCT_FROM_DOMAIN_CONTEXT_CARDS（M4.3 独立）",
-    "dp117": "遵守：ATTACHMENT_ACTIONS_REQUIRE_REAL_CAPABILITY_NOT_PRESENTATION_ASSUMPTION",
-    "i31": "遵守：RENDERER_MUST_NOT_FETCH_REMOTE_ATTACHMENT_RESOURCES_DIRECTLY",
+    "dp116": "遵守：MESSAGE_TEXT_AND_ATTACHMENTS_ARE_ORTHOGONAL_FACTS（text + zero/many attachments）",
+    "dp117": "遵守：ATTACHMENT_SOURCE_REFERENCE_IS_NOT_RENDERER_LOAD_AUTHORITY（CSP/network boundary 保持）",
+    "i31": "遵守：MESSAGE_RICH_PAYLOADS_DO_NOT_DEFINE_PRODUCT_ORDER_CONTEXT_DOMAIN（M4.3 独立）",
     "candidate_kinds_not_permanent": "遵守：image/file 仅候选示例，未批准为永久 kind taxonomy",
     "no_composer_placeholder": "遵守：Composer 未加 attachment placeholder/disabled 控件",
     "four_readiness_outputs": "遵守：ATTACHMENT_FACT_READINESS=BLOCKED / ATTACHMENT_SOURCE_READINESS=BLOCKED / ATTACHMENT_BINARY_LIFECYCLE_READINESS=NOT_READY / ATTACHMENT_PRESENTATION_READINESS=NOT_READY + cardinality/source identity/locator sensitivity/legacy completeness 证据",
     "no_schema_change": "遵守：未授权 00010；schema v9 不变；如需 persistence 扩展将 STOP 另提 prerequisite/00010 proposal",
     "evidence_aware_close": "遵守：事实源不足 -> evidence-aware BLOCKED/DEFERRED 关闭，无 fake attachment/card UI",
-    "no_visual": "遵守：本轮无 visual evidence（纯 Read First/decision package）",
-    "forbidden_kept": "遵守：未实现 Send Pipeline / platform producer / Composer attachment staging / Outbox / sync / Product-Order Context / Unread / Priority / Risk；未改已 PASS Composer/I-27~I-30"
+    "no_visual": "遵守：本轮无产品 UI 改动 -> 不要求 visual evidence；真实 typed attachment implementation 后再提供 text+attachment / unknown presentation evidence",
+    "forbidden_kept": "遵守：未实现 Send Pipeline / platform producer / Composer attachment staging / Outbox / sync / Product-Order Context / Unread / Priority / Risk；未改已 PASS Composer/I-27~I-30",
+    "dp118": "遵守：ATTACHMENT_BINARY_STORAGE_IS_NOT_PART_OF_NORMALIZED_MESSAGE_FACTS_BY_DEFAULT（不把 bytes/blob 塞 SQLite）",
+    "inbound_read_side_only": "遵守：本轮以 inbound/read-side fact + Timeline presentation 为目标；无 Composer attachment button/placeholder/selector，无上传/发送",
+    "same_name_not_fact": "遵守：同名字符串（type=image 等）不自动算事实；核验真实 platform/domain/persistence contract",
+    "contract_vs_producer": "遵守：事实语义不足 -> 输出 CONTRACT_NOT_READY / PRODUCER_NOT_READY（BLOCKED），不造 fake attachments",
+    "00010_conditions": "遵守：若未来授权 00010 须含 typed repository + production ingestion boundary + fresh/upgrade/integrity/unknown-preservation tests"
   },
   "readiness": {
-    "ATTACHMENT_FACT_READINESS": "BLOCKED (normalized_messages text-only; no attachment columns/tables; cardinality/source-identity/completeness evidence absent; legacy metadata JSON bag is an anti-pattern)",
-    "ATTACHMENT_SOURCE_READINESS": "BLOCKED (platform normalizers hardcode message_type=text and extract text content only; no inbound attachment facts; send_image is PARTIAL-certainty outbound DOM driver; no real platform producer/ingestion)",
-    "ATTACHMENT_BINARY_LIFECYCLE_READINESS": "NOT_READY (separate capability per DP-113; no download/cache/upload/cleanup)",
-    "ATTACHMENT_PRESENTATION_READINESS": "NOT_READY (no facts to render; DP-114 thin typed rendering unimplementable until fact foundation)"
+    "ATTACHMENT_FACT_CONTRACT": "NOT_READY (semantics not provable from current evidence)",
+    "ATTACHMENT_PRODUCER": "NOT_READY (no real platform producer/ingestion writes attachment facts)",
+    "ATTACHMENT_BINARY_LIFECYCLE_READINESS": "NOT_READY (separate capability per DP-118)",
+    "ATTACHMENT_PRESENTATION_READINESS": "NOT_READY (no facts to render; DP-113 thin presenters unimplementable until fact foundation)"
   },
   "evidence": {
     "confirmed": [
@@ -71,5 +76,17 @@
   "old_rebuild_modified": false,
   "original_reference_modified": false,
   "secrets_detected": false,
-  "next_stage_not_executed": true
+  "next_stage_not_executed": true,
+  "owner_renumbered_decisions": {
+    "note": "Owner 2026-08-28 re-approved SHEEP-065 Read First with corrected numbering; the following supersedes the previous DP-111~117 + I-31/I-32 set",
+    "dp_111": "ATTACHMENT_FACT_MODEL_IS_TYPED_EXTENSIBLE_NOT_METADATA_BAG",
+    "dp_112": "ATTACHMENT_STORAGE_FOLLOWS_MESSAGE_FACT_SEMANTICS (owner/lifecycle/cardinality/source identity/authoritative metadata before storage; no 00010 until confirmed)",
+    "dp_113": "TYPED_ATTACHMENT_PRESENTERS_ARE_THIN_AND_KIND_SPECIFIC (no CardRegistry/variant engine/plugin/rich-content framework)",
+    "dp_114": "HISTORICAL_UNKNOWN_ATTACHMENTS_STAY_UNKNOWN (no fake filename/MIME/type/size/thumbnail; 0 child rows != known no-attachments without completeness evidence)",
+    "dp_115": "ATTACHMENT_FACTS_AND_CARD_PRESENTATION_ARE_SEPARATE_CONTRACTS",
+    "dp_116": "MESSAGE_TEXT_AND_ATTACHMENTS_ARE_ORTHOGONAL_FACTS (text + zero/many attachments; not content_kind=text|rich mutually exclusive)",
+    "dp_117": "ATTACHMENT_SOURCE_REFERENCE_IS_NOT_RENDERER_LOAD_AUTHORITY (CSP/network boundary kept; materialization/cache separate pipeline)",
+    "dp_118": "ATTACHMENT_BINARY_STORAGE_IS_NOT_PART_OF_NORMALIZED_MESSAGE_FACTS_BY_DEFAULT (no bytes/blob in SQLite; Asset/Cache later)",
+    "i_31": "MESSAGE_RICH_PAYLOADS_DO_NOT_DEFINE_PRODUCT_ORDER_CONTEXT_DOMAIN (M4.3 independent)"
+  }
 }

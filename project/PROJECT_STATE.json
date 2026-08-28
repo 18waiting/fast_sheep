@@ -1501,7 +1501,8 @@
       "ATTACHMENT_BINARY_LIFECYCLE_READINESS": "NOT_READY (separate capability per DP-113)",
       "ATTACHMENT_PRESENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-111..DP-117 + I-31/I-32 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decisions": ["DP-111..DP-118 + I-31 (adopted per Owner 2026-08-28 renumbering; OWNER_DECIDED pending Owner PASS)"],
+    "renumbered": "Owner re-approved SHEEP-065 Read First with corrected numbering (supersedes prior DP-111~117 + I-31/I-32 set)",
     "decision_package": {
       "no_00010": "migration 00010 NOT authorized; schema v9 kept",
       "no_product_impl": "no Attachment/Card UI; no Composer attachment placeholder/disabled control",
@@ -1522,16 +1523,17 @@
   "fast_sheep_attachment_fact_readiness_decisions": {
     "status": "ADOPTED_PENDING_OWNER_PASS",
     "decided_date": "2026-08-28",
+    "renumbered": "Owner 2026-08-28 re-approved with corrected numbering (supersedes prior set)",
     "dp_111": "ATTACHMENT_FACT_MODEL_IS_TYPED_EXTENSIBLE_NOT_METADATA_BAG",
-    "dp_112": "MESSAGE_BODY_AND_ATTACHMENTS_ARE_ORTHOGONAL_FACTS",
-    "dp_113": "ATTACHMENT_FACT_METADATA_AND_BINARY_LIFECYCLE_ARE_SEPARATE_CAPABILITIES",
-    "dp_114": "ATTACHMENT_PRESENTATION_IS_THIN_TYPED_RENDERING_NOT_A_CARD_FRAMEWORK",
-    "dp_115": "ATTACHMENT_PRESENCE_AND_FACT_COMPLETENESS_MUST_BE_EXPLICIT",
-    "dp_116": "MESSAGE_ATTACHMENT_CARDS_ARE_DISTINCT_FROM_DOMAIN_CONTEXT_CARDS",
-    "dp_117": "ATTACHMENT_ACTIONS_REQUIRE_REAL_CAPABILITY_NOT_PRESENTATION_ASSUMPTION",
-    "i_31": "RENDERER_MUST_NOT_FETCH_REMOTE_ATTACHMENT_RESOURCES_DIRECTLY",
-    "i_32": "ABSENCE_OF_ATTACHMENT_FACTS_DOES_NOT_IMPLY_KNOWN_NO_ATTACHMENTS_WITHOUT_COMPLETENESS_EVIDENCE",
-    "readiness": "ATTACHMENT_FACT=BLOCKED / SOURCE=BLOCKED / BINARY_LIFECYCLE=NOT_READY / PRESENTATION=NOT_READY",
-    "next": "Owner decides authorize 00010/prerequisite vs DEFER; no Attachment/Card implementation this round"
+    "dp_112": "ATTACHMENT_STORAGE_FOLLOWS_MESSAGE_FACT_SEMANTICS (owner/lifecycle/cardinality/source identity/authoritative metadata before storage; no 00010 until confirmed)",
+    "dp_113": "TYPED_ATTACHMENT_PRESENTERS_ARE_THIN_AND_KIND_SPECIFIC (no CardRegistry/variant engine/plugin/rich-content framework)",
+    "dp_114": "HISTORICAL_UNKNOWN_ATTACHMENTS_STAY_UNKNOWN (no fake filename/MIME/type/size/thumbnail; 0 child rows != known no-attachments without completeness evidence)",
+    "dp_115": "ATTACHMENT_FACTS_AND_CARD_PRESENTATION_ARE_SEPARATE_CONTRACTS",
+    "dp_116": "MESSAGE_TEXT_AND_ATTACHMENTS_ARE_ORTHOGONAL_FACTS (text + zero/many attachments)",
+    "dp_117": "ATTACHMENT_SOURCE_REFERENCE_IS_NOT_RENDERER_LOAD_AUTHORITY (CSP/network boundary kept)",
+    "dp_118": "ATTACHMENT_BINARY_STORAGE_IS_NOT_PART_OF_NORMALIZED_MESSAGE_FACTS_BY_DEFAULT (no bytes/blob in SQLite; Asset/Cache later)",
+    "i_31": "MESSAGE_RICH_PAYLOADS_DO_NOT_DEFINE_PRODUCT_ORDER_CONTEXT_DOMAIN (M4.3 independent)",
+    "readiness": "ATTACHMENT_FACT_CONTRACT=NOT_READY / ATTACHMENT_PRODUCER=NOT_READY / BINARY_LIFECYCLE=NOT_READY / PRESENTATION=NOT_READY",
+    "next": "Owner decides authorize 00010/prerequisite vs DEFER; no Attachment/Card implementation this round; no SHEEP-066 without PASS"
   }
 }

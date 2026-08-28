@@ -2,22 +2,22 @@
 
 > 项目：Fast Sheep / 快羊客服 · Phase 4 / M4.2 · 日期：2026-08-28
 > 定位：SHEEP-065 本轮仅执行 **Fact-Readiness Review + Contract Decision Package**（Owner 收紧：不授权 migration 00010、不批准 Attachment/Card 产品实现、无 visual evidence）。
-> 结论：**evidence-aware BLOCKED/DEFERRED**——无真实 attachment 事实源/事实契约；不为 Roadmap 制造 fake attachment/card UI。
+> 结论：**evidence-aware BLOCKED/DEFERRED**——无真实 attachment 事实源/事实契约（`ATTACHMENT_FACT_CONTRACT=NOT_READY` / `ATTACHMENT_PRODUCER=NOT_READY`）；不为 Roadmap 制造 fake attachment/card UI。
 > 边界：不改 schema v9；不实现 Send Pipeline / platform producer / Composer attachment staging / Outbox / sync / Product-Order Context / Unread。
 
-## 1. 决策契约（本轮记录，待 Owner PASS）
+## 1. 决策契约（本轮记录，待 Owner PASS；编号以 Owner 最新批准为准）
 
 | DP / I | 决策 | 说明 |
 |---|---|---|
-| DP-111 | ATTACHMENT_FACT_MODEL_IS_TYPED_EXTENSIBLE_NOT_METADATA_BAG | 禁止万能 metadata JSON bag 代替事实契约（legacy `metadata`/`product_context`/`order_context` Record<string,unknown> 是反例，不复制） |
-| DP-112 | MESSAGE_BODY_AND_ATTACHMENTS_ARE_ORTHOGONAL_FACTS | 不预设 content_kind=text|image|file|rich 互斥模型；text+attachment / 多 attachment / image-only 事实需求未证实前不定 storage shape |
-| DP-113 | ATTACHMENT_FACT_METADATA_AND_BINARY_LIFECYCLE_ARE_SEPARATE_CAPABILITIES | attachment fact ≠ Fast Sheep 已下载/拥有 binary；不实现 download/cache/upload/cleanup |
-| DP-114 | ATTACHMENT_PRESENTATION_IS_THIN_TYPED_RENDERING_NOT_A_CARD_FRAMEWORK | 不建 Card registry/slot/variant/plugin framework |
-| DP-115 | ATTACHMENT_PRESENCE_AND_FACT_COMPLETENESS_MUST_BE_EXPLICIT | presence/completeness 必须显式 |
-| DP-116 | MESSAGE_ATTACHMENT_CARDS_ARE_DISTINCT_FROM_DOMAIN_CONTEXT_CARDS | 不抽象 Product/Order/Customer cards（M4.3 独立） |
-| DP-117 | ATTACHMENT_ACTIONS_REQUIRE_REAL_CAPABILITY_NOT_PRESENTATION_ASSUMPTION | 无真实 open/download/preview/send 能力时不展示可用动作 |
-| I-31 | RENDERER_MUST_NOT_FETCH_REMOTE_ATTACHMENT_RESOURCES_DIRECTLY | 未来 preview/fetch 必须经可信 Main/Worker/adapter 边界；Renderer 不得直接使用平台远程/signed URL |
-| I-32 | ABSENCE_OF_ATTACHMENT_FACTS_DOES_NOT_IMPLY_KNOWN_NO_ATTACHMENTS_WITHOUT_COMPLETENESS_EVIDENCE | 历史 0 child rows 不得自动解释为"确定无附件" |
+| DP-111 | ATTACHMENT_FACT_MODEL_IS_TYPED_EXTENSIBLE_NOT_METADATA_BAG | 禁止万能 metadata JSON 替代 typed facts（legacy `metadata`/`product_context`/`order_context` Record<string,unknown> 是反例，不复制） |
+| DP-112 | ATTACHMENT_STORAGE_FOLLOWS_MESSAGE_FACT_SEMANTICS | Read First 先确认 attachment owner/lifecycle/cardinality/source identity/authoritative metadata 再决定 storage；未完成前不得 00010 |
+| DP-113 | TYPED_ATTACHMENT_PRESENTERS_ARE_THIN_AND_KIND_SPECIFIC | 禁止 CardRegistry/variant engine/plugin/rich-content framework |
+| DP-114 | HISTORICAL_UNKNOWN_ATTACHMENTS_STAY_UNKNOWN | 不用 fake filename/MIME/type/size/thumbnail 填充未知事实；0 child rows ≠ 确定无附件（无 completeness 证据不得推断已知无附件） |
+| DP-115 | ATTACHMENT_FACTS_AND_CARD_PRESENTATION_ARE_SEPARATE_CONTRACTS | 事实契约与 Card 呈现契约分离 |
+| DP-116 | MESSAGE_TEXT_AND_ATTACHMENTS_ARE_ORTHOGONAL_FACTS | Message 可同时有 text + zero/many attachments；不把模型简化成 content_kind=text\|rich 互斥结构 |
+| DP-117 | ATTACHMENT_SOURCE_REFERENCE_IS_NOT_RENDERER_LOAD_AUTHORITY | source URL/ref 不授权 Renderer 直接网络加载；CSP/network boundary 保持；download/materialization/cache 另立受控 pipeline |
+| DP-118 | ATTACHMENT_BINARY_STORAGE_IS_NOT_PART_OF_NORMALIZED_MESSAGE_FACTS_BY_DEFAULT | 本单元不把 image/file bytes/blob 直接塞 SQLite；后续 Asset/Cache 需求另决策 |
+| I-31 | MESSAGE_RICH_PAYLOADS_DO_NOT_DEFINE_PRODUCT_ORDER_CONTEXT_DOMAIN | 消息内商品/订单 payload 与 M4.3 Product/Order Context 不同语义层；不得借 Cards 提前实现 M4.3 |
 
 ## 2. Read First 证据
 
