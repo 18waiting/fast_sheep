@@ -1630,6 +1630,31 @@
     "next_per_roadmap": "SHEEP-066-PR1 awaiting Owner PASS; no SHEEP-067 without PASS",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
+  },
+  "sheep_066_pr2": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "NOT_READY / PRODUCT_DECISION_REQUIRED (pure Read First; 0 product code)",
+    "closed_date_candidate": null,
+    "report": "reports\\SHEEP-066-PR2-report.json",
+    "review_doc": "docs\\fast-sheep-manual-send-authorization-readiness.md",
+    "readiness": {
+      "MANUAL_SEND_WORKSPACE_TARGET_AUTHORITY_READINESS": "READY (WorkspaceMerchant containment + identity domain + PR1 attempt target; I-42)",
+      "MANUAL_SEND_AUTHORIZATION_CAPABILITY_READINESS": "NOT_READY (send_text is declared Platform Technical Capability, DP-131)",
+      "MANUAL_SEND_RESOURCE_SCOPE_READINESS": "NOT_READY (no implementation; must not substitute Queue/selected shop/All Stores/containment, I-43)",
+      "MANUAL_SEND_ENTITLEMENT_REQUIREMENT_READINESS": "PRODUCT_DECISION_REQUIRED (DP-132 unevidenced)",
+      "MANUAL_SEND_ENTITLEMENT_IMPLEMENTATION_READINESS": "NOT_READY",
+      "PLATFORM_TEXT_SEND_TECHNICAL_CAPABILITY_READINESS": "PARTIAL (session ready is technical only, #11)",
+      "MANUAL_SEND_AUTHORIZATION_COMPOSITION_READINESS": "NOT_READY (production Send unavailable, DP-129)"
+    },
+    "decisions": ["DP-131/132 + I-42/I-43 + DP-124 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decision_package": {
+      "no_permission_system": "no authorization service / policy engine / entitlement checker built (0 code)",
+      "composer_send_disabled": "Composer Send stays disabled (DP-129); no delivery driver; ACK still NOT_READY (inherited)",
+      "owner_options": "minimal authorization prerequisite vs Product Decision (is manual_send entitlement real) vs DEFER"
+    },
+    "next_per_roadmap": "Owner decides minimal authorization prerequisite / Product Decision / DEFER; no SHEEP-066 product send implementation without PASS; no SHEEP-067",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }
-

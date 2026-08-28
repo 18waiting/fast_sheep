@@ -1,0 +1,75 @@
+{
+  "task": "SHEEP-066-PR2",
+  "codex_result": "PARTIAL",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.2 prerequisite (before SHEEP-066 product send implementation)",
+  "status": "NOT_READY / PRODUCT_DECISION_REQUIRED (pure Read First; 0 product code)",
+  "summary": "Manual Text Send Authorization Contract Readiness：核验现有 Capability/ResourceScope/Entitlement/WorkspaceMerchant/Conversation/Store/PlatformAccount authority——Authorization Capability NOT_READY（platform-capability-registry.send_text 是 declared Platform Technical Capability，非 Agent Authorization Capability，DP-131）、ResourceScope NOT_READY（无实现；不得用 Queue/selected shop/All Stores/containment 冒充，I-43）、Entitlement requirement PRODUCT_DECISION_REQUIRED（DP-132 需求未证实）、Entitlement implementation NOT_READY、Platform technical capability PARTIAL（session ready 仅 technical，#11）、Workspace target authority READY（基础）、Authorization composition NOT_READY。Composer Send 保持 disabled（DP-129）；不实现权限系统、不接 delivery driver、不改 schema v10",
+  "completed_requirements": 16,
+  "total_requirements": 16,
+  "owner_tightening": {
+    "send_text_technical_capability": "遵守：platform-capability-registry.send_text 视为待核验 Platform Technical Capability，不自动视为 Agent Authorization Capability",
+    "dp131": "遵守：AGENT_AUTHORIZATION_CAPABILITY_AND_PLATFORM_TECHNICAL_CAPABILITY_ARE_SEPARATE_GATES",
+    "i42": "遵守：MANUAL_SEND_AUTHORITY_IS_RESOLVED_FROM_THE_CONVERSATION_NOT_AMBIENT_QUEUE_SCOPE（Renderer/Composer 仅 {conversationId,draft}；Main resolve Conversation 得 Store/PlatformAccount authority）",
+    "i43": "遵守：WORKSPACE_MERCHANT_CONTAINMENT_DOES_NOT_IMPLY_RESOURCE_SCOPE_AUTHORITY",
+    "resource_scope_not_invented": "遵守：ResourceScope 无实现 -> NOT_READY；未用 Queue Store filter / selected shop / All Stores / containment 冒充",
+    "entitlement_split": "遵守：拆 MANUAL_SEND_ENTITLEMENT_REQUIREMENT_READINESS 与 MANUAL_SEND_ENTITLEMENT_IMPLEMENTATION_READINESS；未自造 manual_send entitlement",
+    "dp132": "遵守：MANUAL_SEND_ENTITLEMENT_REQUIREMENT_MUST_BE_EVIDENCED_NOT_INFERRED_FROM_THE_EXISTENCE_OF_ENTITLEMENTS",
+    "no_invented_capability": "遵守：未自造 SEND_MESSAGE / conversation.send Authorization Capability taxonomy；无事实源 -> NOT_READY / PRODUCT_DECISION_REQUIRED",
+    "dp124": "遵守：AI AutomationLevel 不直接 gate Manual Agent Send",
+    "session_vs_authority": "遵守：session ready 只证明 technical readiness；authorization valid + session unavailable 也保持 production Send unavailable",
+    "seven_readiness_outputs": "遵守：WORKSPACE_TARGET / AUTHORIZATION_CAPABILITY / RESOURCE_SCOPE / ENTITLEMENT_REQUIREMENT / ENTITLEMENT_IMPLEMENTATION / PLATFORM_TEXT_SEND_TECHNICAL / AUTHORIZATION_COMPOSITION 分别输出",
+    "gate_matrix": "遵守：逐项 Gate Matrix（问题/真实事实源/readiness/缺失语义），未折叠为 canSend=false",
+    "delivery_driver_not_redone": "遵守：Delivery Driver / ACK readiness 继承 SHEEP-066（production ACK 仍 NOT_READY，DP-129 有效）",
+    "zero_code": "遵守：0 product code / 0 UI / 0 visual evidence；未创建 authorization service/policy engine/entitlement checker",
+    "composer_send_disabled": "遵守：Composer Send 全程 disabled"
+  },
+  "readiness": {
+    "MANUAL_SEND_WORKSPACE_TARGET_AUTHORITY_READINESS": "READY (WorkspaceMerchant containment + identity domain + PR1 attempt target capture; I-42 authority resolved from the conversation)",
+    "MANUAL_SEND_AUTHORIZATION_CAPABILITY_READINESS": "NOT_READY (no Agent Authorization Capability model; send_text is declared Platform Technical Capability, DP-131)",
+    "MANUAL_SEND_RESOURCE_SCOPE_READINESS": "NOT_READY (no ResourceScope implementation; must not substitute Queue/selected shop/All Stores/containment, I-43)",
+    "MANUAL_SEND_ENTITLEMENT_REQUIREMENT_READINESS": "PRODUCT_DECISION_REQUIRED (no evidence manual text send needs an entitlement; DP-132)",
+    "MANUAL_SEND_ENTITLEMENT_IMPLEMENTATION_READINESS": "NOT_READY (no Entitlement implementation)",
+    "PLATFORM_TEXT_SEND_TECHNICAL_CAPABILITY_READINESS": "PARTIAL (send_text declared; doudian certainty PARTIAL; session ready is technical only, #11)",
+    "MANUAL_SEND_AUTHORIZATION_COMPOSITION_READINESS": "NOT_READY (Authorization Capability + ResourceScope + Entitlement absent -> composition not authorizable; production Send unavailable, DP-129)"
+  },
+  "decision_package": {
+    "no_permission_system": "no authorization service / policy engine / entitlement checker built this round (0 code)",
+    "composer_send_disabled": "Composer Send stays disabled (DP-129); no delivery driver; ACK still NOT_READY (inherited from SHEEP-066)",
+    "owner_options": "minimal authorization prerequisite (requires evidenced Authorization Capability/ResourceScope/Entitlement requirement model) vs Product Decision (is a manual_send entitlement real) vs DEFER (until real multi-merchant/subscription/authorization need)"
+  },
+  "evidence": {
+    "confirmed": [
+      "platform-capability-registry.send_text: declared Platform Technical Capability (pdd hardcoded true; doudian DOUDIAN_CAPABILITY_CERTAINTY.send_text=PARTIAL); not Agent Authorization Capability",
+      "session readiness (PddPlatformAdapter.sendText checks session.isReady()) is technical only",
+      "no ResourceScope implementation; no Entitlement implementation",
+      "permission* hits are Electron setPermissionRequestHandler (browser permissions), not agent send authority",
+      "WorkspaceMerchant containment + identity domain + PR1 attempt target capture exist (READY basis)",
+      "no SEND_MESSAGE / conversation.send Authorization Capability taxonomy"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "desktop build/typecheck + desktop tests 298/298 (regression; pure Read First turn — no new product code)",
+    "workspace typecheck/test PASS",
+    "m6 Electron smoke PASS (external_network_calls=0) — non-regression",
+    "check:boundary PASS; secret scan PASS"
+  ],
+  "negative_tests": [
+    "未实现权限系统 / authorization service / policy engine / entitlement checker",
+    "未启用 Composer Send；未接真实 delivery driver",
+    "未自造 Authorization Capability / ResourceScope / Entitlement taxonomy（DP-131/132/I-43）",
+    "未用 Queue Store filter / selected shop / All Stores / merchant containment 冒充 ResourceScope",
+    "未改 schema v10；未改已 PASS Composer/I-27~I-30、PR1/I-33~I-41"
+  ],
+  "modified_files": [
+    "docs/fast-sheep-manual-send-authorization-readiness.md (new)",
+    "reports/SHEEP-066-PR2-report.json (new)",
+    "project/PROJECT_STATE.json (sheep_066_pr2 record + decision package)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
