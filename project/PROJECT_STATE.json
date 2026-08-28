@@ -29,9 +29,9 @@
   },
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
-  "last_closed_task": "SHEEP-065",
-  "current_task": "SHEEP-066 (Message Send Delivery-Contract Readiness = STOP/DEFER; Option A/B not approved; Composer Send stays disabled; decision package submitted; awaiting Owner decision)",
-  "next_action": "Owner decision on SHEEP-066 (delivery prerequisite vs DEFER); no Send implementation; no SHEEP-067 without PASS",
+  "last_closed_task": "SHEEP-066 (Read First)",
+  "current_task": "SHEEP-066-PR1 (Text Delivery Attempt & Outcome Foundation — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed; Composer Send stays disabled)",
+  "next_action": "SHEEP-066-PR1 (Text Delivery Attempt & Outcome Foundation) proposal — awaiting Owner approval; not auto-executed; no SHEEP-067 without PASS",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1551,9 +1551,9 @@
   },
   "sheep_066": {
     "codex_result": "PARTIAL",
-    "controller_decision": "PENDING_OWNER_PASS",
-    "status": "STOP / DEFER (Message Send Delivery-Contract Readiness; Option A/B not approved; Composer Send disabled)",
-    "closed_date_candidate": null,
+    "controller_decision": "PASS",
+    "status": "CLOSED (Read First accepted; PR1 prerequisite approved)",
+    "closed_date_candidate": "2026-08-28",
     "report": "reports\\SHEEP-066-report.json",
     "review_doc": "docs\\fast-sheep-send-pipeline-delivery-readiness.md",
     "readiness": {
@@ -1563,7 +1563,10 @@
       "RETRY_IDEMPOTENCY_READINESS": "PARTIAL (commandId idempotency; no durable journal / reconciliation / UNKNOWN handling)",
       "DURABLE_SEND_ATTEMPT_READINESS": "NOT_READY (no durable delivery journal; crash window unhandled)"
     },
-    "decisions": ["DP-119/120/122/124/125/126 + I-33 + I-28 sent-definition (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decisions": ["DP-119/120/122/124/125/126 + I-33 + I-28 sent-definition (OWNER_DECIDED 2026-08-28)"],
+    "owner_disposition": "Option A NOT approved; Option B NOT approved; approved independent prerequisite SHEEP-066-PR1 (Text Delivery Attempt & Outcome Foundation)",
+    "prerequisite_proposal": "SHEEP-066-PR1 (Text Delivery Attempt & Outcome Foundation) — submitted; awaiting Owner approval; not executed",
+    "controller_pass_date": "2026-08-28",
     "decision_package": {
       "option_a": "DEFER (real platform driver with authoritative delivery/ack semantics not provable)",
       "option_b": "NOT APPROVED (send-record would fake the Send Pipeline)",
@@ -1581,3 +1584,4 @@
     "next_stage_not_executed": true
   }
 }
+
