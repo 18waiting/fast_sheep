@@ -26,6 +26,11 @@ export function mountApp(root: HTMLElement): WorkbenchStore {
     onCancel: () => void store.cancel(),
     onPlatformBoundsChange: (bounds) => void store.reportPlatformBounds(bounds),
     onReloadPlatform: () => void store.reloadPlatform(),
+    // SHEEP-064 Composer: manual draft input + explicit submit intent + explicit
+    // non-destructive AI-suggestion apply (DP-105/106/107/108).
+    onComposerDraftChange: (text) => store.updateComposerDraft(text),
+    onComposerSubmit: () => store.submitComposer(),
+    onApplySuggestion: () => store.applySuggestion(),
   };
 
   // M10 panels: projection/control only. All controls forward to typed IPC
@@ -88,3 +93,4 @@ export function mountApp(root: HTMLElement): WorkbenchStore {
 
   return store;
 }
+

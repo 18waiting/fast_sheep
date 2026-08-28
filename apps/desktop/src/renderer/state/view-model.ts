@@ -44,6 +44,15 @@ export interface UiState {
   timelineMessages: TimelineMessageView[];
   timelineLoading: boolean;
   timelineError: string | null;
+  /** SHEEP-064: ephemeral composer drafts keyed by conversationId (DP-108/109).
+   *  In-memory only; persist to SHEEP-075. Survive conversation switches within the
+   *  Main context lifetime (DP-109). */
+  composerDrafts: Record<string, string>;
+  /** SHEEP-064: whether a production Send pipeline is wired (false until SHEEP-066);
+   *  Send control must honestly express unavailable and never fake success. */
+  composerSendAvailable: boolean;
+  /** SHEEP-064: transient composer cue (e.g. non-destructive apply blocked / send unavailable). */
+  composerNote: string | null;
 }
 
 export const EMPTY_UI_STATE: UiState = {
@@ -68,6 +77,9 @@ export const EMPTY_UI_STATE: UiState = {
   timelineMessages: [],
   timelineLoading: false,
   timelineError: null,
+  composerDrafts: {},
+  composerSendAvailable: false,
+  composerNote: null,
 };
 
 export function revisionOf(vm: WorkbenchViewModel | null): number {
@@ -160,6 +172,63 @@ export function activeConversationPresentation(state: UiState): ActiveConversati
     state: trustedConv?.state ?? null,
     buyer: trustedConv?.buyer ?? null,
   };
+}
+
+// ---- SHEEP-064 Composer: ephemeral drafts + submit-intent contract ----
+
+/** DP-108/DP-109: set the ephemeral draft for a conversation (keyed by
+ *  conversationId, not Queue row / Store Scope). In-memory only (SHEEP-075). */
+export function setComposerDraft(state: UiState, conversationId: string, text: string): UiState {
+  return { ...state, composerDrafts: { ...state.composerDrafts, [conversationId]: text }, composerNote: null };
+}
+
+/** DP-106: AI suggestion application is EXPLICIT and NON-DESTRUCTIVE. A suggestion
+ *  is never applied asynchronously; an explicit apply fills the draft ONLY when the
+ *  current draft is empty or identical. A non-empty differing draft is preserved and
+ *  a calm note is set (never silently replaced). */
+export function applySuggestionToComposer(state: UiState, conversationId: string, suggestion: string): UiState {
+  const current = state.composerDrafts[conversationId] ?? "";
+  if (current === "" || current === suggestion) {
+    return { ...state, composerDrafts: { ...state.composerDrafts, [conversationId]: suggestion }, composerNote: null };
+  }
+  return { ...state, composerNote: "草稿非空，未覆盖 AI 建议" };
+}
+
+/** #11: production Send capability availability (wired by SHEEP-066). */
+export function setComposerSendAvailable(state: UiState, available: boolean): UiState {
+  return { ...state, composerSendAvailable: available };
+}
+
+// ---- DP-107 / I-27 / DP-110 / I-28: submit-intent contract (SHEEP-066 consumes) ----
+
+/** A composer submit intent: conversation identity + draft captured ATOMICALLY at
+ *  intent time (DP-110). Later active-conversation switches never change the target. */
+export interface ComposerSubmitIntent {
+  conversationId: string;
+  draft: string;
+}
+
+/** Atomic capture of conversationId + draft at intent time (DP-110). 064 only
+ *  defines/captures the intent; it never persists it as a delivered message fact
+ *  (I-27) and never executes delivery (DP-107) — SHEEP-066 owns execution. */
+export function captureComposerSubmitIntent(conversationId: string, draft: string): ComposerSubmitIntent {
+  return { conversationId, draft };
+}
+
+/** I-28: a send result may mutate ONLY the draft for ITS captured conversation.
+ *  "sent" clears that conversation's draft; "failed" preserves it (never clears);
+ *  a c1 result never clears c2's draft. This is the SHEEP-066 hard constraint. */
+export function applyComposerSendResult(state: UiState, intent: ComposerSubmitIntent, outcome: "sent" | "failed"): UiState {
+  if (outcome === "failed") return state;
+  const drafts = { ...state.composerDrafts };
+  delete drafts[intent.conversationId];
+  return { ...state, composerDrafts: drafts, composerNote: null };
+}
+
+/** I-29: Enter-to-submit only when NOT in IME composition and Shift is not held.
+ *  IME composition must never trigger submit; Shift+Enter inserts a newline. */
+export function shouldSubmitComposerOnEnter(e: { isComposing: boolean; shiftKey: boolean }): boolean {
+  return !e.isComposing && !e.shiftKey;
 }
 
 export function setPendingCommand(state: UiState, command: UiState["pendingCommand"]): UiState {

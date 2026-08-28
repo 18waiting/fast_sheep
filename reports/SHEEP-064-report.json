@@ -1,0 +1,94 @@
+{
+  "task": "SHEEP-064",
+  "codex_result": "COMPLETE",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.2",
+  "summary": "Composer (Option C)：manual professional-fallback reply input（DP-105）成为 Timeline 下方主回复 surface；ephemeral drafts keyed by conversationId（DP-108/109）；AI suggestion 显式非破坏 apply（DP-106）；submit = explicit submit-intent contract（DP-107/I-27，不写 delivered message fact、不 delivery，执行留 SHEEP-066）；intent 原子捕获（DP-110）；I-28 send-result 只影响自身会话 draft；I-29 IME 不触发 submit；无真实 Send IPC → Send native disabled + 诚实 unavailable（不伪造成功）；native textarea/button + accessible label + focus-visible + 无 innerHTML；visual evidence 5 态（empty/draft/apply/switch/unavailable）经真实路径；desktop 294/294、workspace typecheck+test PASS、m6 smoke PASS（external_network_calls=0）、boundary+secrets PASS",
+  "completed_requirements": 16,
+  "total_requirements": 16,
+  "owner_tightening": {
+    "dp105": "遵守：COMPOSER_IS_THE_MANUAL_PROFESSIONAL_FALLBACK_REPLY_INPUT（不依赖 AI；AI failure/HUMAN_ONLY 可正常编辑）",
+    "dp106": "遵守：AI_SUGGESTION_APPLICATION_TO_COMPOSER_IS_EXPLICIT_AND_NON_DESTRUCTIVE（无异步自动覆盖；显式使用建议才进入；非空 draft 不静默 replace + calm note）",
+    "dp107": "遵守：COMPOSER_SUBMIT_IS_EXPLICIT_INTENT_SEND_PIPELINE_OWNS_EXECUTION（只 capture intent；不写 outbound message/不设 occurred_at/不 delivery）",
+    "i27": "遵守：SEND_INTENT_MUST_NOT_BE_PERSISTED_AS_DELIVERED_CONVERSATION_MESSAGE_FACT（测试断言 draft 不被写入/清除为 delivered fact）",
+    "option_b_forbidden": "遵守：未用 orchestrator.manual_send 作为 Composer 临时替代",
+    "dp108": "遵守：COMPOSER_DRAFT_IS_BOUND_TO_CONVERSATION_IDENTITY（key = conversationId，非 Queue row/Store Scope）",
+    "dp109": "遵守：EPHEMERAL_DRAFTS_SURVIVE_CONVERSATION_SWITCHES_WITHIN_THE_MAIN_CONTEXT（c1->c2->c1 保留；restart 可消失；持久化留 SHEEP-075）",
+    "dp110": "遵守：COMPOSER_SUBMIT_CAPTURES_CONVERSATION_IDENTITY_AND_DRAFT_AT_INTENT_TIME（原子捕获；后续切换不改 target）",
+    "i28": "遵守：SEND_RESULT_MAY_MUTATE_ONLY_THE_DRAFT_FOR_ITS_CAPTURED_CONVERSATION（sent 清自身/failed 保留/c1 不清 c2；SHEEP-066 硬约束）",
+    "i29": "遵守：IME_COMPOSITION_MUST_NEVER_TRIGGER_COMPOSER_SUBMIT（isComposing 不 submit；Shift+Enter 换行；中文 IME composition 测试）",
+    "trim_no_rewrite": "遵守：空白校验用 trim 判断，但不清除/改写用户 authored draft；未发明 max-length",
+    "no_send_ipc": "遵守：064 无真正 send IPC / message ingestion；Send 保留但 native disabled + 诚实 unavailable（不伪造成功）",
+    "visual_evidence": "遵守：empty composer / manual draft / AI explicit apply / per-conversation draft switch preservation / send-pipeline unavailable state（非 send busy/error）",
+    "main_reply_surface": "遵守：Composer 成为 Timeline 下方主回复 surface（Conversation-centered 收敛；非独立 sibling card；未最终重做 Workspace）",
+    "ai_explicit_apply_only": "遵守：本轮只建立 explicit apply -> editable draft 路径；旧 sibling suggestion panel 可暂存",
+    "a11y": "遵守：native textarea/button + accessible name/focus-visible；placeholder 非唯一 label；无 innerHTML",
+    "forbidden_kept": "遵守：未实现 Attachments / Send Pipeline / platform delivery / Outbox / sync / draft persistence / Unread/Priority/Risk / Customer/Product/Order / schema 变更"
+  },
+  "decisions": {
+    "dp105": "COMPOSER_IS_THE_MANUAL_PROFESSIONAL_FALLBACK_REPLY_INPUT",
+    "dp106": "AI_SUGGESTION_APPLICATION_TO_COMPOSER_IS_EXPLICIT_AND_NON_DESTRUCTIVE",
+    "dp107": "COMPOSER_SUBMIT_IS_EXPLICIT_INTENT_SEND_PIPELINE_OWNS_EXECUTION",
+    "dp108": "COMPOSER_DRAFT_IS_BOUND_TO_CONVERSATION_IDENTITY",
+    "dp109": "EPHEMERAL_DRAFTS_SURVIVE_CONVERSATION_SWITCHES_WITHIN_THE_MAIN_CONTEXT",
+    "dp110": "COMPOSER_SUBMIT_CAPTURES_CONVERSATION_IDENTITY_AND_DRAFT_AT_INTENT_TIME",
+    "i27": "SEND_INTENT_MUST_NOT_BE_PERSISTED_AS_DELIVERED_CONVERSATION_MESSAGE_FACT",
+    "i28": "SEND_RESULT_MAY_MUTATE_ONLY_THE_DRAFT_FOR_ITS_CAPTURED_CONVERSATION",
+    "i29": "IME_COMPOSITION_MUST_NEVER_TRIGGER_COMPOSER_SUBMIT"
+  },
+  "evidence": {
+    "confirmed": [
+      "manual draft independent of AI (DP-105); explicit non-destructive apply (DP-106)",
+      "submit = explicit intent only; unavailable honestly expressed; no delivered message fact (DP-107/I-27)",
+      "drafts keyed by conversationId; c1->c2->c1 preserved (DP-108/109)",
+      "intent atomic capture + target immutable (DP-110); I-28 result isolation",
+      "IME never triggers submit (I-29); native a11y + no innerHTML",
+      "composer below timeline as main reply surface; send-pipeline unavailable state honest",
+      "visual evidence 5 states via real persistence->Main->IPC->Renderer"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "desktop build/typecheck; desktop tests 294/294 (9 new composer guards)",
+    "workspace typecheck / test（全部 PASS）",
+    "m6 Electron renderer smoke（PASS，external_network_calls=0）",
+    "check:boundary PASS；secret scan PASS"
+  ],
+  "smokes": [
+    "m6-electron-smoke：PASS"
+  ],
+  "visual_evidence": [
+    "reports\\visual-evidence\\sheep-064-composer-empty.png",
+    "reports\\visual-evidence\\sheep-064-composer-draft.png",
+    "reports\\visual-evidence\\sheep-064-composer-apply.png",
+    "reports\\visual-evidence\\sheep-064-composer-switch.png",
+    "reports\\visual-evidence\\sheep-064-composer-unavailable.png"
+  ],
+  "negative_tests": [
+    "未实现真正 send IPC / message ingestion / platform delivery / Outbox / sync",
+    "未用 orchestrator.manual_send 作为 Composer 替代（Option B 禁止）",
+    "无异步自动覆盖 AI 建议（DP-106）；非空 draft 不静默 replace",
+    "IME composition 不触发 submit（I-29）",
+    "未实现 Attachments / draft persistence / Unread/Priority/Risk / Customer/Product/Order / schema 变更"
+  ],
+  "modified_files": [
+    "apps/desktop/src/renderer/state/view-model.ts (composer state + reducers + intent contract)",
+    "apps/desktop/src/renderer/state/workbench-store.ts (updateComposerDraft / applySuggestion / submitComposer)",
+    "apps/desktop/src/renderer/components/composer.ts (new)",
+    "apps/desktop/src/renderer/components/app-shell.ts (composer below timeline)",
+    "apps/desktop/src/renderer/components/suggestion-panel.ts (explicit 使用建议 apply)",
+    "apps/desktop/src/renderer/components/actions.ts + app.ts (composer actions)",
+    "apps/desktop/src/renderer/styles.css (composer styles)",
+    "apps/desktop/tests/renderer-composer.test.ts (new, 9 guards)",
+    "scripts/visual-evidence/capture-composer-main.mjs (new)",
+    "reports/visual-evidence/sheep-064-composer-*.png (5)",
+    "docs/fast-sheep-composer.md (new)",
+    "reports/SHEEP-064-report.json (new)",
+    "project/PROJECT_STATE.json (sheep_064 record)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

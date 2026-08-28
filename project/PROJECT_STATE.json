@@ -30,8 +30,8 @@
   "current_phase": "PHASE_4",
   "current_milestone": "M4.2-COMPLETE",
   "last_closed_task": "SHEEP-063",
-  "current_task": "SHEEP-064 (Composer — Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
-  "next_action": "SHEEP-064 (Composer) proposal — awaiting Owner approval; not auto-executed",
+  "current_task": "SHEEP-064 (COMPLETE: Composer with explicit submit-intent contract Option C; Controller Review + visual evidence submitted; awaiting Owner PASS — SHEEP-065 NOT started)",
+  "next_action": "SHEEP-064 awaiting Owner PASS (DP-105~110 + I-27~I-29 + visual review); no SHEEP-065 without PASS",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -1403,5 +1403,41 @@
         "Platform/Background Tasks/Offline Learning remain runtime baseline",
         "UNREAD_FACT_READINESS stays PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS"
     ]
+  },
+  "sheep_064": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PENDING_OWNER_PASS",
+    "status": "EXECUTED_AWAITING_PASS",
+    "closed_date_candidate": null,
+    "report": "reports\\SHEEP-064-report.json",
+    "review_doc": "docs\\fast-sheep-composer.md",
+    "visual_evidence": [
+      "reports\\visual-evidence\\sheep-064-composer-empty.png",
+      "reports\\visual-evidence\\sheep-064-composer-draft.png",
+      "reports\\visual-evidence\\sheep-064-composer-apply.png",
+      "reports\\visual-evidence\\sheep-064-composer-switch.png",
+      "reports\\visual-evidence\\sheep-064-composer-unavailable.png"
+    ],
+    "decisions": ["DP-105..DP-110 + I-27..I-29 (Option C submit-intent contract; OWNER_DECIDED pending Owner PASS)"],
+    "implemented": [
+        "Composer = manual professional-fallback reply input below Timeline (DP-105/108)",
+        "ephemeral drafts keyed by conversationId; survive switches in MainContext (DP-109)",
+        "AI suggestion explicit + non-destructive apply (DP-106)",
+        "submit = explicit intent contract; no delivered-fact persistence (DP-107/I-27); intent atomic capture (DP-110)",
+        "I-28 send-result isolation; I-29 IME never triggers submit",
+        "no real Send IPC -> Send native disabled + honest unavailable (no fake success)",
+        "native textarea/button + accessible label + focus-visible + no innerHTML"
+    ],
+    "tests": "desktop 294/294 (9 new composer guards) + workspace typecheck/test PASS + m6 smoke PASS (external_network_calls=0) + boundary/secrets PASS",
+    "future_constraints": [
+        "SHEEP-066 Message Send Pipeline owns execution: Main command / persistence / platform delivery / success-failure semantics",
+        "I-27: send intent must never be persisted as a delivered conversation message fact",
+        "I-28: send result may mutate only the draft for its captured conversation; failure never clears draft",
+        "SHEEP-075 Local Drafts persistence; SHEEP-065 Attachments",
+        "UNREAD_FACT_READINESS stays PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS"
+    ],
+    "next_per_roadmap": "SHEEP-064 awaiting Owner PASS; no SHEEP-065 without PASS",
+    "reference_tree_modified": false,
+    "next_stage_not_executed": true
   }
 }

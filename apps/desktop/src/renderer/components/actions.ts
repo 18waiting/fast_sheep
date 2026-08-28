@@ -9,4 +9,9 @@ export interface WorkbenchActions {
   onCancel(): void;
   onPlatformBoundsChange(bounds: { x: number; y: number; width: number; height: number; visible: boolean }): void;
   onReloadPlatform(): void;
+  /** SHEEP-064 Composer: manual draft input, explicit submit intent, explicit AI-suggestion apply. */
+  onComposerDraftChange(text: string): void;
+  onComposerSubmit(): void;
+  onApplySuggestion(): void;
 }
+

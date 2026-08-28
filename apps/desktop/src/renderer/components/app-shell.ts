@@ -19,6 +19,7 @@ import { renderAppNavbar } from "./app-navbar.js";
 import { renderWorkbenchHeader } from "./workbench-header.js";
 import { renderConversationPanel } from "./conversation-panel.js";
 import { renderMessageTimeline } from "./message-timeline.js";
+import { renderComposer } from "./composer.js";
 import { renderSuggestionPanel } from "./suggestion-panel.js";
 import { renderModeToggle } from "./mode-toggle.js";
 import { renderCountdownView } from "./countdown-view.js";
@@ -75,6 +76,9 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
   // SHEEP-063: Message Timeline is the Conversation Main primary content surface
   // (Phase-4 incremental topology convergence; bound to the active conversation).
   renderMessageTimeline(conversationHost, state);
+  // SHEEP-064: Composer is the main reply surface BELOW the Timeline (DP-105/108),
+  // not an independent sibling card (incremental convergence; no final redesign).
+  renderComposer(conversationHost, state, actions);
   panels.appendChild(conversationHost);
   const suggestionHost = el("div", "suggestion-host");
   renderSuggestionPanel(suggestionHost, state, actions);
@@ -136,4 +140,5 @@ function noopM10Actions(): M10PanelActions {
     onCancelJob: () => {},
   };
 }
+
 

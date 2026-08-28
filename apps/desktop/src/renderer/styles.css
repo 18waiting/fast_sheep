@@ -150,3 +150,13 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 .timeline-content { font-size: var(--fs-font-size-md); color: var(--fs-color-text); word-break: break-word; }
 .timeline-message--unknown .timeline-content { color: var(--fs-color-text-secondary); font-style: italic; }
 
+
+/* ===== SHEEP-064 Composer (manual reply input below the Timeline) ===== */
+.composer { background: var(--fs-color-bg-surface); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); border-radius: var(--fs-radius-md); padding: var(--fs-space-3); margin-top: var(--fs-space-2); }
+.composer-label { display: block; font-size: var(--fs-font-size-sm); color: var(--fs-color-text-secondary); margin-bottom: var(--fs-space-1); }
+.composer-input { width: 100%; min-height: 72px; padding: var(--fs-space-2); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); border-radius: var(--fs-radius-sm); font-size: var(--fs-font-size-md); font-family: inherit; resize: vertical; }
+.composer-input:focus-visible { outline: 2px solid var(--fs-color-primary); outline-offset: 1px; }
+.composer-controls { display: flex; align-items: center; gap: var(--fs-space-2); margin-top: var(--fs-space-2); }
+.composer-note { margin: var(--fs-space-2) 0 0; color: var(--fs-color-text-secondary); font-size: var(--fs-font-size-sm); }
+.composer-unavailable { color: var(--fs-color-text-muted); font-size: var(--fs-font-size-sm); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }

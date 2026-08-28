@@ -32,6 +32,9 @@ export function renderSuggestionPanel(root: HTMLElement, state: UiState, actions
   const modeBusy = state.pendingCommand === "set_mode";
 
   const controls = el("div", "suggestion-controls");
+  // SHEEP-064 (DP-106): EXPLICIT, NON-DESTRUCTIVE apply of the AI suggestion into the
+  // composer draft (never async-auto-applies; non-empty drafts are never silently replaced).
+  controls.appendChild(button("btn btn-apply-suggestion", "使用建议", () => actions.onApplySuggestion()));
   const manual = button("btn btn-manual", "手动发送 (Enter)", () => actions.onManualSend());
   manual.disabled = sendBusy || modeBusy;
   const noSave = button("btn btn-no-save", "不保存发送 (Alt+Enter)", () => actions.onNoSaveSend());
@@ -58,3 +61,4 @@ export function renderSuggestionPanel(root: HTMLElement, state: UiState, actions
   panel.tabIndex = 0;
   root.appendChild(panel);
 }
+

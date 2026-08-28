@@ -64,6 +64,9 @@ import {
   setTimelineItems as setTimelineItemsPure,
   setTimelineError as setTimelineErrorPure,
   clearTimeline as clearTimelinePure,
+  setComposerDraft as setComposerDraftPure,
+  applySuggestionToComposer as applySuggestionToComposerPure,
+  captureComposerSubmitIntent,
   type UiState,
 } from "./view-model.js";
 import { reduceEvent, shouldResync } from "./event-reducer.js";
@@ -215,6 +218,41 @@ export class WorkbenchStore {
   }
 
   private timelineRequestSeq = 0;
+
+  /** SHEEP-064: update the ephemeral composer draft for the ACTIVE conversation
+   *  (DP-108: keyed by conversationId; no-op without an active conversation). */
+  updateComposerDraft(text: string): void {
+    const activeId = this.state.activeConversationId;
+    if (activeId === null) return;
+    this.setState(setComposerDraftPure(this.state, activeId, text));
+  }
+
+  /** SHEEP-064 (DP-106): EXPLICIT, NON-DESTRUCTIVE AI suggestion apply into the
+   *  composer draft. Reads the current suggestion; never async-auto-applies. */
+  applySuggestion(): void {
+    const activeId = this.state.activeConversationId;
+    const suggestion = this.state.viewModel?.suggestion?.reply;
+    if (activeId === null || typeof suggestion !== "string") return;
+    this.setState(applySuggestionToComposerPure(this.state, activeId, suggestion));
+  }
+
+  /** SHEEP-064 (DP-107/I-27): Composer submit is EXPLICIT INTENT; execution belongs to
+   *  SHEEP-066. This unit captures the intent atomically (DP-110) but NEVER persists a
+   *  delivered message fact and NEVER executes delivery. Without a wired production
+   *  Send capability, the Send control must honestly express unavailable (I-25/DP-48):
+   *  no fake success. */
+  submitComposer(): void {
+    const activeId = this.state.activeConversationId;
+    const draft = activeId !== null ? (this.state.composerDrafts[activeId] ?? "") : "";
+    if (activeId === null || draft.trim() === "") return;
+    if (!this.state.composerSendAvailable) {
+      this.setState({ ...this.state, composerNote: "发送功能暂不可用" });
+      return;
+    }
+    // SHEEP-066: capture intent atomically, then route to the send pipeline.
+    const intent = captureComposerSubmitIntent(activeId, draft);
+    void intent;
+  }
 
   /** SHEEP-063: refresh Message Timeline via Main typed projection (DP-84/85 + I-14 stale
    *  protection: a stale response for a previous active conversation must not overwrite
