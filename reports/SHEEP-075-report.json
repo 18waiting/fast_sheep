@@ -1,0 +1,94 @@
+{
+  "task": "SHEEP-075",
+  "codex_result": "PARTIAL",
+  "controller_decision": "PENDING_OWNER_PASS",
+  "phase": "Phase 4",
+  "milestone": "M4.5",
+  "status": "NOT_READY / DEFER (Local Drafts Fact-Readiness; no schema v11, no draft persistence/IPC, no Composer UI change)",
+  "summary": "Local Drafts Fact-Readiness Read First：DRAFT_WORKING_STATE_SEMANTICS=PARTIAL（renderer in-memory mutable working state keyed by conversationId；非 delivered fact）、DRAFT_AUTHOR_SCOPE=NOT_READY（无 author scope；无 trusted Member/operator subject；DP-182/I-124 不臆造 scope）、DRAFT_CARDINALITY=NOT_READY（不预设主键/cardinality）、DRAFT_LIFECYCLE_SEMANTICS=NOT_READY（DP-181 create/update/clear + durability timing 未定义）、DRAFT_WRITE_DURABILITY_SEMANTICS=NOT_READY（I-127 不丢 edit 不伪造 save success）、DRAFT_REVISION_CONCURRENCY=NOT_READY（无 revision；I-126；不为 R-06 顺手加 metadata）、DRAFT_CLEARING_SEMANTICS=PARTIAL（I-28 in-memory clearing 存在；gap：未匹配 draft version，DP-184/I-126）、DRAFT_PERSISTENCE_CONTRACT=NOT_READY（无 table/repo/producer/path）、DRAFT_REHYDRATION=NOT_READY（DP-183 conversation-scoped 非全局 startup recovery；I-128）、DRAFT_AUTHORIZATION=PARTIAL（I-121 anchor authorized active conversation；author scope 由 Main trusted context 解析）、DRAFT_BACKUP_RESTORE_SEMANTICS=NOT_READY（draft 不在 SQLite；v11 时由现有 backup-manager 覆盖，无特殊机制）、DRAFT_IPC=NOT_READY、DRAFT_PRIVACY=PARTIAL（I-122/I-125 原样保留 text；trim 仅 send-empty validation）、DRAFT_PRESENTATION=PARTIAL（I-120 NOT_FOUND=空 Composer，failure 不伪装空）、LOCAL_DRAFTS_IMPLEMENTATION=NOT_READY。不授权 schema v11/draft table/draft IPC/Composer UI 变更；不实现 Outbox/sync（Phase 12）；DEFER 至 author scope contract + lifecycle/durability + revision/concurrency + clearing-by-version + conversation-scoped rehydration。DP-179~184 + I-120~I-128 已记录",
+  "completed_requirements": 21,
+  "total_requirements": 21,
+  "owner_tightening": {
+    "dp179": "遵守：DRAFT_IS_LOCAL_MUTABLE_WORKING_STATE_BOUND_TO_CONVERSATION_AND_EXPLICIT_AUTHOR_SCOPE（draft 是 mutable work state，非 delivered Message fact）",
+    "dp182": "遵守：DRAFT_AUTHOR_SCOPE_IS_NOT_INFERRED_FROM_CONVERSATION_OR_WORKSPACE_MERCHANT（核验 durable Draft 为 conversation+Member / Seat / local installation / other scope；未因 ephemeral map keyed conversationId 永久决定共享）",
+    "i124": "遵守：PERSISTED_DRAFT_MUST_NOT_BE_SHARED_ACROSS_HUMAN_SUBJECTS_WITHOUT_AN_EXPLICIT_AUTHOR_SCOPE_CONTRACT",
+    "dp180": "遵守：DRAFT_IS_DISTINCT_FROM_DELIVERED_MESSAGE_FACT_SEND_INTENT_AND_DELIVERY_ATTEMPT（未用 delivery_attempt payload 代替 editable draft）",
+    "dp181": "遵守：DRAFT_PERSISTENCE_REQUIRES_EXPLICIT_LIFECYCLE_CLEARING_AND_DURABILITY_SEMANTICS（核验 create/update/clear + autosave/debounce/switch/close 何时算 durable；未实现）",
+    "i120": "遵守：AUTHORIZED_DRAFT_NOT_FOUND_MEANS_NO_SAVED_DRAFT_WHILE_READ_FAILURE_OR_UNAVAILABLE_MUST_NOT_MASQUERADE_AS_EMPTY（合法 NOT_FOUND 可空 Composer；DB/auth/IPC failure 不伪装空）",
+    "i121": "遵守：Draft read 锚定 authorized Active Conversation；未来 author scope 由 Main trusted context 解析，Renderer 不提供可信 Member/author target",
+    "i122": "遵守：Draft payload 默认不进 logs/telemetry/error strings",
+    "i123": "遵守：Draft persistence 不推出 Send/Outbox/Cloud Sync；Phase 12 前未建立 draft sync",
+    "i125": "遵守：DRAFT_PERSISTENCE_PRESERVES_AUTHORED_TEXT_EXACTLY_WITHOUT_TRIM_OR_NORMALIZATION（trim 仅用于 send-empty validation，不改写 persisted draft）",
+    "dp184": "遵守：DRAFT_CLEARING_BY_SEND_RESULT_REQUIRES_MATCHING_THE_CAPTURED_DRAFT_VERSION_OR_EQUIVALENT_IDENTITY（记录 gap：当前 in-memory clearing 仅按 conversationId 无条件清）",
+    "i126": "遵守：OLDER_SEND_RESULT_MUST_NOT_CLEAR_OR_OVERWRITE_A_NEWER_DRAFT_REVISION（记录 gap；未来 ACK 仅清理对应 captured draft 版本/identity）",
+    "revision_only_for_local_consumer": "遵守：Revision/change metadata 仅在真实 local consumer（如 I-126 concurrency）时建立；未因 R-06 sync-ready 顺手加 Cloud/Outbox/sync metadata",
+    "i127": "遵守：DRAFT_PERSISTENCE_FAILURE_MUST_NOT_DISCARD_CURRENT_EDIT_OR_FABRICATE_DURABLE_SAVE_SUCCESS（failure semantics 已核验，未实现 UI）",
+    "dp183": "遵守：DRAFT_REHYDRATION_IS_CONVERSATION_SCOPED_AND_NEED_NOT_BE_GLOBAL_STARTUP_RECOVERY（未要求 startup 一次性读取所有草稿）",
+    "i128": "遵守：LATE_DRAFT_REHYDRATION_RESULT_MUST_NOT_OVERWRITE_A_NEWER_IN_MEMORY_EDIT_OR_WRONG_CONVERSATION_CONTEXT",
+    "backup_restore_readiness": "遵守：新增 DRAFT_BACKUP_RESTORE_SEMANTICS_READINESS（draft 入 Main SQLite 后由现有 backup-manager 覆盖；未创建特殊 Backup 机制）",
+    "no_preset_shape": "遵守：未预设 draft table 主键、conversation-only cardinality、revision 字段名或 v11 shape；先由 author scope/lifecycle/concurrency evidence 决定",
+    "fifteen_readiness_outputs": "遵守：15 项 readiness 分别输出（WORKING_STATE/AUTHOR_SCOPE/CARDINALITY/LIFECYCLE/WRITE_DURABILITY/REVISION_CONCURRENCY/CLEARING/PERSISTENCE_CONTRACT/REHYDRATION/AUTHORIZATION/BACKUP_RESTORE/IPC/PRIVACY/PRESENTATION/IMPLEMENTATION）",
+    "zero_code": "遵守：0 product code / 0 UI / 0 visual evidence；未创建 DraftRepository/service/table",
+    "controller_review_stop": "遵守：提交 Controller Review + Decision Package 并 STOP；由 Owner 决定最小 v11 prerequisite、Product Decision、DEFER 或 typed implementation"
+  },
+  "readiness": {
+    "DRAFT_WORKING_STATE_SEMANTICS_READINESS": "PARTIAL (renderer in-memory mutable working state keyed by conversationId; not delivered message fact; durable semantics undecided)",
+    "DRAFT_AUTHOR_SCOPE_READINESS": "NOT_READY (no author scope; no trusted Member/operator subject; DP-182/I-124 no invented scope)",
+    "DRAFT_CARDINALITY_READINESS": "NOT_READY (ephemeral 1:1 conversationId->draft; durable cardinality depends on author scope; no preset)",
+    "DRAFT_LIFECYCLE_SEMANTICS_READINESS": "NOT_READY (create/update/clear + autosave/debounce/switch/close durability timing undefined; DP-181)",
+    "DRAFT_WRITE_DURABILITY_SEMANTICS_READINESS": "NOT_READY (durable-write timing undefined; I-127 no discard current edit / no fabricated save success)",
+    "DRAFT_REVISION_CONCURRENCY_READINESS": "NOT_READY (no revision metadata; I-126 older send result must not clear newer revision; no R-06 metadata)",
+    "DRAFT_CLEARING_SEMANTICS_READINESS": "PARTIAL (I-28 in-memory clearing exists; GAP: not matched to captured draft version/identity - DP-184/I-126)",
+    "DRAFT_PERSISTENCE_CONTRACT_READINESS": "NOT_READY (no draft table/repository/producer/path; v11 not authorized; no table without producer)",
+    "DRAFT_REHYDRATION_READINESS": "NOT_READY (DP-183 conversation-scoped rehydration, not global startup recovery; I-128 late rehydration guard)",
+    "DRAFT_AUTHORIZATION_READINESS": "PARTIAL (I-121 authorized active conversation anchor; author scope from Main trusted context; renderer never provides trusted author target)",
+    "DRAFT_BACKUP_RESTORE_SEMANTICS_READINESS": "NOT_READY (drafts not in SQLite today; if v11 adds draft table to Main SQLite, existing backup-manager VACUUM INTO covers it; no special mechanism)",
+    "DRAFT_IPC_READINESS": "NOT_READY (no draft typed IPC channel or handler)",
+    "DRAFT_PRIVACY_READINESS": "PARTIAL (I-122 draft payload not in logs/telemetry; I-125 preserve authored text exactly; trim only for send-empty validation)",
+    "DRAFT_PRESENTATION_READINESS": "PARTIAL (composer draft UI in-memory; I-120 NOT_FOUND = empty composer OK; failure/unavailable must not masquerade as empty)",
+    "LOCAL_DRAFTS_IMPLEMENTATION_READINESS": "NOT_READY"
+  },
+  "decision_package": {
+    "no_migration": "schema v11 / draft table / draft IPC / Composer UI change NOT authorized; no Outbox/sync (Phase 12); no attachment drafts (SHEEP-065 DEFER); no Unread",
+    "no_author_scope_invention": "durable Draft author scope (conversation+Member / Seat / local installation) must be a product decision when trusted Member/operator runtime exists; NOT decided from current ephemeral conversationId keying",
+    "defer": "DEFER until author scope contract (DP-182/I-124) + lifecycle/durability semantics (DP-181) + revision/concurrency (I-126) + clearing-by-version (DP-184) + conversation-scoped rehydration (DP-183/I-128) + backup/restore semantics; then minimal v11 prerequisite per DP-179..184 + I-120..I-128"
+  },
+  "evidence": {
+    "confirmed": [
+      "renderer composerDrafts: Record<string,string> keyed by conversationId only (DP-108/109); in-memory UiState; no localStorage/sessionStorage (SHEEP-074 confirmed)",
+      "composer reads composerDrafts[activeConversationId] ?? ''; draft.trim() used ONLY for send-disabled check, never rewrites draft (I-125)",
+      "applyComposerSendResult (I-28): 'sent' clears captured conversation draft; 'failed' preserves; c1 never clears c2; clearing unconditional by conversationId - no draft version/identity matching (DP-184/I-126 gap)",
+      "AI suggestion apply explicit/non-destructive (DP-106): only when current draft empty or identical",
+      "captureComposerSubmitIntent(conversationId, draft) atomic capture (DP-110)",
+      "No trusted human Member/operator subject runtime (SHEEP-066-PR2 MANUAL_SEND_AUTHORIZATION_SUBJECT_READINESS=NOT_READY); durable draft author scope UNDECIDED",
+      "No draft table in migrations (only a comment in 0010); no draft IPC channel; no draft repository/producer",
+      "backup-manager VACUUM INTO covers whole Main SQLite; drafts currently not in SQLite so not in backup"
+    ],
+    "inferred": []
+  },
+  "tests": [
+    "desktop build/typecheck + desktop tests (regression; pure Read First turn - no new product code)",
+    "workspace typecheck/test PASS",
+    "m6 Electron smoke PASS (external_network_calls=0) - non-regression",
+    "check:boundary PASS; secret scan PASS"
+  ],
+  "negative_tests": [
+    "未改 schema v10；未授权 draft table/v11 migration/draft IPC/Composer UI 变更",
+    "未实现 draft persistence/repository/service/table；未建 Outbox/sync（Phase 12）",
+    "未从 conversation/workspace merchant 臆造 durable draft author scope（DP-182/I-124）",
+    "未用 delivery_attempt payload 代替 editable draft（DP-180）",
+    "未伪造 durable save success / 丢弃当前 edit（I-127）；未把 read failure 伪装成空 draft（I-120）",
+    "未让 older send result clear newer draft revision（I-126 记录 gap，未实现）",
+    "未为 R-06 顺手加 Cloud/Outbox/sync metadata（约束 #13）",
+    "未实现 attachment drafts（SHEEP-065 DEFER）、SHEEP-076（Audit Trail）、Unread"
+  ],
+  "modified_files": [
+    "docs/fast-sheep-local-drafts-readiness.md (new)",
+    "reports/SHEEP-075-report.json (new)",
+    "project/PROJECT_STATE.json (sheep_075 record + decision package)"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}
