@@ -27,11 +27,11 @@
     "reviewed_path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
     "reviewed_version": "V1.0_REVIEWED"
   },
-  "current_phase": "PHASE_4",
-  "current_milestone": "M4.2-COMPLETE",
-  "last_closed_task": "SHEEP-075",
-  "current_task": "SHEEP-076 (Conversation Audit Trail — Fact-Readiness executed; NOT_READY/DEFER; awaiting Owner disposition; not auto-executed)",
-  "next_action": "SHEEP-076 (Conversation Audit Trail) Fact-Readiness — awaiting Owner disposition; no next SHEEP without PASS",
+  "current_phase": "PHASE_5",
+  "current_milestone": "M5.1 (Capability Contract) — Phase 5 entry proposal submitted; not executed",
+  "last_closed_task": "SHEEP-076",
+  "current_task": "SHEEP-080 (Platform Capability Registry — Phase 5 entry / Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
+  "next_action": "Phase 5 entry / SHEEP-080 (Platform Capability Registry) proposal — awaiting Owner approval; not auto-executed",
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -2380,9 +2380,9 @@
   },
   "sheep_076": {
     "codex_result": "PARTIAL",
-    "controller_decision": "PENDING_OWNER_PASS",
-    "status": "NOT_READY / DEFER (Conversation Audit Trail Fact-Readiness; no schema v11, no Audit IPC/UI/service; GATE-P4 ruling separate)",
-    "closed_date_candidate": null,
+    "controller_decision": "PASS",
+    "status": "CLOSED (Conversation Audit Trail implementation DEFER_PENDING_VERIFIED_AUDITED_MUTATION_PRODUCERS_ATOMICITY_ACTOR_PROVENANCE_AND_DATA_POLICY)",
+    "closed_date_candidate": "2026-08-29",
     "report": "reports\\SHEEP-076-report.json",
     "review_doc": "docs\\fast-sheep-conversation-audit-trail-readiness.md",
     "readiness": {
@@ -2394,28 +2394,42 @@
       "AUDIT_EVENT_TEMPORAL_SEMANTICS_READINESS": "NOT_READY (not reusing occurred_at/updated_at)",
       "AUDIT_MUTATION_ATOMICITY_IDEMPOTENCY_READINESS": "NOT_READY (Phase1 boundary no audit hook; DP-189/I-136)",
       "AUDIT_PERSISTENCE_READINESS": "NOT_READY (no audit table; v11 not authorized)",
-      "AUDIT_DATA_CLASSIFICATION_READINESS": "PARTIAL (I-138 identity-ref; I-137 taxonomy undefined)",
+      "AUDIT_DATA_CLASSIFICATION_READINESS": "PARTIAL / OPERATIONAL_BUSINESS_DATA_CLASS_CONFIRMED; EVENT_PAYLOAD_CLASSIFICATION_PENDING (I-138 identity-ref pattern; I-137 taxonomy pending)",
       "AUDIT_RETENTION_SEMANTICS_READINESS": "NOT_READY (R-06 DATA-DECISION-GATE)",
       "AUDIT_BACKUP_RESTORE_SEMANTICS_READINESS": "PARTIAL (v11 covered by backup-manager mechanically)",
-      "AUDIT_AUTHORIZATION_READINESS": "PARTIAL (I-132; Supervisor query not locked out)",
+      "AUDIT_AUTHORIZATION_READINESS": "PARTIAL / CONVERSATION_DETAIL_ANCHOR_CONTRACT_READY; BROADER_SUPERVISOR_QUERY_NOT_DEFINED (I-132)",
       "AUDIT_IPC_PRESENTATION_READINESS": "NOT_READY (no typed IPC/UI)",
-      "GATE_P4_AUDIT_MUTATION_BOUNDARY_READINESS": "PARTIAL (GATE-P4 = future Audit writes not bypass Phase1 boundary; current writes compliant; no vacuous PASS / no auto FAIL; final ruling separate)",
+      "GATE_P4_AUDIT_MUTATION_BOUNDARY_READINESS": "READY / CURRENT_IMPLEMENTED_SCOPE_COMPLIANT; FUTURE_AUDIT_IMPLEMENTATION_NOT_READY (GATE-P4 boundary compliance for current writes confirmed; Audit product itself DEFERRED)",
       "CONVERSATION_AUDIT_TRAIL_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-185..DP-190 + I-130..I-139 (adopted; OWNER_DECIDED pending Owner PASS)"],
+    "decisions": ["DP-185..DP-190 + I-130..I-139 (OWNER_DECIDED 2026-08-29)"],
+    "disposition": "DEFER_PENDING_VERIFIED_AUDITED_MUTATION_PRODUCERS_ATOMICITY_ACTOR_PROVENANCE_AND_DATA_POLICY",
+    "acceptance": {
+      "no_migration": "schema stays v10; no Audit event table / v11 migration",
+      "no_ipc_ui_service": "no Audit service/IPC/UI; no event registry / metadata bag",
+      "no_primary_fact_copy": "Message/DeliveryAttempt primary facts NOT copied just to manufacture Audit",
+      "no_learning_audit_merge": "M10 learning audit NOT merged with Conversation Audit",
+      "retention_pending": "retention/deletion continues to wait for Owner DATA decision",
+      "future_mutations_contract": "future audited mutation must satisfy DP-189 atomic/recoverably-idempotent contract"
+    },
+    "reopen_order_audit": "audited scope -> real mutation producer -> actor provenance -> event/temporal semantics -> atomic/idempotent linkage -> DATA policy -> persistence -> authorized query -> presentation",
+    "gate_p4_final": "GATE-P4-CONVERSATION-CORE FINAL = PASS (2026-08-29); PHASE_4 = PASS / CLOSED; Phase 5 entry proposed",
+    "controller_pass_date": "2026-08-29",
     "decision_package": {
       "no_migration": "v11 / Audit table / Outbox / Sync / retention-deletion implementation NOT authorized",
       "no_ipc_ui_service": "no Audit IPC/UI/service/event registry; M10 learning audit NOT conflated (DP-188/I-130)",
       "defer": "DEFER until verified mutation producers (Ownership/Handoff/Supervisor/Send DEFERRED) + Phase1 mutation-boundary audit hook (DP-189) + actor provenance (DP-190) + temporal/data-class semantics + Owner DATA decision (retention I-134); then minimal v11 prerequisite",
       "gate_p4_separate": "GATE-P4 final ruling separate (constraint #24); this Read First provides boundary-compliance facts only"
     },
-    "next_per_roadmap": "Owner decides SHEEP-076 implementation disposition and GATE-P4 final ruling separately; no Audit Trail product implementation without PASS",
+    "next_per_roadmap": "CLOSED (DEFER_PENDING_VERIFIED_AUDITED_MUTATION_PRODUCERS_ATOMICITY_ACTOR_PROVENANCE_AND_DATA_POLICY); GATE-P4 FINAL = PASS; PHASE_4 = PASS / CLOSED; next = Phase 5 entry / SHEEP-080 (Platform Capability Registry) proposal",
     "reference_tree_modified": false,
     "next_stage_not_executed": true
   },
   "fast_sheep_conversation_audit_trail_fact_readiness_decisions": {
-    "status": "ADOPTED_PENDING_OWNER_PASS",
+    "status": "OWNER_DECIDED",
     "decided_date": "2026-08-29",
+    "disposition": "DEFER_PENDING_VERIFIED_AUDITED_MUTATION_PRODUCERS_ATOMICITY_ACTOR_PROVENANCE_AND_DATA_POLICY",
+    "precision_notes": "GATE_P4_AUDIT_MUTATION_BOUNDARY_READINESS=READY/CURRENT_IMPLEMENTED_SCOPE_COMPLIANT;FUTURE_AUDIT_IMPLEMENTATION_NOT_READY; AUDIT_DATA_CLASSIFICATION_READINESS=PARTIAL/OPERATIONAL_BUSINESS_DATA_CLASS_CONFIRMED;EVENT_PAYLOAD_CLASSIFICATION_PENDING; AUDIT_AUTHORIZATION_READINESS=PARTIAL/CONVERSATION_DETAIL_ANCHOR_CONTRACT_READY;BROADER_SUPERVISOR_QUERY_NOT_DEFINED",
     "dp_185": "CONVERSATION_AUDIT_TRAIL_USES_TYPED_APPEND_ONLY_EVENT_FACTS_NOT_FREE_FORM_LOGS",
     "dp_186": "CONVERSATION_AUDIT_EVENTS_ARE_BOUND_TO_THE_AUTHORIZED_CONVERSATION_AND_MERCHANT_CONTAINED",
     "dp_187": "CONVERSATION_AUDIT_EVENTS_REQUIRE_VERIFIED_MUTATION_PRODUCERS_NOT_PRESENTATION_INFERENCE",
@@ -2434,6 +2448,34 @@
     "i_139": "AUDIT_EVENT_CORRECTION_OR_RECONCILIATION_APPENDS_NEW_FACTS_INSTEAD_OF_REWRITING_NORMAL_OPERATION_HISTORY",
     "gate_p4_interpretation": "GATE-P4 (R-07): Conversation/Message/Context/Audit writes must pass through Phase 1 mutation boundary (observable, future Outbox hookable) -> forward contract for future Audit writes; NOT a requirement that current mutations already generate Audit events; no vacuous PASS / no auto FAIL; current conversation/message writes via typed repositories compliant (feature layer has no raw domain SQL - only read-only smoke/probe + persistence-internal)",
     "readiness": "AUDIT_FACT=NOT_READY / EVENT_SCOPE_TAXONOMY=NOT_READY / MUTATION_PRODUCER=NOT_READY / ACTOR_PROVENANCE=NOT_READY / EVENT_SEMANTICS=NOT_READY / EVENT_TEMPORAL=NOT_READY / MUTATION_ATOMICITY_IDEMPOTENCY=NOT_READY / PERSISTENCE=NOT_READY / DATA_CLASSIFICATION=PARTIAL / RETENTION=NOT_READY / BACKUP_RESTORE=PARTIAL / AUTHORIZATION=PARTIAL / IPC_PRESENTATION=NOT_READY / GATE_P4_BOUNDARY=PARTIAL / IMPLEMENTATION=NOT_READY",
-    "next": "Owner decides SHEEP-076 implementation disposition and GATE-P4 final ruling separately; no Audit Trail product implementation without PASS"
+    "next": "GATE-P4 FINAL = PASS (2026-08-29); Phase 5 entry / SHEEP-080 (Platform Capability Registry) proposal — awaiting Owner approval; not auto-executed"
+  },
+  "gate_p4": {
+    "status": "PASS",
+    "reviewed_date": "2026-08-29",
+    "phase_4": "PASS / CLOSED",
+    "phase_4_disposition": "CONVERSATION_CORE_FOUNDATION_COMPLETE_WITH_EXPLICIT_EVIDENCE_AWARE_DEFERRALS",
+    "gate_scope_conclusions": {
+      "conversation_core": "Conversation-centered Queue -> Timeline -> Composer runtime core = PASS",
+      "authority_boundaries": "Merchant/Conversation authority boundaries = PASS",
+      "message_factual_integrity": "Message factual integrity = PASS",
+      "composer_contract": "Composer/manual fallback contract = PASS",
+      "delivery_foundation": "Delivery Attempt truth + production startup crash recovery foundation = PASS",
+      "context_domains": "Context domains = evidence-aware DEFER, no fabricated context",
+      "ownership_handoff_supervisor": "Ownership/Handoff/Supervisor domains = evidence-aware DEFER, no unsafe mutation/UI",
+      "draft_persistence": "Draft persistence = DEFER with explicit author/version contract",
+      "audit": "Audit mutation-boundary = CURRENT IMPLEMENTED SCOPE COMPLIANT; Audit product itself DEFERRED",
+      "renderer_main_security": "Renderer/Main/security/network/regression boundaries = PASS"
+    },
+    "deferral_note": "Explicit deferred capabilities and their reopen triggers remain in PROJECT_STATE; Gate PASS must NOT reclassify them as implemented",
+    "requires_owner_approval": true
+  },
+  "phase_5_entry": {
+    "status": "PROPOSED_AWAITING_OWNER_APPROVAL",
+    "gate_p4": "PASS",
+    "proposed_date": "2026-08-29",
+    "tier_order": "PDD first, DouDian later",
+    "first_acceptance_unit": "SHEEP-080 (Platform Capability Registry)",
+    "sheep_080_approved": false
   }
 }
