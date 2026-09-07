@@ -60,11 +60,11 @@ export interface Store {
   readonly platform: PlatformId;
 }
 
-/** PlatformAccount: seller platform account, scoped to a Merchant; carries external platform identity. */
+/** PlatformAccount: local seller platform account identity, scoped to a Merchant. */
 export interface PlatformAccount {
   readonly id: PlatformAccountId;
   readonly merchantId: MerchantId;
   readonly platform: PlatformId;
-  /** External platform identity reference (IdentityKind = "platform"). */
-  readonly externalRef: AccountRef;
+  /** Optional opaque platform identity; absent/null means seller identity is not bound. */
+  readonly externalRef?: AccountRef | null;
 }

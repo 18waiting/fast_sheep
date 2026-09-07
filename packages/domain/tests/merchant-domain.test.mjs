@@ -44,6 +44,38 @@ test("PlatformAccount is scoped to a Merchant and carries external platform iden
   assert.deepEqual(Object.keys(pa).sort(), ["externalRef", "id", "merchantId", "platform"]);
 });
 
+test("local PDD PlatformAccount does not require an external seller identity", () => {
+  const pa = {
+    id: "local-pa-pdd-1",
+    merchantId: "merchant-1",
+    platform: PLATFORM_PDD,
+  };
+
+  assert.equal(pa.platform, PLATFORM_PDD);
+  assert.equal(pa.externalRef, undefined);
+  assert.deepEqual(Object.keys(pa).sort(), ["id", "merchantId", "platform"]);
+});
+
+test("PDD buyer and mall_cs-side identifiers remain outside local PlatformAccount identity", () => {
+  const customerUid = "buyer-customer-uid";
+  const mallCsSideUid = "opaque-mall-cs-side-uid";
+  const pa = { id: "local-pa-pdd-2", merchantId: "merchant-1", platform: PLATFORM_PDD };
+
+  assert.notEqual(pa.id, customerUid);
+  assert.notEqual(pa.id, mallCsSideUid);
+  assert.equal(pa.externalRef, undefined);
+  assert.equal(Object.hasOwn(pa, "customerUid"), false);
+  assert.equal(Object.hasOwn(pa, "mallCsSideUid"), false);
+});
+
+test("PlatformAccount identity alone carries no authorization, entitlement, session, or send readiness", () => {
+  const pa = { id: "local-pa-pdd-3", merchantId: "merchant-1", platform: PLATFORM_PDD };
+
+  for (const field of ["authorization", "entitlement", "session", "sessionStatus", "sendReady"]) {
+    assert.equal(Object.hasOwn(pa, field), false, `identity must not imply ${field}`);
+  }
+});
+
 // --- platform extensibility (SHEEP-010 tightening #2) ---
 test("PlatformId is extensible beyond known platforms (runtime: any string accepted)", () => {
   const future = "some-future-platform";

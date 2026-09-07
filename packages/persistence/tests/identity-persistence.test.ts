@@ -108,6 +108,15 @@ test("identity repositories: merchant/store/platformAccount/member/membership/se
   assert.deepEqual(pas.listByMerchant("m1").map((p) => p.id), ["pa1"]);
   assert.equal(pas.findById("pa1")?.externalRef, "ext-1");
 
+  pas.save({ id: "pa-pdd-local", merchantId: "m1", platform: "pdd", externalRef: null });
+  assert.deepEqual(pas.findById("pa-pdd-local"), {
+    id: "pa-pdd-local",
+    merchantId: "m1",
+    platform: "pdd",
+    externalRef: null,
+  });
+  assert.deepEqual(pas.listByMerchant("m1").map((p) => p.id), ["pa-pdd-local", "pa1"]);
+
   members.save({ id: "mem1", accountRefKind: "local", accountRefValue: "acc-1" });
   assert.deepEqual(members.findById("mem1"), { id: "mem1", accountRefKind: "local", accountRefValue: "acc-1" });
 

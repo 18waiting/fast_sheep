@@ -30,10 +30,10 @@
   "current_phase": "PHASE_5",
   "current_milestone": "M5.1 Capability Contract",
   "last_closed_task": "SHEEP-081",
-  "current_task": "SHEEP-081 (PDD Capability Matrix) — PASS / CLOSED; live evidence persisted; no PDD integration implementation",
-  "next_action": "SHEEP-082 remains the next authoritative Roadmap ID; execution is not authorized",
+  "current_task": "SHEEP-082 (PDD PlatformAccount Local Identity) — IMPLEMENTED / AWAITING CONTROLLER REVIEW; no PDD integration implementation",
+  "next_action": "SHEEP-082 implementation is complete with constraints; await Controller Review; do not start SHEEP-083",
   "next_authoritative_roadmap_id": "SHEEP-082",
-  "sheep_082_execution_authorized": false,
+  "sheep_082_execution_authorized": true,
   "project_state_reconciliation_required": false,
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -202,7 +202,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-082 (M5.2 PDD PlatformAccount Local Identity; execution not authorized)",
+  "next_task": "SHEEP-082 (M5.2 PDD PlatformAccount Local Identity; IMPLEMENTED / AWAITING CONTROLLER REVIEW)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -2509,12 +2509,31 @@
   },
   "sheep_082": {
     "roadmap_status": "NEXT_AUTHORITATIVE_ROADMAP_ID",
-    "execution_authorized": false,
-    "blocked_until": [
-      "SHEEP-081 live evidence / Controller Decision Package persisted",
-      "PROJECT_STATE and current lifecycle reconciled",
-      "governance files verified consistent",
-      "git status and filesystem impact reported"
+    "execution_authorized": true,
+    "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
+    "controller_proposal": "PASS / APPROVED",
+    "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+    "controller_decision": "PENDING_CONTROLLER_REVIEW",
+    "implementation_readiness": "READY_WITH_CONSTRAINTS",
+    "implementation_delta": "MINIMAL_CODE_GAP",
+    "report": "reports\\SHEEP-082-report.json",
+    "pdd_platform_account_identity": "local id + merchant scope + platform=pdd",
+    "external_ref": "NULLABLE / UNBOUND",
+    "seller_external_identity": "NOT_PROVEN / NOT_IMPLEMENTED",
+    "customer_uid": "BUYER_IDENTITY_ONLY",
+    "mall_cs_side_uid": "OPAQUE / UNBOUND",
+    "conversation_identity": "UNRESOLVED",
+    "login_session": "NOT_IMPLEMENTED",
+    "pdd_integration": "NOT_STARTED",
+    "active_scope_constraints": [
+      "local PlatformAccount identity only",
+      "reuse existing schema/model/repository",
+      "no schema migration",
+      "no network, login/session, credentials, or PDD runtime",
+      "no receive/send implementation",
+      "externalRef remains unbound unless independently evidenced",
+      "customerUid remains buyer identity only",
+      "observed mall_cs-side UID remains opaque/unbound"
     ],
     "next_stage_not_executed": true
   },
@@ -2531,6 +2550,7 @@
     "next_authoritative_roadmap_id": "SHEEP-082",
     "sheep_080_approved": true,
     "sheep_081_closed": true,
-    "sheep_082_execution_authorized": false
+    "sheep_082_execution_authorized": true,
+    "sheep_082_status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW"
   }
 }

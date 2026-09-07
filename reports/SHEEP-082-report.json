@@ -1,0 +1,187 @@
+{
+  "task": "SHEEP-082",
+  "result": "PARTIAL",
+  "phase": "PHASE_5",
+  "milestone": "M5.2 Identity / Session",
+  "objective": "Establish the local PDD PlatformAccount identity foundation without implementing PDD runtime integration.",
+  "implementation_delta": "MINIMAL_CODE_GAP",
+  "controller_authorization": {
+    "proposal": "PASS / APPROVED",
+    "implementation": "AUTHORIZED WITH CONSTRAINTS",
+    "readiness": "READY_WITH_CONSTRAINTS"
+  },
+  "completed_requirements": 8,
+  "total_requirements": 8,
+  "local_pdd_platform_account_contract": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "platform_account_id": "Fast Sheep local PlatformAccount entity identity",
+    "merchant_id": "Fast Sheep local Merchant scope",
+    "platform": "pdd",
+    "external_ref": "nullable / opaque / unbound unless separately supported by direct PDD seller-side identity evidence"
+  },
+  "implementation_delta_evidence": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "already_satisfied": [
+      "SQLite platform_accounts schema already permits nullable external_ref.",
+      "The existing identity repository already persists and reads nullable externalRef values.",
+      "The existing PlatformAccount local id, merchant scope, and platform fields are reusable."
+    ],
+    "minimal_code_gap": [
+      "The domain PlatformAccount contract required externalRef even though the approved local PDD foundation permits an unbound identity.",
+      "Focused domain and persistence tests were required to prove the approved PDD boundary and non-implication rules."
+    ],
+    "not_added": [
+      "No PDD-specific identity field or abstraction.",
+      "No fake seller identity or synthesized externalRef."
+    ]
+  },
+  "customer_uid_and_mall_cs_uid_boundary": {
+    "customer_uid": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "meaning": "PDD buyer/customer identity only.",
+      "not_bound_as": ["PlatformAccount.id", "PlatformAccount.externalRef", "merchantId", "conversationId", "sellerId", "mallId"]
+    },
+    "inbound_direction": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "shape": {"from.role": "user", "from.uid": "customerUid", "to.role": "mall_cs", "to.uid": "observed mall_cs-side UID"}
+    },
+    "mall_cs_side_uid": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "existence": "CONFIRMED",
+      "semantic_binding": "NOT_PROVEN / PARTIAL",
+      "disposition": "opaque / unbound; not written to PlatformAccount.externalRef",
+      "not_bound_as": ["mallId", "sellerId", "merchantId", "PlatformAccount.externalRef", "operatorId", "conversationId"]
+    },
+    "outbound_direction": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "shape": {"from.role": "mall_cs", "from.uid": "NOT OBSERVED in the confirmed request shape", "to.role": "user", "to.uid": "customerUid"}
+    },
+    "conversation_identity": {
+      "classification": "BLOCKED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "status": "conversationId, chatId, and sessionId remain unresolved"
+    }
+  },
+  "external_ref_disposition": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "status": "NULLABLE / UNBOUND",
+    "seller_external_identity": "NOT_PROVEN / NOT_IMPLEMENTED",
+    "rule": "Do not populate externalRef with customerUid, the observed mall_cs-side UID, or an invented seller identity."
+  },
+  "authorization_session_boundary": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "platform_account_identity_does_not_imply": ["authorization", "entitlement", "login/session identity", "runtime/session readiness", "send capability", "delivery or read status"],
+    "implemented": "Only local identity foundation; no authorization, session, or PDD runtime behavior."
+  },
+  "scope_constraints": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "active_exclusions": [
+      "No schema or migration.",
+      "No PDD-specific identity table.",
+      "No IPC, UI, service, network, Titan, send, receive, or conversation-selection implementation.",
+      "No login/session automation.",
+      "No Cookie, Token, Authorization, or Session persistence.",
+      "No retry/idempotency or delivery/read status implementation.",
+      "No DouDian, Product, Order, Image, or Transfer work.",
+      "Do not start SHEEP-083 or later work."
+    ]
+  },
+  "evidence_summary": {
+    "confirmed": [
+      "LIVE_PDD_EVIDENCE confirms buyer customerUid identity and inbound mall_cs-side UID existence, but not the latter's semantic binding.",
+      "FAST_SHEEP_GOVERNANCE authorizes local PlatformAccount.id, merchantId, and platform=pdd as the identity foundation.",
+      "The domain contract now permits an absent or null externalRef, and persistence round-trip behavior is covered."
+    ],
+    "inferred": [
+      "A stable local PlatformAccount.id is the appropriate local anchor for this narrow unit because it is the existing domain identity and does not assert a PDD seller identity."
+    ],
+    "product_decision_required": [],
+    "blocked": [
+      "Authoritative seller account semantic binding for the observed mall_cs-side UID.",
+      "Formal PDD conversation identity semantics.",
+      "Secret scan completion while protected pre-existing untracked reference content remains unchanged."
+    ],
+    "deferred": ["PDD login state machine, secure credential reference, session expiry, conversation discovery, receive/send runtime, and delivery semantics."]
+  },
+  "tests": [
+    "@fastwork/domain build — PASS",
+    "@fastwork/domain tests — 86/86 PASS",
+    "@fastwork/persistence build — PASS",
+    "@fastwork/persistence tests — 89/89 PASS",
+    "workspace typecheck — PASS (20 workspace packages)",
+    "pnpm run check:boundary — PASS"
+  ],
+  "smokes": ["NOT APPLICABLE — local identity contract only; no new runtime path or PDD integration was added."],
+  "negative_tests": [
+    "Local PDD PlatformAccount is valid without seller external identity.",
+    "Persistence round-trip preserves pdd, local identity, merchant scope, and externalRef=null.",
+    "customerUid and mall_cs-side UID are not PlatformAccount identity fields.",
+    "PlatformAccount identity alone does not imply authorization, entitlement, session, or send readiness.",
+    "No schema migration, PDD runtime, IPC, UI, network, credential, or retry behavior was added.",
+    "No SHEEP-083 work was started."
+  ],
+  "validation": {
+    "git_diff_check": "PASS",
+    "secret_scan": {
+      "status": "BLOCKED / FAIL",
+      "classification": "BLOCKED",
+      "reason": "The repository scan matched pre-existing untracked reference content under references/pdd-customer-service-sdk/main.py and README.md. Those protected paths were not modified, staged, or deleted; matching values are not reproduced here.",
+      "task_impact": "Required scan cannot be reported PASS without modifying protected pre-existing content, which is outside this task."
+    },
+    "protected_untracked_paths": {
+      "status": "UNCHANGED",
+      "paths": ["docs/fast-sheep-pdd-platform-capability-registry-readiness.md", "docs/reference-pdd-customer-service-sdk.md", "references/pdd-customer-service-sdk/", "reports/REFERENCE-PDD-CUSTOMER-SERVICE-SDK-import-report.json", "reports/SHEEP-080-report.json"]
+    },
+    "pdd_integration": "NOT_STARTED",
+    "next_stage_not_executed": true
+  },
+  "files_read": [
+    "AGENTS.md",
+    "project/FAST_SHEEP_MASTER_PROMPT.md",
+    "project/PROJECT_STATE.json",
+    "project/DECISIONS.md",
+    "project/FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
+    "project/FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.0_REVIEWED.md",
+    "packages/domain/src/merchant-domain.ts",
+    "packages/domain/tests/merchant-domain.test.mjs",
+    "packages/persistence/migrations/0005_identity_domain.sql",
+    "packages/persistence/src/repositories/identity-repositories.ts",
+    "packages/persistence/src/sqlite/sqlite-identity-repositories.ts",
+    "packages/persistence/tests/identity-persistence.test.ts",
+    "reports/SHEEP-080-report.json",
+    "reports/SHEEP-081-report.json"
+  ],
+  "files_created": ["reports/SHEEP-082-report.json"],
+  "files_modified": ["packages/domain/src/merchant-domain.ts", "packages/domain/tests/merchant-domain.test.mjs", "packages/persistence/tests/identity-persistence.test.ts", "project/PROJECT_STATE.json"],
+  "files_deleted": [],
+  "architecture_changes": [],
+  "security_changes": [],
+  "data_model_changes": [],
+  "tenant_isolation_changes": [],
+  "ai_data_disclosure_changes": [],
+  "audit_traceability_changes": [],
+  "sync_readiness_contract_consumed": true,
+  "data_decision_gate_triggered": false,
+  "schema_migration_added": false,
+  "ipc_added": false,
+  "network_added": false,
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "raw_buyer_identifiers_persisted": false,
+  "secrets_detected": false,
+  "raw_ipc_renderer_added": false,
+  "cross_tenant_or_cross_merchant_access_found": false,
+  "unapproved_sync_or_outbox_added": false,
+  "next_stage_not_executed": true,
+  "controller_review_required": true,
+  "next_task": "SHEEP-083 is not started; wait for Controller Review of SHEEP-082."
+}
