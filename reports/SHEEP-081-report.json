@@ -1,0 +1,393 @@
+{
+  "task": "SHEEP-081",
+  "result": "COMPLETE",
+  "controller_decision": "PASS",
+  "status": "CLOSED",
+  "phase": "PHASE_5",
+  "milestone": "M5.1 Capability Contract",
+  "objective": "Persist the accepted live PDD evidence and reconcile authoritative project state without implementing PDD integration.",
+  "evidence_result": "PARTIAL",
+  "persistence_status": "COMPLETE",
+  "evidence_protocol": {
+    "classification_vocabulary": [
+      "CONFIRMED",
+      "INFERRED",
+      "PRODUCT_DECISION_REQUIRED",
+      "BLOCKED",
+      "DEFERRED"
+    ],
+    "source_vocabulary": [
+      "LIVE_PDD_EVIDENCE",
+      "FAST_SHEEP_GOVERNANCE",
+      "FAST_SHEEP_REQUIRED_INVARIANT",
+      "SYNTHETIC_FIXTURE",
+      "CURRENT_FASTWORK_ARTIFACT"
+    ],
+    "source_boundary": "Project reports and project documentation are not classified as CURRENT_FASTWORK_ARTIFACT unless the content itself originates from the FastWork artifact."
+  },
+  "live_pdd_evidence": {
+    "conversation_selection": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "binding": [
+        "PDD DOM chat-row data-random prefix",
+        "updateChatBizInfo.customerUid",
+        "Titan inbound message.from.uid"
+      ],
+      "safe_identity_anchor": "customerUid",
+      "controlled_identity_values": "REDACTED; raw buyer identifiers are intentionally not persisted",
+      "unresolved": [
+        "conversationId not found",
+        "chatId not found",
+        "sessionId not found"
+      ],
+      "negative_naming_rules": [
+        "customerUid must not be renamed conversationId",
+        "target_id must not be renamed conversationId",
+        "to.uid must not be renamed mallId without direct evidence"
+      ]
+    },
+    "receive_text": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "live_source": "titan-ws.pinduoduo.com",
+      "minimum_semantic_contract": {
+        "content": "observed inbound text content",
+        "from.role": "observed sender role",
+        "from.uid": "observed sender UID; customer identity may be anchored by customerUid when bound by live evidence",
+        "to.role": "observed recipient role",
+        "to.uid": "observed recipient UID; do not relabel as mallId",
+        "msg_id": "observed message identity field",
+        "client_msg_id": "existence is observed; broader client-generated identity semantics are not established"
+      },
+      "observed_opaque_or_partial_fields": [
+        "pre_msg_id",
+        "seq_id",
+        "base_seq_id",
+        "target_id",
+        "chat_type_id",
+        "version",
+        "type"
+      ],
+      "partial_observation": "pre_msg_id correlated strongly with a previous-message chain; exact protocol semantics remain unresolved.",
+      "lifecycle_observation": "Titan session/bootstrap, Titan sync, and system/mall status were observed after controlled refresh/reconnect; immediate old-message replay was not observed in that refresh, which does not establish a universal no-replay rule."
+    },
+    "send_text": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "live_source": "Fetch/XHR with data.cmd = send_message",
+      "client_request": {
+        "request_id": "client request identity field; value redacted",
+        "random": "client request correlation field; value redacted",
+        "message.content": "text",
+        "message.from.role": "mall_cs",
+        "message.to.role": "user",
+        "message.to.uid": "customerUid",
+        "message.msg_id": null,
+        "message.type": 0
+      },
+      "additional_observed_fields_non_authoritative": [
+        "hash",
+        "ts",
+        "manual_reply",
+        "is_aut",
+        "is_read",
+        "status"
+      ],
+      "negative_rules": [
+        "Request-side is_read and status do not establish authoritative read or delivery semantics",
+        "to.uid must not be renamed mallId without direct evidence"
+      ]
+    },
+    "application_acceptance": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "observed_response": {
+        "success": true,
+        "result.response": "send_message",
+        "result.result": "ok",
+        "result.request_id": "echoed request_id; raw value redacted",
+        "result.msg_id": "server-assigned message identity; raw value redacted",
+        "result.pre_msg_id": "returned value; semantics remain partial",
+        "result.ts": "server value; raw value omitted"
+      },
+      "meaning": "PLATFORM_APPLICATION_ACCEPTED",
+      "does_not_mean": [
+        "formal delivered state",
+        "formal read state"
+      ],
+      "independent_confirmation": "A second controlled send independently confirmed the same application-acceptance shape."
+    },
+    "end_to_end_visibility": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "observation": "Controlled merchant-to-buyer text was visible on the buyer phone.",
+      "boundary": "Visibility is not promoted to a formal platform delivered or read state."
+    },
+    "transport_ack": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "observation": "titan.notifyDataLite.ack was observed.",
+      "meaning": "Transport/application notification evidence only; not a message delivery ACK."
+    },
+    "idempotency": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "confirmed": "Independent identical-text sends generated different request_id, random, and server msg_id values.",
+      "not_verified": [
+        "same request_id retry",
+        "same random retry",
+        "same logical command retry",
+        "timeout retry",
+        "crash/reconnect retry"
+      ],
+      "not_verified_classification": "BLOCKED",
+      "readiness": "PDD_SEND_IDEMPOTENCY_READINESS = PARTIAL"
+    },
+    "unknown_failure": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "observed": "No real uncertain-outcome case was triggered; happy-path sends showed no visible seller/buyer timing separation.",
+      "required_boundary": {
+        "classification": "INFERRED",
+        "evidence_source": "FAST_SHEEP_GOVERNANCE",
+        "statement": "UNKNOWN remains a required Fast Sheep outcome whenever a remote side effect may have occurred and the authoritative result is unavailable."
+      },
+      "readiness": "PDD_SEND_FAILURE_UNKNOWN_SEMANTICS_READINESS = PARTIAL"
+    }
+  },
+  "capability_contract": {
+    "conversation_selection": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "adapter_identity_input": "customerUid",
+      "conversation_identity": "Unresolved; no evidence for conversationId, chatId, or sessionId."
+    },
+    "receive_text": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "event_fields": [
+        "content",
+        "from.role",
+        "from.uid",
+        "to.role",
+        "to.uid",
+        "msg_id",
+        "client_msg_id existence"
+      ],
+      "opaque_or_partial_fields": [
+        "pre_msg_id",
+        "seq_id",
+        "base_seq_id",
+        "target_id",
+        "chat_type_id",
+        "version",
+        "type"
+      ],
+      "contract_boundary": "The adapter may consume the directly observed fields while preserving unresolved protocol fields as opaque or partial."
+    },
+    "send_text_request": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "fields": [
+        "request_id",
+        "random",
+        "message.content",
+        "message.from.role = mall_cs",
+        "message.to.role = user",
+        "message.to.uid = customerUid",
+        "message.msg_id = null",
+        "message.type = 0"
+      ]
+    },
+    "send_text_result": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "acceptance_shape": [
+        "success = true",
+        "result.response = send_message",
+        "result.result = ok",
+        "result.request_id echoed",
+        "result.msg_id server-assigned",
+        "result.pre_msg_id returned with partial semantics",
+        "result.ts returned by server"
+      ],
+      "platform_outcome": "PLATFORM_APPLICATION_ACCEPTED"
+    },
+    "identity_correlation": {
+      "classification": "INFERRED",
+      "evidence_source": "FAST_SHEEP_REQUIRED_INVARIANT",
+      "required_invariant": "One Fast Sheep logical send retains a stable internal command/correlation identity that can relate internal command identity to PDD request_id/random and then to the PDD server-assigned msg_id.",
+      "boundary": "Contract-level invariant only; no schema, persistence, retry algorithm, or implementation is authorized by this report."
+    }
+  },
+  "outcome_taxonomy": {
+    "LOCAL_ACTION_ACCEPTED": {
+      "classification": "INFERRED",
+      "evidence_source": "FAST_SHEEP_GOVERNANCE",
+      "definition": "Fast Sheep locally accepted and recorded the send action for attempted dispatch; this does not establish PDD application acceptance or delivery."
+    },
+    "PLATFORM_APPLICATION_ACCEPTED": {
+      "classification": "CONFIRMED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "definition": "The live PDD send_message response returned success=true, response=send_message, result=ok, echoed request_id, and server-assigned result identity fields."
+    },
+    "UNKNOWN": {
+      "classification": "INFERRED",
+      "evidence_source": "FAST_SHEEP_GOVERNANCE",
+      "definition": "A remote side effect may have occurred, but no authoritative result is available. UNKNOWN must not be collapsed into REJECTED or success."
+    },
+    "REJECTED": {
+      "classification": "INFERRED",
+      "evidence_source": "FAST_SHEEP_GOVERNANCE",
+      "definition": "An authoritative platform rejection or failure result is received; no real rejected-send example was exercised in SHEEP-081."
+    },
+    "DELIVERED": {
+      "classification": "BLOCKED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "justified": false,
+      "reason": "Buyer-phone visibility and titan.notifyDataLite.ack do not establish a formal platform delivered state."
+    }
+  },
+  "fastwork_and_synthetic_disposition": [
+    {
+      "behavior": "local pageResult.成功 and local sender {成功:true}",
+      "evidence_classification": "CONFIRMED",
+      "evidence_source": "SYNTHETIC_FIXTURE",
+      "disposition": "KEEP_AS_TEST_FIXTURE_ONLY",
+      "reason": "Local success values are not live PDD server authority."
+    },
+    {
+      "behavior": "renderer seller bubble",
+      "evidence_classification": "CONFIRMED",
+      "evidence_source": "SYNTHETIC_FIXTURE",
+      "disposition": "KEEP_AS_TEST_FIXTURE_ONLY",
+      "reason": "A locally rendered bubble does not prove platform application acceptance, delivery, or read state."
+    },
+    {
+      "behavior": "synthetic [data-fw-pdd-*] ACK markers",
+      "evidence_classification": "CONFIRMED",
+      "evidence_source": "SYNTHETIC_FIXTURE",
+      "disposition": "KEEP_AS_TEST_FIXTURE_ONLY",
+      "reason": "Synthetic ACK markers must not be treated as live PDD delivery ACKs."
+    },
+    {
+      "behavior": "FastWork local receive/send fixture listener and synthetic event shape",
+      "evidence_classification": "CONFIRMED",
+      "evidence_source": "SYNTHETIC_FIXTURE",
+      "disposition": "KEEP_AS_TEST_FIXTURE_ONLY",
+      "reason": "Useful for regression fixtures only; live Titan and Fetch/XHR contracts are authoritative for PDD evidence."
+    },
+    {
+      "behavior": "FastWork-derived finite send_text or DOM execution assumptions where they conflict with live data.cmd=send_message",
+      "evidence_classification": "CONFIRMED",
+      "evidence_source": "SYNTHETIC_FIXTURE",
+      "disposition": "SUPERSEDED_BY_LIVE_PDD",
+      "reason": "The live PDD HTTP command and response contract governs application acceptance."
+    },
+    {
+      "behavior": "Unverified same-request retry and idempotency behavior",
+      "evidence_classification": "BLOCKED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "disposition": "DEFERRED",
+      "reason": "No retry algorithm or idempotency claim is authorized before direct evidence."
+    }
+  ],
+  "remaining_gaps_before_implementation": [
+    {
+      "classification": "BLOCKED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "gap": "Conversation identity semantics remain unresolved beyond customerUid; conversationId, chatId, and sessionId were not found."
+    },
+    {
+      "classification": "DEFERRED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "gap": "Opaque Titan field semantics, event completeness, and reconnect/replay behavior are not fully established."
+    },
+    {
+      "classification": "BLOCKED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "gap": "Same-request retry, timeout, crash/reconnect, and uncertain-outcome idempotency behavior remain unverified."
+    },
+    {
+      "classification": "BLOCKED",
+      "evidence_source": "LIVE_PDD_EVIDENCE",
+      "gap": "Authoritative rejected-send response and formal delivery/read semantics were not directly evidenced."
+    },
+    {
+      "classification": "DEFERRED",
+      "evidence_source": "FAST_SHEEP_GOVERNANCE",
+      "gap": "PDD adapter persistence, IPC, service, and runtime implementation are outside SHEEP-081 and require their own authorized Acceptance Units."
+    }
+  ],
+  "state_reconciliation": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "project_state_reconciliation_required": true,
+    "status": "COMPLETE",
+    "current_phase": "PHASE_5",
+    "current_milestone": "M5.1 Capability Contract",
+    "sheep_080": {
+      "controller_status": "PASS / CLOSED",
+      "evidence_result": "PARTIAL"
+    },
+    "sheep_081": {
+      "controller_status": "PASS / CLOSED",
+      "evidence_result": "PARTIAL",
+      "persistence_status": "COMPLETE"
+    },
+    "next_authoritative_roadmap_id": "SHEEP-082",
+    "sheep_082_execution_authorized": false,
+    "next_stage_not_executed": true,
+    "stale_fields_reconciled": [
+      "lifecycle_stage = PHASE_4 to PHASE_5",
+      "next_task = SHEEP-063 to SHEEP-082",
+      "current_task = SHEEP-080 proposal to SHEEP-081 closed record",
+      "phase_5_entry = awaiting approval to active M5.1 with SHEEP-080 and SHEEP-081 closed"
+    ]
+  },
+  "decision_package": {
+    "classification": "DEFERRED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "product_decision_required": "NONE",
+    "implementation_authority": "SHEEP-082 is a roadmap successor only; no execution authorization is granted here.",
+    "required_preconditions_before_sheep_082": [
+      "SHEEP-081 live evidence and Controller Decision Package persisted",
+      "PROJECT_STATE and current lifecycle reconciled",
+      "governance files verified consistent",
+      "git status and filesystem impact reported"
+    ]
+  },
+  "files_created": [
+    "reports/SHEEP-081-report.json"
+  ],
+  "files_modified": [
+    "project/PROJECT_STATE.json"
+  ],
+  "files_deleted": [],
+  "filesystem_impact": {
+    "modified_files": 1,
+    "created_files": 1,
+    "deleted_files": 0,
+    "reference_trees_modified": false,
+    "production_code_changed": false,
+    "pdd_integration_implemented": false,
+    "schemas_migrations_ipc_services_ui_added": false,
+    "next_stage_not_executed": true
+  },
+  "sensitive_material_check": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "raw_buyer_identifiers_persisted": false,
+    "cookies_tokens_authorization_session_material_persisted": false,
+    "secrets_detected": false,
+    "redaction_status": "PASS"
+  },
+  "validation": {
+    "project_state_json_parse": "PASS",
+    "sheep_081_report_json_parse": "PASS",
+    "reviewed_roadmap_modified": false,
+    "decisions_modified": false,
+    "git_status_reported": true
+  }
+}

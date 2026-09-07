@@ -28,10 +28,13 @@
     "reviewed_version": "V1.0_REVIEWED"
   },
   "current_phase": "PHASE_5",
-  "current_milestone": "M5.1 (Capability Contract) — Phase 5 entry proposal submitted; not executed",
-  "last_closed_task": "SHEEP-076",
-  "current_task": "SHEEP-080 (Platform Capability Registry — Phase 5 entry / Acceptance Unit proposal submitted; awaiting Owner approval; NOT executed)",
-  "next_action": "Phase 5 entry / SHEEP-080 (Platform Capability Registry) proposal — awaiting Owner approval; not auto-executed",
+  "current_milestone": "M5.1 Capability Contract",
+  "last_closed_task": "SHEEP-081",
+  "current_task": "SHEEP-081 (PDD Capability Matrix) — PASS / CLOSED; live evidence persisted; no PDD integration implementation",
+  "next_action": "SHEEP-082 remains the next authoritative Roadmap ID; execution is not authorized",
+  "next_authoritative_roadmap_id": "SHEEP-082",
+  "sheep_082_execution_authorized": false,
+  "project_state_reconciliation_required": true,
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
   "implementation_progress": 0.0,
@@ -109,7 +112,19 @@
     "PHASE_0_START:APPROVED_OWNER_GO"
   ],
   "next_stage_not_executed": true,
-  "lifecycle_stage": "PHASE_4",
+  "lifecycle_stage": "PHASE_5",
+  "project_state_reconciliation": {
+    "required": true,
+    "status": "COMPLETE",
+    "reason": "AUTHORITATIVE_STATE_DRIFT reconciled after SHEEP-080 and SHEEP-081 Controller PASS / CLOSED",
+    "stale_fields_reconciled": [
+      "lifecycle_stage",
+      "next_task",
+      "current_task",
+      "phase_5_entry"
+    ],
+    "next_stage_not_executed": true
+  },
   "roadmap_phase_started": true,
   "review_2_inputs_from_dry_run": [
     "R-01 SecretStore dependency ordering",
@@ -187,7 +202,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-063 (M4.2 Message Timeline; pending Owner approval)",
+  "next_task": "SHEEP-082 (M5.2 PDD PlatformAccount Local Identity; execution not authorized)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -2470,12 +2485,52 @@
     "deferral_note": "Explicit deferred capabilities and their reopen triggers remain in PROJECT_STATE; Gate PASS must NOT reclassify them as implemented",
     "requires_owner_approval": true
   },
+  "sheep_080": {
+    "codex_result": "PARTIAL",
+    "controller_decision": "PASS",
+    "status": "CLOSED",
+    "evidence_result": "PARTIAL",
+    "closed_date_candidate": "2026-09-07",
+    "report": "reports\\SHEEP-080-report.json",
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-09-07"
+  },
+  "sheep_081": {
+    "codex_result": "COMPLETE",
+    "controller_decision": "PASS",
+    "status": "CLOSED",
+    "evidence_result": "PARTIAL",
+    "persistence_status": "COMPLETE",
+    "closed_date_candidate": "2026-09-07",
+    "report": "reports\\SHEEP-081-report.json",
+    "live_evidence_source": "LIVE_PDD_EVIDENCE",
+    "next_stage_not_executed": true,
+    "controller_pass_date": "2026-09-07"
+  },
+  "sheep_082": {
+    "roadmap_status": "NEXT_AUTHORITATIVE_ROADMAP_ID",
+    "execution_authorized": false,
+    "blocked_until": [
+      "SHEEP-081 live evidence / Controller Decision Package persisted",
+      "PROJECT_STATE and current lifecycle reconciled",
+      "governance files verified consistent",
+      "git status and filesystem impact reported"
+    ],
+    "next_stage_not_executed": true
+  },
   "phase_5_entry": {
-    "status": "PROPOSED_AWAITING_OWNER_APPROVAL",
+    "status": "ACTIVE",
     "gate_p4": "PASS",
     "proposed_date": "2026-08-29",
     "tier_order": "PDD first, DouDian later",
-    "first_acceptance_unit": "SHEEP-080 (Platform Capability Registry)",
-    "sheep_080_approved": false
+    "current_milestone": "M5.1 Capability Contract",
+    "completed_acceptance_units": [
+      "SHEEP-080",
+      "SHEEP-081"
+    ],
+    "next_authoritative_roadmap_id": "SHEEP-082",
+    "sheep_080_approved": true,
+    "sheep_081_closed": true,
+    "sheep_082_execution_authorized": false
   }
 }
