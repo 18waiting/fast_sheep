@@ -29,11 +29,11 @@
   },
   "current_phase": "PHASE_5",
   "current_milestone": "M5.2 Identity / Session",
-  "last_closed_task": "SHEEP-081",
-  "current_task": "SHEEP-082 (PDD PlatformAccount Local Identity) — IMPLEMENTED / AWAITING CONTROLLER REVIEW; no PDD integration implementation",
-  "next_action": "SHEEP-082 implementation is complete with constraints; await Controller Review; do not start SHEEP-083",
-  "next_authoritative_roadmap_id": "SHEEP-082",
-  "sheep_082_execution_authorized": true,
+  "last_closed_task": "SHEEP-082",
+  "current_task": "SHEEP-082 (PDD PlatformAccount Local Identity) — PASS / CLOSED; no PDD integration implementation",
+  "next_action": "SHEEP-082 is PASS / CLOSED; await Controller authorization before SHEEP-083; do not start SHEEP-083",
+  "next_authoritative_roadmap_id": "SHEEP-083",
+  "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
   "next_sheep_task_after_governance": "SHEEP-001",
   "implementation_started": true,
@@ -202,7 +202,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-082 (M5.2 PDD PlatformAccount Local Identity; IMPLEMENTED / AWAITING CONTROLLER REVIEW)",
+  "next_task": "SHEEP-083 (M5.2 PDD Login State Machine; not started; execution unauthorized)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -2508,12 +2508,13 @@
     "controller_pass_date": "2026-09-07"
   },
   "sheep_082": {
-    "roadmap_status": "NEXT_AUTHORITATIVE_ROADMAP_ID",
-    "execution_authorized": true,
+    "roadmap_status": "CLOSED",
+    "execution_authorized": false,
     "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
     "controller_proposal": "PASS / APPROVED",
-    "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
-    "controller_decision": "PENDING_CONTROLLER_REVIEW",
+    "status": "PASS / CLOSED",
+    "controller_decision": "PASS",
+    "implementation_result": "accepted",
     "implementation_readiness": "READY_WITH_CONSTRAINTS",
     "implementation_delta": "MINIMAL_CODE_GAP",
     "report": "reports\\SHEEP-082-report.json",
@@ -2545,12 +2546,13 @@
     "current_milestone": "M5.2 Identity / Session",
     "completed_acceptance_units": [
       "SHEEP-080",
-      "SHEEP-081"
+      "SHEEP-081",
+      "SHEEP-082"
     ],
-    "next_authoritative_roadmap_id": "SHEEP-082",
+    "next_authoritative_roadmap_id": "SHEEP-083",
     "sheep_080_approved": true,
     "sheep_081_closed": true,
-    "sheep_082_execution_authorized": true,
-    "sheep_082_status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW"
+    "sheep_082_execution_authorized": false,
+    "sheep_082_status": "PASS / CLOSED"
   }
 }

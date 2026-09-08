@@ -1,6 +1,10 @@
 {
   "task": "SHEEP-082",
   "result": "PARTIAL",
+  "controller_decision": "PASS",
+  "status": "CLOSED",
+  "implementation_result": "accepted",
+  "controller_pass_date": "2026-09-08",
   "phase": "PHASE_5",
   "milestone": "M5.2 Identity / Session",
   "objective": "Establish the local PDD PlatformAccount identity foundation without implementing PDD runtime integration.",
@@ -10,6 +14,8 @@
     "implementation": "AUTHORIZED WITH CONSTRAINTS",
     "readiness": "READY_WITH_CONSTRAINTS"
   },
+  "next_authoritative_roadmap_id": "SHEEP-083",
+  "next_task_execution_authorized": false,
   "completed_requirements": 8,
   "total_requirements": 8,
   "local_pdd_platform_account_contract": {
@@ -218,6 +224,6 @@
   "cross_tenant_or_cross_merchant_access_found": false,
   "unapproved_sync_or_outbox_added": false,
   "next_stage_not_executed": true,
-  "controller_review_required": true,
-  "next_task": "SHEEP-083 is not started; wait for Controller Review of SHEEP-082."
+  "controller_review_required": false,
+  "next_task": "SHEEP-083 (M5.2 PDD Login State Machine) is not started; execution unauthorized pending Controller authorization."
 }
