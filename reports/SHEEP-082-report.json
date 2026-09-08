@@ -75,6 +75,17 @@
     "seller_external_identity": "NOT_PROVEN / NOT_IMPLEMENTED",
     "rule": "Do not populate externalRef with customerUid, the observed mall_cs-side UID, or an invented seller identity."
   },
+  "external_ref_canonical_unbound_semantics": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "canonical_state": "EXTERNAL_REF_UNBOUND",
+    "domain_type": "PlatformAccount.externalRef?: AccountRef | null",
+    "accepted_inputs": ["externalRef omitted (undefined)", "externalRef = null"],
+    "persistence_write": "SqlitePlatformAccountRepository.save uses externalRef ?? null and writes SQLite external_ref = NULL for either input.",
+    "persistence_read": "SQLite external_ref = NULL is returned as externalRef: null.",
+    "undefined_vs_null": "No separate business meaning; both represent the same canonical unbound state after persistence.",
+    "code_change_required": false
+  },
   "authorization_session_boundary": {
     "classification": "CONFIRMED",
     "evidence_source": "FAST_SHEEP_GOVERNANCE",
@@ -131,11 +142,36 @@
   ],
   "validation": {
     "git_diff_check": "PASS",
-    "secret_scan": {
-      "status": "BLOCKED / FAIL",
+    "GLOBAL_SECRET_SCAN": {
+      "status": "BLOCKED_BY_PREEXISTING_PROTECTED_UNTRACKED_ARTIFACT",
       "classification": "BLOCKED",
+      "scope": "repository-wide",
       "reason": "The repository scan matched pre-existing untracked reference content under references/pdd-customer-service-sdk/main.py and README.md. Those protected paths were not modified, staged, or deleted; matching values are not reproduced here.",
-      "task_impact": "Required scan cannot be reported PASS without modifying protected pre-existing content, which is outside this task."
+      "task_impact": "The global scan remains blocked by protected pre-existing artifacts; this is not attributed to SHEEP-082."
+    },
+    "SHEEP_082_DELTA_SECRET_SCAN": {
+      "status": "PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+      "scope": [
+        "packages/domain/src/merchant-domain.ts",
+        "packages/domain/tests/merchant-domain.test.mjs",
+        "packages/persistence/tests/identity-persistence.test.ts",
+        "project/PROJECT_STATE.json",
+        "reports/SHEEP-082-report.json"
+      ],
+      "method": "Changed-files-only equivalent sensitive-material review; no matched values are output.",
+      "checks": {
+        "password": "PASS",
+        "cookie_value": "PASS",
+        "access_token": "PASS",
+        "authorization_credential": "PASS",
+        "session_credential": "PASS",
+        "api_key": "PASS",
+        "anti_content_value": "PASS",
+        "raw_sensitive_live_pdd_credential_material": "PASS",
+        "unnecessary_raw_test_buyer_identifiers": "PASS"
+      }
     },
     "protected_untracked_paths": {
       "status": "UNCHANGED",

@@ -28,7 +28,7 @@
     "reviewed_version": "V1.0_REVIEWED"
   },
   "current_phase": "PHASE_5",
-  "current_milestone": "M5.1 Capability Contract",
+  "current_milestone": "M5.2 Identity / Session",
   "last_closed_task": "SHEEP-081",
   "current_task": "SHEEP-082 (PDD PlatformAccount Local Identity) — IMPLEMENTED / AWAITING CONTROLLER REVIEW; no PDD integration implementation",
   "next_action": "SHEEP-082 implementation is complete with constraints; await Controller Review; do not start SHEEP-083",
@@ -2542,7 +2542,7 @@
     "gate_p4": "PASS",
     "proposed_date": "2026-08-29",
     "tier_order": "PDD first, DouDian later",
-    "current_milestone": "M5.1 Capability Contract",
+    "current_milestone": "M5.2 Identity / Session",
     "completed_acceptance_units": [
       "SHEEP-080",
       "SHEEP-081"
