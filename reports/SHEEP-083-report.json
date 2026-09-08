@@ -39,6 +39,7 @@
     {"from": "LOADING", "event": "page_ready", "to": "READY", "reason": "Consume the existing local page-ready observation only."},
     {"from": "LOADING", "event": "login_required", "to": "LOGIN_REQUIRED", "reason": "Record the local login-required observation."},
     {"from": "LOADING", "event": "dom_unsupported", "to": "DOM_UNSUPPORTED", "reason": "Fail closed on an unsupported local surface."},
+    {"from": "LOGIN_REQUIRED", "event": "page_ready after fresh runtime observation", "to": "READY", "reason": "A fresh local page/runtime readiness observation is the only recovery signal; it does not assert authentication truth."},
     {"from": "LOGIN_REQUIRED", "event": "dom_unsupported", "to": "DOM_UNSUPPORTED", "reason": "A specific unsupported-page observation supersedes the earlier login observation."},
     {"from": "READY", "event": "reload", "to": "LOADING", "reason": "Re-enter local loading on an explicit reload."},
     {"from": "DOM_UNSUPPORTED", "event": "reload", "to": "LOADING", "reason": "Allow explicit local re-observation after reload."},
@@ -122,6 +123,7 @@
       "Illegal transition rejection and host fail-closed behavior",
       "page_ready does not establish authentication",
       "login_required and dom_unsupported observations",
+      "LOGIN_REQUIRED recovery only after a fresh runtime page_ready observation",
       "Unknown event handling",
       "Per-shop/session isolation",
       "Status-only safe projection",
@@ -139,12 +141,14 @@
     "classification": "CONFIRMED",
     "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
     "checks": {
-      "platform_pdd_tests": "65/65 PASS",
-      "desktop_tests": "305/305 PASS",
+      "platform_pdd_tests": "68/68 PASS",
+      "desktop_tests": "306/306 PASS",
       "platform_pdd_typecheck": "PASS",
       "desktop_typecheck": "PASS",
       "desktop_build": "PASS",
       "check_m7_pdd_security": "PASS",
+      "check_m7_no_network": "PASS",
+      "verify_m7_pdd_session_isolation": "PASS",
       "git_diff_check": "PASS",
       "project_state_json_parse": "PASS"
     }
@@ -166,8 +170,8 @@
   "section_17_commit": {
     "classification": "CONFIRMED",
     "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
-    "status": "ONE_FOCUSED_SHEEP_083_IMPLEMENTATION_COMMIT",
-    "scope": "One focused SHEEP-083 implementation commit; protected pre-existing untracked paths excluded."
+    "status": "ONE_FOCUSED_SHEEP_083_IMPLEMENTATION_COMMIT_PLUS_ONE_AUTHORIZED_REPAIR_COMMIT",
+    "scope": "The repair commit contains only the five authorized repair files plus this report; protected pre-existing untracked paths and SHEEP-084 are excluded."
   },
   "section_18_final_git_status": {
     "classification": "CONFIRMED",
@@ -194,6 +198,37 @@
     "classification": "CONFIRMED",
     "evidence_source": "FAST_SHEEP_GOVERNANCE",
     "value": "Stop after SHEEP-083 and wait for Controller Review."
+  },
+  "section_22_targeted_repair_closeout": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "result": "COMPLETE",
+    "selected_recovery_design": "LOGIN_REQUIRED_TO_READY_AFTER_FRESH_PAGE_OBSERVATION",
+    "objective": "Repair only the confirmed local LOGIN_REQUIRED recovery gap.",
+    "exact_transition_changes": [
+      "LOGIN_REQUIRED now legally accepts page_ready only after a fresh local page/runtime readiness observation.",
+      "Repeated login_required observations remain idempotent.",
+      "Fresh unsupported DOM remains fail-closed as dom_unsupported."
+    ],
+    "runtime_reobservation_path": "The existing mutation observer remains active while LOGIN_REQUIRED is observed; a later DOM change re-runs the existing readiness check, emits page_ready only for a fresh supported DOM, and then permits the local state transition.",
+    "semantic_boundary": ["READY != authenticated", "READY != session_valid", "READY != seller_verified", "READY != authorization", "READY != entitlement", "READY != send_ready"],
+    "repair_files_modified": [
+      "apps/desktop/tests/pdd-session-host.test.ts",
+      "packages/platform-pdd/src/page/page-runtime.ts",
+      "packages/platform-pdd/src/session-state.ts",
+      "packages/platform-pdd/tests/dom-health.test.ts",
+      "packages/platform-pdd/tests/session-state.test.ts",
+      "reports/SHEEP-083-report.json"
+    ],
+    "ephemeral_validation_reports": {
+      "reports/m7-pdd-security-report.json": "REMOVED_AFTER_VALIDATION",
+      "reports/m7-pdd-session-report.json": "REMOVED_AFTER_VALIDATION"
+    },
+    "protected_preexisting_paths": "UNCHANGED / NOT STAGED",
+    "live_pdd_testing": "NOT_PERFORMED",
+    "pdd_integration": "NOT_STARTED",
+    "sheep_084": "NOT_STARTED",
+    "next_stage_not_executed": true
   },
   "files_created": ["reports/SHEEP-083-report.json"],
   "files_modified": [

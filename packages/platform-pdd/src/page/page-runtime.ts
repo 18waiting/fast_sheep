@@ -41,6 +41,7 @@ export class PddPageRuntime {
   private lastMessageKeys = new Set<string>();
   private readonly observer: PageMutationObserver;
   private readonly now: () => number;
+  private lastReadiness: "LOGIN_REQUIRED" | "READY" | "DOM_UNSUPPORTED" | null = null;
 
   constructor(private readonly options: PageRuntimeOptions) {
     this.now = options.now ?? (() => Date.now());
@@ -53,25 +54,44 @@ export class PddPageRuntime {
         return new MO(cb);
       });
     this.observer = new PageMutationObserver(makeObserver, 80);
-    this.observer.onScan = () => this.scan();
+    this.observer.onScan = () => this.observeReadiness();
     options.transport.onCommand((command) => this.runCommand(command));
   }
 
   start(): void {
-    const { doc, sessionId, shopId, transport } = this.options;
-    const health = domHealth(doc, PDD_SELECTOR_PROFILE);
-    if (doc.querySelector("[data-fw-pdd-login]")) {
-      this.emit(buildLoginRequired(sessionId));
-      return;
-    }
-    if (!health.ready) {
-      this.emit(buildDomUnsupported(sessionId, health.reason));
-      return;
-    }
-    this.emit(buildPageReady(sessionId, "READY"));
-    this.scan();
+    const { doc } = this.options;
+    this.observeReadiness();
     const root = doc.body;
     if (root) this.observer.start(root);
+  }
+
+  private observeReadiness(): void {
+    const { doc, sessionId } = this.options;
+    if (doc.querySelector("[data-fw-pdd-login]")) {
+      if (this.lastReadiness !== "LOGIN_REQUIRED") {
+        this.lastReadiness = "LOGIN_REQUIRED";
+        this.emit(buildLoginRequired(sessionId));
+      }
+      return;
+    }
+
+    const health = domHealth(doc, PDD_SELECTOR_PROFILE);
+    if (!health.ready) {
+      if (this.lastReadiness !== "DOM_UNSUPPORTED") {
+        this.lastReadiness = "DOM_UNSUPPORTED";
+        this.emit(buildDomUnsupported(sessionId, health.reason));
+      }
+      return;
+    }
+
+    if (this.lastReadiness !== "READY") {
+      this.lastReadiness = "READY";
+      this.emit(buildPageReady(sessionId, "READY"));
+      this.scan();
+      return;
+    }
+
+    this.scan();
   }
 
   private emit(event: PddPageEvent): void {

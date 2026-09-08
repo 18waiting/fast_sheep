@@ -44,6 +44,16 @@ test("a specific unsupported-page observation may supersede login-required obser
   assert.equal(s.getLastError(), "missing selectors");
 });
 
+test("login-required accepts only the fresh page-ready recovery signal", () => {
+  const s = new PddSessionState("shop-1", "session-1");
+  s.setStatus("CREATING");
+  s.setStatus("LOADING");
+  s.setStatus("LOGIN_REQUIRED");
+  s.setStatus("READY");
+  assert.equal(s.getStatus(), "READY");
+  assert.equal(s.isReady(), true);
+});
+
 test("session rejects unknown statuses", () => {
   const s = new PddSessionState("s1", "sid");
   assert.throws(() => s.setStatus("BOGUS" as never));

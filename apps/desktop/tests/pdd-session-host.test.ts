@@ -45,6 +45,19 @@ test("session tracks active conversation and login/dom-unsupported states", () =
   assert.equal(host.state.getLastError(), "missing selectors");
 });
 
+test("login-required recovers when the page runtime reports a fresh page-ready observation", () => {
+  const host = new PddSessionHost({ shopId: "shop-1", makeView: () => new FakeView() as never });
+  host.state.setStatus("CREATING");
+  host.state.setStatus("LOADING");
+
+  host.handleEvent({ event: "login_required", session_id: host.state.sessionId } as PddPageEvent);
+  assert.equal(host.state.getStatus(), "LOGIN_REQUIRED");
+  host.handleEvent({ event: "page_ready", session_id: host.state.sessionId, status: "READY" } as PddPageEvent);
+
+  assert.equal(host.state.getStatus(), "READY");
+  assert.equal(host.state.view().status, "READY");
+});
+
 test("session host fails closed on an illegal or unknown runtime signal", () => {
   const host = new PddSessionHost({ shopId: "shop-1", makeView: () => new FakeView() as never });
   host.state.setStatus("CREATING");
