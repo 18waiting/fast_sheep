@@ -1,0 +1,276 @@
+{
+  "task": "SHEEP-084",
+  "result": "COMPLETE",
+  "controller_decision": "AWAITING_CONTROLLER_REVIEW",
+  "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "section_1_result": {
+    "value": "COMPLETE",
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "basis": "The authorized local Main-side credential-reference composition boundary is implemented and the required scoped validation is passing."
+  },
+  "section_2_implementation_delta": {
+    "value": "MINIMAL_CODE_GAP",
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "details": [
+      "Added the Main-side PddSecretReferenceService composition boundary.",
+      "Added focused synthetic-value tests for lifecycle, rediscovery, scope isolation, and fail-closed behavior.",
+      "Added the existing SecretStore workspace dependency to the desktop package and lockfile.",
+      "No PDD credential acquisition, login, session validation, receive/send runtime, or network behavior was added."
+    ]
+  },
+  "section_3_platform_account_id_scope_verification": {
+    "value": "PLATFORM_ACCOUNT_ID_SCOPE_CONFIRMED",
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "basis": [
+      "The existing PlatformAccount persistence contract uses id as the local entity primary key.",
+      "PlatformAccount.id is distinct from merchant scope and optional externalRef.",
+      "The approved SHEEP-084 contract permits derivation from PlatformAccount.id after trusted merchant and platform validation."
+    ]
+  },
+  "section_4_selected_rediscovery_model": {
+    "value": "DERIVABLE_REFERENCE_SUFFICIENT",
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "details": "The reference is deterministically derived from the validated PlatformAccount.id and is not separately persisted."
+  },
+  "section_5_reference_key_contract": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "format": "A Main-private approved namespace followed by a SHA-256 hexadecimal digest of the validated PlatformAccount.id.",
+    "properties": [
+      "Contains no credential value.",
+      "Does not use PlatformAccount.externalRef, customerUid, mall_cs-side UID, session state, or ambient UI selection.",
+      "Is stable across service reconstruction for the same PlatformAccount.id.",
+      "Satisfies the existing SecretStore key format without exposing the key through the public service surface."
+    ]
+  },
+  "section_6_main_side_credential_service": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "service": "PddSecretReferenceService",
+    "operations": [
+      "register/store opaque secret material",
+      "replace/re-register at the same derived account key",
+      "has/presence without returning the value",
+      "resolve inside the Main-side service boundary",
+      "remove/revoke"
+    ],
+    "constraints": [
+      "Resolves the existing PlatformAccount before SecretStore access.",
+      "Requires trusted merchant containment and platform=pdd.",
+      "Does not expose arbitrary SecretStore keys or a public reference parser.",
+      "Uses only synthetic non-secret values in tests."
+    ]
+  },
+  "section_7_restart_rediscovery": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "behavior": "A newly constructed service with the same authoritative PlatformAccount repository, trusted merchant scope, and SecretStore state resolves the existing entry without a mapping row.",
+    "non_implications": [
+      "Secret presence does not imply authenticated.",
+      "Secret presence does not imply session_valid.",
+      "Secret presence does not imply seller_verified, authorized, entitled, or send_ready."
+    ]
+  },
+  "section_8_multi_account_isolation": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "checks": [
+      "Different valid PlatformAccount.id values use distinct effective derived keys.",
+      "An entry registered for Account A is not resolved for Account B.",
+      "A merchant-scope mismatch fails before SecretStore access.",
+      "A non-PDD account fails before SecretStore access.",
+      "No ambient shop, session, UI selection, or caller-supplied reference can redirect lookup."
+    ]
+  },
+  "section_9_failure_fail_closed_behavior": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "fail_closed_cases": [
+      "missing PlatformAccount",
+      "invalid PlatformAccount identity",
+      "wrong merchant scope",
+      "wrong platform",
+      "empty secret material",
+      "missing SecretStore entry",
+      "removed SecretStore entry",
+      "SecretStore failure or unavailability"
+    ],
+    "fallbacks": "No plaintext, Renderer input, DOM, SQLite, environment variable, legacy-import in-memory adapter, or test-store fallback is introduced."
+  },
+  "section_10_identity_authorization_boundary": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "separations": [
+      "credential reference != credential value",
+      "credential reference != PlatformAccount.externalRef",
+      "credential reference != PDD seller identity",
+      "credential reference != customerUid",
+      "credential reference != mall_cs-side UID",
+      "credential reference != conversation identity",
+      "credential reference != session state",
+      "credential reference != authorization",
+      "credential presence != authenticated/session-valid/send-ready"
+    ]
+  },
+  "section_11_files_created": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "files": [
+      "apps/desktop/src/main/services/pdd-credential-reference-service.ts",
+      "apps/desktop/tests/pdd-credential-reference.test.ts",
+      "reports/SHEEP-084-report.json"
+    ]
+  },
+  "section_12_files_modified": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "files": [
+      "apps/desktop/package.json",
+      "pnpm-lock.yaml"
+    ],
+    "note": "Only the desktop workspace dependency declaration and its lockfile importer entry were changed."
+  },
+  "section_13_tests": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "focused_coverage": [
+      "valid PDD register -> has -> resolve",
+      "replace uses the same account-derived reference",
+      "service reconstruction resolves existing state",
+      "missing and removed entry behavior",
+      "account and merchant isolation",
+      "non-PDD rejection",
+      "SecretStore failure propagation",
+      "no arbitrary key/reference public operation",
+      "externalRef independence",
+      "no buyer/mall-side/session/IPC/Renderer boundary coupling"
+    ]
+  },
+  "section_14_data_schema_impact": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "value": "NO_SCHEMA_CHANGE_REQUIRED",
+    "details": [
+      "No migration was created.",
+      "No credential_ref column or mapping table was added.",
+      "PlatformAccount.externalRef remains nullable and unbound for this contract.",
+      "Secret material remains owned by SecretStore rather than ordinary SQLite persistence."
+    ]
+  },
+  "section_15_ipc_ui_network_impact": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "ipc": "NONE",
+    "ui": "NONE",
+    "network": "NONE",
+    "renderer_secret_access": "PROHIBITED and not introduced"
+  },
+  "section_16_live_pdd_evidence_status": {
+    "classification": "DEFERRED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "live_pdd_evidence_required_now": false,
+    "live_pdd_testing_performed": false,
+    "meaning": "This unit does not establish PDD credential acquisition, login, authentication, session validity, or runtime platform truth."
+  },
+  "section_17_secret_sensitive_material_check": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "real_credentials": false,
+    "real_cookies_tokens_passwords_authorization_values": false,
+    "test_material": "Synthetic opaque values only; no sensitive values are reproduced in this report.",
+    "protected_paths": "Not modified, staged, or committed."
+  },
+  "section_18_validation": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "checks": {
+      "desktop_tests": "317/317 PASS",
+      "secret_store_tests": "9/9 PASS",
+      "persistence_build": "PASS",
+      "persistence_tests": "89/89 PASS",
+      "desktop_typecheck": "PASS",
+      "desktop_build": "PASS",
+      "clean_room_boundary": "PASS",
+      "git_diff_check": "PASS",
+      "project_state_json_parse": "PASS",
+      "sheep_085_started": false,
+      "pdd_integration_started": false
+    }
+  },
+  "section_19_scoped_secret_scan": {
+    "global_secret_scan": {
+      "status": "BLOCKED_BY_PREEXISTING_PROTECTED_UNTRACKED_ARTIFACT",
+      "classification": "BLOCKED",
+      "evidence_source": "CURRENT_FAST_SHEEP_ARTIFACT",
+      "reason": "Repository-wide scanning is blocked by pre-existing protected SDK reference material under references/pdd-customer-service-sdk. The protected paths were not changed or staged."
+    },
+    "sheep_084_delta_secret_scan": {
+      "status": "PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+      "method": "The SHEEP-084 source, test, package metadata, lockfile delta, and report were reviewed for credential and sensitive live-PDD material; no sensitive values are output."
+    }
+  },
+  "section_20_project_state": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "current_phase": "PHASE_5",
+    "current_milestone": "M5.2 Identity / Session",
+    "last_closed_task": "SHEEP-083",
+    "sheep_083": "PASS / CLOSED",
+    "sheep_084": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+    "next_authoritative_roadmap_id": "SHEEP-084",
+    "next_task_execution_authorized": false,
+    "sheep_085": "NOT_STARTED",
+    "next_stage_not_executed": true,
+    "project_state_modified_by_sheep_084": false
+  },
+  "section_21_commit": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "status": "ONE_FOCUSED_SHEEP_084_IMPLEMENTATION_COMMIT",
+    "scope": "Only the two package metadata files, the Main-side service, its focused test, and this report are authorized for staging."
+  },
+  "section_22_final_git_status": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "protected_preexisting_untracked_paths": "UNCHANGED / NOT STAGED",
+    "protected_paths": [
+      "docs/fast-sheep-pdd-platform-capability-registry-readiness.md",
+      "docs/reference-pdd-customer-service-sdk.md",
+      "references/pdd-customer-service-sdk/",
+      "reports/REFERENCE-PDD-CUSTOMER-SERVICE-SDK-import-report.json",
+      "reports/SHEEP-080-report.json"
+    ],
+    "sheep_085_started": false
+  },
+  "section_23_acceptance_criteria_result": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "result": "All authorized SHEEP-084 local credential-reference criteria pass. Full credential acquisition, PDD login/session truth, and runtime integration remain outside this unit."
+  },
+  "section_24_stop_condition": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "value": "Stop after SHEEP-084. Do not start SHEEP-085. Do not perform live PDD testing. Wait for Controller Review.",
+    "next_stage_not_executed": true
+  },
+  "files_created": [
+    "apps/desktop/src/main/services/pdd-credential-reference-service.ts",
+    "apps/desktop/tests/pdd-credential-reference.test.ts",
+    "reports/SHEEP-084-report.json"
+  ],
+  "files_modified": [
+    "apps/desktop/package.json",
+    "pnpm-lock.yaml"
+  ],
+  "files_deleted": [],
+  "pdd_integration_started": false,
+  "sheep_085_started": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

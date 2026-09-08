@@ -59,6 +59,9 @@ importers:
       '@fastwork/product-optimization':
         specifier: workspace:*
         version: link:../../packages/product-optimization
+      '@fastwork/secret-store':
+        specifier: workspace:*
+        version: link:../../packages/secret-store
       '@fastwork/test-kit':
         specifier: workspace:*
         version: link:../../packages/test-kit
