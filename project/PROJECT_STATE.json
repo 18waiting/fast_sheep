@@ -29,10 +29,11 @@
   },
   "current_phase": "PHASE_5",
   "current_milestone": "M5.2 Identity / Session",
-  "last_closed_task": "SHEEP-082",
-  "current_task": "SHEEP-083 (PDD Login State Machine) — IMPLEMENTED / AWAITING CONTROLLER REVIEW; no PDD integration implementation",
-  "next_action": "SHEEP-083 implementation is complete for review; await Controller PASS / REPAIR; do not start SHEEP-084",
-  "next_authoritative_roadmap_id": "SHEEP-083",
+  "last_closed_task": "SHEEP-083",
+  "current_task": "SHEEP-083 (PDD Login State Machine) — PASS / CLOSED; no PDD integration implementation",
+  "next_action": "SHEEP-083 is PASS / CLOSED; audit SHEEP-084 only; do not start SHEEP-084",
+  "next_authoritative_roadmap_id": "SHEEP-084",
+  "next_task_execution_authorized": false,
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
   "next_sheep_task_after_governance": "SHEEP-001",
@@ -202,7 +203,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-083 (M5.2 PDD Login State Machine; not started; execution unauthorized)",
+  "next_task": "SHEEP-084 (M5.2 Secure Credential Reference; not started; execution unauthorized)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -2539,10 +2540,10 @@
     "next_stage_not_executed": true
   },
   "sheep_083": {
-    "roadmap_status": "IN_PROGRESS",
+    "roadmap_status": "CLOSED",
     "codex_result": "COMPLETE",
-    "controller_decision": "AWAITING_CONTROLLER_REVIEW",
-    "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+    "controller_decision": "PASS",
+    "status": "PASS / CLOSED",
     "phase": "PHASE_5",
     "milestone": "M5.2 Identity / Session",
     "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
@@ -2566,9 +2567,10 @@
     "completed_acceptance_units": [
       "SHEEP-080",
       "SHEEP-081",
-      "SHEEP-082"
+      "SHEEP-082",
+      "SHEEP-083"
     ],
-    "next_authoritative_roadmap_id": "SHEEP-083",
+    "next_authoritative_roadmap_id": "SHEEP-084",
     "sheep_080_approved": true,
     "sheep_081_closed": true,
     "sheep_082_execution_authorized": false,
