@@ -35,6 +35,8 @@ class SyntheticDomBridge implements PddPageBridge {
 
 function adapterFor(fixture: string) {
   const session = new PddSessionState("shop-1", "session-1");
+  session.setStatus("CREATING");
+  session.setStatus("LOADING");
   session.setStatus("READY");
   const adapter = new PddPlatformAdapter({ bridge: new SyntheticDomBridge(fixture), session, commandIdFactory: () => "cmd-1" });
   return { adapter, session };
@@ -121,6 +123,8 @@ test("GF-PDD-008 DOM unavailable -> safe failure, no bypass", async () => {
 test("GF-PDD-009 login unavailable -> listener stopped (LOGIN_REQUIRED)", () => {
   const f = readFixture("pdd/GF-PDD-009.json");
   const session = new PddSessionState("shop-1", "session-1");
+  session.setStatus("CREATING");
+  session.setStatus("LOADING");
   session.setStatus("LOGIN_REQUIRED");
   // A login-required session is not ready; listener is effectively stopped.
   assert.equal(session.isReady(), false);

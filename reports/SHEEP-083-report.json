@@ -1,0 +1,213 @@
+{
+  "task": "SHEEP-083",
+  "result": "COMPLETE",
+  "controller_decision": "AWAITING_CONTROLLER_REVIEW",
+  "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "section_1_result": {
+    "value": "COMPLETE",
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "basis": "The authorized local state-machine scope is implemented and all required scoped tests and checks pass."
+  },
+  "section_2_implementation_delta": {
+    "value": "MINIMAL_CODE_GAP",
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "details": [
+      "Explicit legal transition validation was added to the existing PddSessionState.",
+      "PddSessionHost now validates session identity, handles supported runtime signals, and fails closed on unsupported or illegal signals.",
+      "Focused tests cover state transitions, event handling, isolation, safe projection, and authentication-boundary semantics."
+    ]
+  },
+  "section_3_exact_state_vocabulary": [
+    {"name": "STOPPED", "semantic_level": "LOCAL_LIFECYCLE", "meaning": "The local PDD session has not begun or has been reset before creation.", "must_not_imply": ["authenticated", "session_valid", "seller_identity_verified", "authorization", "send_ready"]},
+    {"name": "CREATING", "semantic_level": "LOCAL_LIFECYCLE", "meaning": "The local session host is creating its per-shop view/session boundary.", "must_not_imply": ["authenticated", "session_valid", "seller_identity_verified", "authorization", "send_ready"]},
+    {"name": "LOADING", "semantic_level": "LOCAL_LIFECYCLE", "meaning": "The local page/runtime fixture or reload is being loaded.", "must_not_imply": ["authenticated", "session_valid", "seller_identity_verified", "authorization", "send_ready"]},
+    {"name": "LOGIN_REQUIRED", "semantic_level": "LOGIN_REQUIRED_OBSERVATION", "meaning": "The local page/runtime emitted an observation that login is required.", "must_not_imply": ["credential_acquired", "credential_persisted", "login_automation", "authenticated"]},
+    {"name": "READY", "semantic_level": "PAGE_RUNTIME_OBSERVATION", "meaning": "The local page/runtime passed its existing readiness signal and the adapter may use its existing local ready gate.", "must_not_imply": ["authenticated", "session_valid", "seller_identity_verified", "authorization", "entitlement", "send_ready"]},
+    {"name": "DOM_UNSUPPORTED", "semantic_level": "UNSUPPORTED_OR_ERROR", "meaning": "The local page/runtime reported that the expected supported surface is unavailable.", "must_not_imply": ["authenticated", "session_valid", "retryable_platform_truth", "send_ready"]},
+    {"name": "ERROR", "semantic_level": "UNSUPPORTED_OR_ERROR", "meaning": "The local session host failed closed after an exception, illegal transition, or unsupported event.", "must_not_imply": ["authenticated", "session_valid", "safe_to_send"]},
+    {"name": "DISPOSED", "semantic_level": "LOCAL_LIFECYCLE", "meaning": "The local session view and host have been disposed.", "must_not_imply": ["authenticated", "session_valid", "seller_identity_verified", "authorization"]}
+  ],
+  "section_4_legal_transition_table": [
+    {"from": "STOPPED", "event": "same-state signal / host initialization", "to": "STOPPED", "reason": "Idempotent local initial state."},
+    {"from": "STOPPED", "event": "create", "to": "CREATING", "reason": "Begin local per-shop session creation."},
+    {"from": "CREATING", "event": "local page load", "to": "LOADING", "reason": "Load the local page/runtime surface."},
+    {"from": "CREATING", "event": "page_ready", "to": "READY", "reason": "Consume the existing local page-ready observation only."},
+    {"from": "CREATING", "event": "login_required", "to": "LOGIN_REQUIRED", "reason": "Record the local login-required observation."},
+    {"from": "CREATING", "event": "dom_unsupported", "to": "DOM_UNSUPPORTED", "reason": "Fail closed on an unsupported local surface."},
+    {"from": "LOADING", "event": "page_ready", "to": "READY", "reason": "Consume the existing local page-ready observation only."},
+    {"from": "LOADING", "event": "login_required", "to": "LOGIN_REQUIRED", "reason": "Record the local login-required observation."},
+    {"from": "LOADING", "event": "dom_unsupported", "to": "DOM_UNSUPPORTED", "reason": "Fail closed on an unsupported local surface."},
+    {"from": "LOGIN_REQUIRED", "event": "dom_unsupported", "to": "DOM_UNSUPPORTED", "reason": "A specific unsupported-page observation supersedes the earlier login observation."},
+    {"from": "READY", "event": "reload", "to": "LOADING", "reason": "Re-enter local loading on an explicit reload."},
+    {"from": "DOM_UNSUPPORTED", "event": "reload", "to": "LOADING", "reason": "Allow explicit local re-observation after reload."},
+    {"from": "ERROR", "event": "reload", "to": "LOADING", "reason": "Allow explicit local recovery attempt without asserting platform recovery."},
+    {"from": "*", "event": "dispose", "to": "DISPOSED", "reason": "Dispose local host state; repeated disposal is idempotent."},
+    {"from": "*", "event": "same-state signal", "to": "same state", "reason": "Repeated signals are idempotent where the explicit table permits them."}
+  ],
+  "section_5_illegal_fail_closed": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "behavior": [
+      "PddSessionState rejects an unknown status and rejects an unlisted transition without mutating the previous state.",
+      "PddSessionHost converts an illegal supported event transition to ERROR.",
+      "PddSessionHost converts an unknown runtime event to ERROR.",
+      "Events with a different session_id are ignored and cannot mutate local state.",
+      "Create/load/reload exceptions fail closed to ERROR and preserve the exception for the caller."
+    ]
+  },
+  "section_6_files_created": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "files": ["reports/SHEEP-083-report.json"]
+  },
+  "section_7_files_modified": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "files": [
+      "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
+      "apps/desktop/tests/pdd-session-host.test.ts",
+      "packages/platform-pdd/src/index.ts",
+      "packages/platform-pdd/src/session-state.ts",
+      "packages/platform-pdd/tests/pdd-platform-adapter.test.ts",
+      "packages/platform-pdd/tests/platform-golden-fixtures.test.ts",
+      "packages/platform-pdd/tests/session-state.test.ts",
+      "project/PROJECT_STATE.json"
+    ]
+  },
+  "section_8_pdd_session_host_integration": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "details": [
+      "The existing PddSessionHost owns a PddSessionState per shop/session.",
+      "Supported page/runtime events are consumed without adding network or PDD protocol behavior.",
+      "The existing status-only projection remains the renderer-facing boundary.",
+      "No new IPC channel, UI surface, credential flow, or session persistence was added."
+    ]
+  },
+  "section_9_multi_shop_isolation": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "details": [
+      "Session identity is checked before event handling.",
+      "Existing per-shop Chromium partition and coordinator boundaries are preserved.",
+      "Focused desktop isolation tests and the existing multi-shop tests pass."
+    ]
+  },
+  "section_10_authorization_platform_account_boundary": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "details": [
+      "PlatformAccount existence does not imply authenticated session, authorization, entitlement, seller verification, or send readiness.",
+      "SHEEP-082 local identity semantics are unchanged: externalRef remains nullable/unbound, customerUid remains buyer identity only, and the observed mall_cs-side UID remains opaque/unbound.",
+      "No PDD seller identity or authorization binding was added."
+    ]
+  },
+  "section_11_secret_renderer_boundary": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "details": [
+      "No credential, Cookie, Token, Authorization header, password, QR material, anti_content, or session secret is read, stored, logged, or projected.",
+      "The status view exposes only shop_id, session_id, status, bounded last_error, active_conversation_id, and buyer_id.",
+      "No raw ipcRenderer, filesystem, SQLite, or unrestricted system API was added to the renderer boundary."
+    ]
+  },
+  "section_12_tests": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "coverage": [
+      "Initial/default state",
+      "Explicit legal transitions and repeated same-state signals",
+      "Illegal transition rejection and host fail-closed behavior",
+      "page_ready does not establish authentication",
+      "login_required and dom_unsupported observations",
+      "Unknown event handling",
+      "Per-shop/session isolation",
+      "Status-only safe projection",
+      "PlatformAccount identity does not imply authorization or send readiness"
+    ]
+  },
+  "section_13_live_pdd_evidence_status": {
+    "classification": "DEFERRED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "live_pdd_evidence_required_now": false,
+    "live_pdd_evidence_required_later": true,
+    "meaning": "This unit freezes and validates a local runtime contract; it does not claim that local synthetic/page observations are authoritative PDD authentication truth."
+  },
+  "section_14_validation": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "checks": {
+      "platform_pdd_tests": "65/65 PASS",
+      "desktop_tests": "305/305 PASS",
+      "platform_pdd_typecheck": "PASS",
+      "desktop_typecheck": "PASS",
+      "desktop_build": "PASS",
+      "check_m7_pdd_security": "PASS",
+      "git_diff_check": "PASS",
+      "project_state_json_parse": "PASS"
+    }
+  },
+  "section_15_scoped_secret_check": {
+    "global_secret_scan": {"status": "BLOCKED_BY_PREEXISTING_PROTECTED_UNTRACKED_ARTIFACT", "classification": "BLOCKED", "evidence_source": "CURRENT_FAST_SHEEP_ARTIFACT", "reason": "Repository-wide scanning is blocked by existing protected SDK reference material under references/pdd-customer-service-sdk; protected paths were not modified, staged, or reproduced."},
+    "sheep_083_delta_secret_scan": {"status": "PASS", "classification": "CONFIRMED", "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION", "method": "Changed SHEEP-083 source, tests, state, and report were reviewed for credentials and sensitive live PDD material; no matched sensitive values are output."}
+  },
+  "section_16_project_state_update": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "current_phase": "PHASE_5",
+    "current_milestone": "M5.2 Identity / Session",
+    "last_closed_task": "SHEEP-082",
+    "sheep_083": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+    "next_authoritative_roadmap_id": "SHEEP-083",
+    "next_stage_not_executed": true
+  },
+  "section_17_commit": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "status": "ONE_FOCUSED_SHEEP_083_IMPLEMENTATION_COMMIT",
+    "scope": "One focused SHEEP-083 implementation commit; protected pre-existing untracked paths excluded."
+  },
+  "section_18_final_git_status": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "status": "PROTECTED_PRE_EXISTING_UNTRACKED_PATHS_REMAIN_UNTOUCHED_AND_UNSTAGED",
+    "protected_paths": "UNCHANGED / NOT STAGED"
+  },
+  "section_19_acceptance_criteria_result": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "result": "All authorized SHEEP-083 criteria pass within local scope; live PDD authentication/session truth remains unestablished."
+  },
+  "section_20_next_state": {
+    "classification": "DEFERRED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "pdd_seller_external_identity": "NOT_IMPLEMENTED / NOT_PROVEN",
+    "pdd_live_login_session_transition_semantics": "NOT_YET_LIVE_VALIDATED",
+    "pdd_integration": "NOT_STARTED",
+    "sheep_084": "NOT_STARTED",
+    "sheep_085": "NOT_STARTED",
+    "next_stage_not_executed": true
+  },
+  "section_21_stop_condition": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "value": "Stop after SHEEP-083 and wait for Controller Review."
+  },
+  "files_created": ["reports/SHEEP-083-report.json"],
+  "files_modified": [
+    "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
+    "apps/desktop/tests/pdd-session-host.test.ts",
+    "packages/platform-pdd/src/index.ts",
+    "packages/platform-pdd/src/session-state.ts",
+    "packages/platform-pdd/tests/pdd-platform-adapter.test.ts",
+    "packages/platform-pdd/tests/platform-golden-fixtures.test.ts",
+    "packages/platform-pdd/tests/session-state.test.ts",
+    "project/PROJECT_STATE.json"
+  ],
+  "files_deleted": [],
+  "pdd_integration_started": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true
+}

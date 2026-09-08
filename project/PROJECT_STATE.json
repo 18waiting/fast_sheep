@@ -30,8 +30,8 @@
   "current_phase": "PHASE_5",
   "current_milestone": "M5.2 Identity / Session",
   "last_closed_task": "SHEEP-082",
-  "current_task": "SHEEP-082 (PDD PlatformAccount Local Identity) — PASS / CLOSED; no PDD integration implementation",
-  "next_action": "SHEEP-082 is PASS / CLOSED; await Controller authorization before SHEEP-083; do not start SHEEP-083",
+  "current_task": "SHEEP-083 (PDD Login State Machine) — IMPLEMENTED / AWAITING CONTROLLER REVIEW; no PDD integration implementation",
+  "next_action": "SHEEP-083 implementation is complete for review; await Controller PASS / REPAIR; do not start SHEEP-084",
   "next_authoritative_roadmap_id": "SHEEP-083",
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
@@ -2536,6 +2536,25 @@
       "customerUid remains buyer identity only",
       "observed mall_cs-side UID remains opaque/unbound"
     ],
+    "next_stage_not_executed": true
+  },
+  "sheep_083": {
+    "roadmap_status": "IN_PROGRESS",
+    "codex_result": "COMPLETE",
+    "controller_decision": "AWAITING_CONTROLLER_REVIEW",
+    "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+    "phase": "PHASE_5",
+    "milestone": "M5.2 Identity / Session",
+    "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
+    "implementation_readiness": "READY_WITH_CONSTRAINTS",
+    "implementation_delta": "MINIMAL_CODE_GAP",
+    "report": "reports\\SHEEP-083-report.json",
+    "live_pdd_evidence_required_now": false,
+    "live_pdd_evidence_required_later": true,
+    "pdd_authentication_truth_established": false,
+    "pdd_integration": "NOT_STARTED",
+    "sheep_084_started": false,
+    "sheep_085_started": false,
     "next_stage_not_executed": true
   },
   "phase_5_entry": {

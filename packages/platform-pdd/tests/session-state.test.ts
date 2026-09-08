@@ -3,15 +3,45 @@ import assert from "node:assert/strict";
 import { PddSessionState } from "../dist/session-state.js";
 import { SESSION_STATES } from "../dist/session-state.js";
 
-test("session state machine transitions are explicit", () => {
-  const s = new PddSessionState("shop-1", "session-1");
-  assert.equal(s.getStatus(), "STOPPED");
+function transitionToReady(s: PddSessionState): void {
   s.setStatus("CREATING");
   s.setStatus("LOADING");
   s.setStatus("READY");
+}
+
+test("session state machine transitions are explicit", () => {
+  const s = new PddSessionState("shop-1", "session-1");
+  assert.equal(s.getStatus(), "STOPPED");
+  transitionToReady(s);
   assert.equal(s.isReady(), true);
   s.setStatus("DISPOSED");
   assert.equal(s.isReady(), false);
+});
+
+test("session rejects illegal transitions and preserves the previous state", () => {
+  const s = new PddSessionState("shop-1", "session-1");
+  assert.throws(() => s.setStatus("READY"), /illegal PDD session transition/);
+  assert.equal(s.getStatus(), "STOPPED");
+  transitionToReady(s);
+  assert.throws(() => s.setStatus("LOGIN_REQUIRED"), /illegal PDD session transition/);
+  assert.equal(s.getStatus(), "READY");
+});
+
+test("repeated runtime state signals are idempotent", () => {
+  const s = new PddSessionState("shop-1", "session-1");
+  transitionToReady(s);
+  s.setStatus("READY");
+  assert.equal(s.getStatus(), "READY");
+});
+
+test("a specific unsupported-page observation may supersede login-required observation", () => {
+  const s = new PddSessionState("shop-1", "session-1");
+  s.setStatus("CREATING");
+  s.setStatus("LOADING");
+  s.setStatus("LOGIN_REQUIRED");
+  s.setStatus("DOM_UNSUPPORTED", "missing selectors");
+  assert.equal(s.getStatus(), "DOM_UNSUPPORTED");
+  assert.equal(s.getLastError(), "missing selectors");
 });
 
 test("session rejects unknown statuses", () => {
@@ -21,7 +51,7 @@ test("session rejects unknown statuses", () => {
 
 test("session tracks active conversation without cross-shop contamination", () => {
   const s = new PddSessionState("shop-1", "sid");
-  s.setStatus("READY");
+  transitionToReady(s);
   s.setConversation("c1", "b1");
   assert.equal(s.getActiveConversationId(), "c1");
   const s2 = new PddSessionState("shop-2", "sid2");

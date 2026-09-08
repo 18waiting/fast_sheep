@@ -11,6 +11,17 @@ export interface PddSessionHostOptions {
   onViewCreated?: (view: PddViewHost) => void;
 }
 
+const SESSION_EVENTS: ReadonlySet<PddPageEvent["event"]> = new Set([
+  "page_ready",
+  "login_required",
+  "dom_unsupported",
+  "conversation_changed",
+  "message_received",
+  "human_reply_detected",
+  "send_ack",
+  "transfer_ack",
+]);
+
 export class PddSessionHost {
   readonly state: PddSessionState;
   private view: PddViewHost | null = null;
@@ -33,11 +44,16 @@ export class PddSessionHost {
 
   async createAndLoad(fixturePath?: string): Promise<void> {
     this.state.setStatus("CREATING");
-    this.view = this.makeView();
-    this.onViewCreatedHook?.(this.view);
-    if (fixturePath) {
-      this.state.setStatus("LOADING");
-      await this.view.loadLocalFixture(fixturePath, { shop_id: this.state.shopId, session_id: this.state.sessionId });
+    try {
+      this.view = this.makeView();
+      this.onViewCreatedHook?.(this.view);
+      if (fixturePath) {
+        this.state.setStatus("LOADING");
+        await this.view.loadLocalFixture(fixturePath, { shop_id: this.state.shopId, session_id: this.state.sessionId });
+      }
+    } catch (error) {
+      this.failClosed("SESSION_CREATE_OR_LOAD_FAILED");
+      throw error;
     }
   }
 
@@ -55,16 +71,32 @@ export class PddSessionHost {
 
   async reload(fixturePath?: string): Promise<void> {
     if (fixturePath && this.view) {
-      await this.view.loadLocalFixture(fixturePath, { shop_id: this.state.shopId, session_id: this.state.sessionId });
+      this.state.setStatus("LOADING");
+      try {
+        await this.view.loadLocalFixture(fixturePath, { shop_id: this.state.shopId, session_id: this.state.sessionId });
+      } catch (error) {
+        this.failClosed("SESSION_RELOAD_FAILED");
+        throw error;
+      }
     }
   }
 
   handleEvent(ev: PddPageEvent): void {
-    if (ev.event === "page_ready") this.state.setStatus("READY");
-    else if (ev.event === "login_required") this.state.setStatus("LOGIN_REQUIRED");
-    else if (ev.event === "dom_unsupported") this.state.setStatus("DOM_UNSUPPORTED", ev.reason ?? "DOM_UNSUPPORTED");
-    else if (ev.event === "conversation_changed" && ev.conversation_id) {
-      this.state.setConversation(ev.conversation_id, ev.buyer_id);
+    if (ev.session_id !== this.state.sessionId) return;
+    if (!SESSION_EVENTS.has(ev.event)) {
+      this.failClosed("UNSUPPORTED_SESSION_EVENT");
+      this.onEventHook?.(ev);
+      return;
+    }
+    try {
+      if (ev.event === "page_ready") this.state.setStatus("READY");
+      else if (ev.event === "login_required") this.state.setStatus("LOGIN_REQUIRED");
+      else if (ev.event === "dom_unsupported") this.state.setStatus("DOM_UNSUPPORTED", ev.reason ?? "DOM_UNSUPPORTED");
+      else if (ev.event === "conversation_changed" && ev.conversation_id) {
+        this.state.setConversation(ev.conversation_id, ev.buyer_id);
+      }
+    } catch {
+      this.failClosed("ILLEGAL_SESSION_EVENT");
     }
     this.onEventHook?.(ev);
   }
@@ -73,5 +105,10 @@ export class PddSessionHost {
     this.view?.dispose();
     this.view = null;
     this.state.setStatus("DISPOSED");
+  }
+
+  private failClosed(reason: string): void {
+    if (this.state.getStatus() === "DISPOSED") return;
+    this.state.setStatus("ERROR", reason);
   }
 }

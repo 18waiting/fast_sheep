@@ -20,7 +20,13 @@ export { PDD_CAPABILITIES, capabilities, supportsCapability, CAPABILITY_PROVENAN
 export { PDD_SELECTOR_PROFILE, selector, requiredSelectors, type SelectorProfile, type SelectorEntry, type SelectorProvenance } from "./selector-profile.js";
 export { normalizeMessage, normalizeScan, fallbackFingerprint, type NormalizeInput } from "./message-normalizer.js";
 export { MessageDeduplicator, type DedupStats } from "./message-deduplicator.js";
-export { PddSessionState, SESSION_STATES, type SessionStateView } from "./session-state.js";
+export {
+  PddSessionState,
+  SESSION_STATES,
+  LEGAL_SESSION_TRANSITIONS,
+  PddSessionTransitionError,
+  type SessionStateView,
+} from "./session-state.js";
 export type { PddPageBridge } from "./pdd-page-bridge.js";
 export { PddPlatformAdapter, type PddPlatformAdapterOptions } from "./pdd-platform-adapter.js";
 export { domHealth, type DomHealthResult } from "./dom/dom-health.js";

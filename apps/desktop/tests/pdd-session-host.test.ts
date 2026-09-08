@@ -34,11 +34,36 @@ test("session host lifecycle: create/load/ready/dispose", async () => {
 
 test("session tracks active conversation and login/dom-unsupported states", () => {
   const host = new PddSessionHost({ shopId: "shop-1", makeView: () => new FakeView() as never });
-  host.handleEvent({ event: "conversation_changed", session_id: "s", shop_id: "shop-1", conversation_id: "c1", buyer_id: "b1" } as PddPageEvent);
+  host.state.setStatus("CREATING");
+  host.state.setStatus("LOADING");
+  host.handleEvent({ event: "conversation_changed", session_id: host.state.sessionId, shop_id: "shop-1", conversation_id: "c1", buyer_id: "b1" } as PddPageEvent);
   assert.equal(host.state.getActiveConversationId(), "c1");
-  host.handleEvent({ event: "login_required", session_id: "s" } as PddPageEvent);
+  host.handleEvent({ event: "login_required", session_id: host.state.sessionId } as PddPageEvent);
   assert.equal(host.state.getStatus(), "LOGIN_REQUIRED");
-  host.handleEvent({ event: "dom_unsupported", session_id: "s", reason: "missing selectors" } as PddPageEvent);
+  host.handleEvent({ event: "dom_unsupported", session_id: host.state.sessionId, reason: "missing selectors" } as PddPageEvent);
   assert.equal(host.state.getStatus(), "DOM_UNSUPPORTED");
   assert.equal(host.state.getLastError(), "missing selectors");
+});
+
+test("session host fails closed on an illegal or unknown runtime signal", () => {
+  const host = new PddSessionHost({ shopId: "shop-1", makeView: () => new FakeView() as never });
+  host.state.setStatus("CREATING");
+  host.state.setStatus("LOADING");
+  host.handleEvent({ event: "page_ready", session_id: host.state.sessionId } as PddPageEvent);
+  host.handleEvent({ event: "login_required", session_id: host.state.sessionId } as PddPageEvent);
+  assert.equal(host.state.getStatus(), "ERROR");
+  assert.equal(host.state.getLastError(), "ILLEGAL_SESSION_EVENT");
+
+  const unknown = new PddSessionHost({ shopId: "shop-2", makeView: () => new FakeView() as never });
+  unknown.state.setStatus("CREATING");
+  unknown.state.setStatus("LOADING");
+  unknown.handleEvent({ event: "future_event", session_id: unknown.state.sessionId } as never);
+  assert.equal(unknown.state.getStatus(), "ERROR");
+  assert.equal(unknown.state.getLastError(), "UNSUPPORTED_SESSION_EVENT");
+});
+
+test("session host ignores an event from another session", () => {
+  const host = new PddSessionHost({ shopId: "shop-1", makeView: () => new FakeView() as never });
+  host.handleEvent({ event: "page_ready", session_id: "other-session" } as PddPageEvent);
+  assert.equal(host.state.getStatus(), "STOPPED");
 });

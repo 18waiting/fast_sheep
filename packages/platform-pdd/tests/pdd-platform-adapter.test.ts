@@ -24,6 +24,8 @@ class RecordingBridge implements PddPageBridge {
 
 function makeAdapter(bridge: PddPageBridge) {
   const session = new PddSessionState("shop-1", "session-1");
+  session.setStatus("CREATING");
+  session.setStatus("LOADING");
   session.setStatus("READY");
   const adapter = new PddPlatformAdapter({ bridge, session, commandIdFactory: () => "cmd-1" });
   return { adapter, session };
