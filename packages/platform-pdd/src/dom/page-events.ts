@@ -13,6 +13,10 @@ export function buildDomUnsupported(sessionId: string, reason: string): PddPageE
   return { event: "dom_unsupported", session_id: sessionId, reason };
 }
 
+export function buildAuthReauthRequired(sessionId: string): PddPageEvent {
+  return { event: "auth_reauth_required", session_id: sessionId, reason: "AUTH_REAUTH_REQUIRED" };
+}
+
 export function buildConversationChanged(sessionId: string, shopId: string, conversationId: string, buyerId?: string): PddPageEvent {
   return { event: "conversation_changed", session_id: sessionId, shop_id: shopId, conversation_id: conversationId, buyer_id: buyerId };
 }

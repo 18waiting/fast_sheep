@@ -3,17 +3,18 @@
 import type { PddSessionStatusValue } from "./types.js";
 
 export const SESSION_STATES: readonly PddSessionStatusValue[] = [
-  "STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "ERROR", "DISPOSED",
+  "STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "AUTH_REAUTH_REQUIRED", "ERROR", "DISPOSED",
 ] as const;
 
 export const LEGAL_SESSION_TRANSITIONS: Readonly<Record<PddSessionStatusValue, readonly PddSessionStatusValue[]>> = {
-  STOPPED: ["STOPPED", "CREATING", "ERROR", "DISPOSED"],
-  CREATING: ["CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "ERROR", "DISPOSED"],
-  LOADING: ["LOADING", "READY", "LOGIN_REQUIRED", "DOM_UNSUPPORTED", "ERROR", "DISPOSED"],
-  LOGIN_REQUIRED: ["LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "ERROR", "DISPOSED"],
-  READY: ["READY", "LOADING", "ERROR", "DISPOSED"],
-  DOM_UNSUPPORTED: ["DOM_UNSUPPORTED", "LOADING", "ERROR", "DISPOSED"],
-  ERROR: ["ERROR", "LOADING", "DISPOSED"],
+  STOPPED: ["STOPPED", "CREATING", "AUTH_REAUTH_REQUIRED", "ERROR", "DISPOSED"],
+  CREATING: ["CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "AUTH_REAUTH_REQUIRED", "ERROR", "DISPOSED"],
+  LOADING: ["LOADING", "READY", "LOGIN_REQUIRED", "DOM_UNSUPPORTED", "AUTH_REAUTH_REQUIRED", "ERROR", "DISPOSED"],
+  LOGIN_REQUIRED: ["LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "AUTH_REAUTH_REQUIRED", "ERROR", "DISPOSED"],
+  READY: ["READY", "LOADING", "AUTH_REAUTH_REQUIRED", "ERROR", "DISPOSED"],
+  DOM_UNSUPPORTED: ["DOM_UNSUPPORTED", "LOADING", "AUTH_REAUTH_REQUIRED", "ERROR", "DISPOSED"],
+  AUTH_REAUTH_REQUIRED: ["AUTH_REAUTH_REQUIRED", "LOADING", "ERROR", "DISPOSED"],
+  ERROR: ["ERROR", "LOADING", "AUTH_REAUTH_REQUIRED", "DISPOSED"],
   DISPOSED: ["DISPOSED"],
 };
 
@@ -58,7 +59,8 @@ export class PddSessionState {
       throw new PddSessionTransitionError(this.status, next);
     }
     this.status = next;
-    if (error !== null) this.lastError = error.slice(0, 200);
+    if (next === "AUTH_REAUTH_REQUIRED") this.lastError = null;
+    else if (error !== null) this.lastError = error.slice(0, 200);
   }
 
   setConversation(conversationId: string, buyerId?: string): void {
@@ -68,6 +70,10 @@ export class PddSessionState {
 
   isReady(): boolean {
     return this.status === "READY";
+  }
+
+  isAuthReauthRequired(): boolean {
+    return this.status === "AUTH_REAUTH_REQUIRED";
   }
 
   view(): SessionStateView {

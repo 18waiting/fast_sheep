@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["status"],
   "properties": {
-    "status": { "type": "string", "enum": ["STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "ERROR", "DISPOSED"] },
+    "status": { "type": "string", "enum": ["STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "AUTH_REAUTH_REQUIRED", "ERROR", "DISPOSED"] },
     "session_id": { "type": "string" },
     "shop_id": { "type": "string" },
     "last_error": { "type": "string" }

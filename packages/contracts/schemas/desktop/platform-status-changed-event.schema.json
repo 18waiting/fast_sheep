@@ -7,7 +7,7 @@
   "required": ["shop_id", "session_status", "revision"],
   "properties": {
     "shop_id": { "type": "string", "minLength": 1 },
-    "session_status": { "type": "string", "enum": ["STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "ERROR", "DISPOSED"] },
+    "session_status": { "type": "string", "enum": ["STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "AUTH_REAUTH_REQUIRED", "ERROR", "DISPOSED"] },
     "revision": { "type": "integer", "minimum": 0 },
     "last_error": { "type": "string" }
   }

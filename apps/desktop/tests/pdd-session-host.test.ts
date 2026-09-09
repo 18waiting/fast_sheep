@@ -58,6 +58,40 @@ test("login-required recovers when the page runtime reports a fresh page-ready o
   assert.equal(host.state.view().status, "READY");
 });
 
+test("auth reauth is latched over readiness and recovers only through fresh reload lifecycle", async () => {
+  const host = new PddSessionHost({ shopId: "shop-1", makeView: () => new FakeView() as never });
+  await host.createAndLoad("/fixtures/chat-basic.html");
+  host.handleEvent({ event: "page_ready", session_id: host.state.sessionId } as PddPageEvent);
+  host.handleEvent({ event: "auth_reauth_required", session_id: host.state.sessionId } as PddPageEvent);
+  assert.equal(host.state.getStatus(), "AUTH_REAUTH_REQUIRED");
+
+  host.handleEvent({ event: "page_ready", session_id: host.state.sessionId } as PddPageEvent);
+  host.handleEvent({ event: "login_required", session_id: host.state.sessionId } as PddPageEvent);
+  host.handleEvent({ event: "dom_unsupported", session_id: host.state.sessionId } as PddPageEvent);
+  assert.equal(host.state.getStatus(), "AUTH_REAUTH_REQUIRED");
+
+  await host.reload("/fixtures/chat-basic.html");
+  assert.equal(host.state.getStatus(), "LOADING");
+  host.handleEvent({ event: "page_ready", session_id: host.state.sessionId } as PddPageEvent);
+  assert.equal(host.state.getStatus(), "READY");
+});
+
+test("auth reauth, ERROR, DOM_UNSUPPORTED, and DISPOSED remain distinct", () => {
+  const host = new PddSessionHost({ shopId: "shop-1", makeView: () => new FakeView() as never });
+  host.state.setStatus("CREATING");
+  host.state.setStatus("LOADING");
+  host.handleEvent({ event: "auth_reauth_required", session_id: host.state.sessionId } as PddPageEvent);
+  assert.equal(host.state.getStatus(), "AUTH_REAUTH_REQUIRED");
+  host.dispose();
+  assert.equal(host.state.getStatus(), "DISPOSED");
+});
+
+test("auth reauth event from another session cannot mutate this host", () => {
+  const host = new PddSessionHost({ shopId: "shop-1", makeView: () => new FakeView() as never });
+  host.handleEvent({ event: "auth_reauth_required", session_id: "other-session" } as PddPageEvent);
+  assert.equal(host.state.getStatus(), "STOPPED");
+});
+
 test("session host fails closed on an illegal or unknown runtime signal", () => {
   const host = new PddSessionHost({ shopId: "shop-1", makeView: () => new FakeView() as never });
   host.state.setStatus("CREATING");

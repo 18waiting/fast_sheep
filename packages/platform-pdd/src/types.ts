@@ -6,6 +6,7 @@ export type PddSessionStatusValue =
   | "LOGIN_REQUIRED"
   | "READY"
   | "DOM_UNSUPPORTED"
+  | "AUTH_REAUTH_REQUIRED"
   | "ERROR"
   | "DISPOSED";
 
@@ -64,6 +65,7 @@ export type PageEventType =
   | "page_ready"
   | "login_required"
   | "dom_unsupported"
+  | "auth_reauth_required"
   | "conversation_changed"
   | "message_received"
   | "human_reply_detected"

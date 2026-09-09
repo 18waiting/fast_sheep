@@ -77,8 +77,8 @@ test("view() exposes only safe presentation fields", () => {
   assert.deepEqual(Object.keys(v).sort(), ["active_conversation_id", "buyer_id", "last_error", "session_id", "shop_id", "status"]);
 });
 
-test("SESSION_STATES includes all 8 required statuses", () => {
-  for (const st of ["STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "ERROR", "DISPOSED"]) {
+test("SESSION_STATES includes all 9 required PDD statuses", () => {
+  for (const st of ["STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "AUTH_REAUTH_REQUIRED", "ERROR", "DISPOSED"]) {
     assert.ok(SESSION_STATES.includes(st as never), st);
   }
 });

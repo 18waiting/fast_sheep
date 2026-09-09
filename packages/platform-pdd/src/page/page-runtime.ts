@@ -13,10 +13,11 @@ import { MessageDeduplicator } from "../message-deduplicator.js";
 import { handleCommand } from "./command-handler.js";
 import { PageMutationObserver, type MutationObserverLike } from "./mutation-observer.js";
 import { MiniEventEmitter } from "./event-emitter.js";
+import { hasAuthReauthEvidence } from "./auth-reauth-detector.js";
 import type { PddPageCommand, PddPageCommandResult, PddPageEvent } from "../types.js";
 import {
   buildPageReady, buildLoginRequired, buildDomUnsupported, buildConversationChanged,
-  buildMessageReceived, buildHumanReplyDetected, buildSendAck, buildTransferAck,
+  buildAuthReauthRequired, buildMessageReceived, buildHumanReplyDetected, buildSendAck, buildTransferAck,
 } from "../dom/page-events.js";
 
 export interface PageTransport {
@@ -42,6 +43,7 @@ export class PddPageRuntime {
   private readonly observer: PageMutationObserver;
   private readonly now: () => number;
   private lastReadiness: "LOGIN_REQUIRED" | "READY" | "DOM_UNSUPPORTED" | null = null;
+  private authReauthLatched = false;
 
   constructor(private readonly options: PageRuntimeOptions) {
     this.now = options.now ?? (() => Date.now());
@@ -67,6 +69,15 @@ export class PddPageRuntime {
 
   private observeReadiness(): void {
     const { doc, sessionId } = this.options;
+    if (hasAuthReauthEvidence(doc)) {
+      if (!this.authReauthLatched) {
+        this.authReauthLatched = true;
+        this.emit(buildAuthReauthRequired(sessionId));
+      }
+      return;
+    }
+    if (this.authReauthLatched) return;
+
     if (doc.querySelector("[data-fw-pdd-login]")) {
       if (this.lastReadiness !== "LOGIN_REQUIRED") {
         this.lastReadiness = "LOGIN_REQUIRED";

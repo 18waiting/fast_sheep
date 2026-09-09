@@ -8,7 +8,7 @@
   "properties": {
     "shop_id": { "type": "string", "minLength": 1 },
     "platform": { "type": "string" },
-    "session_status": { "type": "string", "enum": ["STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "ERROR", "DISPOSED"] },
+    "session_status": { "type": "string", "enum": ["STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "AUTH_REAUTH_REQUIRED", "ERROR", "DISPOSED"] },
     "view_visible": { "type": "boolean" },
     "last_error": { "type": "string" },
     "capabilities": { "type": "object", "additionalProperties": true }

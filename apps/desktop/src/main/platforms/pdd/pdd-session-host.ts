@@ -15,6 +15,7 @@ const SESSION_EVENTS: ReadonlySet<PddPageEvent["event"]> = new Set([
   "page_ready",
   "login_required",
   "dom_unsupported",
+  "auth_reauth_required",
   "conversation_changed",
   "message_received",
   "human_reply_detected",
@@ -89,7 +90,11 @@ export class PddSessionHost {
       return;
     }
     try {
-      if (ev.event === "page_ready") this.state.setStatus("READY");
+      if (ev.event === "auth_reauth_required") this.state.setStatus("AUTH_REAUTH_REQUIRED");
+      else if (this.state.isAuthReauthRequired() && (ev.event === "page_ready" || ev.event === "login_required" || ev.event === "dom_unsupported")) {
+        // A same-runtime readiness observation cannot clear the auth latch.
+      }
+      else if (ev.event === "page_ready") this.state.setStatus("READY");
       else if (ev.event === "login_required") this.state.setStatus("LOGIN_REQUIRED");
       else if (ev.event === "dom_unsupported") this.state.setStatus("DOM_UNSUPPORTED", ev.reason ?? "DOM_UNSUPPORTED");
       else if (ev.event === "conversation_changed" && ev.conversation_id) {
@@ -109,6 +114,7 @@ export class PddSessionHost {
 
   private failClosed(reason: string): void {
     if (this.state.getStatus() === "DISPOSED") return;
+    if (this.state.isAuthReauthRequired()) return;
     this.state.setStatus("ERROR", reason);
   }
 }

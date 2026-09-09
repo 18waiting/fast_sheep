@@ -11,10 +11,16 @@ export interface DomElement {
   dispatchEvent?(event: unknown): boolean;
 }
 
+export interface DomLocationProjection {
+  origin: string;
+  pathname: string;
+}
+
 export interface DomDocument {
   querySelector(sel: string): DomElement | null;
   querySelectorAll(sel: string): DomElement[];
   body: DomElement;
+  location?: DomLocationProjection;
 }
 
 /** Wrap a real browser Document into the minimal DomDocument surface. */
@@ -25,6 +31,9 @@ export function toDomDocument(doc: unknown): DomDocument {
     querySelectorAll: (sel) =>
       Array.from(d.querySelectorAll(sel)).map((n) => toDomElement(n)).filter((x): x is DomElement => x !== null),
     body: toDomElement(d.body) as DomElement,
+    location: d.location
+      ? { origin: d.location.origin, pathname: d.location.pathname }
+      : undefined,
   };
 }
 

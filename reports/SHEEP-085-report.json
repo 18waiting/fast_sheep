@@ -1,0 +1,351 @@
+{
+  "task": "SHEEP-085",
+  "result": "COMPLETE",
+  "controller_decision": "AWAITING_CONTROLLER_REVIEW",
+  "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "phase": "PHASE_5",
+  "milestone": "M5.2 Identity / Session",
+  "objective": "Implement the minimum local PDD AUTH_REAUTH_REQUIRED detector and preserve the existing local session boundary without claiming PDD authentication truth.",
+  "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
+  "implementation_readiness": "READY_WITH_CONSTRAINTS",
+  "implementation_delta": "MINIMAL_CODE_GAP",
+  "completed_requirements": 10,
+  "total_requirements": 10,
+  "evidence": {
+    "confirmed": [
+      {
+        "value": "The authorized local detector emits auth_reauth_required from Signal A or Signal B.",
+        "classification": "CONFIRMED",
+        "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+      },
+      {
+        "value": "Signal A requires the exact title/message pair in one modal: \u767b\u5f55\u8fc7\u671f / \u767b\u5f55\u5df2\u8fc7\u671f\uff0c\u8bf7\u91cd\u65b0\u767b\u5f55.",
+        "classification": "CONFIRMED",
+        "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+      },
+      {
+        "value": "Signal B requires origin https://mms.pinduoduo.com and pathname /login/.",
+        "classification": "CONFIRMED",
+        "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+      },
+      {
+        "value": "The runtime latch emits once per page-runtime instance and same-runtime readiness, marker disappearance, URL changes, DOM mutation, and readiness cannot clear it.",
+        "classification": "CONFIRMED",
+        "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+      },
+      {
+        "value": "Recovery is available only through the existing fresh reload/lifecycle path.",
+        "classification": "CONFIRMED",
+        "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+      },
+      {
+        "value": "READY remains local page/runtime readiness and does not assert authenticated, session-valid, seller-verified, authorized, entitled, or send-ready.",
+        "classification": "CONFIRMED",
+        "evidence_source": "FAST_SHEEP_GOVERNANCE"
+      },
+      {
+        "value": "ERROR, DOM_UNSUPPORTED, LOGIN_REQUIRED, AUTH_REAUTH_REQUIRED, and DISPOSED remain distinct local states.",
+        "classification": "CONFIRMED",
+        "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+      },
+      {
+        "value": "Session identity isolation and the status-only renderer projection remain enforced.",
+        "classification": "CONFIRMED",
+        "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+      }
+    ],
+    "inferred": [
+      {
+        "value": "The exact Signal A and Signal B observations are sufficient for this minimum local detector contract, but do not establish platform authentication truth or natural-expiry semantics.",
+        "classification": "INFERRED",
+        "evidence_source": "FAST_SHEEP_GOVERNANCE"
+      }
+    ],
+    "product_decision_required": [],
+    "blocked": [],
+    "deferred": [
+      {
+        "value": "Natural expiry semantics remain unproven and are not implemented.",
+        "classification": "DEFERRED",
+        "evidence_source": "FAST_SHEEP_GOVERNANCE"
+      },
+      {
+        "value": "Live PDD authentication/session truth, credential acquisition, login automation, and PDD runtime integration remain outside this unit.",
+        "classification": "DEFERRED",
+        "evidence_source": "FAST_SHEEP_GOVERNANCE"
+      }
+    ]
+  },
+  "state_vocabulary": [
+    "STOPPED",
+    "CREATING",
+    "LOADING",
+    "LOGIN_REQUIRED",
+    "READY",
+    "DOM_UNSUPPORTED",
+    "AUTH_REAUTH_REQUIRED",
+    "ERROR",
+    "DISPOSED"
+  ],
+  "signal_a": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "rule": "One modal surface must contain both exact title and exact message.",
+    "title": "\u767b\u5f55\u8fc7\u671f",
+    "message": "\u767b\u5f55\u5df2\u8fc7\u671f\uff0c\u8bf7\u91cd\u65b0\u767b\u5f55",
+    "generic_or_partial_modal": "MUST_NOT_TRIGGER"
+  },
+  "signal_b": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "origin": "https://mms.pinduoduo.com",
+    "pathname": "/login/",
+    "projection": ["origin", "pathname"],
+    "other_url_parts": "NOT_CONSUMED"
+  },
+  "precedence": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "rules": [
+      "AUTH_REAUTH_REQUIRED takes precedence over local READY, LOGIN_REQUIRED, and DOM_UNSUPPORTED observations within the same runtime latch.",
+      "Repeated AUTH_REAUTH_REQUIRED observations are idempotent.",
+      "A different session_id cannot mutate the host.",
+      "DISPOSED remains the terminal local lifecycle state when disposal is requested."
+    ]
+  },
+  "recovery_lifecycle": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "same_runtime_recovery": false,
+    "fresh_reload_recovery": true,
+    "recovery_path": "Explicit reload enters LOADING; a subsequent fresh local page_ready may enter READY.",
+    "authentication_claim": "NONE"
+  },
+  "natural_expiry": {
+    "status": "NOT_PROVEN",
+    "classification": "DEFERRED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "meaning": "The detector does not claim that natural platform session expiry has been observed or fully characterized."
+  },
+  "host_main_integration": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "host": "PddSessionHost consumes auth_reauth_required and transitions the existing local session state.",
+    "main": "No credential acquisition, login, session validation, platform network, or PDD protocol behavior was added.",
+    "session_isolation": "Existing per-shop/session boundaries remain enforced."
+  },
+  "ipc_boundary": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "new_ipc": false,
+    "renderer_projection": "Existing status-only projection; no raw ipcRenderer, filesystem, SQLite, credential, or unrestricted system API exposure.",
+    "network": "NONE"
+  },
+  "isolation": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "session_identity_isolation": true,
+    "multi_shop_partition_isolation": true,
+    "cross_session_event_mutation": false,
+    "cross_shop_leak": false
+  },
+  "tests": [
+    {
+      "name": "@fastwork/platform-pdd test",
+      "result": "75/75 PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+    },
+    {
+      "name": "@fastwork/desktop test",
+      "result": "320/320 PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+    },
+    {
+      "name": "@fastwork/platform-pdd build",
+      "result": "PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+    },
+    {
+      "name": "@fastwork/desktop typecheck",
+      "result": "PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+    }
+  ],
+  "smokes": [
+    {
+      "name": "M7 PDD DOM fixture verification",
+      "result": "11/11 PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+    },
+    {
+      "name": "M7 PDD session isolation verification",
+      "result": "PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+    }
+  ],
+  "negative_tests": [
+    {
+      "name": "M7 PDD security check",
+      "result": "PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+    },
+    {
+      "name": "M7 no-network check",
+      "result": "PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+    },
+    {
+      "name": "Auth detector negative cases: generic, partial, stale-content, wrong-origin, and wrong-path inputs",
+      "result": "PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+    },
+    {
+      "name": "Auth latch negative cases: same-runtime clearing and cross-session mutation",
+      "result": "PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+    }
+  ],
+  "live_evidence_status": {
+    "classification": "DEFERRED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "live_pdd_testing_performed": false,
+    "live_pdd_authentication_truth_established": false,
+    "natural_expiry_established": false,
+    "synthetic_fixture_boundary": "Synthetic DOM/page-runtime fixtures validate local behavior only and are not promoted to live PDD authority."
+  },
+  "security_boundary": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "security_boundary_changed": false,
+    "secrets_detected": false,
+    "credentials_cookies_tokens_authorization_inspected": false,
+    "raw_ipc_renderer_added": false,
+    "anti_bot_or_captcha_automation_added": false,
+    "unapproved_sync_or_outbox_added": false,
+    "secret_scan_values_output": false
+  },
+  "network_schema_impact": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "network_calls_added": 0,
+    "schema_changed": false,
+    "migration_created": false,
+    "ipc_channels_added": 0,
+    "pdd_integration_started": false
+  },
+  "scoped_secret_scan": {
+    "global_secret_scan": {
+      "status": "BLOCKED_BY_PREEXISTING_PROTECTED_UNTRACKED_ARTIFACT",
+      "classification": "BLOCKED",
+      "evidence_source": "CURRENT_FAST_SHEEP_ARTIFACT",
+      "reason": "Repository-wide scanning is blocked by pre-existing protected SDK reference content under references/pdd-customer-service-sdk. No sensitive values are reproduced."
+    },
+    "sheep_085_delta_secret_scan": {
+      "status": "PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+      "method": "Changed SHEEP-085 source, tests, contracts, project state, and report were reviewed without outputting sensitive values."
+    }
+  },
+  "project_state": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "current_phase": "PHASE_5",
+    "current_milestone": "M5.2 Identity / Session",
+    "last_closed_task": "SHEEP-084",
+    "next_authoritative_roadmap_id": "SHEEP-085",
+    "next_task_execution_authorized": false,
+    "sheep_085": {
+      "roadmap_status": "IN_PROGRESS",
+      "controller_decision": "AWAITING_CONTROLLER_REVIEW",
+      "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+      "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
+      "implementation_result": "COMPLETE / AWAITING CONTROLLER REVIEW",
+      "natural_expiry": "NOT_PROVEN",
+      "pdd_integration": "NOT_STARTED"
+    },
+    "next_stage_not_executed": true
+  },
+  "files_created": [
+    "packages/platform-pdd/src/page/auth-reauth-detector.ts",
+    "packages/platform-pdd/tests/auth-reauth.test.ts",
+    "reports/SHEEP-085-report.json"
+  ],
+  "files_modified": [
+    "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
+    "apps/desktop/tests/pdd-session-host.test.ts",
+    "packages/contracts/schemas/desktop/platform-status-changed-event.schema.json",
+    "packages/contracts/schemas/desktop/platform-status-view.schema.json",
+    "packages/contracts/schemas/platform/pdd-session-status.schema.json",
+    "packages/contracts/schemas/platform/platform-session-status.schema.json",
+    "packages/contracts/src/generated/platform-pdd.ts",
+    "packages/desktop-ipc/src/types.ts",
+    "packages/platform-pdd/src/dom/dom-types.ts",
+    "packages/platform-pdd/src/dom/page-events.ts",
+    "packages/platform-pdd/src/index.ts",
+    "packages/platform-pdd/src/page/page-runtime.ts",
+    "packages/platform-pdd/src/session-state.ts",
+    "packages/platform-pdd/src/types.ts",
+    "packages/platform-pdd/tests/session-state.test.ts",
+    "project/PROJECT_STATE.json"
+  ],
+  "files_deleted": [
+    "reports/m7-pdd-dom-fixture-report.json",
+    "reports/m7-pdd-security-report.json",
+    "reports/m7-pdd-session-report.json"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "architecture_changes": [],
+  "security_changes": [
+    "Added a local auth reauthentication observation and state; no credential or session material handling was added."
+  ],
+  "data_model_changes": [],
+  "commit": {
+    "status": "ONE_FOCUSED_SHEEP_085_IMPLEMENTATION_COMMIT",
+    "required_message": "SHEEP-085: implement auth reauth detection",
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "note": "One focused commit contains only the explicit SHEEP-085 implementation, tests, contracts, project state, and this report; protected pre-existing untracked paths are excluded."
+  },
+  "validation": {
+    "git_diff_check": "PASS",
+    "project_state_json_parse": "PASS",
+    "report_json_parse": "PASS",
+    "protected_paths_untouched": "PASS",
+    "delta_secret_scan": "PASS",
+    "global_secret_scan": "BLOCKED_BY_PREEXISTING_PROTECTED_UNTRACKED_ARTIFACT",
+    "sheep_086_started": false,
+    "pdd_integration_started": false,
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+  },
+  "final_git_status": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "status": "The focused SHEEP-085 commit is created; protected pre-existing untracked paths remain unchanged and unstaged.",
+    "protected_preexisting_untracked_paths": "UNCHANGED / NOT STAGED",
+    "sheep_086_started": false
+  },
+  "acceptance_result": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "value": "All authorized SHEEP-085 local detector criteria pass. The result is complete for the authorized local implementation scope and awaits Controller PASS / REPAIR."
+  },
+  "stop_condition": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "value": "Do not start SHEEP-086. Do not perform live PDD integration or authentication testing. Wait for Controller PASS / REPAIR.",
+    "next_stage_not_executed": true
+  }
+}

@@ -65,7 +65,7 @@ export interface BootstrapState { revision: number; worker_status: WorkerStatusV
 
 export interface OrchestratorEventPayload { event: string; revision: number; shop_id?: string; conversation_id?: string; payload?: Record<string, unknown> }
 
-export type PlatformSessionStatus = "STOPPED" | "CREATING" | "LOADING" | "LOGIN_REQUIRED" | "READY" | "DOM_UNSUPPORTED" | "ERROR" | "DISPOSED";
+export type PlatformSessionStatus = "STOPPED" | "CREATING" | "LOADING" | "LOGIN_REQUIRED" | "READY" | "DOM_UNSUPPORTED" | "AUTH_REAUTH_REQUIRED" | "ERROR" | "DISPOSED";
 
 export interface PlatformStatusView {
   shop_id: string;

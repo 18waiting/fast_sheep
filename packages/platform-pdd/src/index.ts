@@ -36,12 +36,21 @@ export { readComposerState, sendText, sendImage, type ComposerState } from "./do
 export { executeTransfer, FALLBACK_TRANSFER_TEXT } from "./dom/transfer-driver.js";
 export { detectHumanReply, type TakeoverSignal } from "./dom/takeover-detector.js";
 export {
-  buildPageReady, buildLoginRequired, buildDomUnsupported, buildConversationChanged,
+  buildPageReady, buildLoginRequired, buildDomUnsupported, buildAuthReauthRequired, buildConversationChanged,
   buildMessageReceived, buildHumanReplyDetected, buildSendAck, buildTransferAck, scanToMessages,
 } from "./dom/page-events.js";
-export type { DomElement, DomDocument } from "./dom/dom-types.js";
+export type { DomElement, DomDocument, DomLocationProjection } from "./dom/dom-types.js";
 export { toDomDocument } from "./dom/dom-types.js";
 export { PddPageRuntime, type PageTransport, type PageRuntimeOptions } from "./page/page-runtime.js";
+export {
+  AUTH_REAUTH_TITLE,
+  AUTH_REAUTH_MESSAGE,
+  AUTH_REAUTH_ORIGIN,
+  AUTH_REAUTH_PATHNAME,
+  hasAuthReauthModal,
+  hasAuthReauthLocation,
+  hasAuthReauthEvidence,
+} from "./page/auth-reauth-detector.js";
 export { PageMutationObserver, type MutationObserverLike, type ScanCallback } from "./page/mutation-observer.js";
 export { handleCommand } from "./page/command-handler.js";
 export { MiniEventEmitter, type Listener } from "./page/event-emitter.js";

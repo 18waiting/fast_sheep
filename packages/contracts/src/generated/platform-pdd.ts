@@ -10,6 +10,7 @@ export type PddSessionStatusValue =
   | "LOGIN_REQUIRED"
   | "READY"
   | "DOM_UNSUPPORTED"
+  | "AUTH_REAUTH_REQUIRED"
   | "ERROR"
   | "DISPOSED";
 
