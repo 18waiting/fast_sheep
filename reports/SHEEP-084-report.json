@@ -1,8 +1,10 @@
 {
   "task": "SHEEP-084",
   "result": "COMPLETE",
-  "controller_decision": "AWAITING_CONTROLLER_REVIEW",
-  "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "controller_decision": "PASS",
+  "status": "PASS / CLOSED",
+  "implementation_result": "ACCEPTED",
+  "controller_pass_date": "2026-09-09",
   "section_1_result": {
     "value": "COMPLETE",
     "classification": "CONFIRMED",
@@ -220,14 +222,14 @@
     "evidence_source": "FAST_SHEEP_GOVERNANCE",
     "current_phase": "PHASE_5",
     "current_milestone": "M5.2 Identity / Session",
-    "last_closed_task": "SHEEP-083",
+    "last_closed_task": "SHEEP-084",
     "sheep_083": "PASS / CLOSED",
-    "sheep_084": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
-    "next_authoritative_roadmap_id": "SHEEP-084",
+    "sheep_084": "PASS / CLOSED",
+    "next_authoritative_roadmap_id": "SHEEP-085",
     "next_task_execution_authorized": false,
     "sheep_085": "NOT_STARTED",
     "next_stage_not_executed": true,
-    "project_state_modified_by_sheep_084": false
+    "project_state_modified_by_sheep_084": true
   },
   "section_21_commit": {
     "classification": "CONFIRMED",
@@ -256,8 +258,23 @@
   "section_24_stop_condition": {
     "classification": "CONFIRMED",
     "evidence_source": "FAST_SHEEP_GOVERNANCE",
-    "value": "Stop after SHEEP-084. Do not start SHEEP-085. Do not perform live PDD testing. Wait for Controller Review.",
+    "value": "SHEEP-084 is PASS / CLOSED. Do not start SHEEP-085. Do not perform live PDD testing. Wait for the next Controller-authorized task.",
     "next_stage_not_executed": true
+  },
+  "section_25_controller_closeout": {
+    "classification": "CONFIRMED",
+    "evidence_source": "FAST_SHEEP_GOVERNANCE",
+    "controller_decision": "PASS / CLOSED",
+    "implementation": "ACCEPTED",
+    "last_closed_task": "SHEEP-084",
+    "next_authoritative_roadmap_id": "SHEEP-085",
+    "next_task_title": "Session Expiry Detection",
+    "next_task_execution_authorized": false,
+    "next_stage_not_executed": true,
+    "pdd_live_login_session_semantics": "NOT_YET_LIVE_VALIDATED",
+    "pdd_seller_external_identity": "NOT_PROVEN / NOT_IMPLEMENTED",
+    "pdd_integration": "NOT_STARTED",
+    "ready_semantics": "local page/runtime readiness only"
   },
   "files_created": [
     "apps/desktop/src/main/services/pdd-credential-reference-service.ts",

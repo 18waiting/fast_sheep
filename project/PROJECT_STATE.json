@@ -29,10 +29,10 @@
   },
   "current_phase": "PHASE_5",
   "current_milestone": "M5.2 Identity / Session",
-  "last_closed_task": "SHEEP-083",
-  "current_task": "SHEEP-084 (M5.2 Secure Credential Reference) — IMPLEMENTED / AWAITING CONTROLLER REVIEW; no PDD integration implementation",
-  "next_action": "SHEEP-084 implementation is COMPLETE and awaiting Controller Review; do not close SHEEP-084 or start SHEEP-085",
-  "next_authoritative_roadmap_id": "SHEEP-084",
+  "last_closed_task": "SHEEP-084",
+  "current_task": "SHEEP-084 (M5.2 Secure Credential Reference) — PASS / CLOSED; no PDD integration implementation",
+  "next_action": "SHEEP-084 is PASS / CLOSED; audit SHEEP-085 only; do not start SHEEP-085",
+  "next_authoritative_roadmap_id": "SHEEP-085",
   "next_task_execution_authorized": false,
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
@@ -203,7 +203,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-084 (M5.2 Secure Credential Reference; implemented / awaiting Controller review)",
+  "next_task": "SHEEP-085 (M5.2 Session Expiry Detection; not started; execution unauthorized)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -2559,13 +2559,14 @@
     "next_stage_not_executed": true
   },
   "sheep_084": {
-    "roadmap_status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+    "roadmap_status": "CLOSED",
     "codex_result": "COMPLETE",
-    "controller_decision": "AWAITING_CONTROLLER_REVIEW",
-    "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+    "controller_decision": "PASS",
+    "status": "PASS / CLOSED",
     "phase": "PHASE_5",
     "milestone": "M5.2 Identity / Session",
     "implementation_result": "COMPLETE",
+    "implementation_acceptance": "ACCEPTED",
     "implementation_commit": "e125498",
     "selected_rediscovery_model": "DERIVABLE_REFERENCE_SUFFICIENT",
     "platform_account_id_scope": "CONFIRMED",
@@ -2575,11 +2576,16 @@
     "pdd_login_session_live_semantics": "NOT_YET_LIVE_VALIDATED",
     "pdd_integration": "NOT_STARTED",
     "report": "reports\\SHEEP-084-report.json",
+    "controller_pass_date": "2026-09-09",
     "next_stage_not_executed": true
   },
   "sheep_085": {
+    "roadmap_status": "NEXT_AUTHORITATIVE_ROADMAP_ID",
+    "phase": "PHASE_5",
+    "milestone": "M5.2 Identity / Session",
     "status": "NOT_STARTED",
     "execution_authorized": false,
+    "implementation_result": "NOT_STARTED",
     "pdd_integration": "NOT_STARTED",
     "next_stage_not_executed": true
   },
@@ -2593,9 +2599,10 @@
       "SHEEP-080",
       "SHEEP-081",
       "SHEEP-082",
-      "SHEEP-083"
+      "SHEEP-083",
+      "SHEEP-084"
     ],
-    "next_authoritative_roadmap_id": "SHEEP-084",
+    "next_authoritative_roadmap_id": "SHEEP-085",
     "sheep_080_approved": true,
     "sheep_081_closed": true,
     "sheep_082_execution_authorized": false,
