@@ -7,6 +7,15 @@ import type { WebContentsView } from "electron";
 import { partitionFor } from "./pdd-session-partition.js";
 import { isPddNavigationAllowed, isPddPopupAllowed, type PddNavigationPolicyOptions } from "./pdd-navigation-policy.js";
 import { pddPermissionDecision } from "./pdd-permission-policy.js";
+import { bindPddDocumentLifecycle, type PddDocumentLifecycleObserver } from "./pdd-document-lifecycle.js";
+
+export const PDD_PAGE_LIFECYCLE_START_CHANNEL = "pdd-page-lifecycle-start";
+
+export interface PddDocumentObservation {
+  session_id: string;
+  shop_id: string;
+  document_generation: number;
+}
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_PRELOAD = join(HERE, "..", "..", "..", "platforms", "pdd", "preload.js");
@@ -37,6 +46,7 @@ export class PddViewHost {
   readonly webContentsView: WebContentsView;
   private visible = false;
   private readonly nav: PddNavigationPolicyOptions;
+  private documentLifecycleObserver: PddDocumentLifecycleObserver | null = null;
 
   constructor(options: PddViewHostOptions) {
     const partition = partitionFor(options.shopId);
@@ -63,6 +73,11 @@ export class PddViewHost {
     this.webContentsView.webContents.session.setPermissionRequestHandler((_wc, permission, callback) => {
       callback(pddPermissionDecision(permission));
     });
+    bindPddDocumentLifecycle(this.webContentsView.webContents, {
+      onMainFrameNavigationStart: () => this.documentLifecycleObserver?.onMainFrameNavigationStart(),
+      onMainFrameDomReady: () => this.documentLifecycleObserver?.onMainFrameDomReady(),
+      onMainFrameLoadFailure: () => this.documentLifecycleObserver?.onMainFrameLoadFailure(),
+    });
   }
 
   get webContents() {
@@ -78,6 +93,16 @@ export class PddViewHost {
       fixturePath,
       query ? { search: new URLSearchParams(query).toString() } : {},
     );
+  }
+
+  setDocumentLifecycleObserver(observer: PddDocumentLifecycleObserver | null): void {
+    this.documentLifecycleObserver = observer;
+  }
+
+  startDocumentObservation(observation: PddDocumentObservation): void {
+    if (!this.webContents.isDestroyed()) {
+      this.webContents.send(PDD_PAGE_LIFECYCLE_START_CHANNEL, observation);
+    }
   }
 
   /** Clamp bounds to the main content area and apply. Ignores stale/hidden shops. */

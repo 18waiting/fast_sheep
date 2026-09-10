@@ -8,6 +8,7 @@
   "properties": {
     "event": { "type": "string" },
     "session_id": { "type": "string", "minLength": 1 },
+    "document_generation": { "type": "integer", "minimum": 1 },
     "shop_id": { "type": "string" },
     "conversation_id": { "type": "string" },
     "buyer_id": { "type": "string" },

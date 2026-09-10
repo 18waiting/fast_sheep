@@ -24,6 +24,7 @@ export interface PddSessionStatus {
 export interface PddPageEventBase {
   event: string;
   session_id: string;
+  document_generation?: number;
   shop_id?: string;
   conversation_id?: string;
   buyer_id?: string;

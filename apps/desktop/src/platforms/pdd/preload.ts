@@ -7,15 +7,31 @@
 import { ipcRenderer } from "electron";
 import { PddPageRuntime, toDomDocument, type PddPageCommand, type PddPageEvent } from "@fastwork/platform-pdd";
 
-function boot(): void {
-  const params = new URLSearchParams(window.location.search);
-  const sessionId = params.get("session_id") ?? "unknown";
-  const shopId = params.get("shop_id") ?? "unknown";
+const PDD_PAGE_LIFECYCLE_START_CHANNEL = "pdd-page-lifecycle-start";
+
+interface DocumentObservation {
+  session_id: string;
+  shop_id: string;
+  document_generation: number;
+}
+
+function isDocumentObservation(value: unknown): value is DocumentObservation {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.session_id === "string"
+    && typeof candidate.shop_id === "string"
+    && Number.isInteger(candidate.document_generation)
+    && (candidate.document_generation as number) > 0;
+}
+
+function boot(observation: DocumentObservation): void {
+  const { session_id: sessionId, shop_id: shopId, document_generation: documentGeneration } = observation;
 
   const runtime = new PddPageRuntime({
     doc: toDomDocument(window.document),
     sessionId,
     shopId,
+    documentGeneration,
     transport: {
       send: (event: PddPageEvent) => {
         ipcRenderer.send("pdd-page-event", event);
@@ -39,8 +55,33 @@ function boot(): void {
   runtime.start();
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", boot, { once: true });
-} else {
-  boot();
+let started = false;
+function start(observation: DocumentObservation): void {
+  if (started) return;
+  started = true;
+  boot(observation);
+}
+
+ipcRenderer.on(PDD_PAGE_LIFECYCLE_START_CHANNEL, (_event: unknown, observation: unknown) => {
+  if (started || !isDocumentObservation(observation)) return;
+  start(observation);
+});
+
+// Explicit local fixtures keep their deterministic DOMContentLoaded startup.
+// Production documents never consume URL parameters and wait for Main's real
+// WebContents lifecycle notification above.
+if (window.location.protocol === "file:") {
+  const params = new URLSearchParams(window.location.search);
+  const fixtureObservation = {
+    session_id: params.get("session_id") ?? "",
+    shop_id: params.get("shop_id") ?? "",
+    document_generation: Number(params.get("document_generation")),
+  };
+  if (isDocumentObservation(fixtureObservation)) {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => start(fixtureObservation), { once: true });
+    } else {
+      start(fixtureObservation);
+    }
+  }
 }

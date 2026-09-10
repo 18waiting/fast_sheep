@@ -1,16 +1,16 @@
 {
   "task": "SHEEP-085",
-  "result": "COMPLETE",
+  "result": "PARTIAL",
   "controller_decision": "AWAITING_CONTROLLER_REVIEW",
   "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
   "phase": "PHASE_5",
   "milestone": "M5.2 Identity / Session",
-  "objective": "Implement the minimum local PDD AUTH_REAUTH_REQUIRED detector and preserve the existing local session boundary without claiming PDD authentication truth.",
+  "objective": "Connect AUTH_REAUTH_REQUIRED recovery to the existing real main-frame WebContents document lifecycle without claiming PDD authentication truth or adding login automation.",
   "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
   "implementation_readiness": "READY_WITH_CONSTRAINTS",
-  "implementation_delta": "MINIMAL_CODE_GAP",
-  "completed_requirements": 10,
-  "total_requirements": 10,
+  "implementation_delta": "REAL_DOCUMENT_LIFECYCLE_WIRING_WITH_PRODUCTION_NAVIGATION_ENTRY_GAP",
+  "completed_requirements": 11,
+  "total_requirements": 12,
   "evidence": {
     "confirmed": [
       {
@@ -34,7 +34,7 @@
         "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
       },
       {
-        "value": "Recovery is available only through the existing fresh reload/lifecycle path.",
+        "value": "The Main-side WebContents lifecycle is wired for real main-frame document boundaries, generation-tagged observation, and lifecycle failure handling; an executable production PDD navigation entry is not present/proven.",
         "classification": "CONFIRMED",
         "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
       },
@@ -62,7 +62,13 @@
       }
     ],
     "product_decision_required": [],
-    "blocked": [],
+    "blocked": [
+      {
+        "value": "No production PDD loadURL() or configured navigation entry is present/proven; end-to-end production recovery cannot be validated from the current code.",
+        "classification": "BLOCKED",
+        "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+      }
+    ],
     "deferred": [
       {
         "value": "Natural expiry semantics remain unproven and are not implemented.",
@@ -76,6 +82,13 @@
       }
     ]
   },
+  "blockers": [
+    {
+      "value": "No production PDD loadURL() or configured navigation entry is present/proven; end-to-end production recovery cannot be validated from the current code.",
+      "classification": "BLOCKED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+    }
+  ],
   "state_vocabulary": [
     "STOPPED",
     "CREATING",
@@ -114,11 +127,21 @@
     ]
   },
   "recovery_lifecycle": {
-    "classification": "CONFIRMED",
+    "classification": "RECOVERY_LIFECYCLE_GAP",
     "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
     "same_runtime_recovery": false,
-    "fresh_reload_recovery": true,
-    "recovery_path": "Explicit reload enters LOADING; a subsequent fresh local page_ready may enter READY.",
+    "fixture_reload_recovery": true,
+    "real_document_recovery_mechanics": true,
+    "end_to_end_production_recovery": false,
+    "webcontents_lifecycle": {
+      "navigation_start": "Main-frame, non-in-place did-start-navigation starts a new document generation and enters LOADING.",
+      "dom_ready": "Main-frame dom-ready starts observation once for the active generation through pdd-page-lifecycle-start.",
+      "load_failure": "Main-frame did-fail-load and render-process-gone transition a loading document to local ERROR.",
+      "same_document_navigation": "In-place/hash navigation does not start recovery."
+    },
+    "document_generation": "Main assigns a generation per observed document; page events must carry the active generation after real navigation, and stale or untagged real-document events are rejected.",
+    "production_navigation_entry": "NOT_FOUND / NOT_PROVEN",
+    "recovery_path": "Fixture load/reload retains explicit legacy fixture compatibility. Real WebContents navigation mechanics are wired, but no executable production PDD navigation entry is present/proven.",
     "authentication_claim": "NONE"
   },
   "natural_expiry": {
@@ -137,8 +160,10 @@
   "ipc_boundary": {
     "classification": "CONFIRMED",
     "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
-    "new_ipc": false,
-    "renderer_projection": "Existing status-only projection; no raw ipcRenderer, filesystem, SQLite, credential, or unrestricted system API exposure.",
+    "new_renderer_to_main_ipc": false,
+    "internal_main_to_preload_lifecycle_channel_added": true,
+    "lifecycle_channel": "pdd-page-lifecycle-start carries only session_id, shop_id, and document_generation to the isolated PDD preload.",
+    "renderer_projection": "Existing status-only application-renderer projection; no raw ipcRenderer, filesystem, SQLite, credential, or unrestricted system API exposure.",
     "network": "NONE"
   },
   "isolation": {
@@ -158,7 +183,7 @@
     },
     {
       "name": "@fastwork/desktop test",
-      "result": "320/320 PASS",
+      "result": "325/325 PASS",
       "classification": "CONFIRMED",
       "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
     },
@@ -213,12 +238,19 @@
       "result": "PASS",
       "classification": "CONFIRMED",
       "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
+    },
+    {
+      "name": "Real document lifecycle boundary: untagged page_ready after navigation, stale generation, and same-document navigation",
+      "result": "PASS",
+      "classification": "CONFIRMED",
+      "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION"
     }
   ],
   "live_evidence_status": {
     "classification": "DEFERRED",
     "evidence_source": "FAST_SHEEP_GOVERNANCE",
     "live_pdd_testing_performed": false,
+    "live_pdd_evidence_required_now": false,
     "live_pdd_authentication_truth_established": false,
     "natural_expiry_established": false,
     "synthetic_fixture_boundary": "Synthetic DOM/page-runtime fixtures validate local behavior only and are not promoted to live PDD authority."
@@ -238,9 +270,11 @@
     "classification": "CONFIRMED",
     "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
     "network_calls_added": 0,
-    "schema_changed": false,
+    "database_schema_changed": false,
+    "contract_schema_changed": true,
     "migration_created": false,
-    "ipc_channels_added": 0,
+    "internal_main_to_preload_channels_added": 1,
+    "renderer_to_main_ipc_channels_added": 0,
     "pdd_integration_started": false
   },
   "scoped_secret_scan": {
@@ -254,7 +288,7 @@
       "status": "PASS",
       "classification": "CONFIRMED",
       "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
-      "method": "Changed SHEEP-085 source, tests, contracts, project state, and report were reviewed without outputting sensitive values."
+      "method": "Changed SHEEP-085 lifecycle source, tests, contracts, and report were reviewed without outputting sensitive values."
     }
   },
   "project_state": {
@@ -274,49 +308,41 @@
       "natural_expiry": "NOT_PROVEN",
       "pdd_integration": "NOT_STARTED"
     },
+    "sheep_086": "NOT_STARTED",
     "next_stage_not_executed": true
   },
   "files_created": [
-    "packages/platform-pdd/src/page/auth-reauth-detector.ts",
-    "packages/platform-pdd/tests/auth-reauth.test.ts",
-    "reports/SHEEP-085-report.json"
+    "apps/desktop/src/main/platforms/pdd/pdd-document-lifecycle.ts",
+    "apps/desktop/tests/pdd-document-lifecycle.test.ts"
   ],
   "files_modified": [
     "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
+    "apps/desktop/src/main/platforms/pdd/pdd-view-host.ts",
+    "apps/desktop/src/platforms/pdd/preload.ts",
     "apps/desktop/tests/pdd-session-host.test.ts",
-    "packages/contracts/schemas/desktop/platform-status-changed-event.schema.json",
-    "packages/contracts/schemas/desktop/platform-status-view.schema.json",
-    "packages/contracts/schemas/platform/pdd-session-status.schema.json",
-    "packages/contracts/schemas/platform/platform-session-status.schema.json",
+    "packages/contracts/schemas/platform/pdd-page-event.schema.json",
     "packages/contracts/src/generated/platform-pdd.ts",
-    "packages/desktop-ipc/src/types.ts",
-    "packages/platform-pdd/src/dom/dom-types.ts",
-    "packages/platform-pdd/src/dom/page-events.ts",
-    "packages/platform-pdd/src/index.ts",
     "packages/platform-pdd/src/page/page-runtime.ts",
-    "packages/platform-pdd/src/session-state.ts",
     "packages/platform-pdd/src/types.ts",
-    "packages/platform-pdd/tests/session-state.test.ts",
-    "project/PROJECT_STATE.json"
+    "reports/SHEEP-085-report.json"
   ],
-  "files_deleted": [
-    "reports/m7-pdd-dom-fixture-report.json",
-    "reports/m7-pdd-security-report.json",
-    "reports/m7-pdd-session-report.json"
-  ],
+  "files_deleted": [],
   "old_rebuild_modified": false,
   "original_reference_modified": false,
-  "architecture_changes": [],
+  "architecture_changes": [
+    "Added a narrow Main-owned PDD document lifecycle adapter for real main-frame WebContents events.",
+    "Added Main-assigned document_generation correlation across the PDD host, isolated preload, page runtime, and page-event contract."
+  ],
   "security_changes": [
-    "Added a local auth reauthentication observation and state; no credential or session material handling was added."
+    "Added a narrow Main-to-isolated-preload lifecycle notification containing only local identifiers and generation; no credential or session material handling was added."
   ],
   "data_model_changes": [],
   "commit": {
-    "status": "ONE_FOCUSED_SHEEP_085_IMPLEMENTATION_COMMIT",
-    "required_message": "SHEEP-085: implement auth reauth detection",
+    "status": "ONE_FOCUSED_SHEEP_085_REPAIR_COMMIT",
+    "message": "SHEEP-085: repair browser recovery lifecycle",
     "classification": "CONFIRMED",
     "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
-    "note": "One focused commit contains only the explicit SHEEP-085 implementation, tests, contracts, project state, and this report; protected pre-existing untracked paths are excluded."
+    "note": "The focused repair commit contains only the explicit SHEEP-085 lifecycle implementation, tests, contract updates, and this corrected report; commit 8c9c8b2 is not amended and protected pre-existing untracked paths are excluded."
   },
   "validation": {
     "git_diff_check": "PASS",
@@ -333,14 +359,14 @@
   "final_git_status": {
     "classification": "CONFIRMED",
     "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
-    "status": "The focused SHEEP-085 commit is created; protected pre-existing untracked paths remain unchanged and unstaged.",
+    "status": "The focused SHEEP-085 repair delta is committed; only the five protected pre-existing untracked paths remain in status.",
     "protected_preexisting_untracked_paths": "UNCHANGED / NOT STAGED",
     "sheep_086_started": false
   },
   "acceptance_result": {
-    "classification": "CONFIRMED",
+    "classification": "BLOCKED",
     "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
-    "value": "All authorized SHEEP-085 local detector criteria pass. The result is complete for the authorized local implementation scope and awaits Controller PASS / REPAIR."
+    "value": "The real WebContents lifecycle and old-document safety mechanics pass, but end-to-end production recovery remains unproven because no production PDD navigation entry exists in the current code. Result is PARTIAL and awaits Controller review."
   },
   "stop_condition": {
     "classification": "CONFIRMED",

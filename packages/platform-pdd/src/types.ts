@@ -75,6 +75,8 @@ export type PageEventType =
 export interface PddPageEvent {
   event: PageEventType;
   session_id: string;
+  /** Main-assigned lifecycle generation; omitted only by legacy/unit test callers. */
+  document_generation?: number;
   shop_id?: string;
   conversation_id?: string;
   buyer_id?: string;

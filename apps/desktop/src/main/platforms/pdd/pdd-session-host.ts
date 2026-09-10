@@ -2,6 +2,7 @@
 import type { PddPageEvent } from "@fastwork/platform-pdd";
 import { PddSessionState } from "@fastwork/platform-pdd";
 import type { PddViewHost, ViewBounds } from "./pdd-view-host.js";
+import type { PddDocumentLifecycleObserver } from "./pdd-document-lifecycle.js";
 
 export interface PddSessionHostOptions {
   shopId: string;
@@ -28,6 +29,11 @@ export class PddSessionHost {
   private view: PddViewHost | null = null;
   private readonly onEventHook: ((ev: PddPageEvent) => void) | undefined;
   private readonly onViewCreatedHook: ((view: PddViewHost) => void) | undefined;
+  private documentGeneration = 0;
+  private activeDocumentGeneration: number | null = null;
+  private startedDocumentGeneration: number | null = null;
+  private fixtureDocumentGeneration: number | null = null;
+  private awaitingExplicitNavigationStart = false;
 
   constructor(options: PddSessionHostOptions) {
     this.state = new PddSessionState(options.shopId, "pdd-session-" + options.shopId);
@@ -48,9 +54,16 @@ export class PddSessionHost {
     try {
       this.view = this.makeView();
       this.onViewCreatedHook?.(this.view);
+      this.view.setDocumentLifecycleObserver?.(this.documentLifecycleObserver);
       if (fixturePath) {
-        this.state.setStatus("LOADING");
-        await this.view.loadLocalFixture(fixturePath, { shop_id: this.state.shopId, session_id: this.state.sessionId });
+        this.beginDocumentLifecycle(true);
+        this.awaitingExplicitNavigationStart = true;
+        await this.view.loadLocalFixture(fixturePath, {
+          shop_id: this.state.shopId,
+          session_id: this.state.sessionId,
+          document_generation: String(this.activeDocumentGeneration),
+        });
+        this.awaitingExplicitNavigationStart = false;
       }
     } catch (error) {
       this.failClosed("SESSION_CREATE_OR_LOAD_FAILED");
@@ -72,10 +85,17 @@ export class PddSessionHost {
 
   async reload(fixturePath?: string): Promise<void> {
     if (fixturePath && this.view) {
-      this.state.setStatus("LOADING");
+      this.beginDocumentLifecycle(true);
+      this.awaitingExplicitNavigationStart = true;
       try {
-        await this.view.loadLocalFixture(fixturePath, { shop_id: this.state.shopId, session_id: this.state.sessionId });
+        await this.view.loadLocalFixture(fixturePath, {
+          shop_id: this.state.shopId,
+          session_id: this.state.sessionId,
+          document_generation: String(this.activeDocumentGeneration),
+        });
+        this.awaitingExplicitNavigationStart = false;
       } catch (error) {
+        this.awaitingExplicitNavigationStart = false;
         this.failClosed("SESSION_RELOAD_FAILED");
         throw error;
       }
@@ -84,6 +104,7 @@ export class PddSessionHost {
 
   handleEvent(ev: PddPageEvent): void {
     if (ev.session_id !== this.state.sessionId) return;
+    if (!this.acceptsCurrentDocument(ev)) return;
     if (!SESSION_EVENTS.has(ev.event)) {
       this.failClosed("UNSUPPORTED_SESSION_EVENT");
       this.onEventHook?.(ev);
@@ -91,8 +112,8 @@ export class PddSessionHost {
     }
     try {
       if (ev.event === "auth_reauth_required") this.state.setStatus("AUTH_REAUTH_REQUIRED");
-      else if (this.state.isAuthReauthRequired() && (ev.event === "page_ready" || ev.event === "login_required" || ev.event === "dom_unsupported")) {
-        // A same-runtime readiness observation cannot clear the auth latch.
+      else if (this.state.isAuthReauthRequired() && !this.isFreshDocumentEvent(ev) && (ev.event === "page_ready" || ev.event === "login_required" || ev.event === "dom_unsupported")) {
+        // A same-runtime or old-document observation cannot clear the auth latch.
       }
       else if (ev.event === "page_ready") this.state.setStatus("READY");
       else if (ev.event === "login_required") this.state.setStatus("LOGIN_REQUIRED");
@@ -107,6 +128,7 @@ export class PddSessionHost {
   }
 
   dispose(): void {
+    this.view?.setDocumentLifecycleObserver?.(null);
     this.view?.dispose();
     this.view = null;
     this.state.setStatus("DISPOSED");
@@ -116,5 +138,54 @@ export class PddSessionHost {
     if (this.state.getStatus() === "DISPOSED") return;
     if (this.state.isAuthReauthRequired()) return;
     this.state.setStatus("ERROR", reason);
+  }
+
+  private readonly documentLifecycleObserver: PddDocumentLifecycleObserver = {
+    onMainFrameNavigationStart: () => {
+      if (this.awaitingExplicitNavigationStart) {
+        this.awaitingExplicitNavigationStart = false;
+        return;
+      }
+      const status = this.state.getStatus();
+      if (["CREATING", "LOADING", "READY", "DOM_UNSUPPORTED", "AUTH_REAUTH_REQUIRED", "ERROR"].includes(status)) {
+        this.beginDocumentLifecycle();
+      }
+    },
+    onMainFrameDomReady: () => {
+      if (!this.view || this.activeDocumentGeneration === null) return;
+      if (this.startedDocumentGeneration === this.activeDocumentGeneration) return;
+      this.startedDocumentGeneration = this.activeDocumentGeneration;
+      this.view.startDocumentObservation({
+        session_id: this.state.sessionId,
+        shop_id: this.state.shopId,
+        document_generation: this.activeDocumentGeneration,
+      });
+    },
+    onMainFrameLoadFailure: () => {
+      if (this.state.getStatus() === "LOADING") this.failClosed("SESSION_DOCUMENT_LOAD_FAILED");
+    },
+  };
+
+  private beginDocumentLifecycle(allowLegacyFixtureEvents = false): void {
+    if (this.state.getStatus() !== "LOADING") this.state.setStatus("LOADING");
+    this.documentGeneration += 1;
+    this.activeDocumentGeneration = this.documentGeneration;
+    this.startedDocumentGeneration = null;
+    this.fixtureDocumentGeneration = allowLegacyFixtureEvents ? this.documentGeneration : null;
+  }
+
+  private acceptsCurrentDocument(ev: PddPageEvent): boolean {
+    if (this.activeDocumentGeneration === null) return true;
+    if (ev.document_generation !== undefined) return ev.document_generation === this.activeDocumentGeneration;
+    // Only explicit fixture callers retain compatibility with legacy untagged
+    // unit events. Real document generations require the Main-issued tag.
+    return this.fixtureDocumentGeneration === this.activeDocumentGeneration
+      && this.startedDocumentGeneration === null;
+  }
+
+  private isFreshDocumentEvent(ev: PddPageEvent): boolean {
+    return this.activeDocumentGeneration !== null
+      && ev.document_generation !== undefined
+      && ev.document_generation === this.activeDocumentGeneration;
   }
 }

@@ -29,6 +29,7 @@ export interface PageRuntimeOptions {
   doc: DomDocument;
   sessionId: string;
   shopId: string;
+  documentGeneration?: number;
   transport: PageTransport;
   now?: () => number;
   makeObserver?: (cb: () => void) => { observe(target: unknown, options: unknown): void; disconnect(): void };
@@ -106,8 +107,11 @@ export class PddPageRuntime {
   }
 
   private emit(event: PddPageEvent): void {
-    this.events.emit(event);
-    this.options.transport.send(event);
+    const withGeneration = this.options.documentGeneration === undefined
+      ? event
+      : { ...event, document_generation: this.options.documentGeneration };
+    this.events.emit(withGeneration);
+    this.options.transport.send(withGeneration);
   }
 
   scan(): void {
