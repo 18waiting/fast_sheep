@@ -30,10 +30,10 @@
   "current_phase": "PHASE_5",
   "current_milestone": "M5.3 Conversation",
   "last_closed_task": "SHEEP-085",
-  "current_task": "SHEEP-086 (M5.3 PDD Conversation Discovery) — NOT_STARTED / HOLD; no PDD integration implementation",
-  "next_action": "SHEEP-085 is PASS / CLOSED; SHEEP-086 remains HOLD and execution is not authorized",
+  "current_task": "SHEEP-086 (M5.3 PDD Conversation Discovery) — NOT_STARTED / AUTHORIZED WITH CONSTRAINTS; no PDD integration implementation",
+  "next_action": "SHEEP-085 is PASS / CLOSED; SHEEP-086 is execution-authorized with constraints and remains unimplemented",
   "next_authoritative_roadmap_id": "SHEEP-086",
-  "next_task_execution_authorized": false,
+  "next_task_execution_authorized": true,
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
   "next_sheep_task_after_governance": "SHEEP-001",
@@ -203,7 +203,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-086 (M5.3 PDD Conversation Discovery; NOT_STARTED / HOLD; execution unauthorized)",
+  "next_task": "SHEEP-086 (M5.3 PDD Conversation Discovery; NOT_STARTED / AUTHORIZED WITH CONSTRAINTS; not implemented)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -2601,8 +2601,12 @@
   "sheep_086": {
     "phase": "PHASE_5",
     "milestone": "M5.3 Conversation",
-    "status": "NOT_STARTED / HOLD",
-    "execution_authorized": false,
+    "status": "NOT_STARTED",
+    "execution_authorized": true,
+    "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
+    "scope": "ACTIVE_CONVERSATION_SELECTION_DISCOVERY_ONLY",
+    "live_evidence_source": "LIVE_PDD_EVIDENCE",
+    "live_pdd_evidence_required_now": false,
     "pdd_integration": "NOT_STARTED",
     "next_stage_not_executed": true
   },
