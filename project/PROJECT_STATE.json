@@ -30,10 +30,10 @@
   "current_phase": "PHASE_5",
   "current_milestone": "M5.3 Conversation",
   "last_closed_task": "SHEEP-086",
-  "current_task": "SHEEP-087 (M5.3 PDD Incoming Message Normalize) — NOT_STARTED / AWAITING EXECUTION AUTHORIZATION",
-  "next_action": "SHEEP-087 requires Controller execution authorization; no later task may execute before authorization",
+  "current_task": "SHEEP-087 (M5.3 PDD Incoming Message Normalize) — NOT_STARTED / AUTHORIZED WITH CONSTRAINTS; scope=NORMALIZATION_CONTRACT_ONLY",
+  "next_action": "SHEEP-087 is authorized with constraints for NORMALIZATION_CONTRACT_ONLY; no later task may execute before this task closes",
   "next_authoritative_roadmap_id": "SHEEP-087",
-  "next_task_execution_authorized": false,
+  "next_task_execution_authorized": true,
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
   "next_sheep_task_after_governance": "SHEEP-001",
@@ -203,7 +203,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-087 (M5.3 PDD Incoming Message Normalize; NOT_STARTED / AWAITING EXECUTION AUTHORIZATION)",
+  "next_task": "SHEEP-087 (M5.3 PDD Incoming Message Normalize; NOT_STARTED / AUTHORIZED WITH CONSTRAINTS; scope=NORMALIZATION_CONTRACT_ONLY)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
