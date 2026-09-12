@@ -1,0 +1,76 @@
+{
+  "task": "SHEEP-087",
+  "title": "PDD Incoming Message Normalize",
+  "result": "IMPLEMENTED",
+  "controller_decision": "AWAITING_CONTROLLER_REVIEW",
+  "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "phase": "PHASE_5",
+  "milestone": "M5.3 Conversation",
+  "scope": "NORMALIZATION_CONTRACT_ONLY",
+  "objective": "Normalize directly observed PDD buyer-to-mall_cs inbound text fields into a local, non-persistent candidate without asserting conversation identity or delivery semantics.",
+  "evidence": {
+    "live_evidence_sufficient": true,
+    "new_live_evidence": false,
+    "classification": "CONFIRMED",
+    "source": "LIVE_PDD_EVIDENCE",
+    "contract": [
+      "from.role=user and to.role=mall_cs are required",
+      "from.uid is preserved as decimal-string customerUid",
+      "msg_id is preserved exactly as platformMessageId and must be non-blank",
+      "content is preserved exactly",
+      "client_msg_id is optional and non-semantic",
+      "conversation identity is not assigned"
+    ]
+  },
+  "outcomes": ["NORMALIZED", "REJECTED", "UNKNOWN"],
+  "opaque_fields": ["to.uid", "pre_msg_id", "seq_id", "base_seq_id", "target_id", "chat_type_id", "version", "type"],
+  "implementation": {
+    "pure_local_normalizer": true,
+    "persistence": "NONE",
+    "network": "NONE",
+    "production_titan_or_websocket_receive_integration": false,
+    "conversation_association": "UNRESOLVED",
+    "deduplication": "NOT_IMPLEMENTED",
+    "replay_semantics": "NOT_ESTABLISHED",
+    "ordering_semantics": "NOT_ESTABLISHED"
+  },
+  "spr": {
+    "risk": "R0_LOCAL_READ_ONLY",
+    "provenance": "OBSERVED_WEB_RUNTIME",
+    "decision": "ALLOW_WITH_CONSTRAINTS"
+  },
+  "security_boundary": {
+    "network_calls_added": 0,
+    "credentials_cookies_tokens_authorization_inspected": false,
+    "anti_content_handling": false,
+    "real_identifiers_or_live_payloads_persisted": false
+  },
+  "validation": {
+    "platform_pdd_build": "PASS",
+    "platform_pdd_typecheck": "PASS",
+    "platform_pdd_tests": "96/96 PASS",
+    "focused_inbound_normalizer_tests": "6/6 PASS",
+    "pdd_no_network_check": "PASS",
+    "pdd_security_check": "PASS",
+    "git_diff_check": "PASS",
+    "json_parse": "PASS"
+  },
+  "msg_id_blank_fix": "APPLIED_MINIMAL_FIX",
+  "files_created": [
+    "packages/platform-pdd/src/inbound-normalizer.ts",
+    "packages/platform-pdd/tests/inbound-normalizer.test.ts",
+    "reports/SHEEP-087-report.json"
+  ],
+  "files_modified": [
+    "packages/platform-pdd/src/index.ts",
+    "project/PROJECT_STATE.json"
+  ],
+  "files_deleted": [],
+  "pdd_integration": "NOT_STARTED",
+  "acceptance_claim": "SHEEP-087 = IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "next_stage_not_executed": true,
+  "commit": {
+    "status": "ONE_FOCUSED_SHEEP_087_COMMIT",
+    "message": "SHEEP-087: implement inbound message normalization contract"
+  }
+}
