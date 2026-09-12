@@ -14,10 +14,12 @@ import { handleCommand } from "./command-handler.js";
 import { PageMutationObserver, type MutationObserverLike } from "./mutation-observer.js";
 import { MiniEventEmitter } from "./event-emitter.js";
 import { hasAuthReauthEvidence } from "./auth-reauth-detector.js";
+import { readSelectedCustomer } from "../dom/selected-customer-reader.js";
 import type { PddPageCommand, PddPageCommandResult, PddPageEvent } from "../types.js";
 import {
   buildPageReady, buildLoginRequired, buildDomUnsupported, buildConversationChanged,
   buildAuthReauthRequired, buildMessageReceived, buildHumanReplyDetected, buildSendAck, buildTransferAck,
+  buildSelectedCustomerObserved,
 } from "../dom/page-events.js";
 
 export interface PageTransport {
@@ -41,6 +43,7 @@ export class PddPageRuntime {
   private readonly ackRegistry = new Map<string, number>();
   private lastConversationId: string | null = null;
   private lastMessageKeys = new Set<string>();
+  private lastSelectedCustomerObservationKey: string | null = null;
   private readonly observer: PageMutationObserver;
   private readonly now: () => number;
   private lastReadiness: "LOGIN_REQUIRED" | "READY" | "DOM_UNSUPPORTED" | null = null;
@@ -145,6 +148,15 @@ export class PddPageRuntime {
     const signal = detectHumanReply(doc, PDD_SELECTOR_PROFILE, messages, acks, nowMs);
     if (signal.isHuman && this.lastConversationId) {
       this.emit(buildHumanReplyDetected(sessionId, shopId, this.lastConversationId, signal.message_id));
+    }
+
+    const selectedCustomer = readSelectedCustomer(doc);
+    const observationKey = selectedCustomer.status === "SELECTED"
+      ? `${selectedCustomer.status}:${selectedCustomer.customerUid}`
+      : selectedCustomer.status;
+    if (observationKey !== this.lastSelectedCustomerObservationKey) {
+      this.lastSelectedCustomerObservationKey = observationKey;
+      this.emit(buildSelectedCustomerObserved(sessionId, shopId, selectedCustomer));
     }
     void listConversations;
   }

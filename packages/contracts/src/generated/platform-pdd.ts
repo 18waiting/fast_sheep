@@ -22,7 +22,19 @@ export interface PddSessionStatus {
 }
 
 export interface PddPageEventBase {
-  event: string;
+  event: Exclude<
+    | "page_ready"
+    | "login_required"
+    | "dom_unsupported"
+    | "auth_reauth_required"
+    | "conversation_changed"
+    | "message_received"
+    | "human_reply_detected"
+    | "send_ack"
+    | "transfer_ack"
+    | "selected_customer_observed",
+    "selected_customer_observed"
+  >;
   session_id: string;
   document_generation?: number;
   shop_id?: string;
@@ -38,8 +50,26 @@ export interface PddPageEventBase {
   ok?: boolean;
   reason?: string;
   status?: string;
+  customer_uid?: string;
   error?: string;
 }
+
+export type PddSelectedCustomerObservedEvent =
+  | {
+      event: "selected_customer_observed";
+      session_id: string;
+      document_generation?: number;
+      shop_id: string;
+      status: "SELECTED";
+      customer_uid: string;
+    }
+  | {
+      event: "selected_customer_observed";
+      session_id: string;
+      document_generation?: number;
+      shop_id: string;
+      status: "NONE" | "UNKNOWN";
+    };
 
 export type PddPageCommandType =
   | "scan"

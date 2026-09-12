@@ -1,0 +1,166 @@
+{
+  "task": "SHEEP-086",
+  "result": "COMPLETE",
+  "controller_decision": "AWAITING_CONTROLLER_REVIEW",
+  "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "phase": "PHASE_5",
+  "milestone": "M5.3 Conversation",
+  "scope": "ACTIVE_CONVERSATION_SELECTION_DISCOVERY_ONLY",
+  "objective": "Observe the currently selected PDD buyer as transient, shop/session/document-scoped context without platform action or durable conversation identity.",
+  "live_evidence": {
+    "classification": "CONFIRMED",
+    "evidence_source": "LIVE_PDD_EVIDENCE",
+    "PDD_SELECTED_ROW_MARKER": "LIVE_EVIDENCE_CONFIRMED",
+    "PDD_ACTIVE_SELECTION_A_B_A": "CONFIRMED",
+    "NEW_LIVE_PDD_EVIDENCE_REQUIRED_NOW": false,
+    "live_pdd_testing_performed_in_sheep_086_implementation": false
+  },
+  "selected_row_contract": {
+    "element": "DIV",
+    "required_class_token": "chat-item-box",
+    "required_data_random_suffix": "-all",
+    "selected_class_token": "active",
+    "generic_global_active_selector_used": false,
+    "exact_full_class_string_required": false,
+    "transition_is_selection_semantic": false,
+    "full_data_random_exposed_beyond_dom_reader": false
+  },
+  "identity": {
+    "customer_uid_semantics": "BUYER_CUSTOMER_IDENTITY_ONLY",
+    "customer_uid_is_conversation_id": false,
+    "customer_uid_is_chat_id": false,
+    "customer_uid_is_session_id": false,
+    "conversation_identity": "UNRESOLVED / NOT_CREATED",
+    "target_id": "OPAQUE / UNBOUND",
+    "mall_cs_side_uid": "OPAQUE / UNBOUND",
+    "list_position_is_identity": false
+  },
+  "page_event_contract": {
+    "event": "selected_customer_observed",
+    "statuses": [
+      "SELECTED",
+      "NONE",
+      "UNKNOWN"
+    ],
+    "selected_requires_customer_uid": true,
+    "none_forbids_customer_uid": true,
+    "unknown_forbids_customer_uid": true,
+    "generated_contract_source": "NO_GENERATOR_FOUND_VALIDATED_MANUAL_SYNC"
+  },
+  "runtime_semantics": {
+    "classification": "CONFIRMED",
+    "evidence_source": "CURRENT_FAST_SHEEP_IMPLEMENTATION",
+    "selected_replaces_previous_buyer": true,
+    "none_suppresses_previous_buyer": true,
+    "unknown_suppresses_previous_buyer": true,
+    "none_unknown_distinguishable_internally": true,
+    "duplicate_observations_deduplicated_per_runtime": true,
+    "synthetic_conversation_path_remains_separate": true
+  },
+  "lifecycle": {
+    "storage": "IN_MEMORY_ONLY",
+    "shop_scoped": true,
+    "session_scoped": true,
+    "document_generation_scoped": true,
+    "navigation_clears_selected_buyer": true,
+    "old_document_event_rejected": true,
+    "login_required_suppresses_selected_buyer": true,
+    "auth_reauth_required_suppresses_selected_buyer": true,
+    "dom_unsupported_suppresses_selected_buyer": true,
+    "disposed_clears_selected_buyer": true,
+    "ready_restores_previous_buyer": false,
+    "natural_expiry": "NOT_PROVEN"
+  },
+  "impact": {
+    "persistence": "NONE",
+    "database_schema": "NONE",
+    "migration": "NONE",
+    "network_platform_side_effects": "NONE",
+    "renderer_ui": "NONE",
+    "renderer_to_main_ipc": "NONE",
+    "production_navigation_entry": "NOT_FOUND / NOT_PROVEN",
+    "pdd_production_integration_complete": false
+  },
+  "spr": {
+    "risk": "R1_PLATFORM_OBSERVATION",
+    "provenance": "OBSERVED_WEB_RUNTIME",
+    "decision": "ALLOW_WITH_CONSTRAINTS"
+  },
+  "security_boundary": {
+    "automatic_clicking": false,
+    "automatic_conversation_switching": false,
+    "message_sending": false,
+    "titan_integration": false,
+    "network_interception": false,
+    "login_automation": false,
+    "credential_cookie_token_authorization_inspection": false,
+    "anti_content_handling": false,
+    "captcha_2fa_device_verification_bypass": false,
+    "stealth_fingerprint_spoofing": false,
+    "real_customer_uid_samples_persisted": false
+  },
+  "validation": {
+    "platform_pdd_tests": "90/90 PASS",
+    "contracts_build": "PASS",
+    "contracts_typecheck": "PASS",
+    "validate_contracts": "59/59 REGISTERED CONTRACTS PASS",
+    "platform_pdd_typecheck": "PASS",
+    "desktop_build": "PASS",
+    "desktop_typecheck": "PASS",
+    "desktop_pdd_session_document_tests": "17/17 PASS",
+    "pdd_no_network_check": "PASS",
+    "pdd_security_check": "PASS",
+    "git_diff_check": "PASS",
+    "json_parse": "PASS"
+  },
+  "secret_scan": {
+    "SHEEP_086_DELTA_SECRET_SCAN": "PASS",
+    "delta_files_scanned": 17,
+    "GLOBAL_SECRET_SCAN": "PREEXISTING_PROTECTED_ARTIFACT_FINDINGS",
+    "global_finding_scope": "Protected pre-existing PDD SDK reference tree only; no values reproduced and no protected files modified."
+  },
+  "stage_4_defect_correction": {
+    "classification": "CONFIRMED",
+    "scope": "TEST_FIXTURE_SANITIZATION_ONLY",
+    "detail": "Replaced known live buyer UID samples in the selected-customer runtime test with synthetic numeric fixtures without changing contract semantics."
+  },
+  "files_created": [
+    "packages/platform-pdd/src/dom/selected-customer-reader.ts",
+    "packages/platform-pdd/tests/selected-customer-reader.test.ts",
+    "packages/platform-pdd/tests/selected-customer-runtime.test.ts",
+    "reports/SHEEP-086-report.json"
+  ],
+  "files_modified": [
+    "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
+    "apps/desktop/tests/pdd-session-host.test.ts",
+    "packages/contracts/schemas/platform/pdd-page-event.schema.json",
+    "packages/contracts/src/generated/platform-pdd.ts",
+    "packages/contracts/src/index.ts",
+    "packages/platform-pdd/src/dom/page-events.ts",
+    "packages/platform-pdd/src/index.ts",
+    "packages/platform-pdd/src/page/mutation-observer.ts",
+    "packages/platform-pdd/src/page/page-runtime.ts",
+    "packages/platform-pdd/src/session-state.ts",
+    "packages/platform-pdd/src/types.ts",
+    "packages/platform-pdd/tests/dom-health.test.ts",
+    "project/PROJECT_STATE.json"
+  ],
+  "files_deleted": [],
+  "protected_paths": "UNCHANGED / NOT_STAGED_UNLESS_ALREADY_TRACKED_OUTSIDE_THIS_DELTA",
+  "project_state": {
+    "current_phase": "PHASE_5",
+    "current_milestone": "M5.3 Conversation",
+    "last_closed_task": "SHEEP-085",
+    "next_authoritative_roadmap_id": "SHEEP-086",
+    "next_task_execution_authorized": false,
+    "sheep_086": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+    "pdd_integration": "NOT_STARTED",
+    "next_stage_not_executed": true
+  },
+  "commit": {
+    "status": "ONE_FOCUSED_SHEEP_086_COMMIT_PENDING",
+    "message": "SHEEP-086: implement active selected buyer discovery"
+  },
+  "acceptance_claim": "SHEEP-086 = IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "next_stage_not_executed": true
+}

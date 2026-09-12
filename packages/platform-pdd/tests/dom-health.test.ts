@@ -70,7 +70,7 @@ test("login-required runtime keeps observing and emits page_ready only after fre
   observer!.trigger();
   await new Promise((resolve) => setTimeout(resolve, 100));
 
-  assert.deepEqual(events.map((event) => event.event), ["login_required", "page_ready", "conversation_changed", "message_received"]);
+  assert.deepEqual(events.map((event) => event.event), ["login_required", "page_ready", "conversation_changed", "message_received", "selected_customer_observed"]);
   assert.equal(events[1]?.event, "page_ready");
 });
 

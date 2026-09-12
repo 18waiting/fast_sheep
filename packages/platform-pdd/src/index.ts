@@ -9,6 +9,9 @@ export type {
   PddCapabilities,
   PageEventType,
   PddPageEvent,
+  PddPageEventBase,
+  PddSelectedCustomerObservedEvent,
+  SelectedCustomerObservationStatus,
   PddPageCommandType,
   PddPageCommand,
   PddPageCommandResult,
@@ -26,6 +29,7 @@ export {
   LEGAL_SESSION_TRANSITIONS,
   PddSessionTransitionError,
   type SessionStateView,
+  type PddSelectedCustomerObservation,
 } from "./session-state.js";
 export type { PddPageBridge } from "./pdd-page-bridge.js";
 export { PddPlatformAdapter, type PddPlatformAdapterOptions } from "./pdd-platform-adapter.js";
@@ -35,9 +39,10 @@ export { readMessages } from "./dom/message-reader.js";
 export { readComposerState, sendText, sendImage, type ComposerState } from "./dom/composer-driver.js";
 export { executeTransfer, FALLBACK_TRANSFER_TEXT } from "./dom/transfer-driver.js";
 export { detectHumanReply, type TakeoverSignal } from "./dom/takeover-detector.js";
+export { readSelectedCustomer, type SelectedCustomerObservation } from "./dom/selected-customer-reader.js";
 export {
   buildPageReady, buildLoginRequired, buildDomUnsupported, buildAuthReauthRequired, buildConversationChanged,
-  buildMessageReceived, buildHumanReplyDetected, buildSendAck, buildTransferAck, scanToMessages,
+  buildMessageReceived, buildHumanReplyDetected, buildSendAck, buildTransferAck, buildSelectedCustomerObserved, scanToMessages,
 } from "./dom/page-events.js";
 export type { DomElement, DomDocument, DomLocationProjection } from "./dom/dom-types.js";
 export { toDomDocument } from "./dom/dom-types.js";

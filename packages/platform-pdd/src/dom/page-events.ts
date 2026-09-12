@@ -1,5 +1,11 @@
 // M7 page event builder (clean-room). Builds normalized PageEvent payloads.
-import type { NormalizedInboundMessage, PddPageEvent, RawDomScan } from "../types.js";
+import type {
+  NormalizedInboundMessage,
+  PddPageEvent,
+  PddSelectedCustomerObservedEvent,
+  RawDomScan,
+} from "../types.js";
+import type { SelectedCustomerObservation } from "./selected-customer-reader.js";
 
 export function buildPageReady(sessionId: string, status: string): PddPageEvent {
   return { event: "page_ready", session_id: sessionId, status };
@@ -47,6 +53,28 @@ export function buildSendAck(sessionId: string, shopId: string, conversationId: 
 
 export function buildTransferAck(sessionId: string, shopId: string, conversationId: string, commandId: string, ok: boolean, error?: string): PddPageEvent {
   return { event: "transfer_ack", session_id: sessionId, shop_id: shopId, conversation_id: conversationId, command_id: commandId, ok, error };
+}
+
+export function buildSelectedCustomerObserved(
+  sessionId: string,
+  shopId: string,
+  observation: SelectedCustomerObservation,
+): PddSelectedCustomerObservedEvent {
+  if (observation.status === "SELECTED") {
+    return {
+      event: "selected_customer_observed",
+      session_id: sessionId,
+      shop_id: shopId,
+      status: "SELECTED",
+      customer_uid: observation.customerUid,
+    };
+  }
+  return {
+    event: "selected_customer_observed",
+    session_id: sessionId,
+    shop_id: shopId,
+    status: observation.status,
+  };
 }
 
 export function scanToMessages(scan: RawDomScan): NormalizedInboundMessage[] {

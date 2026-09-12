@@ -1,6 +1,10 @@
 // M7 PDD session state machine (clean-room). No Electron lifecycle here.
 // READY is local/page-runtime readiness only; it is not PDD authentication truth.
-import type { PddSessionStatusValue } from "./types.js";
+import type { PddSessionStatusValue, SelectedCustomerObservationStatus } from "./types.js";
+
+export type PddSelectedCustomerObservation =
+  | { status: "SELECTED"; customerUid: string }
+  | { status: Exclude<SelectedCustomerObservationStatus, "SELECTED"> };
 
 export const SESSION_STATES: readonly PddSessionStatusValue[] = [
   "STOPPED", "CREATING", "LOADING", "LOGIN_REQUIRED", "READY", "DOM_UNSUPPORTED", "AUTH_REAUTH_REQUIRED", "ERROR", "DISPOSED",
@@ -42,6 +46,7 @@ export class PddSessionState {
   private lastError: string | null = null;
   private activeConversationId: string | null = null;
   private buyerId: string | null = null;
+  private selectedCustomerObservation: PddSelectedCustomerObservation | null = null;
 
   constructor(
     readonly shopId: string,
@@ -52,6 +57,20 @@ export class PddSessionState {
   getLastError(): string | null { return this.lastError; }
   getActiveConversationId(): string | null { return this.activeConversationId; }
   getBuyerId(): string | null { return this.buyerId; }
+  getSelectedCustomerObservation(): PddSelectedCustomerObservation | null { return this.selectedCustomerObservation; }
+  getSelectedCustomerUid(): string | null {
+    return this.selectedCustomerObservation?.status === "SELECTED"
+      ? this.selectedCustomerObservation.customerUid
+      : null;
+  }
+
+  setSelectedCustomerObservation(observation: PddSelectedCustomerObservation): void {
+    this.selectedCustomerObservation = observation;
+  }
+
+  clearSelectedCustomerObservation(): void {
+    this.selectedCustomerObservation = null;
+  }
 
   setStatus(next: PddSessionStatusValue, error: string | null = null): void {
     if (!SESSION_STATES.includes(next)) throw new Error("invalid session status: " + next);
@@ -59,6 +78,9 @@ export class PddSessionState {
       throw new PddSessionTransitionError(this.status, next);
     }
     this.status = next;
+    if (["LOGIN_REQUIRED", "DOM_UNSUPPORTED", "AUTH_REAUTH_REQUIRED", "DISPOSED"].includes(next)) {
+      this.clearSelectedCustomerObservation();
+    }
     if (next === "AUTH_REAUTH_REQUIRED") this.lastError = null;
     else if (error !== null) this.lastError = error.slice(0, 200);
   }

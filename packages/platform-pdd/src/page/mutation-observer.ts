@@ -22,7 +22,13 @@ export class PageMutationObserver {
   start(target: unknown): void {
     if (this.observer) return;
     this.observer = this.makeObserver(() => this.schedule());
-    this.observer.observe(target, { childList: true, subtree: true, characterData: true });
+    this.observer.observe(target, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["class"],
+    });
   }
 
   private schedule(): void {

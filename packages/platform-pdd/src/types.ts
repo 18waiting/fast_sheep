@@ -70,10 +70,30 @@ export type PageEventType =
   | "message_received"
   | "human_reply_detected"
   | "send_ack"
-  | "transfer_ack";
+  | "transfer_ack"
+  | "selected_customer_observed";
 
-export interface PddPageEvent {
-  event: PageEventType;
+export type SelectedCustomerObservationStatus = "SELECTED" | "NONE" | "UNKNOWN";
+
+export type PddSelectedCustomerObservedEvent =
+  | {
+      event: "selected_customer_observed";
+      session_id: string;
+      document_generation?: number;
+      shop_id: string;
+      status: "SELECTED";
+      customer_uid: string;
+    }
+  | {
+      event: "selected_customer_observed";
+      session_id: string;
+      document_generation?: number;
+      shop_id: string;
+      status: "NONE" | "UNKNOWN";
+    };
+
+export interface PddPageEventBase {
+  event: Exclude<PageEventType, "selected_customer_observed">;
   session_id: string;
   /** Main-assigned lifecycle generation; omitted only by legacy/unit test callers. */
   document_generation?: number;
@@ -92,6 +112,8 @@ export interface PddPageEvent {
   status?: string;
   error?: string;
 }
+
+export type PddPageEvent = PddPageEventBase | PddSelectedCustomerObservedEvent;
 
 export type PddPageCommandType = "scan" | "send_text" | "send_image" | "transfer" | "focus_conversation" | "health";
 

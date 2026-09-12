@@ -1,6 +1,6 @@
 // M7 PDD session host (clean-room). Per-shop session state machine + view lifecycle.
 import type { PddPageEvent } from "@fastwork/platform-pdd";
-import { PddSessionState } from "@fastwork/platform-pdd";
+import { PddSessionState, type PddSelectedCustomerObservation } from "@fastwork/platform-pdd";
 import type { PddViewHost, ViewBounds } from "./pdd-view-host.js";
 import type { PddDocumentLifecycleObserver } from "./pdd-document-lifecycle.js";
 
@@ -22,6 +22,7 @@ const SESSION_EVENTS: ReadonlySet<PddPageEvent["event"]> = new Set([
   "human_reply_detected",
   "send_ack",
   "transfer_ack",
+  "selected_customer_observed",
 ]);
 
 export class PddSessionHost {
@@ -47,6 +48,11 @@ export class PddSessionHost {
 
   get viewHost(): PddViewHost | null {
     return this.view;
+  }
+
+  /** Main-only, non-durable selected buyer observation for the active document. */
+  getSelectedCustomerObservation(): PddSelectedCustomerObservation | null {
+    return this.state.getSelectedCustomerObservation();
   }
 
   async createAndLoad(fixturePath?: string): Promise<void> {
@@ -105,6 +111,16 @@ export class PddSessionHost {
   handleEvent(ev: PddPageEvent): void {
     if (ev.session_id !== this.state.sessionId) return;
     if (!this.acceptsCurrentDocument(ev)) return;
+    if (ev.event === "selected_customer_observed") {
+      if (ev.shop_id !== this.state.shopId || this.selectedCustomerSuppressed()) return;
+      if (ev.status === "SELECTED") {
+        this.state.setSelectedCustomerObservation({ status: "SELECTED", customerUid: ev.customer_uid });
+      } else {
+        this.state.setSelectedCustomerObservation({ status: ev.status });
+      }
+      this.onEventHook?.(ev);
+      return;
+    }
     if (!SESSION_EVENTS.has(ev.event)) {
       this.failClosed("UNSUPPORTED_SESSION_EVENT");
       this.onEventHook?.(ev);
@@ -131,6 +147,7 @@ export class PddSessionHost {
     this.view?.setDocumentLifecycleObserver?.(null);
     this.view?.dispose();
     this.view = null;
+    this.state.clearSelectedCustomerObservation();
     this.state.setStatus("DISPOSED");
   }
 
@@ -167,6 +184,7 @@ export class PddSessionHost {
   };
 
   private beginDocumentLifecycle(allowLegacyFixtureEvents = false): void {
+    this.state.clearSelectedCustomerObservation();
     if (this.state.getStatus() !== "LOADING") this.state.setStatus("LOADING");
     this.documentGeneration += 1;
     this.activeDocumentGeneration = this.documentGeneration;
@@ -187,5 +205,9 @@ export class PddSessionHost {
     return this.activeDocumentGeneration !== null
       && ev.document_generation !== undefined
       && ev.document_generation === this.activeDocumentGeneration;
+  }
+
+  private selectedCustomerSuppressed(): boolean {
+    return ["LOGIN_REQUIRED", "AUTH_REAUTH_REQUIRED", "DOM_UNSUPPORTED", "DISPOSED"].includes(this.state.getStatus());
   }
 }

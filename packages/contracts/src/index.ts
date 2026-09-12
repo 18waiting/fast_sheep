@@ -38,6 +38,7 @@ export type {
   PddSessionStatus,
   PddSessionStatusValue,
   PddPageEventBase,
+  PddSelectedCustomerObservedEvent,
   PddPageCommand,
   PddPageCommandType,
   PddPageCommandResult,

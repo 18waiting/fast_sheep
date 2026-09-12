@@ -80,6 +80,110 @@ test("session tracks active conversation and login/dom-unsupported states", () =
   assert.equal(host.state.getLastError(), "missing selectors");
 });
 
+test("selected customer observation accepts SELECTED, replaces it, and preserves NONE/UNKNOWN", () => {
+  const host = new PddSessionHost({ shopId: "shop-selected", makeView: () => new FakeView() as never });
+  host.state.setStatus("CREATING");
+  host.state.setStatus("LOADING");
+
+  host.handleEvent({
+    event: "selected_customer_observed",
+    session_id: host.state.sessionId,
+    shop_id: "shop-selected",
+    status: "SELECTED",
+    customer_uid: "buyer-a",
+  } as PddPageEvent);
+  assert.deepEqual(host.getSelectedCustomerObservation(), { status: "SELECTED", customerUid: "buyer-a" });
+
+  host.handleEvent({
+    event: "selected_customer_observed",
+    session_id: host.state.sessionId,
+    shop_id: "shop-selected",
+    status: "SELECTED",
+    customer_uid: "buyer-b",
+  } as PddPageEvent);
+  assert.deepEqual(host.getSelectedCustomerObservation(), { status: "SELECTED", customerUid: "buyer-b" });
+
+  host.handleEvent({ event: "selected_customer_observed", session_id: host.state.sessionId, shop_id: "shop-selected", status: "NONE" } as PddPageEvent);
+  assert.deepEqual(host.getSelectedCustomerObservation(), { status: "NONE" });
+  assert.equal(host.state.getSelectedCustomerUid(), null);
+
+  host.handleEvent({ event: "selected_customer_observed", session_id: host.state.sessionId, shop_id: "shop-selected", status: "UNKNOWN" } as PddPageEvent);
+  assert.deepEqual(host.getSelectedCustomerObservation(), { status: "UNKNOWN" });
+  assert.equal(host.state.getSelectedCustomerUid(), null);
+});
+
+test("selected customer observation rejects wrong session/shop and keeps shops isolated", () => {
+  const first = new PddSessionHost({ shopId: "shop-one", makeView: () => new FakeView() as never });
+  const second = new PddSessionHost({ shopId: "shop-two", makeView: () => new FakeView() as never });
+  first.state.setStatus("CREATING");
+  first.state.setStatus("LOADING");
+  second.state.setStatus("CREATING");
+  second.state.setStatus("LOADING");
+
+  first.handleEvent({ event: "selected_customer_observed", session_id: "wrong-session", shop_id: "shop-one", status: "SELECTED", customer_uid: "buyer-x" } as PddPageEvent);
+  first.handleEvent({ event: "selected_customer_observed", session_id: first.state.sessionId, shop_id: "shop-two", status: "SELECTED", customer_uid: "buyer-x" } as PddPageEvent);
+  assert.equal(first.getSelectedCustomerObservation(), null);
+
+  first.handleEvent({ event: "selected_customer_observed", session_id: first.state.sessionId, shop_id: "shop-one", status: "SELECTED", customer_uid: "buyer-one" } as PddPageEvent);
+  second.handleEvent({ event: "selected_customer_observed", session_id: second.state.sessionId, shop_id: "shop-two", status: "SELECTED", customer_uid: "buyer-two" } as PddPageEvent);
+  assert.equal(first.state.getSelectedCustomerUid(), "buyer-one");
+  assert.equal(second.state.getSelectedCustomerUid(), "buyer-two");
+});
+
+test("navigation clears selected customer, rejects old generation, and accepts fresh observation", () => {
+  let view: FakeView | undefined;
+  const host = new PddSessionHost({
+    shopId: "shop-generation",
+    makeView: () => { view = new FakeView(); return view as never; },
+  });
+  void host.createAndLoad();
+  view!.emitNewMainDocument();
+  view!.emitDomReady();
+  const firstGeneration = view!.observations[0]!.document_generation;
+  host.handleEvent({ event: "selected_customer_observed", session_id: host.state.sessionId, shop_id: "shop-generation", document_generation: firstGeneration, status: "SELECTED", customer_uid: "buyer-a" } as PddPageEvent);
+  assert.equal(host.state.getSelectedCustomerUid(), "buyer-a");
+
+  view!.emitNewMainDocument();
+  assert.equal(host.getSelectedCustomerObservation(), null);
+  const secondGeneration = firstGeneration + 1;
+  host.handleEvent({ event: "selected_customer_observed", session_id: host.state.sessionId, shop_id: "shop-generation", document_generation: firstGeneration, status: "SELECTED", customer_uid: "buyer-a" } as PddPageEvent);
+  assert.equal(host.getSelectedCustomerObservation(), null);
+  view!.emitDomReady();
+  host.handleEvent({ event: "page_ready", session_id: host.state.sessionId, document_generation: secondGeneration } as PddPageEvent);
+  assert.equal(host.getSelectedCustomerObservation(), null, "READY does not restore the previous buyer");
+  host.handleEvent({ event: "selected_customer_observed", session_id: host.state.sessionId, shop_id: "shop-generation", document_generation: secondGeneration, status: "SELECTED", customer_uid: "buyer-b" } as PddPageEvent);
+  assert.equal(host.state.getSelectedCustomerUid(), "buyer-b");
+});
+
+test("auth, unsupported, disposal, and READY semantics suppress stale selected buyer context", async () => {
+  const host = new PddSessionHost({ shopId: "shop-suppression", makeView: () => new FakeView() as never });
+  host.state.setStatus("CREATING");
+  host.state.setStatus("LOADING");
+  const selected = { event: "selected_customer_observed", session_id: host.state.sessionId, shop_id: "shop-suppression", status: "SELECTED", customer_uid: "buyer-a" } as PddPageEvent;
+  host.handleEvent(selected);
+  assert.equal(host.state.getSelectedCustomerUid(), "buyer-a");
+  assert.equal(host.state.getActiveConversationId(), null, "selected customer does not populate conversation identity");
+  assert.equal("selected_customer_observation" in host.state.view(), false, "selected customer is absent from the durable-shaped status projection");
+
+  host.handleEvent({ event: "login_required", session_id: host.state.sessionId } as PddPageEvent);
+  assert.equal(host.getSelectedCustomerObservation(), null);
+  host.handleEvent(selected);
+  assert.equal(host.getSelectedCustomerObservation(), null);
+
+  host.handleEvent({ event: "dom_unsupported", session_id: host.state.sessionId } as PddPageEvent);
+  assert.equal(host.getSelectedCustomerObservation(), null);
+  host.state.setStatus("LOADING");
+  host.handleEvent(selected);
+  host.handleEvent({ event: "auth_reauth_required", session_id: host.state.sessionId } as PddPageEvent);
+  assert.equal(host.getSelectedCustomerObservation(), null);
+  host.handleEvent(selected);
+  assert.equal(host.getSelectedCustomerObservation(), null);
+
+  host.dispose();
+  assert.equal(host.getSelectedCustomerObservation(), null);
+  await Promise.resolve();
+});
+
 test("login-required recovers when the page runtime reports a fresh page-ready observation", () => {
   const host = new PddSessionHost({ shopId: "shop-1", makeView: () => new FakeView() as never });
   host.state.setStatus("CREATING");
