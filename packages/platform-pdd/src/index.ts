@@ -23,6 +23,25 @@ export { PDD_CAPABILITIES, capabilities, supportsCapability, CAPABILITY_PROVENAN
 export { PDD_SELECTOR_PROFILE, selector, requiredSelectors, type SelectorProfile, type SelectorEntry, type SelectorProvenance } from "./selector-profile.js";
 export { normalizeMessage, normalizeScan, fallbackFingerprint, type NormalizeInput } from "./message-normalizer.js";
 export { normalizePddInbound, type PddInboundPayload, type PddInboundCandidate, type PddInboundNormalizationResult } from "./inbound-normalizer.js";
+export {
+  PDD_SEND_TARGET_KIND,
+  validatePddSendIntent,
+  validatePddSendState,
+  unknownOutcomeDirective,
+  type PddSendTarget,
+  type PddSendIntentInput,
+  type PddSendIntent,
+  type PddLocalValidation,
+  type PddPlatformAttempt,
+  type PddPlatformOutcome,
+  type PddPlatformResultFacts,
+  type PddSendState,
+  type PddSendIntentValidationResult,
+  type PddSendIntentRejectionReason,
+  type PddSendStateValidationResult,
+  type PddSendStateRejectionReason,
+  type PddUnknownOutcomeDirective,
+} from "./send-text-semantics.js";
 export { MessageDeduplicator, type DedupStats } from "./message-deduplicator.js";
 export {
   PddSessionState,

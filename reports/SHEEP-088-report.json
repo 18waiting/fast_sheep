@@ -1,0 +1,146 @@
+{
+  "task": "SHEEP-088",
+  "title": "PDD Send Text",
+  "result": "COMPLETE",
+  "controller_decision": "AWAITING_CONTROLLER_REVIEW",
+  "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "phase": "PHASE_5",
+  "milestone": "M5.3 Conversation",
+  "scope": "LOCAL_PDD_SEND_TEXT_SEMANTICS_CONTRACT_ONLY",
+  "objective": "Define and validate a non-executing local PDD send-text intent and outcome vocabulary without transport, persistence, or platform side effects.",
+  "evidence": {
+    "classification": "CONFIRMED",
+    "source": "OBSERVED_WEB_RUNTIME",
+    "new_live_pdd_evidence_required": false,
+    "real_pdd_send_authorized": false,
+    "contract_basis": "Controller-accepted Stage 1 and Stage 2 Scope-A contract"
+  },
+  "target_contract": {
+    "kind": "PDD_CUSTOMER_UID",
+    "customer_uid_semantics": "BUYER_CUSTOMER_IDENTITY_ONLY",
+    "exact_string_preserved": true,
+    "numeric_coercion": false,
+    "conversation_id": "FORBIDDEN / DISTINCT",
+    "chat_id": "FORBIDDEN / DISTINCT",
+    "session_id": "FORBIDDEN / DISTINCT",
+    "seller_id": "FORBIDDEN / DISTINCT",
+    "mall_id": "FORBIDDEN / DISTINCT",
+    "merchant_id": "FORBIDDEN / DISTINCT",
+    "operator_id": "FORBIDDEN / DISTINCT"
+  },
+  "content_contract": {
+    "input": "exact outbound text",
+    "non_empty": true,
+    "trimming_or_normalization": false,
+    "transport_encoding": "NOT_DEFINED"
+  },
+  "local_validation": [
+    "VALID",
+    "REJECTED"
+  ],
+  "local_rejected_semantics": "LOCAL REJECTED does not mean PLATFORM_REJECTED because no PDD action occurred",
+  "platform_attempt_vocabulary": [
+    "NOT_ATTEMPTED",
+    "ATTEMPTED",
+    "UNKNOWN"
+  ],
+  "platform_outcome_vocabulary": [
+    "NOT_ATTEMPTED",
+    "PLATFORM_APPLICATION_ACCEPTED",
+    "PLATFORM_REJECTED",
+    "UNKNOWN"
+  ],
+  "valid_state_combinations": [
+    "REJECTED + NOT_ATTEMPTED + NOT_ATTEMPTED",
+    "VALID + NOT_ATTEMPTED + NOT_ATTEMPTED",
+    "VALID + ATTEMPTED + PLATFORM_APPLICATION_ACCEPTED",
+    "VALID + ATTEMPTED + PLATFORM_REJECTED",
+    "VALID + ATTEMPTED + UNKNOWN",
+    "VALID + UNKNOWN + UNKNOWN"
+  ],
+  "contradictory_state_handling": "Rejected by validation and not representable as a coherent state",
+  "unknown_retry_rule": "NO_AUTOMATIC_RETRY",
+  "platform_message_id": {
+    "optional": true,
+    "validation": "non-empty, non-whitespace-only string; exact value preserved",
+    "meaning": "opaque PDD platform message identity only",
+    "not": [
+      "conversation_id",
+      "local Fast Sheep message ID",
+      "idempotency key",
+      "delivery status",
+      "read status"
+    ]
+  },
+  "pre_msg_id": "OMITTED_DUE_TO_UNRESOLVED_TYPE",
+  "conversation_association": "UNRESOLVED / NOT REQUIRED FOR LOCAL SEMANTICS CONTRACT",
+  "delivery": "NOT_ESTABLISHED",
+  "read": "NOT_ESTABLISHED",
+  "accepted_is_not": [
+    "DELIVERED",
+    "READ"
+  ],
+  "implementation": {
+    "non_executing_local_contract": true,
+    "production_transport": "NOT_IMPLEMENTED",
+    "network": "NONE",
+    "platform_side_effect": "NONE",
+    "persistence": "NONE",
+    "desktop_main_ipc_ui": "NONE",
+    "runtime_state_machine": "NOT_IMPLEMENTED",
+    "retry": "NOT_IMPLEMENTED",
+    "idempotency": "NOT_VERIFIED / NOT_IMPLEMENTED"
+  },
+  "spr": {
+    "risk": "R0_LOCAL_READ_ONLY",
+    "provenance": "OBSERVED_WEB_RUNTIME",
+    "decision": "ALLOW_WITH_CONSTRAINTS"
+  },
+  "security_boundary": {
+    "network_calls_added": 0,
+    "transport_fields_in_contract": false,
+    "credentials_cookies_tokens_authorization_handling": false,
+    "anti_content_handling": false,
+    "raw_pdd_payload_retained": false,
+    "automatic_retry": false,
+    "real_identifiers_or_live_content_persisted": false
+  },
+  "validation": {
+    "platform_pdd_build": "PASS",
+    "platform_pdd_typecheck": "PASS",
+    "platform_pdd_tests": "108/108 PASS",
+    "focused_send_text_semantics_tests": "12/12 PASS",
+    "focused_pdd_platform_adapter_regression_tests": "9/9 PASS",
+    "pdd_no_network_check": "PASS",
+    "pdd_security_check": "PASS",
+    "sheep_088_delta_secret_scan": "PASS",
+    "global_secret_scan": "NOT_RUN / NOT_REQUIRED_FOR_SCOPE_A_DELTA",
+    "git_diff_check": "PASS",
+    "json_parse": "PASS"
+  },
+  "generated_security_report": {
+    "path": "reports/m7-pdd-security-report.json",
+    "generated": true,
+    "check_result": "PASS",
+    "sensitive_material_present": false,
+    "disposition": "DELETED_AFTER_VALIDATION"
+  },
+  "files_created": [
+    "packages/platform-pdd/src/send-text-semantics.ts",
+    "packages/platform-pdd/tests/send-text-semantics.test.ts",
+    "reports/SHEEP-088-report.json"
+  ],
+  "files_modified": [
+    "packages/platform-pdd/src/index.ts",
+    "project/PROJECT_STATE.json"
+  ],
+  "files_deleted": [],
+  "protected_paths": "UNCHANGED",
+  "pdd_integration": "NOT_STARTED",
+  "acceptance_claim": "SHEEP-088 = IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "next_stage_not_executed": true,
+  "commit": {
+    "status": "ONE_FOCUSED_SHEEP_088_COMMIT",
+    "message": "SHEEP-088: implement local send text semantics contract"
+  }
+}
