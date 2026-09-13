@@ -1,0 +1,260 @@
+{
+  "task": "SHEEP-089",
+  "title": "PDD Send Media/Card Capabilities",
+  "result": "COMPLETE",
+  "controller_decision": "AWAITING_CONTROLLER_REVIEW",
+  "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "phase": "PHASE_5",
+  "milestone": "M5.3 Conversation",
+  "scope": "PDD_MEDIA_AND_CARD_CAPABILITY_EVIDENCE_FREEZE_ONLY",
+  "execution_form": "REPORT_ONLY",
+  "objective": "Freeze a truthful, provenance-qualified report of what is known and unknown about PDD media and card capability subjects without creating an executable platform capability.",
+  "evidence_cutoff": {
+    "as_of_head": "6afcccb9f91a682d55ff6013b750dcc69c8c4234",
+    "accepted_evidence_through": "SHEEP-088 PASS / CLOSED",
+    "authorization_commit_is_new_pdd_capability_evidence": false,
+    "later_evidence_rule": "Later accepted evidence may supersede only the affected claim; this historical report is not silently rewritten."
+  },
+  "subject_boundary": {
+    "media_and_card_are_separate_knowledge_subjects": true,
+    "combined_media_card_capability_family": "NOT_CREATED",
+    "shared_unproven_target_payload_upload_schema_transport_lifecycle_or_response_semantics": false
+  },
+  "evidence": {
+    "confirmed": [
+      "The reviewed Roadmap names PDD Send Media/Card Capabilities as SHEEP-089 scope.",
+      "The repository contains legacy or synthetic vocabulary including send_image, asset_ref, send_product_card, and send_order_card.",
+      "SHEEP-065 records that attachment/card fact readiness was blocked and that send_image behavior was an outbound DOM driver rather than an inbound attachment fact source.",
+      "SHEEP-088 live evidence establishes a text control case only; its text target and message.type=0 semantics do not establish Media/Card semantics.",
+      "No direct accepted PDD evidence in the available scope establishes a Media or Card category, target, payload, upload lifecycle, response, processing, delivery, read, or rendering contract."
+    ],
+    "inferred": [
+      "The existing repository vocabulary may be retained as compatibility or fixture context while remaining non-authoritative for PDD Media/Card support."
+    ],
+    "product_decision_required": [],
+    "blocked": [
+      "A typed executable Media contract is blocked by the absence of one evidenced exact media variant and its target/input/upload/payload/response semantics.",
+      "A typed executable Card contract is blocked by the absence of one evidenced exact card category and its target/payload/response semantics."
+    ],
+    "deferred": [
+      "Real Media/Card action, platform transport, upload, processing, and future evidence-acquisition units are deferred to separately authorized work."
+    ]
+  },
+  "evidence_records": [
+    {
+      "claimScope": "SHEEP-089 is an in-scope knowledge freeze for separate MEDIA and CARD subjects.",
+      "family": "GENERAL",
+      "sourceKind": "FAST_SHEEP_GOVERNANCE",
+      "evidenceAssessment": "The reviewed Roadmap establishes the task subject boundary, not platform support.",
+      "authorityUse": "GOVERNANCE_REFERENCE",
+      "reference": "project/FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md Phase 5 M5.3 SHEEP-089",
+      "asOf": "6afcccb9f91a682d55ff6013b750dcc69c8c4234",
+      "limitations": "A Roadmap title does not define a wire contract or authorize real platform action.",
+      "conclusion": "MEDIA and CARD remain separate knowledge subjects; no executable capability is established."
+    },
+    {
+      "claimScope": "Repository terms send_image, asset_ref, send_product_card, and send_order_card exist.",
+      "family": "GENERAL",
+      "sourceKind": "CURRENT_REPOSITORY_ARTIFACT",
+      "evidenceAssessment": "Current Fast Sheep source, tests, and reports contain these terms as legacy/local technical vocabulary.",
+      "authorityUse": "COMPATIBILITY_HINT_OR_TEST_FIXTURE_ONLY",
+      "reference": "Fast Sheep repository search and reports/SHEEP-065-report.json",
+      "asOf": "6afcccb9f91a682d55ff6013b750dcc69c8c4234",
+      "limitations": "Artifact existence does not prove PDD support, target semantics, payload shape, upload behavior, response semantics, or production authorization.",
+      "conclusion": "Retain only as explicitly non-authoritative repository context."
+    },
+    {
+      "claimScope": "PDD text target and message.type=0 semantics.",
+      "family": "GENERAL",
+      "sourceKind": "LIVE_PDD_EVIDENCE",
+      "evidenceAssessment": "Accepted SHEEP-081/SHEEP-088 evidence establishes the confirmed text control case only.",
+      "authorityUse": "LIVE_CONTROL_EVIDENCE",
+      "reference": "reports/SHEEP-081-report.json and reports/SHEEP-088-report.json",
+      "asOf": "6afcccb9f91a682d55ff6013b750dcc69c8c4234",
+      "limitations": "Text evidence does not establish Media/Card target, upload, payload, type, response, processing, delivery, read, or rendering semantics.",
+      "conclusion": "Text semantics are not inherited by MEDIA or CARD."
+    },
+    {
+      "claimScope": "PDD Media/Card exact capability support.",
+      "family": "GENERAL",
+      "sourceKind": "LIVE_PDD_EVIDENCE",
+      "evidenceAssessment": "No accepted direct live evidence for an exact Media or Card capability is present in this freeze.",
+      "authorityUse": "NO_PLATFORM_AUTHORITY_ESTABLISHED",
+      "reference": "SHEEP-089 evidence cutoff through SHEEP-088",
+      "asOf": "6afcccb9f91a682d55ff6013b750dcc69c8c4234",
+      "limitations": "Absence of evidence is not evidence of unsupported capability; no exact capability claim is assigned a support state.",
+      "conclusion": "Media/Card support remains unestablished and no platform action is authorized."
+    }
+  ],
+  "media": {
+    "family": "MEDIA",
+    "subject_status": "CONFIRMED_IN_SCOPE_KNOWLEDGE_SUBJECT",
+    "category_status": "NOT_ESTABLISHED",
+    "exact_claim_status": "NOT_ESTABLISHED",
+    "support_conclusion": "NOT_ASSIGNED_UNTIL_AN_EXACT_CLAIM_IS_DEFINED",
+    "discovery_vocabulary": "IMAGE_VIDEO_FILE = NON_AUTHORITATIVE_DISCOVERY_VOCABULARY_ONLY",
+    "target": "NOT_ESTABLISHED",
+    "local_input_requirements": "NOT_ESTABLISHED",
+    "upload_lifecycle": "NOT_ESTABLISHED",
+    "upload_endpoint": "NOT_ESTABLISHED",
+    "upload_token": "NOT_ESTABLISHED",
+    "platform_asset_reference": "NOT_ESTABLISHED",
+    "media_url_semantics": "NOT_ESTABLISHED",
+    "processing_lifecycle": "NOT_ESTABLISHED",
+    "payload": "NOT_ESTABLISHED",
+    "message_type_mapping": "NOT_ESTABLISHED",
+    "application_response": "NOT_ESTABLISHED",
+    "delivery_read_rendered_semantics": "NOT_ESTABLISHED"
+  },
+  "card": {
+    "family": "CARD",
+    "subject_status": "CONFIRMED_IN_SCOPE_KNOWLEDGE_SUBJECT",
+    "category_status": "NOT_ESTABLISHED",
+    "exact_claim_status": "NOT_ESTABLISHED",
+    "support_conclusion": "NOT_ASSIGNED_UNTIL_AN_EXACT_CLAIM_IS_DEFINED",
+    "discovery_vocabulary": "PRODUCT_ORDER_LINK_CUSTOM = NON_AUTHORITATIVE_DISCOVERY_VOCABULARY_ONLY",
+    "target": "NOT_ESTABLISHED",
+    "payload_schema": "NOT_ESTABLISHED",
+    "application_response": "NOT_ESTABLISHED",
+    "delivery_read_rendered_semantics": "NOT_ESTABLISHED"
+  },
+  "support_status_model": {
+    "exact_claim_support_states": ["SUPPORTED", "UNSUPPORTED", "UNKNOWN"],
+    "supported_meaning": "Authoritative evidence confirms the exact platform capability claim.",
+    "unsupported_meaning": "Authoritative evidence confirms the exact capability is unavailable.",
+    "unknown_meaning": "The exact claim exists but evidence cannot establish support or non-support.",
+    "category_not_established_rule": "Do not assign a support state to an invented or unestablished category.",
+    "evidence_status_is_separate_from_support": true
+  },
+  "readiness_separation": {
+    "platform_support": "NOT_ESTABLISHED",
+    "runtime_readiness": "NOT_EVALUATED / NOT_ESTABLISHED",
+    "authorization": "NOT_AUTHORIZED",
+    "entitlement": "NOT_EVALUATED",
+    "session_readiness": "NOT_EVALUATED",
+    "target_readiness": "NOT_ESTABLISHED",
+    "real_media_card_action": "NOT_IMPLEMENTED / NOT_AUTHORIZED",
+    "separation_rule": "Platform support, runtime readiness, authorization, entitlement, session readiness, and target readiness are distinct dimensions."
+  },
+  "text_control_boundary": {
+    "text_target": "PDD_CUSTOMER_UID(customerUid) for the confirmed text contract only",
+    "text_message_type": 0,
+    "media_target_inherits_text_target": false,
+    "card_target_inherits_text_target": false,
+    "text_message_type_proves_media_or_card_mapping": false
+  },
+  "sheep_088_safety_reference": {
+    "use": "REFERENCE_ONLY",
+    "unknown_outcome_rule": "UNKNOWN -> NO_AUTOMATIC_RETRY for future action contracts",
+    "application_acceptance_is_not": ["DELIVERED", "READ"],
+    "media_card_attempt_or_outcome_fields_added": false
+  },
+  "future_typed_contract_gate": {
+    "media": [
+      "one exact media variant",
+      "target representation",
+      "local input requirements",
+      "upload/asset boundary if applicable",
+      "message payload",
+      "platform application response",
+      "known limitations"
+    ],
+    "card": [
+      "one exact card category",
+      "target representation",
+      "payload schema",
+      "platform application response",
+      "known limitations"
+    ],
+    "conversation_identity": "Not automatically required unless the evidenced operation requires it; customerUid remains distinct from conversationId."
+  },
+  "future_real_action_gate": [
+    "exact capability selected",
+    "accepted target/payload/response contract",
+    "upload lifecycle where applicable",
+    "controlled test shop and buyer/target",
+    "valid runtime session context",
+    "authorization and entitlement where applicable",
+    "target binding and wrong-target protection",
+    "local validation and explicit human confirmation",
+    "UNKNOWN handling with NO_AUTOMATIC_RETRY",
+    "no DELIVERED/READ/rendering claim without direct evidence",
+    "security and SPR review"
+  ],
+  "legacy_artifacts": [
+    {
+      "artifact": "send_image",
+      "existence": "CONFIRMED",
+      "sourceKind": "CURRENT_REPOSITORY_ARTIFACT",
+      "authority": "COMPATIBILITY_HINT_ONLY",
+      "pdd_platform_conclusion": "NOT_ESTABLISHED",
+      "disposition": "KEEP_AS_CONFIRMED_COMPATIBILITY_HINT"
+    },
+    {
+      "artifact": "asset_ref",
+      "existence": "CONFIRMED",
+      "sourceKind": "CURRENT_REPOSITORY_ARTIFACT",
+      "authority": "TEST_FIXTURE_OR_LOCAL_TECHNICAL_VOCABULARY_ONLY",
+      "pdd_platform_conclusion": "NOT_ESTABLISHED",
+      "disposition": "KEEP_AS_TEST_FIXTURE_ONLY"
+    },
+    {
+      "artifact": "send_product_card",
+      "existence": "CONFIRMED",
+      "sourceKind": "CURRENT_REPOSITORY_ARTIFACT",
+      "authority": "TEST_FIXTURE_OR_LOCAL_TECHNICAL_VOCABULARY_ONLY",
+      "pdd_platform_conclusion": "NOT_ESTABLISHED",
+      "disposition": "KEEP_AS_TEST_FIXTURE_ONLY"
+    },
+    {
+      "artifact": "send_order_card",
+      "existence": "CONFIRMED",
+      "sourceKind": "CURRENT_REPOSITORY_ARTIFACT",
+      "authority": "TEST_FIXTURE_OR_LOCAL_TECHNICAL_VOCABULARY_ONLY",
+      "pdd_platform_conclusion": "NOT_ESTABLISHED",
+      "disposition": "KEEP_AS_TEST_FIXTURE_ONLY"
+    }
+  ],
+  "implementation": {
+    "report_only": true,
+    "production_code_delta": "NONE",
+    "runtime_types_changed": false,
+    "contracts_or_schema_changed": false,
+    "capability_registry_changed": false,
+    "pdd_transport_implemented": false,
+    "real_media_card_action": "NOT_IMPLEMENTED / NOT_AUTHORIZED",
+    "network_requirement": "NONE",
+    "live_pdd_testing": "NONE",
+    "persistence_or_evidence_subsystem_created": false
+  },
+  "security_boundary": {
+    "risk": "R0_LOCAL_READ_ONLY",
+    "decision": "ALLOW_WITH_CONSTRAINTS",
+    "credentials_cookies_tokens_authorization_session_material": false,
+    "anti_content": false,
+    "raw_captured_payloads": false,
+    "real_customer_uid_or_buyer_identity": false,
+    "real_message_content": false,
+    "secrets_detected": false,
+    "SHEEP_089_REPORT_SENSITIVE_DATA_CHECK": "PASS"
+  },
+  "validation": {
+    "report_json_parse": "PASS",
+    "project_state_json_parse_after_state_update": "REQUIRED",
+    "claim_scope_self_audit": "PASS",
+    "media_card_separation_check": "PASS",
+    "category_vs_exact_claim_check": "PASS",
+    "synthetic_artifact_authority_boundary_check": "PASS",
+    "sensitive_data_check": "PASS",
+    "product_tests": "NOT_APPLICABLE_NO_PRODUCT_CODE_DELTA",
+    "network_or_live_pdd_test": "NOT_RUN / NOT_REQUIRED_FOR_REPORT_ONLY_SCOPE",
+    "git_diff_check": "REQUIRED_AFTER_AUTHORIZED_FILES_UPDATED"
+  },
+  "files_created": ["reports/SHEEP-089-report.json"],
+  "files_modified": ["project/PROJECT_STATE.json"],
+  "files_deleted": [],
+  "protected_paths": "UNCHANGED",
+  "pdd_integration": "NOT_STARTED",
+  "acceptance_claim": "SHEEP-089 = IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "next_stage_not_executed": true
+}

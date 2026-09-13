@@ -30,10 +30,10 @@
   "current_phase": "PHASE_5",
   "current_milestone": "M5.3 Conversation",
   "last_closed_task": "SHEEP-088",
-  "current_task": "SHEEP-089 (M5.3 PDD Send Media/Card Capabilities) — NOT_STARTED / AUTHORIZED WITH CONSTRAINTS / REPORT_ONLY",
-  "next_action": "SHEEP-089 authorized only for the report-only evidence freeze; no later task may execute before Controller closure",
+  "current_task": "SHEEP-089 (M5.3 PDD Send Media/Card Capabilities) — IMPLEMENTED / AWAITING CONTROLLER REVIEW / REPORT_ONLY",
+  "next_action": "Controller review required for SHEEP-089; no later task may execute before Controller closure",
   "next_authoritative_roadmap_id": "SHEEP-089",
-  "next_task_execution_authorized": true,
+  "next_task_execution_authorized": false,
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
   "next_sheep_task_after_governance": "SHEEP-001",
@@ -203,7 +203,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-089 (M5.3 PDD Send Media/Card Capabilities; NOT_STARTED / AWAITING EXECUTION AUTHORIZATION)",
+  "next_task": "SHEEP-089 (M5.3 PDD Send Media/Card Capabilities; IMPLEMENTED / AWAITING CONTROLLER REVIEW / REPORT_ONLY)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -2663,11 +2663,11 @@
     "next_stage_not_executed": true
   },
   "sheep_089": {
-    "roadmap_status": "NOT_STARTED",
+    "roadmap_status": "IN_PROGRESS / AWAITING CONTROLLER REVIEW",
     "phase": "PHASE_5",
     "milestone": "M5.3 Conversation",
-    "status": "NOT_STARTED / AUTHORIZED WITH CONSTRAINTS",
-    "execution_authorized": true,
+    "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+    "execution_authorized": false,
     "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
     "scope": "PDD_MEDIA_AND_CARD_CAPABILITY_EVIDENCE_FREEZE_ONLY",
     "execution_form": "REPORT_ONLY",
@@ -2675,6 +2675,7 @@
     "network_requirement": "NONE",
     "live_pdd_evidence_required_now": false,
     "pdd_integration": "NOT_STARTED",
+    "report": "reports\\SHEEP-089-report.json",
     "next_stage_not_executed": true
   },
   "phase_5_entry": {
