@@ -29,10 +29,10 @@
   },
   "current_phase": "PHASE_5",
   "current_milestone": "M5.3 Conversation",
-  "last_closed_task": "SHEEP-087",
-  "current_task": "SHEEP-088 (M5.3 PDD Send Text) — IMPLEMENTED / AWAITING CONTROLLER REVIEW; scope=LOCAL_PDD_SEND_TEXT_SEMANTICS_CONTRACT_ONLY",
-  "next_action": "Await Controller Review for SHEEP-088; no later task may execute before this task closes",
-  "next_authoritative_roadmap_id": "SHEEP-088",
+  "last_closed_task": "SHEEP-088",
+  "current_task": "SHEEP-089 (M5.3 PDD Send Media/Card Capabilities) — NOT_STARTED / AWAITING EXECUTION AUTHORIZATION",
+  "next_action": "SHEEP-089 requires Controller execution authorization; no later task may execute before authorization",
+  "next_authoritative_roadmap_id": "SHEEP-089",
   "next_task_execution_authorized": false,
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
@@ -203,7 +203,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-087 (M5.3 PDD Incoming Message Normalize; NOT_STARTED / AUTHORIZED WITH CONSTRAINTS; scope=NORMALIZATION_CONTRACT_ONLY)",
+  "next_task": "SHEEP-089 (M5.3 PDD Send Media/Card Capabilities; NOT_STARTED / AWAITING EXECUTION AUTHORIZATION)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -2637,16 +2637,16 @@
     "next_stage_not_executed": true
   },
   "sheep_088": {
-    "roadmap_status": "IN_PROGRESS / AWAITING CONTROLLER REVIEW",
+    "roadmap_status": "CLOSED",
     "phase": "PHASE_5",
     "milestone": "M5.3 Conversation",
     "codex_result": "COMPLETE",
-    "controller_decision": "AWAITING_CONTROLLER_REVIEW",
-    "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+    "controller_decision": "PASS",
+    "status": "PASS / CLOSED",
     "execution_authorized": false,
     "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
     "implementation_result": "COMPLETE",
-    "implementation_acceptance": "AWAITING_CONTROLLER_REVIEW",
+    "implementation_acceptance": "ACCEPTED",
     "scope": "LOCAL_PDD_SEND_TEXT_SEMANTICS_CONTRACT_ONLY",
     "report": "reports\\SHEEP-088-report.json",
     "pdd_integration": "NOT_STARTED",
@@ -2658,6 +2658,8 @@
     "delivery": "NOT_ESTABLISHED",
     "read": "NOT_ESTABLISHED",
     "natural_expiry": "NOT_APPLICABLE",
+    "implementation_commit": "907803f0f24b7ae23bb291bffefbed2416e45c5f",
+    "controller_pass_date": "2026-09-13",
     "next_stage_not_executed": true
   },
   "phase_5_entry": {
@@ -2674,9 +2676,10 @@
       "SHEEP-084",
       "SHEEP-085",
       "SHEEP-086",
-      "SHEEP-087"
+      "SHEEP-087",
+      "SHEEP-088"
     ],
-    "next_authoritative_roadmap_id": "SHEEP-088",
+    "next_authoritative_roadmap_id": "SHEEP-089",
     "sheep_080_approved": true,
     "sheep_081_closed": true,
     "sheep_082_execution_authorized": false,
