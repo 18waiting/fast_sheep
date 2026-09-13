@@ -30,10 +30,10 @@
   "current_phase": "PHASE_5",
   "current_milestone": "M5.4 Context",
   "last_closed_task": "SHEEP-089",
-  "current_task": "SHEEP-090 (M5.4 PDD Customer Context) — NOT_STARTED / AWAITING EXECUTION AUTHORIZATION",
-  "next_action": "SHEEP-090 requires Controller execution authorization; no later task may execute before authorization",
+  "current_task": "SHEEP-090 (M5.4 PDD Customer Context) — NOT_STARTED / READ-ONLY EVIDENCE ACQUISITION AUTHORIZED WITH CONSTRAINTS",
+  "next_action": "SHEEP-090 read-only evidence acquisition is authorized with constraints; production implementation and no later task may execute before Controller review",
   "next_authoritative_roadmap_id": "SHEEP-090",
-  "next_task_execution_authorized": false,
+  "next_task_execution_authorized": true,
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
   "next_sheep_task_after_governance": "SHEEP-001",
@@ -203,7 +203,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-090 (M5.4 PDD Customer Context; NOT_STARTED / AWAITING EXECUTION AUTHORIZATION)",
+  "next_task": "SHEEP-090 (M5.4 PDD Customer Context; NOT_STARTED / READ-ONLY EVIDENCE ACQUISITION AUTHORIZED WITH CONSTRAINTS)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -2682,6 +2682,24 @@
     "report": "reports\\SHEEP-089-report.json",
     "implementation_commit": "fb3ee14bc84f33086297313a4befea48c884466e",
     "controller_pass_date": "2026-09-13",
+    "next_stage_not_executed": true
+  },
+  "sheep_090": {
+    "roadmap_status": "NOT_STARTED",
+    "phase": "PHASE_5",
+    "milestone": "M5.4 Context",
+    "status": "NOT_STARTED",
+    "execution_authorized": true,
+    "owner_scope": "PDD_CUSTOMER_CONTEXT_READ_ONLY_EVIDENCE_DISCOVERY_ONLY",
+    "execution_form": "OWNER_CONTROLLED_LIVE_READ_ONLY_EVIDENCE_ACQUISITION",
+    "evidence_acquisition_authorization": "AUTHORIZED WITH CONSTRAINTS",
+    "implementation_authorization": "NOT_AUTHORIZED",
+    "platform_mutation_authorization": "NOT_AUTHORIZED",
+    "persistence_authorization": "NOT_AUTHORIZED",
+    "network_requirement": "NONE",
+    "pdd_integration": "NOT_STARTED",
+    "customer_context_claim": "NOT_ESTABLISHED",
+    "later_tasks_authorized": false,
     "next_stage_not_executed": true
   },
   "phase_5_entry": {
