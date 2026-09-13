@@ -1,0 +1,176 @@
+{
+  "task": "SHEEP-090",
+  "title": "PDD Customer Context Evidence Freeze",
+  "result": "COMPLETE",
+  "controller_decision": "AWAITING_CONTROLLER_REVIEW",
+  "status": "IMPLEMENTED / AWAITING CONTROLLER REVIEW",
+  "owner_scope": {
+    "classification": "CONFIRMED",
+    "source_kind": "FAST_SHEEP_GOVERNANCE",
+    "value": "PDD_CUSTOMER_CONTEXT_READ_ONLY_EVIDENCE_DISCOVERY_ONLY",
+    "execution_form": "OWNER_CONTROLLED_LIVE_READ_ONLY_EVIDENCE_ACQUISITION",
+    "spr": "R1_PLATFORM_OBSERVATION / OBSERVED_WEB_RUNTIME / ALLOW_WITH_CONSTRAINTS"
+  },
+  "live_evidence_status": {
+    "classification": "CONFIRMED",
+    "source_kind": "LIVE_PDD_EVIDENCE",
+    "value": "OWNER_COLLECTED_EVIDENCE_ACCEPTED_FOR_REPORT_FREEZE",
+    "additional_live_testing": false
+  },
+  "right_side_workspace": {
+    "classification": "CONFIRMED",
+    "source_kind": "LIVE_PDD_EVIDENCE",
+    "value": "MIXED_SERVICE_TOOL_AND_ORDER_CONTEXT_CANDIDATE_STRUCTURE",
+    "not_customer_context_as_a_whole": true
+  },
+  "top_level_structure": {
+    "classification": "CONFIRMED",
+    "source_kind": "LIVE_PDD_EVIDENCE",
+    "value": {
+      "sections_observed": ["商品推荐", "最新订单", "快捷回复", "服务助手"],
+      "item_marker": "bar-item",
+      "selected_item_marker": "bar-select",
+      "active_indicator": "tabs-active-line middle",
+      "framework_data_attribute": "NOT_TREATED_AS_STABLE_BUSINESS_MARKER"
+    },
+    "class_names_are_official_api": false
+  },
+  "order_secondary_structure": {
+    "classification": "CONFIRMED",
+    "source_kind": "LIVE_PDD_EVIDENCE",
+    "value": {
+      "header_marker": "ul.order-panel-header",
+      "sections_observed": ["个人订单", "店铺待支付订单"],
+      "selected_item_marker": "bar-select"
+    },
+    "buyer_binding": "NOT_PROVEN"
+  },
+  "workspace_selection_lifecycle": {
+    "classification": "CONFIRMED",
+    "source_kind": "LIVE_PDD_EVIDENCE",
+    "value": "BUYER_SELECTION_CHANGE_RESETS_VISIBLE_TOP_LEVEL_WORKSPACE_TO_商品推荐; 最新订单_SECONDARY_STRUCTURE_IS_ABSENT_WHILE_商品推荐_IS_ACTIVE_AND_REAPPEARS_AFTER_MANUAL_RESELECTION",
+    "whole_workspace_remount": "NOT_PROVEN"
+  },
+  "customer_profile_panel": {
+    "classification": "CONFIRMED",
+    "source_kind": "LIVE_PDD_EVIDENCE",
+    "value": "NOT_OBSERVED",
+    "customer_profile_supported": "NOT_ESTABLISHED"
+  },
+  "latest_order_panel": {
+    "classification": "CONFIRMED",
+    "source_kind": "LIVE_PDD_EVIDENCE",
+    "value": "OBSERVED",
+    "both_controlled_buyers_had_no_orders": true
+  },
+  "order_content_buyer_binding": {
+    "classification": "CONFIRMED",
+    "source_kind": "LIVE_PDD_EVIDENCE",
+    "value": "NOT_PROVEN",
+    "limitation": "No differentiated order content was available; no order was manufactured because the scope was read-only."
+  },
+  "product_recommendation_buyer_binding": {
+    "classification": "CONFIRMED",
+    "source_kind": "LIVE_PDD_EVIDENCE",
+    "value": "NOT_ESTABLISHED",
+    "absence_of_differentiation_is_not_absence_of_binding": true
+  },
+  "customer_context_interpretation": {
+    "classification": "CONFIRMED",
+    "source_kind": "LIVE_PDD_EVIDENCE",
+    "value": "CUSTOMER_CONTEXT_IS_ONLY_A_SEMANTIC_SUBSET_WITH_INDEPENDENTLY_PROVEN_BUYER_RELATIONSHIP",
+    "right_side_workspace_equals_customer_context": false,
+    "service_tool_semantics": "商品推荐 / 快捷回复 / 服务助手 remain service or merchant-tool structures; buyer-specific semantics are not established.",
+    "order_context_semantics": "最新订单 is an order-context candidate structure with buyer binding not proven."
+  },
+  "platform_mutation": {
+    "classification": "CONFIRMED",
+    "source_kind": "LIVE_PDD_EVIDENCE",
+    "value": "NOT_OCCURRED",
+    "messages_sent": false,
+    "order_actions": false,
+    "product_actions": false
+  },
+  "network_inspection": {
+    "classification": "CONFIRMED",
+    "source_kind": "LIVE_PDD_EVIDENCE",
+    "value": "NOT_PERFORMED",
+    "network_fetch_xhr_websocket_inspection": false
+  },
+  "sensitive_data_check": {
+    "classification": "CONFIRMED",
+    "source_kind": "FAST_SHEEP_GOVERNANCE",
+    "value": "PASS",
+    "real_buyer_identity_values_in_report": false,
+    "real_customer_uid_nickname_avatar_name_phone_address_order_product_message_values_in_report": false,
+    "credential_cookie_token_authorization_session_anti_content_values_in_report": false,
+    "raw_authenticated_html_in_report": false
+  },
+  "production_code_delta": {
+    "classification": "CONFIRMED",
+    "source_kind": "FAST_SHEEP_GOVERNANCE",
+    "value": "NONE",
+    "contracts_types_platform_pdd_desktop_main_ipc_ui_database_schema_persistence_unchanged": true
+  },
+  "pdd_integration": {
+    "classification": "CONFIRMED",
+    "source_kind": "FAST_SHEEP_GOVERNANCE",
+    "value": "NOT_STARTED",
+    "customer_context_production_capability": "NOT_IMPLEMENTED"
+  },
+  "project_state": {
+    "classification": "CONFIRMED",
+    "current_phase": "PHASE_5",
+    "current_milestone": "M5.4 Context",
+    "last_closed_task": "SHEEP-089",
+    "next_authoritative_roadmap_id": "SHEEP-090",
+    "sheep_090": "IMPLEMENTED / AWAITING_CONTROLLER_REVIEW",
+    "next_task_execution_authorized": false,
+    "next_stage_not_executed": true,
+    "sheep_085_natural_expiry": "NOT_PROVEN",
+    "later_tasks_authorized": false
+  },
+  "evidence_limitations": [
+    {
+      "classification": "CONFIRMED",
+      "source_kind": "LIVE_PDD_EVIDENCE",
+      "value": "No dedicated customer profile panel was established."
+    },
+    {
+      "classification": "CONFIRMED",
+      "source_kind": "LIVE_PDD_EVIDENCE",
+      "value": "Latest-order content binding and product-recommendation buyer binding remain unproven or not established."
+    },
+    {
+      "classification": "DEFERRED",
+      "source_kind": "FAST_SHEEP_GOVERNANCE",
+      "value": "Customer Context implementation, persistence, IPC/UI, platform adapter behavior, and further live evidence are outside this report-only freeze."
+    }
+  ],
+  "validation": {
+    "classification": "CONFIRMED",
+    "working_tree_before_write": "CLEAN",
+    "authorization_commit_verified": "1151fc0becb425121d5ff189a2ca1de311005586",
+    "report_json_parse": "PASS",
+    "project_state_json_parse": "PASS",
+    "sensitive_data_check": "PASS",
+    "platform_capability_overclaim_check": "PASS",
+    "order_binding_not_proven_check": "PASS",
+    "whole_workspace_not_customer_context_check": "PASS",
+    "production_code_delta_check": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "files_created": [
+    "reports/SHEEP-090-report.json"
+  ],
+  "files_modified": [
+    "project/PROJECT_STATE.json"
+  ],
+  "files_deleted": [],
+  "protected_paths": "UNCHANGED",
+  "commit": {
+    "status": "ONE_FOCUSED_SHEEP_090_COMMIT",
+    "message": "SHEEP-090: freeze customer context discovery evidence"
+  },
+  "next_stage_not_executed": true
+}
