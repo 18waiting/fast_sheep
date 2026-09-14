@@ -6,6 +6,10 @@ import { platformIsReady } from "../dist/renderer/state/platform-view-state.js";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { PDD_CAPABILITY_DESCRIPTORS } from "@fastwork/platform-pdd";
+import { PDD_CAPABILITIES } from "@fastwork/platform-pdd";
+import { capabilitiesFor } from "../dist/main/platforms/platform-capability-registry.js";
+import { capabilityPresentationClass, capabilityPresentationLabel } from "../dist/renderer/components/platform-surface.js";
 
 const vm = {
   revision: 1,
@@ -80,6 +84,27 @@ test("platform-surface component never reads PDD DOM or sends messages", () => {
     assert.ok(!src.includes(token), "platform-surface must not " + token);
   }
   assert.ok(src.includes("ResizeObserver"), "surface reports bounds via ResizeObserver");
+});
+
+test("PDD capability projection consumes canonical maturity descriptors", () => {
+  assert.equal(PDD_CAPABILITY_DESCRIPTORS.receive_text.maturity, "OBSERVATION_ONLY");
+  assert.equal(PDD_CAPABILITY_DESCRIPTORS.send_text.maturity, "LOCAL_CONTRACT_ONLY");
+  assert.equal(PDD_CAPABILITY_DESCRIPTORS.send_image.maturity, "SYNTHETIC_ONLY");
+  assert.equal(PDD_CAPABILITY_DESCRIPTORS.conversation_selection.maturity, "OBSERVATION_ONLY");
+  assert.equal(PDD_CAPABILITY_DESCRIPTORS.product_context.maturity, "SYNTHETIC_ONLY");
+  assert.equal(PDD_CAPABILITY_DESCRIPTORS.order_context.maturity, "SYNTHETIC_ONLY");
+  assert.equal(PDD_CAPABILITY_DESCRIPTORS.send_text.declared, true);
+  assert.deepEqual(capabilitiesFor("pdd"), PDD_CAPABILITIES);
+  const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "src", "renderer", "components", "platform-surface.ts"), "utf-8");
+  assert.ok(src.includes("PDD_CAPABILITY_DESCRIPTORS"));
+  assert.equal(capabilityPresentationLabel("pdd", "receive_text", true), "观察能力");
+  assert.equal(capabilityPresentationLabel("pdd", "send_text", true), "本地契约");
+  assert.equal(capabilityPresentationLabel("pdd", "send_image", true), "合成测试");
+  assert.equal(capabilityPresentationLabel("pdd", "desktop_helper", false), "未实现");
+  assert.equal(capabilityPresentationLabel("jd", "send_text", true), "支持");
+  assert.equal(capabilityPresentationLabel("pdd", "unknown", true), "支持");
+  assert.equal(capabilityPresentationClass("pdd", "send_text", true), "cap-chip unsupported");
+  assert.equal(capabilityPresentationClass("jd", "send_text", true), "cap-chip supported");
 });
 
 test("platformIsReady helper reflects READY status", () => {

@@ -3,11 +3,30 @@
 // and shows a loading/login/unsupported status overlay. It NEVER reads PDD DOM,
 // sends chat messages directly, accesses the seller page, or owns the session.
 import type { UiState } from "../state/view-model.js";
+import { PDD_CAPABILITY_DESCRIPTORS } from "@fastwork/platform-pdd";
 import { platformIsReady } from "../state/platform-view-state.js";
 import { clear, el } from "./dom.js";
 
 export interface PlatformSurfaceActions {
   onBoundsChange(bounds: { x: number; y: number; width: number; height: number; visible: boolean }): void;
+}
+
+export function capabilityPresentationLabel(platformType: string | null, key: string, supported: boolean): string {
+  const descriptor = platformType === "pdd"
+    ? PDD_CAPABILITY_DESCRIPTORS[key as keyof typeof PDD_CAPABILITY_DESCRIPTORS]
+    : undefined;
+  if (descriptor?.maturity === "OBSERVATION_ONLY") return "观察能力";
+  if (descriptor?.maturity === "LOCAL_CONTRACT_ONLY") return "本地契约";
+  if (descriptor?.maturity === "SYNTHETIC_ONLY") return "合成测试";
+  if (descriptor?.maturity === "NOT_IMPLEMENTED") return "未实现";
+  return supported ? "支持" : "不支持";
+}
+
+export function capabilityPresentationClass(platformType: string | null, key: string, supported: boolean): string {
+  const descriptor = platformType === "pdd"
+    ? PDD_CAPABILITY_DESCRIPTORS[key as keyof typeof PDD_CAPABILITY_DESCRIPTORS]
+    : undefined;
+  return descriptor || !supported ? "cap-chip unsupported" : "cap-chip supported";
 }
 
 export function renderPlatformSurface(root: HTMLElement, state: UiState, actions: PlatformSurfaceActions): void {
@@ -56,13 +75,19 @@ export function renderPlatformSurface(root: HTMLElement, state: UiState, actions
     const names: Array<[string, string]> = [
       ["receive_text", "接收消息"], ["send_text", "发送文本"], ["send_image", "发送图片"],
       ["manual_takeover_detection", "人工接管检测"], ["conversation_selection", "会话选择"],
-      ["transfer", "转接"], ["desktop_helper", "桌面助手"],
+      ["transfer", "转接"], ["product_context", "商品上下文"],
+      ["order_context", "订单上下文"], ["desktop_helper", "桌面助手"],
     ];
     for (const [key, label] of names) {
       const supported = caps[key] === true;
-      const chip = el("span", supported ? "cap-chip supported" : "cap-chip unsupported", label);
+      const maturityLabel = capabilityPresentationLabel(state.platform?.platformType ?? null, key, supported);
+      const chip = el("span", capabilityPresentationClass(state.platform?.platformType ?? null, key, supported), label + " · " + maturityLabel);
       chip.setAttribute("data-capability", key);
       chip.setAttribute("data-supported", supported ? "true" : "false");
+      const descriptor = state.platform?.platformType === "pdd"
+        ? PDD_CAPABILITY_DESCRIPTORS[key as keyof typeof PDD_CAPABILITY_DESCRIPTORS]
+        : undefined;
+      if (descriptor) chip.setAttribute("data-capability-maturity", descriptor.maturity);
       strip.appendChild(chip);
     }
     surface.appendChild(strip);
