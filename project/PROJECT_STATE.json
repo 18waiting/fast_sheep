@@ -124,13 +124,44 @@
       "pdd_integration": "NOT_STARTED"
     },
     "current_execution_authorization": {
-      "production_navigation_runtime": "NOT_AUTHORIZED",
+      "production_navigation_runtime": "AUTHORIZED_FOR_CONTROLLED_LIVE_VALIDATION_ONLY",
       "production_navigation_implementation": "AUTHORIZED_WITH_CONSTRAINTS",
-      "production_navigation_live_validation": "NOT_AUTHORIZED",
-      "live_pdd_loading": "NOT_AUTHORIZED",
+      "production_navigation_live_validation": "AUTHORIZED_WITH_CONSTRAINTS",
+      "live_pdd_loading": "AUTHORIZED_FOR_CONTROLLED_LIVE_VALIDATION_ONLY",
       "real_text_send": "NOT_AUTHORIZED",
       "automatic_reply": "NOT_AUTHORIZED",
       "later_roadmap_tasks": "NOT_AUTHORIZED"
+    },
+    "controlled_live_validation_authorization": {
+      "scope": "PDD_PRODUCTION_NAVIGATION_CONTROLLED_LIVE_VALIDATION_ONLY",
+      "execution_form": "OWNER_CONTROLLED_FAST_SHEEP_PRODUCTION_READ_ONLY_BRINGUP",
+      "authorization_status": "AUTHORIZED_WITH_CONSTRAINTS",
+      "execution_status": "NOT_YET_EXECUTED",
+      "authorized_validation_count": 1,
+      "consumed_validation_count": 0,
+      "spr": "R1_PLATFORM_OBSERVATION",
+      "production_access_mechanism": "PERMITTED_EMBEDDED_RUNTIME_FIRST",
+      "authority_provenance": "OWNER_ATTESTED_PERMISSION",
+      "login_interaction_authorization": "HUMAN_ONLY / AUTHENTICATION_REQUIRED_ONLY",
+      "chat_interaction_mode": "CHAT_READ_ONLY",
+      "chat_business_interaction_authorization": "NOT_AUTHORIZED",
+      "network_inspection_authorization": "NOT_AUTHORIZED",
+      "platform_mutation_authorization": "NOT_AUTHORIZED",
+      "real_send_authorization": "NOT_AUTHORIZED",
+      "auto_reply_execution_authorization": "NOT_AUTHORIZED",
+      "fixture_fallback_authorization": "NOT_AUTHORIZED",
+      "synthetic_adapter_activation_authorization": "NOT_AUTHORIZED",
+      "authorized_runtime_scope": [
+        "LAUNCH_PRODUCTION_READ_ONLY_RUNTIME",
+        "OPEN_ONE_CONTROLLED_TEST_SHOP",
+        "NAVIGATE_TO_APPROVED_PRODUCTION_ENTRY",
+        "OBSERVE_GENERIC_NAVIGATION_STATES",
+        "HUMAN_LOGIN_AUTHENTICATION_ONLY",
+        "OBSERVE_READ_ONLY_ENFORCEMENT"
+      ],
+      "success_semantics": "PRODUCTION_NAVIGATION_LIVE_VALIDATED_READ_ONLY_ONLY",
+      "production_navigation_state": "IMPLEMENTED / NOT_LIVE_VALIDATED",
+      "roadmap_execution_authorized": false
     },
     "recommended_next_readiness_unit": {
       "type": "PDD_PRODUCTION_NAVIGATION_READ_ONLY_BRINGUP_ONLY",
@@ -138,7 +169,7 @@
       "implementation_authorization": "AUTHORIZED_WITH_CONSTRAINTS",
       "runtime_state": "IMPLEMENTED / NOT_LIVE_VALIDATED",
       "runtime_readiness": "NOT_ESTABLISHED_PENDING_CONTROLLED_LIVE_VALIDATION",
-      "live_pdd_loading_authorization": "NOT_AUTHORIZED",
+      "live_pdd_loading_authorization": "AUTHORIZED_FOR_CONTROLLED_LIVE_VALIDATION_ONLY",
       "permitted_implementation_scope": [
         "EXPLICIT_PRODUCTION_FIXTURE_RUNTIME_MODE",
         "PRODUCTION_LOAD_URL_PATH",
@@ -190,7 +221,8 @@
       "implementation_started": true,
       "implementation_state": "IMPLEMENTED / AWAITING CONTROLLED LIVE VALIDATION",
       "implementation_commit": "005f33251362f29b9ee379338ebe187520df4abe",
-      "live_validation_authorization": "NOT_AUTHORIZED"
+      "live_validation_authorization": "AUTHORIZED_WITH_CONSTRAINTS",
+      "live_validation_execution_status": "NOT_YET_EXECUTED"
     }
   },
   "current_phase": "PHASE_5",
