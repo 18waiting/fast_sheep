@@ -33,7 +33,7 @@ import { createKuaishouPlatformService } from "./platforms/kuaishou/kuaishou-pla
 import { createQianniuPlatformService } from "./platforms/qianniu/qianniu-platform-service.js";
 import { createXianyuPlatformService } from "./platforms/xianyu/xianyu-platform-service.js";
 import { OrchestratorHost } from "./services/orchestrator-host.js";
-import { ShopService } from "./services/shop-service.js";
+import { ShopService, type ShopRow } from "./services/shop-service.js";
 import { WorkerStatusService, type WorkerStatusSource } from "./services/worker-status-service.js";
 import { WorkbenchProjectionService, type ProjectionSource } from "./services/workbench-projection-service.js";
 import { SettingsService, type SettingsSource } from "./services/settings-service.js";
@@ -51,7 +51,7 @@ import { LearningService } from "./services/learning-service.js";
 import { ReviewService } from "./services/review-service.js";
 import { AuditService } from "./services/audit-service.js";
 import { DesktopProductOptimizationService } from "./services/product-optimization-service.js";
-import { syntheticShops, isTestMode, platformForShop } from "./test-mode.js";
+import { syntheticShops, isTestMode, platformForShop as platformForSyntheticShop } from "./test-mode.js";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -158,6 +158,8 @@ export interface BootstrapOptions {
   storeRepository?: StoreRepository;
   /** SHEEP-061: PlatformAccount repository (defaults to in-memory test double in test mode; production composition binds SQLite). */
   platformAccountRepository?: PlatformAccountRepository;
+  /** Controlled production-only PDD shop selected by exact local Shop.id. */
+  controlledProductionPddShop?: ShopRow | null;
 }
 
 /** Minimal in-memory JobRepository for isolated test mode (M10). */
@@ -299,8 +301,12 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   let revision = 0;
   const bumpRevision = () => { revision += 1; return revision; };
 
-  // test-mode synthetic shops (production list returns [] until M7/M8 real adapters)
-  const shopRows = testMode ? syntheticShops() : [];
+  // Test mode keeps all synthetic shops; production exposes only the explicitly selected local shop.
+  const configuredProductionPddShop = options.controlledProductionPddShop ?? null;
+  const controlledProductionPddShop = !testMode && configuredProductionPddShop?.enabled && configuredProductionPddShop.type === "pdd"
+    ? configuredProductionPddShop
+    : null;
+  const shopRows = testMode ? syntheticShops() : controlledProductionPddShop ? [controlledProductionPddShop] : [];
   const shops = new ShopService({ list: async () => shopRows });
 
   const workerSource: WorkerStatusSource = options.workerSource ?? {
@@ -320,7 +326,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
     segmentIntervalMs: () => (typeof desktopConfig().send_interval_ms === "number" ? (desktopConfig().send_interval_ms as number) : 800),
   } satisfies SettingsSource);
 
-  const selectedShop = { id: testMode ? "shop-test-1" : "" };
+  const selectedShop = { id: testMode ? "shop-test-1" : (controlledProductionPddShop?.shop_id ?? "") };
   const projectionSource: ProjectionSource = {
     revision: () => revision,
     shops: () => shopRows.map((s) => ({ shop_id: s.shop_id, name: s.name, type: s.type, enabled: s.enabled })),
@@ -333,7 +339,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
     takeoverStatus: () => null,
     workerStatus: () => worker.status(),
     lastError: () => null,
-    platformCapability: () => (testMode ? "pdd" : "none"),
+    platformCapability: () => (testMode || controlledProductionPddShop ? "pdd" : "none"),
   };
   const projection = new WorkbenchProjectionService(projectionSource);
 
@@ -357,24 +363,26 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   });
 
   // Routing adapter: PDD-activated shops -> PddPlatformAdapter; otherwise fallback.
+  const isControlledProductionPddShop = (shopId: string): boolean =>
+    !testMode && controlledProductionPddShop?.shop_id === shopId;
   const routingAdapter: PlatformAdapter = {
     sendText: async (shopId, conversationId, segments) => {
       const pdd = platform.adapterFor(shopId);
       if (pdd) return pdd.sendText(shopId, conversationId, segments);
-      if (platform.status(shopId)) return { ok: false, error: "platform.command_disabled_navigation_only" };
+      if (platform.status(shopId) || isControlledProductionPddShop(shopId)) return { ok: false, error: "platform.command_disabled_navigation_only" };
       return platformFallback.sendText(shopId, conversationId, segments);
     },
     getCurrentConversationState: async (shopId, conversationId) => {
       const pdd = platform.adapterFor(shopId);
       if (pdd) return pdd.getCurrentConversationState(shopId, conversationId);
-      if (platform.status(shopId)) return { hasNewMessage: false };
+      if (platform.status(shopId) || isControlledProductionPddShop(shopId)) return { hasNewMessage: false };
       return platformFallback.getCurrentConversationState(shopId, conversationId);
     },
     onTransfer: (decision: TransferDecision) => {
       const shopId = (decision as { shop_id?: string }).shop_id;
       const pdd = shopId ? platform.adapterFor(shopId) : null;
       if (pdd) pdd.onTransfer(decision);
-      else if (shopId && platform.status(shopId)) return;
+      else if (shopId && (platform.status(shopId) || isControlledProductionPddShop(shopId))) return;
       else platformFallback.onTransfer(decision);
     },
   };
@@ -382,6 +390,9 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   (orchestrator as unknown as { platformAdapter: PlatformAdapter }).platformAdapter = routingAdapter;
 
   const orchestratorHost = new OrchestratorHost(orchestrator);
+  const platformForShop = testMode
+    ? platformForSyntheticShop
+    : (shopId: string) => controlledProductionPddShop?.shop_id === shopId ? controlledProductionPddShop.type : null;
 
   if (testMode) {
     orchestrator.seedConversation("shop-test-1", "c1", {

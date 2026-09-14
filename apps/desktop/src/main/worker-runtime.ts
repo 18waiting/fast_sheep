@@ -9,13 +9,14 @@
 import { existsSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { AIWorkerClient } from "@fastwork/worker-rpc";
-import { resolveDataRoot, openDatabase, SqliteFeedbackRepository, SqliteJobRepository, SqliteProductRepository, SqliteNormalizedConversationRepository, SqliteMessageRepository, SqliteDeliveryAttemptRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteWorkspaceIdentityBootstrap, resolveOrBootstrapWorkspaceMerchantId, recoverWorkspaceInFlightDeliveryAttempts } from "@fastwork/persistence";
+import { resolveDataRoot, openDatabase, SqliteFeedbackRepository, SqliteJobRepository, SqliteProductRepository, SqliteNormalizedConversationRepository, SqliteMessageRepository, SqliteDeliveryAttemptRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteSettingsRepository, SqliteShopRepository, SqliteWorkspaceIdentityBootstrap, resolveOrBootstrapWorkspaceMerchantId, recoverWorkspaceInFlightDeliveryAttempts } from "@fastwork/persistence";
 import { WorkerAiEngineClient, type WorkerGenerateReplyResponse } from "@fastwork/orchestrator";
 import { FeedbackService, PersistenceFeedbackRepository, WorkerKnowledgeFeedbackClient } from "@fastwork/feedback";
 import { WorkerJobClient } from "@fastwork/background-jobs";
 import { WorkerOptimizationClient, type ProductRepositoryPort } from "@fastwork/product-optimization";
 import { createMainContext, type BootstrapOptions } from "./bootstrap.js";
 import { createWorkspaceMerchantContext } from "./services/workspace-merchant-context.js";
+import type { ShopRow } from "./services/shop-service.js";
 
 /** Packaged worker executable file name (PACK-002 onedir runtime). */
 export const PACKAGED_WORKER_EXE = "fastwork-ai-worker.exe";
@@ -98,6 +99,29 @@ export interface WorkerBackedMainDeps {
   dataRoot: string;
 }
 
+interface ControlledShopLookup {
+  list(): Array<{ id: string; type: string; name: string; enabled: boolean }>;
+}
+
+/** Resolve the single explicitly configured local Shop for controlled PDD production bring-up. */
+export function resolveControlledProductionPddShop(
+  platformConfig: unknown,
+  shopRepository: ControlledShopLookup | null | undefined,
+): ShopRow | null {
+  if (!platformConfig || typeof platformConfig !== "object" || Array.isArray(platformConfig)) return null;
+  const config = platformConfig as Record<string, unknown>;
+  if (config.platform !== "pdd") return null;
+  const shopId = config.controlled_shop_id;
+  if (typeof shopId !== "string" || shopId.length === 0 || shopId.trim() !== shopId || !shopRepository) return null;
+  try {
+    const shop = shopRepository.list().find((candidate) => candidate.id === shopId);
+    if (!shop || !shop.enabled || shop.type !== "pdd") return null;
+    return { shop_id: shop.id, name: shop.name, type: shop.type, enabled: true };
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Compose the worker-backed Main context (shared by the production packaged
  * branch and the dev/test vertical branch). Mirrors the M7/M10 vertical
@@ -135,6 +159,16 @@ export function createWorkerBackedMainContext(deps: WorkerBackedMainDeps, option
   const deliveryAttemptRepository = new SqliteDeliveryAttemptRepository(m10Sqlite.conn);
   const storeRepository = new SqliteStoreRepository(m10Sqlite.conn);
   const platformAccountRepository = new SqlitePlatformAccountRepository(m10Sqlite.conn);
+  const settingsRepository = new SqliteSettingsRepository(m10Sqlite.conn);
+  let controlledProductionPddShop: ShopRow | null = null;
+  try {
+    controlledProductionPddShop = resolveControlledProductionPddShop(
+      settingsRepository.getGroup("PlatformConfig"),
+      new SqliteShopRepository(m10Sqlite.conn),
+    );
+  } catch {
+    controlledProductionPddShop = null;
+  }
   // SHEEP-063-PR2-PR1: resolve-or-bootstrap the trusted local workspace merchant
   // identity AFTER migrations complete and BEFORE Main services/IPC are ready
   // (never lazy-created on first Timeline query). Fails closed on dangling
@@ -175,8 +209,6 @@ export function createWorkerBackedMainContext(deps: WorkerBackedMainDeps, option
     workspaceMerchant,
     storeRepository,
     platformAccountRepository,
+    controlledProductionPddShop,
   });
 }
-
-
-

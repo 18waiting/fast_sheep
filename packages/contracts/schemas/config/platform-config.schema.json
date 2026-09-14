@@ -20,6 +20,11 @@
     "partition_prefix": {
       "type": "string",
       "default": "persist:shop-"
+    },
+    "controlled_shop_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Fast Sheep local Shop.id only; never a platform seller or account identity."
     }
   }
 }

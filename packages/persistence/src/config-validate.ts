@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const CONFIG_SCHEMAS_DIR = join(HERE, "..", "..", "contracts", "schemas", "config");
+const COMMON_SCHEMAS_DIR = join(HERE, "..", "..", "contracts", "schemas", "common");
 
 export const CONFIG_GROUP_SCHEMA_IDS: Record<string, string> = {
   AIConfig: "fastwork:config:ai-config",
@@ -28,6 +29,9 @@ let _ajv: Ajv2020 | null = null;
 function ajv(): Ajv2020 {
   if (_ajv) return _ajv;
   const a = new Ajv2020({ strict: false, allErrors: true, formats: { "date-time": /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/ } });
+  for (const f of readdirSync(COMMON_SCHEMAS_DIR).filter((x) => x.endsWith(".schema.json")).sort()) {
+    a.addSchema(JSON.parse(readFileSync(join(COMMON_SCHEMAS_DIR, f), "utf-8")));
+  }
   for (const f of readdirSync(CONFIG_SCHEMAS_DIR).filter((x) => x.endsWith(".schema.json")).sort()) {
     a.addSchema(JSON.parse(readFileSync(join(CONFIG_SCHEMAS_DIR, f), "utf-8")));
   }
