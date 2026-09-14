@@ -112,8 +112,9 @@
     },
     "permission_semantics": "PERMISSION_DOES_NOT_IMPLY_IMPLEMENTATION_RUNTIME_READINESS_SAFETY_READINESS_OR_CURRENT_EXECUTION_AUTHORIZATION",
     "current_technical_state": {
-      "production_navigation": "NOT_IMPLEMENTED",
-      "real_text_transport": "NOT_IMPLEMENTED",
+      "production_navigation": "IMPLEMENTED / NOT_LIVE_VALIDATED",
+      "production_navigation_runtime_readiness": "NOT_ESTABLISHED_PENDING_CONTROLLED_LIVE_VALIDATION",
+      "real_text_transport": "NOT_IMPLEMENTED / NOT_AUTHORIZED",
       "live_inbound_producer": "NOT_IMPLEMENTED",
       "conversation_association": "UNRESOLVED / NOT_IMPLEMENTED",
       "send_attempt_production_binding": "PARTIAL / NOT_IMPLEMENTED",
@@ -125,6 +126,7 @@
     "current_execution_authorization": {
       "production_navigation_runtime": "NOT_AUTHORIZED",
       "production_navigation_implementation": "AUTHORIZED_WITH_CONSTRAINTS",
+      "production_navigation_live_validation": "NOT_AUTHORIZED",
       "live_pdd_loading": "NOT_AUTHORIZED",
       "real_text_send": "NOT_AUTHORIZED",
       "automatic_reply": "NOT_AUTHORIZED",
@@ -134,7 +136,8 @@
       "type": "PDD_PRODUCTION_NAVIGATION_READ_ONLY_BRINGUP_ONLY",
       "execution_form": "BOUNDED_PRODUCTION_NAVIGATION_IMPLEMENTATION",
       "implementation_authorization": "AUTHORIZED_WITH_CONSTRAINTS",
-      "runtime_state": "NOT_IMPLEMENTED",
+      "runtime_state": "IMPLEMENTED / NOT_LIVE_VALIDATED",
+      "runtime_readiness": "NOT_ESTABLISHED_PENDING_CONTROLLED_LIVE_VALIDATION",
       "live_pdd_loading_authorization": "NOT_AUTHORIZED",
       "permitted_implementation_scope": [
         "EXPLICIT_PRODUCTION_FIXTURE_RUNTIME_MODE",
@@ -184,7 +187,10 @@
         "CONVERSATION_ASSOCIATION",
         "PRODUCT_SKU_IMPLEMENTATION"
       ],
-      "implementation_started": false
+      "implementation_started": true,
+      "implementation_state": "IMPLEMENTED / AWAITING CONTROLLED LIVE VALIDATION",
+      "implementation_commit": "005f33251362f29b9ee379338ebe187520df4abe",
+      "live_validation_authorization": "NOT_AUTHORIZED"
     }
   },
   "current_phase": "PHASE_5",
