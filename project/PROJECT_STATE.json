@@ -61,16 +61,20 @@
     "route_evidence_authorization": {
       "scope": "PDD_PRODUCTION_CHAT_ROUTE_EVIDENCE_ONLY",
       "execution_form": "OWNER_CONTROLLED_LIVE_READ_ONLY_ROUTE_OBSERVATION",
-      "authorization": "AUTHORIZED_WITH_CONSTRAINTS",
+      "authorization": "CLOSED / CONSUMED",
       "authorized_observation_count": 1,
-      "production_chat_route": "UNRESOLVED",
+      "consumed_observation_count": 1,
+      "production_chat_route": "https://mms.pinduoduo.com/chat-merchant/index.html",
+      "production_chat_route_authority": "LIVE_CONFIRMED",
       "confirmed_top_level_host": "mms.pinduoduo.com",
       "confirmed_login_route": "https://mms.pinduoduo.com/login/",
-      "candidate_routes": {
+      "route_classifications": {
         "/chat/": "TEST_ONLY",
-        "/chat-merchant/index.html": "NAVIGATION_CANDIDATE_ONLY"
+        "/chat-merchant/index.html": "LIVE_CONFIRMED",
+        "/login/": "LIVE_CONFIRMED"
       },
       "evidence_target": "FINAL_BROWSER_ADDRESS_BAR_ORIGIN_AND_PATHNAME_ONLY",
+      "query_fragment_authority": "NOT_AUTHORITY / NOT_PERSISTED",
       "spr": "R1_PLATFORM_OBSERVATION",
       "platform_mutation": "NONE",
       "permitted_owner_actions": [
@@ -94,8 +98,8 @@
         "CREDENTIAL_INSPECTION"
       ],
       "minimum_query_fragment_policy": "ORIGIN_AND_PATHNAME_ONLY; QUERY_STRING_AND_FRAGMENT_VALUES_MUST_NOT_BE_RECORDED",
-      "observation_performed": false,
-      "navigation_implementation_authorized": false,
+      "observation_performed": true,
+      "navigation_implementation_authorized_by_this_observation": false,
       "platform_mutation_authorized": false,
       "roadmap_execution_authorized": false
     },
@@ -119,14 +123,68 @@
       "pdd_integration": "NOT_STARTED"
     },
     "current_execution_authorization": {
-      "production_navigation": "NOT_AUTHORIZED",
+      "production_navigation_runtime": "NOT_AUTHORIZED",
+      "production_navigation_implementation": "AUTHORIZED_WITH_CONSTRAINTS",
+      "live_pdd_loading": "NOT_AUTHORIZED",
       "real_text_send": "NOT_AUTHORIZED",
       "automatic_reply": "NOT_AUTHORIZED",
       "later_roadmap_tasks": "NOT_AUTHORIZED"
     },
     "recommended_next_readiness_unit": {
-      "type": "PRODUCTION_NAVIGATION_READINESS",
-      "implementation_authorization": "NOT_AUTHORIZED"
+      "type": "PDD_PRODUCTION_NAVIGATION_READ_ONLY_BRINGUP_ONLY",
+      "execution_form": "BOUNDED_PRODUCTION_NAVIGATION_IMPLEMENTATION",
+      "implementation_authorization": "AUTHORIZED_WITH_CONSTRAINTS",
+      "runtime_state": "NOT_IMPLEMENTED",
+      "live_pdd_loading_authorization": "NOT_AUTHORIZED",
+      "permitted_implementation_scope": [
+        "EXPLICIT_PRODUCTION_FIXTURE_RUNTIME_MODE",
+        "PRODUCTION_LOAD_URL_PATH",
+        "EXACT_HOST_AND_ROUTE_ALLOWLIST",
+        "LOGIN_ROUTE_HANDLING",
+        "CHAT_ROUTE_HANDLING",
+        "REDIRECT_FAIL_CLOSED_HANDLING",
+        "POPUP_AND_NEW_WINDOW_BLOCKING",
+        "PER_SHOP_ISOLATED_PARTITION_REUSE",
+        "DOCUMENT_LIFECYCLE_AND_STALE_EVENT_PROTECTION",
+        "LOGIN_INTERACTIVE_MODE",
+        "CHAT_READ_ONLY_MODE",
+        "HOST_LEVEL_READ_ONLY_INTERACTION_ENFORCEMENT",
+        "SEND_TRANSFER_COMMAND_DISABLING_IN_NAVIGATION_ONLY_MODE",
+        "FOCUSED_TESTS"
+      ],
+      "required_read_only_enforcement": [
+        "POINTER_TOUCH_INTERACTION_SHIELD_ABOVE_PDD_PAGE",
+        "KEYBOARD_INPUT_SUPPRESSION_FOR_PDD_WEB_CONTENTS",
+        "SEND_TEXT_BRIDGE_UNAVAILABLE",
+        "SEND_IMAGE_BRIDGE_UNAVAILABLE",
+        "TRANSFER_BRIDGE_UNAVAILABLE",
+        "PRODUCTION_SEND_ADAPTER_NOT_BOUND",
+        "AUTOMATION_AND_AUTO_REPLY_UNAVAILABLE",
+        "COMPOSER_SEND_REMAINS_UNAVAILABLE"
+      ],
+      "controlled_bringup_identity": {
+        "shop_partition_temporary_containment": "SUFFICIENT_FOR_ONE_CONTROLLED_TEST_SHOP",
+        "pdd_seller_identity": "NOT_ESTABLISHED",
+        "merchant_identity": "NOT_ESTABLISHED",
+        "platform_account_identity": "NOT_ESTABLISHED",
+        "broader_multi_account_binding": "REQUIRED_BEFORE_BROADER_PRODUCTION_USE"
+      },
+      "forbidden_implementation_scope": [
+        "REAL_MESSAGE_SEND",
+        "IMAGE_SEND",
+        "TRANSFER",
+        "PRODUCT_ACTION",
+        "ORDER_ACTION",
+        "AUTOMATIC_REPLY",
+        "AGENT_CONTROLLED_PDD_INTERACTION",
+        "NETWORK_INSPECTION",
+        "CREDENTIAL_OR_SESSION_EXTRACTION",
+        "COOKIE_OR_TOKEN_INSPECTION",
+        "NEW_PERSISTENCE",
+        "CONVERSATION_ASSOCIATION",
+        "PRODUCT_SKU_IMPLEMENTATION"
+      ],
+      "implementation_started": false
     }
   },
   "current_phase": "PHASE_5",
