@@ -27,6 +27,30 @@
     "reviewed_path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
     "reviewed_version": "V1.0_REVIEWED"
   },
+  "state_authority": {
+    "contract_version": "1.0",
+    "roadmap_identity_source": "project\\FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
+    "canonical_current_fields": [
+      "current_phase",
+      "current_milestone",
+      "last_closed_task",
+      "next_authoritative_roadmap_id",
+      "next_task_execution_authorized",
+      "current_live_evidence_authorization",
+      "next_stage_not_executed"
+    ],
+    "projection_fields": [
+      "current_task",
+      "next_task",
+      "next_action"
+    ],
+    "consistency_mirror_fields": [
+      "current_execution_authorization"
+    ],
+    "task_object_policy": "HISTORICAL_OR_PROJECTION_ONLY; current authorization fields must agree with canonical current gates",
+    "historical_authorization_field": "historical_authorization",
+    "pdd_integration_policy": "DERIVED_OR_DEFERRED; no duplicate top-level current truth"
+  },
   "current_phase": "PHASE_5",
   "current_milestone": "M5.4 Context",
   "last_closed_task": "SHEEP-090",
