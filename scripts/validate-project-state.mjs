@@ -50,10 +50,35 @@ function taskObjectFor(state, taskId) {
 
 function closureContradicts(task) {
   if (!isObject(task)) return false;
-  const status = String(task.status ?? task.roadmap_status ?? "").toUpperCase();
-  const controller = String(task.controller_decision ?? "").toUpperCase();
-  if (controller && controller !== "PASS") return true;
-  return status.includes("CLOSED") && controller !== "PASS";
+  const statusClass = lifecycleClass(task.status);
+  const roadmapStatusClass = lifecycleClass(task.roadmap_status);
+  const controllerClass = lifecycleClass(task.controller_decision);
+  if (controllerClass !== null && controllerClass !== "CLOSED") return true;
+  if (statusClass !== null && statusClass !== "CLOSED") return true;
+  if (roadmapStatusClass !== null && roadmapStatusClass !== "CLOSED") return true;
+  return statusClass !== null && roadmapStatusClass !== null && statusClass !== roadmapStatusClass;
+}
+
+function lifecycleClass(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const normalized = String(value).trim().toUpperCase();
+  if (/\bNOT_STARTED\b/.test(normalized)) return "NOT_STARTED";
+  if (/\b(?:CLOSED|PASS)\b/.test(normalized)) return "CLOSED";
+  if (/\b(?:IMPLEMENTED|EXECUTED|IN_PROGRESS|COMPLETE|COMPLETED|ACCEPTED)\b/.test(normalized)) return "EXECUTED";
+  if (/\b(?:FAIL|FAILED|REPAIR|PARTIAL|AWAITING|BLOCKED|SKIPPED|CANCELLED)\b/.test(normalized)) return "NOT_CLOSED";
+  return "UNKNOWN";
+}
+
+function laterTaskLifecycleFields(task) {
+  return [
+    task.status,
+    task.roadmap_status,
+    task.result,
+    task.codex_result,
+    task.controller_decision,
+    task.implementation_result,
+    task.execution_result,
+  ].filter((value) => value !== null && value !== undefined);
 }
 
 function roadmapTaskIds(roadmapText) {
@@ -89,6 +114,10 @@ export function validateProjectState(state, options = {}) {
     }
   }
 
+  if (Object.hasOwn(state, "lifecycle_stage") && state.lifecycle_stage !== state.current_phase) {
+    add("LIFECYCLE_STAGE_PHASE_MISMATCH", "lifecycle_stage", "lifecycle_stage must match canonical current_phase");
+  }
+
   if (state.next_task_execution_authorized !== state.current_execution_authorization) {
     add("EXECUTION_GATE_MIRROR_MISMATCH", "current_execution_authorization", "execution mirror must match next_task_execution_authorized");
   }
@@ -96,6 +125,16 @@ export function validateProjectState(state, options = {}) {
   const currentTaskId = firstTaskId(state.current_task);
   const currentTask = taskObjectFor(state, currentTaskId);
   if (isObject(currentTask)) {
+    if (Object.hasOwn(currentTask, "phase") && currentTask.phase !== state.current_phase) {
+      add("CURRENT_TASK_PHASE_MISMATCH", `sheep_${taskNumber(currentTaskId)}.phase`, "current task phase must match canonical current phase");
+    }
+    if (Object.hasOwn(currentTask, "milestone") && currentTask.milestone !== state.current_milestone) {
+      add("CURRENT_TASK_MILESTONE_MISMATCH", `sheep_${taskNumber(currentTaskId)}.milestone`, "current task milestone must match canonical current milestone");
+    }
+    if (Object.hasOwn(currentTask, "next_stage_not_executed")
+      && currentTask.next_stage_not_executed !== state.next_stage_not_executed) {
+      add("CURRENT_TASK_NEXT_STAGE_PROJECTION_MISMATCH", `sheep_${taskNumber(currentTaskId)}.next_stage_not_executed`, "current task next-stage projection must match canonical gate");
+    }
     if (currentTask.execution_authorized !== state.next_task_execution_authorized) {
       add("CURRENT_TASK_EXECUTION_GATE_MISMATCH", `sheep_${taskNumber(currentTaskId)}.execution_authorized`, "current task projection must match canonical execution gate");
     }
@@ -144,6 +183,13 @@ export function validateProjectState(state, options = {}) {
       if (!objectTaskNumber || Number(objectTaskNumber) <= taskNumber(nextId) || !isObject(value)) continue;
       if (value.execution_authorized === true || value.current_execution_authorization === true || value.later_tasks_authorized === true) {
         add("LATER_TASK_AUTHORIZED_WHILE_STAGE_NOT_EXECUTED", key, "later task must not be authorized while next_stage_not_executed=true");
+      }
+      const executedLifecycleField = laterTaskLifecycleFields(value).find((field) => {
+        const classification = lifecycleClass(field);
+        return classification !== null && classification !== "NOT_STARTED" && classification !== "UNKNOWN";
+      });
+      if (executedLifecycleField !== undefined) {
+        add("LATER_TASK_EXECUTED_WHILE_STAGE_NOT_EXECUTED", key, "later task must not have an executed/closed lifecycle while next_stage_not_executed=true");
       }
     }
   }

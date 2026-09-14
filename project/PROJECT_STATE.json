@@ -42,12 +42,13 @@
     "projection_fields": [
       "current_task",
       "next_task",
-      "next_action"
+      "next_action",
+      "lifecycle_stage"
     ],
     "consistency_mirror_fields": [
       "current_execution_authorization"
     ],
-    "task_object_policy": "HISTORICAL_OR_PROJECTION_ONLY; current authorization fields must agree with canonical current gates",
+    "task_object_policy": "HISTORICAL_OR_PROJECTION_ONLY; current lifecycle and authorization fields must agree with canonical current gates",
     "historical_authorization_field": "historical_authorization",
     "pdd_integration_policy": "DERIVED_OR_DEFERRED; no duplicate top-level current truth"
   },
