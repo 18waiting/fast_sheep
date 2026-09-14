@@ -52,6 +52,42 @@
     "historical_authorization_field": "historical_authorization",
     "pdd_integration_policy": "DERIVED_OR_DEFERRED; no duplicate top-level current truth"
   },
+  "pdd_production_access_decision": {
+    "decision_status": "OWNER_ATTESTED_PERMISSION",
+    "authority_provenance": "OWNER_ATTESTED_PERMISSION",
+    "production_access_mechanism": "PERMITTED_EMBEDDED_RUNTIME_FIRST",
+    "official_customer_service_api_planning_assumption": "ASSUME_NOT_AVAILABLE_FOR_CURRENT_ARCHITECTURE",
+    "official_api_claim_boundary": "ARCHITECTURE_PLANNING_ASSUMPTION_NOT_PLATFORM_ABSENCE_AND_NOT_FIRST_PARTY_CONFIRMED_ABSENCE",
+    "permission_operating_model": {
+      "embedded_merchant_workbench": "AUTHORIZED",
+      "dom_observation": "AUTHORIZED",
+      "human_assisted_operation": "AUTHORIZED",
+      "unattended_operation": "AUTHORIZED",
+      "automatic_reply": "AUTHORIZED"
+    },
+    "permission_semantics": "PERMISSION_DOES_NOT_IMPLY_IMPLEMENTATION_RUNTIME_READINESS_SAFETY_READINESS_OR_CURRENT_EXECUTION_AUTHORIZATION",
+    "current_technical_state": {
+      "production_navigation": "NOT_IMPLEMENTED",
+      "real_text_transport": "NOT_IMPLEMENTED",
+      "live_inbound_producer": "NOT_IMPLEMENTED",
+      "conversation_association": "UNRESOLVED / NOT_IMPLEMENTED",
+      "send_attempt_production_binding": "PARTIAL / NOT_IMPLEMENTED",
+      "unknown_reconciliation": "PARTIAL / NOT_IMPLEMENTED",
+      "kill_switch_quarantine": "NOT_READY",
+      "automatic_reply_runtime": "NOT_IMPLEMENTED / NOT_CURRENTLY_EXECUTION_AUTHORIZED",
+      "pdd_integration": "NOT_STARTED"
+    },
+    "current_execution_authorization": {
+      "production_navigation": "NOT_AUTHORIZED",
+      "real_text_send": "NOT_AUTHORIZED",
+      "automatic_reply": "NOT_AUTHORIZED",
+      "later_roadmap_tasks": "NOT_AUTHORIZED"
+    },
+    "recommended_next_readiness_unit": {
+      "type": "PRODUCTION_NAVIGATION_READINESS",
+      "implementation_authorization": "NOT_AUTHORIZED"
+    }
+  },
   "current_phase": "PHASE_5",
   "current_milestone": "M5.4 Context",
   "last_closed_task": "SHEEP-090",
