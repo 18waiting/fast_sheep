@@ -23,7 +23,7 @@ function makeService(overrides: Record<string, unknown> = {}) {
   const views = new Map<string, FakeView>();
   const inbound: Array<Record<string, unknown>> = [];
   const service = new PddPlatformService({
-    testMode: true,
+    navigationMode: "FIXTURE",
     orchestrator: { onBuyerMessage: async () => undefined, onHumanTakeover: async () => undefined, onFocusShop: () => undefined } as never,
     fixturePathFor: (shopId) => "/fixtures/" + shopId + ".html",
     makeView: (shopId: string) => { const v = new FakeView(); views.set(shopId, v); return v as never; },
@@ -74,4 +74,11 @@ test("disposeAll clears sessions and status becomes unavailable", async () => {
   await service.activate("shop-1");
   service.disposeAll();
   assert.equal(service.status("shop-1"), null);
+});
+
+test("missing explicit navigation mode fails construction", () => {
+  assert.throws(() => new PddPlatformService({
+    testMode: true,
+    orchestrator: { onBuyerMessage: async () => undefined, onHumanTakeover: async () => undefined, onFocusShop: () => undefined } as never,
+  } as never), /navigationMode is required/);
 });

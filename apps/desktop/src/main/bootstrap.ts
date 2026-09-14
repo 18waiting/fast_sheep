@@ -23,6 +23,7 @@ import type { WorkerJobClientPort } from "@fastwork/background-jobs";
 import type { OptimizationWorkerClientPort, ProductRepositoryPort, ProductRow } from "@fastwork/product-optimization";
 import type { JobRepository, JobRecord, ProductRecord } from "@fastwork/persistence";
 import { PddPlatformService } from "./platforms/pdd/pdd-platform-service.js";
+import { PDD_PRODUCTION_CHAT_URL, PDD_TOP_LEVEL_HOST } from "./platforms/pdd/pdd-navigation-policy.js";
 import { createWorkspaceMerchantContext, type WorkspaceMerchantContext } from "./services/workspace-merchant-context.js";
 import { GenericPlatformService } from "./platforms/shared/generic-platform-service.js";
 import { PlatformSessionCoordinator } from "./platforms/platform-session-coordinator.js";
@@ -341,9 +342,10 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   const platformStatusSink: { current: ((ev: PlatformStatusChangedEvent) => void) | null } = { current: null };
   const feedbackService = options.feedbackService ?? null;
   const platform = new PddPlatformService({
-    testMode,
+    navigationMode: testMode ? "FIXTURE" : "PRODUCTION_READ_ONLY",
     orchestrator,
-    allowedProductionHosts: [],
+    allowedProductionHosts: testMode ? [] : [PDD_TOP_LEVEL_HOST],
+    productionEntryUrl: testMode ? undefined : PDD_PRODUCTION_CHAT_URL,
     fixturePathFor: testMode
       ? (shopId) => join(PDD_FIXTURES, shopId === "shop-test-2" ? "conversation-switch.html" : "chat-basic.html")
       : undefined,
@@ -359,17 +361,20 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
     sendText: async (shopId, conversationId, segments) => {
       const pdd = platform.adapterFor(shopId);
       if (pdd) return pdd.sendText(shopId, conversationId, segments);
+      if (platform.status(shopId)) return { ok: false, error: "platform.command_disabled_navigation_only" };
       return platformFallback.sendText(shopId, conversationId, segments);
     },
     getCurrentConversationState: async (shopId, conversationId) => {
       const pdd = platform.adapterFor(shopId);
       if (pdd) return pdd.getCurrentConversationState(shopId, conversationId);
+      if (platform.status(shopId)) return { hasNewMessage: false };
       return platformFallback.getCurrentConversationState(shopId, conversationId);
     },
     onTransfer: (decision: TransferDecision) => {
       const shopId = (decision as { shop_id?: string }).shop_id;
       const pdd = shopId ? platform.adapterFor(shopId) : null;
       if (pdd) pdd.onTransfer(decision);
+      else if (shopId && platform.status(shopId)) return;
       else platformFallback.onTransfer(decision);
     },
   };

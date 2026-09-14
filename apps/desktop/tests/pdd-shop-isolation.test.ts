@@ -17,7 +17,7 @@ class FakeView {
 function makeService() {
   const inbound: Array<{ shop_id: string; conversation_id: string; content: string }> = [];
   const service = new PddPlatformService({
-    testMode: true,
+    navigationMode: "FIXTURE",
     orchestrator: { onBuyerMessage: async () => undefined, onHumanTakeover: async () => undefined, onFocusShop: () => undefined } as never,
     fixturePathFor: (shopId) => "/f/" + shopId + ".html",
     makeView: () => new FakeView() as never,

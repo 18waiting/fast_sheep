@@ -5,6 +5,8 @@ import type { PddPageBridge, PddPageCommand, PddPageCommandResult } from "@fastw
 import type { PddViewHost } from "./pdd-view-host.js";
 import { PDD_PAGE_COMMAND_CHANNEL } from "./pdd-page-ipc.js";
 
+const MUTATION_COMMANDS = new Set<PddPageCommand["type"]>(["send_text", "send_image", "transfer"]);
+
 export interface PendingCommand {
   resolve(result: PddPageCommandResult): void;
   timer: ReturnType<typeof setTimeout>;
@@ -12,13 +14,25 @@ export interface PendingCommand {
 
 export class PddPreloadBridge implements PddPageBridge {
   private readonly pending = new Map<string, PendingCommand>();
+  private mutationCommandsEnabled = true;
 
   constructor(
     private readonly view: PddViewHost,
     private readonly timeoutMs = 8000,
   ) {}
 
+  setMutationCommandsEnabled(enabled: boolean): void {
+    this.mutationCommandsEnabled = enabled;
+  }
+
   execute(command: PddPageCommand): Promise<PddPageCommandResult> {
+    if (!this.mutationCommandsEnabled && MUTATION_COMMANDS.has(command.type)) {
+      return Promise.resolve({
+        command_id: command.command_id,
+        ok: false,
+        error: "platform.command_disabled_navigation_only",
+      });
+    }
     return new Promise<PddPageCommandResult>((resolve) => {
       const timer = setTimeout(() => {
         this.pending.delete(command.command_id);
