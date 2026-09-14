@@ -21,6 +21,8 @@ const DEFAULT_AUTHORITY_FIELDS = [
   "next_stage_not_executed",
 ];
 
+const LATER_TASK_EXECUTION_INDICATORS = /\b(?:IMPLEMENTED|PASS|CLOSED|EXECUTED|IN_PROGRESS|COMPLETE|COMPLETED|ACCEPTED|FAIL|FAILED|PARTIAL|REPAIR)\b/;
+
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
@@ -79,6 +81,11 @@ function laterTaskLifecycleFields(task) {
     task.implementation_result,
     task.execution_result,
   ].filter((value) => value !== null && value !== undefined);
+}
+
+function independentlyProvesLaterTaskExecution(value) {
+  if (value === null || value === undefined || value === "") return false;
+  return LATER_TASK_EXECUTION_INDICATORS.test(String(value).trim().toUpperCase());
 }
 
 function roadmapTaskIds(roadmapText) {
@@ -184,10 +191,7 @@ export function validateProjectState(state, options = {}) {
       if (value.execution_authorized === true || value.current_execution_authorization === true || value.later_tasks_authorized === true) {
         add("LATER_TASK_AUTHORIZED_WHILE_STAGE_NOT_EXECUTED", key, "later task must not be authorized while next_stage_not_executed=true");
       }
-      const executedLifecycleField = laterTaskLifecycleFields(value).find((field) => {
-        const classification = lifecycleClass(field);
-        return classification !== null && classification !== "NOT_STARTED" && classification !== "UNKNOWN";
-      });
+      const executedLifecycleField = laterTaskLifecycleFields(value).find(independentlyProvesLaterTaskExecution);
       if (executedLifecycleField !== undefined) {
         add("LATER_TASK_EXECUTED_WHILE_STAGE_NOT_EXECUTED", key, "later task must not have an executed/closed lifecycle while next_stage_not_executed=true");
       }

@@ -95,6 +95,32 @@ test("later task executed lifecycle is rejected without an authorization boolean
   assert.ok(codes(validateProjectState(state, { roadmapText })).includes("LATER_TASK_EXECUTED_WHILE_STAGE_NOT_EXECUTED"));
 });
 
+test("later-task governance-only lifecycle tokens do not prove execution", () => {
+  for (const status of ["BLOCKED", "CANCELLED", "SKIPPED", "AWAITING"]) {
+    const state = cloneState();
+    state.sheep_092 = { status };
+    assert.ok(!codes(validateProjectState(state, { roadmapText })).includes("LATER_TASK_EXECUTED_WHILE_STAGE_NOT_EXECUTED"), status);
+  }
+});
+
+test("independent later-task execution evidence still fails with a governance token", () => {
+  const blocked = cloneState();
+  blocked.sheep_092 = { status: "BLOCKED", implementation_result: "IMPLEMENTED" };
+  assert.ok(codes(validateProjectState(blocked, { roadmapText })).includes("LATER_TASK_EXECUTED_WHILE_STAGE_NOT_EXECUTED"));
+
+  const cancelled = cloneState();
+  cancelled.sheep_092 = { status: "CANCELLED", execution_result: "EXECUTED" };
+  assert.ok(codes(validateProjectState(cancelled, { roadmapText })).includes("LATER_TASK_EXECUTED_WHILE_STAGE_NOT_EXECUTED"));
+});
+
+test("later-task execution and advancement indicators remain rejected", () => {
+  for (const status of ["IMPLEMENTED", "PASS", "CLOSED", "EXECUTED", "IN_PROGRESS", "COMPLETE", "ACCEPTED", "FAIL", "FAILED", "PARTIAL", "REPAIR"]) {
+    const state = cloneState();
+    state.sheep_092 = { status };
+    assert.ok(codes(validateProjectState(state, { roadmapText })).includes("LATER_TASK_EXECUTED_WHILE_STAGE_NOT_EXECUTED"), status);
+  }
+});
+
 test("historical closed task shape differences do not fail validation", () => {
   const state = cloneState();
   delete state.sheep_089.roadmap_status;
