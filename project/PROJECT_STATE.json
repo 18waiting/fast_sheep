@@ -58,6 +58,47 @@
     "production_access_mechanism": "PERMITTED_EMBEDDED_RUNTIME_FIRST",
     "official_customer_service_api_planning_assumption": "ASSUME_NOT_AVAILABLE_FOR_CURRENT_ARCHITECTURE",
     "official_api_claim_boundary": "ARCHITECTURE_PLANNING_ASSUMPTION_NOT_PLATFORM_ABSENCE_AND_NOT_FIRST_PARTY_CONFIRMED_ABSENCE",
+    "route_evidence_authorization": {
+      "scope": "PDD_PRODUCTION_CHAT_ROUTE_EVIDENCE_ONLY",
+      "execution_form": "OWNER_CONTROLLED_LIVE_READ_ONLY_ROUTE_OBSERVATION",
+      "authorization": "AUTHORIZED_WITH_CONSTRAINTS",
+      "authorized_observation_count": 1,
+      "production_chat_route": "UNRESOLVED",
+      "confirmed_top_level_host": "mms.pinduoduo.com",
+      "confirmed_login_route": "https://mms.pinduoduo.com/login/",
+      "candidate_routes": {
+        "/chat/": "TEST_ONLY",
+        "/chat-merchant/index.html": "NAVIGATION_CANDIDATE_ONLY"
+      },
+      "evidence_target": "FINAL_BROWSER_ADDRESS_BAR_ORIGIN_AND_PATHNAME_ONLY",
+      "spr": "R1_PLATFORM_OBSERVATION",
+      "platform_mutation": "NONE",
+      "permitted_owner_actions": [
+        "MANUAL_OPEN_CONTROLLED_MERCHANT_CUSTOMER_SERVICE_PAGE",
+        "MANUAL_LOGIN_IF_NEEDED",
+        "MANUAL_NAVIGATION_USING_NORMAL_PLATFORM_UI",
+        "RECORD_FINAL_ORIGIN_AND_PATHNAME_ONLY"
+      ],
+      "forbidden_evidence_actions": [
+        "NETWORK_INSPECTION",
+        "FETCH_XHR_INSPECTION",
+        "WEBSOCKET_INSPECTION",
+        "CONSOLE_INSPECTION",
+        "APPLICATION_STORAGE_INSPECTION",
+        "DOM_INSPECTION",
+        "MESSAGE_SEND",
+        "PRODUCT_OR_ORDER_ACTION",
+        "BUYER_SWITCHING_FOR_EVIDENCE",
+        "AUTOMATED_NAVIGATION",
+        "CODEX_BROWSER_CONTROL",
+        "CREDENTIAL_INSPECTION"
+      ],
+      "minimum_query_fragment_policy": "ORIGIN_AND_PATHNAME_ONLY; QUERY_STRING_AND_FRAGMENT_VALUES_MUST_NOT_BE_RECORDED",
+      "observation_performed": false,
+      "navigation_implementation_authorized": false,
+      "platform_mutation_authorized": false,
+      "roadmap_execution_authorized": false
+    },
     "permission_operating_model": {
       "embedded_merchant_workbench": "AUTHORIZED",
       "dom_observation": "AUTHORIZED",
