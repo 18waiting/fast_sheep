@@ -131,6 +131,7 @@
       "live_pdd_loading": "CLOSED / CONSUMED",
       "production_controlled_shop_binding_implementation": "AUTHORIZED_WITH_CONSTRAINTS",
       "production_platform_surface_implementation": "AUTHORIZED_WITH_CONSTRAINTS",
+      "production_surface_stability_package_c": "AUTHORIZED_WITH_CONSTRAINTS",
       "real_text_send": "NOT_AUTHORIZED",
       "automatic_reply": "NOT_AUTHORIZED",
       "later_roadmap_tasks": "NOT_AUTHORIZED"
@@ -273,6 +274,53 @@
       "real_send_authorization": "NOT_AUTHORIZED",
       "auto_reply_execution_authorization": "NOT_AUTHORIZED",
       "network_inspection_authorization": "NOT_AUTHORIZED",
+      "roadmap_execution_authorized": false
+    },
+    "production_surface_stability_package_c_authorization": {
+      "scope": "PDD_PRODUCTION_SURFACE_STABILITY_PACKAGE_C_ONLY",
+      "execution_form": "LOCAL_MAIN_BOUNDS_STATUS_SEPARATION_AND_RENDERER_LIFECYCLE_SAFETY",
+      "authorization_status": "AUTHORIZED_WITH_CONSTRAINTS",
+      "implementation_status": "NOT_STARTED",
+      "accepted_design": {
+        "preferred_root_fix": "A / REMOVE_BOUNDS_ONLY_PLATFORM_STATUS_BROADCAST",
+        "minimum_package_before_next_live_validation": "PACKAGE_C",
+        "first_hard_blocker": "BOUNDS_RERENDER_FEEDBACK_LOOP"
+      },
+      "authorized_files": [
+        "apps\\desktop\\src\\main\\platforms\\pdd\\pdd-platform-service.ts",
+        "apps\\desktop\\src\\renderer\\components\\platform-surface.ts",
+        "apps\\desktop\\tests\\pdd-surface-stability.test.ts"
+      ],
+      "maximum_tracked_files": 3,
+      "root_semantic_fix": "PddPlatformService.setViewBounds applies geometry without emitting a platform status broadcast solely because bounds changed",
+      "stale_surface_safety": "Detached or replaced Renderer platform surfaces must not report bounds; stale callback detection performs local cleanup without IPC",
+      "non_positive_bounds_safety": "Visible zero-width or zero-height geometry must not be reported to Main; explicit visible semantics remain the collapse/hide mechanism",
+      "dedup_hardening": "Local normalized integer bounds dedup is permitted only within the current surface instance; lastReportedBounds updates only after successful onBoundsChange delivery",
+      "forbidden_changes": [
+        "GENERIC_PLATFORM_SERVICE_REPAIR",
+        "SHIELD_UNION_CHANGE",
+        "SHIELD_Z_ORDER_CHANGE",
+        "SHIELD_TRANSPARENCY_CHANGE",
+        "KEYBOARD_SUPPRESSION_CHANGE",
+        "MOUSE_SUPPRESSION_CHANGE",
+        "COORDINATE_CONVERSION_CHANGE",
+        "PDD_ROUTE_POLICY_CHANGE",
+        "SHOP_ACTIVATION_CHANGE",
+        "STORE_FILTERING_CHANGE",
+        "SEND_TEXT_CHANGE",
+        "SEND_IMAGE_CHANGE",
+        "TRANSFER_CHANGE",
+        "AUTO_REPLY_CHANGE",
+        "DEBOUNCE_OR_THROTTLE_WORKAROUND",
+        "MUTATION_OBSERVER",
+        "GENERAL_COMPONENT_LIFECYCLE_FRAMEWORK"
+      ],
+      "generic_platform_repair": "NOT_AUTHORIZED / DEFERRED_TO_SEPARATE_BOUNDED_REVIEW",
+      "current_blocker": "PDD_SURFACE_FLICKER_AND_CLIPPING",
+      "live_validation_authorization": "CLOSED / CONSUMED / NEW_AUTHORIZATION_REQUIRED",
+      "platform_mutation_authorization": "NOT_AUTHORIZED",
+      "real_send_authorization": "NOT_AUTHORIZED",
+      "auto_reply_execution_authorization": "NOT_AUTHORIZED",
       "roadmap_execution_authorized": false
     },
     "recommended_next_readiness_unit": {
