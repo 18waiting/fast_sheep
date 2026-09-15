@@ -129,6 +129,7 @@
       "production_navigation_live_validation": "CLOSED / CONSUMED",
       "live_pdd_loading": "CLOSED / CONSUMED",
       "production_controlled_shop_binding_implementation": "AUTHORIZED_WITH_CONSTRAINTS",
+      "production_platform_surface_implementation": "AUTHORIZED_WITH_CONSTRAINTS",
       "real_text_send": "NOT_AUTHORIZED",
       "automatic_reply": "NOT_AUTHORIZED",
       "later_roadmap_tasks": "NOT_AUTHORIZED"
@@ -208,6 +209,28 @@
       "auto_reply_execution_authorization": "NOT_AUTHORIZED",
       "network_inspection_authorization": "NOT_AUTHORIZED",
       "product_or_order_action_authorization": "NOT_AUTHORIZED",
+      "roadmap_execution_authorized": false
+    },
+    "production_platform_surface_implementation_authorization": {
+      "scope": "PDD_PRODUCTION_PLATFORM_SURFACE_INTEGRATION_ONLY",
+      "execution_form": "LOCAL_RENDERER_SURFACE_WIRING_ONLY",
+      "authorization_status": "AUTHORIZED_WITH_CONSTRAINTS",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "current_blocker": "PLATFORM_SURFACE_SWITCH_MISSING",
+      "surface_source": "EXISTING_RENDER_PLATFORM_SURFACE_ONLY",
+      "bounds_reporting": "EXISTING_ON_PLATFORM_BOUNDS_CHANGE_ONLY",
+      "shop_activation": "EXPLICIT_ONLY / UNCHANGED",
+      "platform_filter_activation": "NOT_AUTHORIZED",
+      "shop_store_boundary": "PRESERVED / NO_MERGE",
+      "direct_pdd_view_host_access": "NOT_AUTHORIZED",
+      "new_repository_access": "NOT_AUTHORIZED",
+      "new_platform_surface_implementation": "NOT_AUTHORIZED",
+      "live_validation_authorization": "CLOSED / CONSUMED",
+      "additional_live_validation_authorized": false,
+      "platform_mutation_authorization": "NOT_AUTHORIZED",
+      "real_send_authorization": "NOT_AUTHORIZED",
+      "auto_reply_execution_authorization": "NOT_AUTHORIZED",
+      "network_inspection_authorization": "NOT_AUTHORIZED",
       "roadmap_execution_authorized": false
     },
     "recommended_next_readiness_unit": {
