@@ -71,9 +71,10 @@ body { font-family: var(--fs-font-sans); color: var(--fs-color-text); background
 .platform-overlay-label { padding: var(--fs-space-2) var(--fs-space-3); border-radius: var(--fs-radius-sm); background: var(--fs-color-bg-surface); border: var(--fs-border-width) var(--fs-border-style) var(--fs-color-border); }
 /* M8 capability chips */
 .platform-capabilities { position: absolute; right: var(--fs-space-2); bottom: var(--fs-space-2); display: flex; gap: 6px; flex-wrap: wrap; z-index: 3; }
+.platform-capabilities-qualifier { flex-basis: 100%; text-align: right; font-size: var(--fs-font-size-xs); color: var(--fs-color-text-muted); }
 .cap-chip { font-size: var(--fs-font-size-xs); padding: 2px var(--fs-space-2); border-radius: var(--fs-radius-full); }
-.cap-chip.supported { background: var(--fs-color-bg-success); color: var(--fs-color-success); }
-.cap-chip.unsupported { background: var(--fs-color-bg-subtle); color: var(--fs-color-text-muted); }
+.cap-chip.declared { background: var(--fs-color-bg-subtle); color: var(--fs-color-text-secondary); }
+.cap-chip.undeclared { background: var(--fs-color-bg-subtle); color: var(--fs-color-text-muted); }
 /* SHEEP-029 dialog common component — clean-room minimal helper.
  * Uses existing --fs-* tokens only; no new unproven visual values
  * (overlay opacity/width/shadow/extra radius/padding are NOT invented).
