@@ -24,6 +24,7 @@ import { renderModeToggle } from "./mode-toggle.js";
 import { renderCountdownView } from "./countdown-view.js";
 import { renderWorkerStatusBadge } from "./worker-status-badge.js";
 import { renderEmptyPlatformPanel } from "./empty-platform-panel.js";
+import { renderPlatformSurface } from "./platform-surface.js";
 import { renderErrorBanner } from "./error-banner.js";
 import { renderBackgroundJobsPanel } from "./background-jobs-panel.js";
 import { renderLearningPanel } from "./learning-panel.js";
@@ -85,7 +86,14 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
   main.appendChild(panels);
 
   const platformHost = el("div", "platform-host");
-  renderEmptyPlatformPanel(platformHost);
+  const activePlatformSurface = state.selectedShopId !== null
+    && state.platform.activeShopId === state.selectedShopId
+    && state.platform.platformType !== null;
+  if (activePlatformSurface) {
+    renderPlatformSurface(platformHost, state, { onBoundsChange: actions.onPlatformBoundsChange });
+  } else {
+    renderEmptyPlatformPanel(platformHost);
+  }
   main.appendChild(platformHost);
 
   // M10 panels: projection/control only (no-op when actions are not wired).

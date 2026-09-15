@@ -20,7 +20,7 @@ test("app-shell establishes navbar/sidebar/main region boundaries (SHEEP-026)", 
   for (const cls of REGIONS) {
     assert.ok(src.includes(cls), "app-shell.ts must create " + cls + " container");
   }
-  for (const name of ["renderErrorBanner", "renderAppNavbar", "renderShopSidebar", "renderWorkbenchHeader", "renderModeToggle", "renderWorkerStatusBadge", "renderConversationList"]) {
+  for (const name of ["renderErrorBanner", "renderAppNavbar", "renderShopSidebar", "renderWorkbenchHeader", "renderModeToggle", "renderWorkerStatusBadge", "renderConversationList", "renderPlatformSurface", "renderEmptyPlatformPanel"]) {
     assert.ok(src.includes(name), "app-shell.ts must keep " + name);
   }
 });
@@ -32,6 +32,15 @@ test("app-shell mounts the existing Shop sidebar without implicit selection or a
   assert.ok(!src.includes("actions.onSelectShop("), "app-shell must not auto-select a Shop");
   assert.ok(!src.includes("activatePlatformShop"), "app-shell must not activate a platform directly");
   assert.ok(!src.includes("SqliteShopRepository") && !src.includes("listByMerchant"), "app-shell must not access repositories directly");
+});
+
+test("app-shell switches to the existing platform surface only for an active selected Shop", () => {
+  const src = readFileSync(SRC, "utf-8");
+  assert.match(src, /state\.selectedShopId !== null[\s\S]*state\.platform\.activeShopId === state\.selectedShopId[\s\S]*state\.platform\.platformType !== null/, "platform surface must require explicit selected Shop/runtime state");
+  assert.match(src, /renderPlatformSurface\(platformHost,\s*state,\s*\{\s*onBoundsChange:\s*actions\.onPlatformBoundsChange\s*\}\)/, "platform surface must use the existing bounds callback");
+  assert.match(src, /else\s*\{\s*renderEmptyPlatformPanel\(platformHost\);\s*\}/, "empty/local platform panel must remain for no runtime");
+  assert.ok(!src.includes("getBoundingClientRect") && !src.includes("Math.round"), "app-shell must not hardcode bounds handling");
+  assert.ok(!src.includes("onScopePlatform") && !src.includes("manualSend") && !src.includes("send_text"), "platform switching must not activate from filters or add send behavior");
 });
 
 test("mounted Shop sidebar is data-driven and selects only through explicit click", () => {
@@ -62,4 +71,5 @@ test("built app-shell.js mirrors the same region boundaries", () => {
     assert.ok(js.includes(cls), "dist app-shell.js must create " + cls + " container");
   }
   assert.ok(js.includes("renderShopSidebar"), "dist app-shell.js must mount the existing Shop sidebar");
+  assert.ok(js.includes("renderPlatformSurface"), "dist app-shell.js must mount the existing platform surface");
 });
