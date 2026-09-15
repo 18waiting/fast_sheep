@@ -41,24 +41,6 @@ export function renderPlatformSurface(root: HTMLElement, state: UiState, actions
     surface.appendChild(overlay);
   }
 
-  // Report local bounds so Main can position the seller view.
-  if (typeof ResizeObserver !== "undefined") {
-    const report = (): void => {
-      const rect = surface.getBoundingClientRect();
-      actions.onBoundsChange({
-        x: Math.round(rect.left),
-        y: Math.round(rect.top),
-        width: Math.round(rect.width),
-        height: Math.round(rect.height),
-        visible: true,
-      });
-    };
-    const ro = new ResizeObserver(() => report());
-    ro.observe(surface);
-    // Initial report (also used by the Electron smoke to verify bounds apply).
-    requestAnimationFrame(() => report());
-  }
-
   // Capability projection (presentation only): these flags are declaration state,
   // not platform support, production readiness, or operation authorization.
   const caps = state.platform?.capabilities ?? {};
@@ -83,4 +65,61 @@ export function renderPlatformSurface(root: HTMLElement, state: UiState, actions
   }
 
   root.appendChild(surface);
+
+  // Report local bounds so Main can position the seller view. Lifecycle state is
+  // local to this surface instance so stale callbacks cannot report after the
+  // surface is replaced by a later app-shell render.
+  let disposed = false;
+  let rafId: number | null = null;
+  let observer: ResizeObserver | null = null;
+  let lastReportedBounds: { x: number; y: number; width: number; height: number; visible: boolean } | null = null;
+
+  const cleanup = (): void => {
+    disposed = true;
+    observer?.disconnect();
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  };
+
+  const report = (): void => {
+    if (disposed || !surface.isConnected) {
+      cleanup();
+      return;
+    }
+    const rect = surface.getBoundingClientRect();
+    const bounds = {
+      x: Math.round(rect.left),
+      y: Math.round(rect.top),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+      visible: true,
+    };
+    if (bounds.visible && (bounds.width <= 0 || bounds.height <= 0)) return;
+    if (lastReportedBounds
+      && lastReportedBounds.x === bounds.x
+      && lastReportedBounds.y === bounds.y
+      && lastReportedBounds.width === bounds.width
+      && lastReportedBounds.height === bounds.height
+      && lastReportedBounds.visible === bounds.visible) return;
+    actions.onBoundsChange(bounds);
+    lastReportedBounds = bounds;
+  };
+
+  if (typeof ResizeObserver !== "undefined") {
+    observer = new ResizeObserver(() => {
+      if (disposed || !surface.isConnected) {
+        cleanup();
+        return;
+      }
+      report();
+    });
+    observer.observe(surface);
+    // Initial report (also used by the Electron smoke to verify bounds apply).
+    rafId = requestAnimationFrame(() => {
+      rafId = null;
+      report();
+    });
+  }
 }

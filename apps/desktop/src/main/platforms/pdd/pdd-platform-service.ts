@@ -192,7 +192,6 @@ export class PddPlatformService {
     const session = this.sessions.get(shopId);
     if (!session) return false;
     session.setViewBounds(bounds, contentBounds);
-    this.broadcastStatus(shopId);
     return true;
   }
 
