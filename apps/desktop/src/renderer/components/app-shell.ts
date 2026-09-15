@@ -73,18 +73,8 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
   renderCountdownView(countdownHost, state);
   main.appendChild(countdownHost);
 
-  const panels = el("div", "panels");
-  const conversationHost = el("div", "conversation-host");
-  // SHEEP-063/064: Conversation Main region = panel + Timeline (primary content) +
-  // Composer below (reply surface). Each surface renders into its own sub-container
-  // so components never clobber one another (REPAIR #2).
-  renderConversationRegion(conversationHost, state, actions);
-  panels.appendChild(conversationHost);
-  const suggestionHost = el("div", "suggestion-host");
-  renderSuggestionPanel(suggestionHost, state, actions);
-  panels.appendChild(suggestionHost);
-  main.appendChild(panels);
-
+  // Stable, non-scrolling PDD platform viewport. The same host exists for both
+  // empty and active runtime states; only its child content changes.
   const platformHost = el("div", "platform-host");
   const activePlatformSurface = state.selectedShopId !== null
     && state.platform.activeShopId === state.selectedShopId
@@ -95,6 +85,21 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
     renderEmptyPlatformPanel(platformHost);
   }
   main.appendChild(platformHost);
+
+  // Local details scroll independently from the stable native platform viewport.
+  const localDetailsScroll = el("div", "local-details-scroll");
+
+  const panels = el("div", "panels");
+  const conversationHost = el("div", "conversation-host");
+  // SHEEP-063/064: Conversation Main region = panel + Timeline (primary content) +
+  // Composer below (reply surface). Each surface renders into its own sub-container
+  // so components never clobber one another (REPAIR #2).
+  renderConversationRegion(conversationHost, state, actions);
+  panels.appendChild(conversationHost);
+  const suggestionHost = el("div", "suggestion-host");
+  renderSuggestionPanel(suggestionHost, state, actions);
+  panels.appendChild(suggestionHost);
+  localDetailsScroll.appendChild(panels);
 
   // M10 panels: projection/control only (no-op when actions are not wired).
   const m10 = state.m10 ?? EMPTY_M10_VIEW_MODEL;
@@ -115,12 +120,13 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
   const optHost = el("div", "m10-opt-host");
   renderProductOptimizationPanel(optHost, m10, m10a);
   m10Row.appendChild(optHost);
-  main.appendChild(m10Row);
+  localDetailsScroll.appendChild(m10Row);
 
   // M11 legacy import panel (projection/control only).
   const liHost = el("div", "m11-legacy-import-host");
   renderLegacyImportPanel(liHost, state.legacyImport ?? EMPTY_LEGACY_IMPORT_VIEW_MODEL, legacyImportActions ?? noopLegacyImportActions());
-  main.appendChild(liHost);
+  localDetailsScroll.appendChild(liHost);
+  main.appendChild(localDetailsScroll);
 
   body.appendChild(main);
   shell.appendChild(body);

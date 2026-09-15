@@ -12,8 +12,10 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const SRC = join(HERE, "..", "src", "renderer", "components", "app-shell.ts");
 const DIST = join(HERE, "..", "dist", "renderer", "components", "app-shell.js");
 const SIDEBAR_SRC = join(HERE, "..", "src", "renderer", "components", "shop-sidebar.ts");
+const SURFACE_SRC = join(HERE, "..", "src", "renderer", "components", "platform-surface.ts");
+const STYLES_SRC = join(HERE, "..", "src", "renderer", "styles.css");
 
-const REGIONS = ["app-navbar", "app-sidebar", "app-main", "queue-host"];
+const REGIONS = ["app-navbar", "app-sidebar", "app-main", "queue-host", "local-details-scroll"];
 
 test("app-shell establishes navbar/sidebar/main region boundaries (SHEEP-026)", () => {
   const src = readFileSync(SRC, "utf-8");
@@ -41,6 +43,39 @@ test("app-shell switches to the existing platform surface only for an active sel
   assert.match(src, /else\s*\{\s*renderEmptyPlatformPanel\(platformHost\);\s*\}/, "empty/local platform panel must remain for no runtime");
   assert.ok(!src.includes("getBoundingClientRect") && !src.includes("Math.round"), "app-shell must not hardcode bounds handling");
   assert.ok(!src.includes("onScopePlatform") && !src.includes("manualSend") && !src.includes("send_text"), "platform switching must not activate from filters or add send behavior");
+});
+
+test("app-shell keeps one stable platform host outside the local-details scroll region", () => {
+  const src = readFileSync(SRC, "utf-8");
+  assert.equal((src.match(/el\("div", "platform-host"\)/g) ?? []).length, 1, "exactly one platform-host must exist");
+  assert.match(src, /const platformHost =[\s\S]*const localDetailsScroll =[\s\S]*localDetailsScroll\.appendChild\(panels\)/, "platform-host must precede and remain outside local-details-scroll");
+  assert.match(src, /localDetailsScroll\.appendChild\(m10Row\)/, "M10 content must live in local-details-scroll");
+  assert.match(src, /localDetailsScroll\.appendChild\(liHost\)/, "M11 content must live in local-details-scroll");
+  assert.match(src, /main\.appendChild\(localDetailsScroll\)/, "local-details-scroll must remain inside app-main");
+  assert.ok(!src.includes("localDetailsScroll.appendChild(platformHost)"), "platform-host must not be nested inside local-details-scroll");
+});
+
+test("app-main and local-details-scroll preserve the stable height contract", () => {
+  const styles = readFileSync(STYLES_SRC, "utf-8");
+  assert.match(styles, /html,\s*body\s*\{[^}]*height:\s*100%[^}]*\}/, "html/body must remain bounded to the viewport height");
+  assert.match(styles, /#app\s*\{[^}]*height:\s*100%[^}]*\}/, "renderer root must remain bounded to the viewport height");
+  assert.match(styles, /\.app-shell\s*\{[^}]*height:\s*100%[^}]*\}/, "app-shell must remain bounded to the viewport height");
+  assert.match(styles, /\.app-body\s*\{[^}]*flex:\s*1[^}]*min-height:\s*0[^}]*\}/, "app-body must flex and permit its children to shrink");
+  assert.match(styles, /\.app-main\s*\{[^}]*min-height:\s*0[^}]*overflow:\s*hidden[^}]*\}/, "app-main must be bounded and non-scrolling");
+  assert.match(styles, /\.platform-host\s*\{[^}]*flex:\s*1 1 auto[^}]*min-width:\s*0[^}]*min-height:\s*260px[^}]*\}/, "platform-host must retain priority and minimum useful height");
+  assert.match(styles, /\.local-details-scroll\s*\{[^}]*min-height:\s*0[^}]*overflow:\s*auto[^}]*\}/, "local-details-scroll must own local vertical overflow");
+  assert.match(styles, /\.header-host,\s*\.status-row,\s*\.countdown-host\s*\{\s*flex:\s*none;\s*\}/, "stable workbench header/status items must not shrink");
+});
+
+test("option B introduces no scroll-driven platform bounds tracking", () => {
+  const shell = readFileSync(SRC, "utf-8");
+  const surface = readFileSync(SURFACE_SRC, "utf-8");
+  for (const token of ["addEventListener(\"scroll\"", "addEventListener('scroll'", "onscroll", "scrollY", "wheel"]) {
+    assert.ok(!shell.includes(token), "app-shell must not introduce scroll tracking: " + token);
+    assert.ok(!surface.includes(token), "platform-surface must not introduce scroll tracking: " + token);
+  }
+  assert.ok(surface.includes("getBoundingClientRect"), "stable surface keeps its existing bounds measurement");
+  assert.ok(surface.includes("ResizeObserver"), "stable surface keeps its existing viewport resize observation");
 });
 
 test("mounted Shop sidebar is data-driven and selects only through explicit click", () => {
@@ -72,4 +107,5 @@ test("built app-shell.js mirrors the same region boundaries", () => {
   }
   assert.ok(js.includes("renderShopSidebar"), "dist app-shell.js must mount the existing Shop sidebar");
   assert.ok(js.includes("renderPlatformSurface"), "dist app-shell.js must mount the existing platform surface");
+  assert.ok(js.includes("local-details-scroll"), "dist app-shell.js must preserve the local details scroll region");
 });
