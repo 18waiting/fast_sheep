@@ -11,17 +11,35 @@ import { fileURLToPath } from "node:url";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SRC = join(HERE, "..", "src", "renderer", "components", "app-shell.ts");
 const DIST = join(HERE, "..", "dist", "renderer", "components", "app-shell.js");
+const SIDEBAR_SRC = join(HERE, "..", "src", "renderer", "components", "shop-sidebar.ts");
 
-const REGIONS = ["app-navbar", "app-main", "queue-host"];
+const REGIONS = ["app-navbar", "app-sidebar", "app-main", "queue-host"];
 
 test("app-shell establishes navbar/sidebar/main region boundaries (SHEEP-026)", () => {
   const src = readFileSync(SRC, "utf-8");
   for (const cls of REGIONS) {
     assert.ok(src.includes(cls), "app-shell.ts must create " + cls + " container");
   }
-  for (const name of ["renderErrorBanner", "renderAppNavbar", "renderWorkbenchHeader", "renderModeToggle", "renderWorkerStatusBadge", "renderConversationList"]) {
+  for (const name of ["renderErrorBanner", "renderAppNavbar", "renderShopSidebar", "renderWorkbenchHeader", "renderModeToggle", "renderWorkerStatusBadge", "renderConversationList"]) {
     assert.ok(src.includes(name), "app-shell.ts must keep " + name);
   }
+});
+
+test("app-shell mounts the existing Shop sidebar without implicit selection or activation", () => {
+  const src = readFileSync(SRC, "utf-8");
+  assert.match(src, /renderShopSidebar\(appSidebarHost,\s*state,\s*actions\)/, "app-shell must mount shop-sidebar with viewModel state and existing actions");
+  assert.match(src, /renderConversationList\(queueHost,\s*state,\s*queueActions\)/, "Store-derived queue filter must remain separate from Shop sidebar");
+  assert.ok(!src.includes("actions.onSelectShop("), "app-shell must not auto-select a Shop");
+  assert.ok(!src.includes("activatePlatformShop"), "app-shell must not activate a platform directly");
+  assert.ok(!src.includes("SqliteShopRepository") && !src.includes("listByMerchant"), "app-shell must not access repositories directly");
+});
+
+test("mounted Shop sidebar is data-driven and selects only through explicit click", () => {
+  const src = readFileSync(SIDEBAR_SRC, "utf-8");
+  assert.ok(src.includes("vm?.shop_summaries ?? []"), "sidebar must render view_model.shop_summaries");
+  assert.match(src, /button\(selected \? "shop-button selected" : "shop-button", shop\.name, \(\) => actions\.onSelectShop\(shop\.shop_id\)\)/, "Shop label and explicit click must use the local Shop id");
+  assert.ok(src.includes("shops.length === 0"), "sidebar must retain a safe empty state");
+  assert.ok(!src.includes("activatePlatformShop") && !src.includes("StoreRecord") && !src.includes("availableStores"), "Shop sidebar must not activate or manufacture Store identity");
 });
 
 test("app-shell keeps integration points minimal (no shell framework/contract)", () => {
@@ -43,4 +61,5 @@ test("built app-shell.js mirrors the same region boundaries", () => {
   for (const cls of REGIONS) {
     assert.ok(js.includes(cls), "dist app-shell.js must create " + cls + " container");
   }
+  assert.ok(js.includes("renderShopSidebar"), "dist app-shell.js must mount the existing Shop sidebar");
 });

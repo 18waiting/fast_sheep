@@ -14,6 +14,7 @@ import type { QueueActions } from "./conversation-list.js";
 import { EMPTY_LEGACY_IMPORT_VIEW_MODEL } from "./legacy-import-types.js";
 import { renderLegacyImportPanel } from "./legacy-import-panel.js";
 import { renderConversationList } from "./conversation-list.js";
+import { renderShopSidebar } from "./shop-sidebar.js";
 import { clear, el } from "./dom.js";
 import { renderAppNavbar } from "./app-navbar.js";
 import { renderWorkbenchHeader } from "./workbench-header.js";
@@ -46,6 +47,9 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
 
 
   const body = el("div", "app-body");
+  const appSidebarHost = el("div", "app-sidebar");
+  renderShopSidebar(appSidebarHost, state, actions);
+  body.appendChild(appSidebarHost);
 
   // SHEEP-060 Queue work-entry surface (Phase 4 incremental topology; provisional
   // left-rail placement; not final Conversation-centered Workspace layout).
