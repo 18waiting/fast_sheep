@@ -13,23 +13,56 @@
     "approval_date": "2026-08-22"
   },
   "task_template": {
-    "path": "project\\FAST_SHEEP_CODEX_TASK_TEMPLATE.md",
-    "review_status": "PASS_REVIEW_3",
-    "reviewed_version": "V1.0_REVIEWED",
-    "reviewed_path": "project\\FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.0_REVIEWED.md"
+    "path": "project\\FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.1_REVIEWED.md",
+    "review_status": "CONTROLLER_REVIEW_REQUIRED",
+    "reviewed_version": "V1.1_REVIEWED",
+    "reviewed_path": "project\\FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.1_REVIEWED.md",
+    "authority_status": "CURRENT_TASK_TEMPLATE_AUTHORITY",
+    "historical_v1_0": {
+      "path": "project\\FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.0_REVIEWED.md",
+      "version": "V1.0_REVIEWED",
+      "authority_status": "IMMUTABLE_HISTORICAL_GOVERNANCE"
+    }
   },
   "roadmap": {
-    "path": "project\\FAST_SHEEP_CODING_ROADMAP.md",
-    "version": "1.0",
-    "review_status": "PASS_REVIEW_2",
-    "phase_count": 15,
-    "total_weight": 1.0,
-    "reviewed_path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
-    "reviewed_version": "V1.0_REVIEWED"
+    "path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md",
+    "version": "1.1",
+    "review_status": "CONTROLLER_REVIEW_REQUIRED",
+    "reviewed_version": "V1.1_REVIEWED",
+    "reviewed_path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md",
+    "authority_status": "CURRENT_EXECUTION_AUTHORITY",
+    "execution_authorization": "NOT_AUTHORIZED_FOR_SHEEP_300",
+    "task_range": [
+      "SHEEP-300",
+      "SHEEP-301",
+      "SHEEP-302",
+      "SHEEP-303",
+      "SHEEP-304",
+      "SHEEP-305",
+      "SHEEP-306",
+      "SHEEP-307",
+      "SHEEP-308",
+      "SHEEP-309",
+      "SHEEP-310",
+      "SHEEP-311",
+      "SHEEP-312",
+      "SHEEP-313"
+    ],
+    "historical_v1_0": {
+      "path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
+      "version": "V1.0_REVIEWED",
+      "authority_status": "IMMUTABLE_HISTORICAL_REVIEWED_ROADMAP",
+      "unfinished_task_range": [
+        "SHEEP-091",
+        "SHEEP-281"
+      ],
+      "classification": "DEFERRED_HISTORICAL_V1_0",
+      "id_reuse": "FORBIDDEN"
+    }
   },
   "state_authority": {
     "contract_version": "1.0",
-    "roadmap_identity_source": "project\\FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md",
+    "roadmap_identity_source": "project\\FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md",
     "canonical_current_fields": [
       "current_phase",
       "current_milestone",
@@ -752,19 +785,19 @@
       "current_blocker": "PDD_PRIMARY_VIEWPORT_STARVED_BY_OPTION_B_SPACE_ALLOCATION / PDD_VISIBLE_CLIPPING_OR_INCOMPLETE_DISPLAY_OBSERVED"
     }
   },
-  "current_phase": "PHASE_5",
-  "current_milestone": "M5.4 Context",
+  "current_phase": "MVP_A_FOUNDATION",
+  "current_milestone": "M-A.1 Identity and Inbound Foundation",
   "last_closed_task": "SHEEP-090",
-  "current_task": "SHEEP-091 (M5.4 PDD Product/SKU Context) — NOT_STARTED / PAUSED FOR GLOBAL PROJECT CLEANUP",
-  "next_action": "SHEEP-091 remains paused for GLOBAL_PROJECT_CLEANUP_REVIEW; no live PDD evidence acquisition, production implementation, or later task may execute until Controller review",
-  "next_authoritative_roadmap_id": "SHEEP-091",
+  "current_task": "SHEEP-300 (M-A.1 IdentityLock and Inbound Envelope Contract) — NOT_STARTED / NOT_AUTHORIZED",
+  "next_action": "SHEEP-300 remains NOT_STARTED / NOT_AUTHORIZED until Controller review and explicit execution authorization; no production, live, send, or AUTO execution is granted",
+  "next_authoritative_roadmap_id": "SHEEP-300",
   "next_task_execution_authorized": false,
   "current_execution_authorization": false,
   "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
-  "current_authorization_pause_reason": "GLOBAL_PROJECT_CLEANUP_REVIEW",
+  "current_authorization_pause_reason": "ROADMAP_V1_1_CONTROLLER_REVIEW",
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
-  "next_sheep_task_after_governance": "SHEEP-001",
+  "next_sheep_task_after_governance": "SHEEP-300",
   "implementation_started": true,
   "implementation_progress": 0.0,
   "product_definition_progress": 1.0,
@@ -784,7 +817,7 @@
     ],
     "exactly_one_next_task": true
   },
-  "locked_decision_count": 40,
+  "locked_decision_count": 47,
   "open_blockers": [],
   "open_decisions": [
     {
@@ -793,6 +826,12 @@
       "confirmed_first_scene": "SHIPPING_TIME",
       "candidate_recommendation": "LOGISTICS",
       "owner_approval_required": true
+    },
+    {
+      "id": "SHIPPING_TIME_RULE_SEMANTICS",
+      "status": "PRODUCT_DECISION_REQUIRED",
+      "scene": "SHIPPING_TIME",
+      "implementation_authorization": "NOT_AUTHORIZED"
     }
   ],
   "deferred_items": [
@@ -803,7 +842,9 @@
     "UI_AND_THIRD_PARTY_ASSET_LICENSE_INVENTORY",
     "FINAL_HOSTING_PROVIDER_DECISION",
     "FINAL_RETENTION_DURATIONS",
-    "FINAL_CLOUD_SYNC_DATA_SCOPE"
+    "FINAL_CLOUD_SYNC_DATA_SCOPE",
+    "V1_0_UNFINISHED_TASKS_091_281_DEFERRED_HISTORICAL",
+    "SHEEP_091_DEFERRED_HISTORICAL_V1_0"
   ],
   "external_reference_sources": [
     {
@@ -846,10 +887,11 @@
     "REVIEW_2_CODING_ROADMAP:PASS_CLOSED_V1.0_REVIEWED",
     "REVIEW_3_CODEX_TASK_TEMPLATE:PASS_CLOSED_V1.0_REVIEWED",
     "FINAL_GOVERNANCE_FREEZE:PASS_CLOSED",
-    "PHASE_0_START:APPROVED_OWNER_GO"
+    "PHASE_0_START:APPROVED_OWNER_GO",
+    "ROADMAP_V1_1_MIGRATION:CONTROLLER_REVIEW_REQUIRED"
   ],
   "next_stage_not_executed": true,
-  "lifecycle_stage": "PHASE_5",
+  "lifecycle_stage": "MVP_A_FOUNDATION",
   "project_state_reconciliation": {
     "required": false,
     "status": "COMPLETE",
@@ -939,7 +981,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-091 (M5.4 PDD Product/SKU Context; NOT_STARTED / PAUSED FOR GLOBAL PROJECT CLEANUP)",
+  "next_task": "SHEEP-300 (M-A.1 IdentityLock and Inbound Envelope Contract; NOT_STARTED / NOT_AUTHORIZED)",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -3455,14 +3497,14 @@
     "next_stage_not_executed": true
   },
   "sheep_091": {
-    "roadmap_status": "NOT_STARTED / PAUSED FOR GLOBAL PROJECT CLEANUP",
+    "roadmap_status": "NOT_STARTED / PAUSED / DEFERRED_HISTORICAL_V1_0",
     "phase": "PHASE_5",
     "milestone": "M5.4 Context",
     "status": "NOT_STARTED",
     "execution_authorized": false,
     "current_execution_authorization": false,
     "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
-    "current_authorization_pause_reason": "GLOBAL_PROJECT_CLEANUP_REVIEW",
+    "current_authorization_pause_reason": "DEFERRED_HISTORICAL_V1_0",
     "owner_scope": "PDD_PRODUCT_SKU_CONTEXT_READ_ONLY_EVIDENCE_DISCOVERY_ONLY",
     "execution_form": "OWNER_CONTROLLED_LIVE_READ_ONLY_EVIDENCE_ACQUISITION",
     "evidence_acquisition_authorization": "PAUSED / NOT_AUTHORIZED",
@@ -3493,15 +3535,41 @@
     "pdd_product_sku_relation": "NOT_ESTABLISHED",
     "pdd_integration": "NOT_STARTED",
     "product_recommendation": "OBSERVED; BUYER_BINDING_NOT_ESTABLISHED; PERSONALIZATION_NOT_ESTABLISHED",
+    "historical_roadmap": "V1.0_REVIEWED",
+    "historical_classification": "DEFERRED_HISTORICAL_V1_0",
     "later_tasks_authorized": false,
     "next_stage_not_executed": true
   },
+  "sheep_300": {
+    "roadmap_status": "NOT_STARTED / NOT_AUTHORIZED",
+    "phase": "MVP_A_FOUNDATION",
+    "milestone": "M-A.1 Identity and Inbound Foundation",
+    "status": "NOT_STARTED",
+    "execution_authorized": false,
+    "current_execution_authorization": false,
+    "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
+    "owner_scope": "IDENTITY_LOCK_AND_INBOUND_ENVELOPE_CONTRACT_ONLY",
+    "implementation_authorization": "NOT_AUTHORIZED",
+    "persistence_authorization": "NOT_AUTHORIZED",
+    "platform_mutation_authorization": "NOT_AUTHORIZED",
+    "message_send_authorization": "NOT_AUTHORIZED",
+    "later_tasks_authorized": false,
+    "next_stage_not_executed": true
+  },
+  "mvp_a_foundation_entry": {
+    "status": "CONTROLLER_REVIEW_REQUIRED",
+    "current_milestone": "M-A.1 Identity and Inbound Foundation",
+    "next_authoritative_roadmap_id": "SHEEP-300",
+    "execution_authorization": "NOT_AUTHORIZED_FOR_SHEEP_300"
+  },
   "phase_5_entry": {
     "status": "ACTIVE",
+    "authority_status": "DEFERRED_HISTORICAL_V1_0",
+    "superseded_by": "MVP_A_FOUNDATION",
     "gate_p4": "PASS",
     "proposed_date": "2026-08-29",
     "tier_order": "PDD first, DouDian later",
-    "current_milestone": "M5.4 Context",
+    "current_milestone": "M-A.1 Identity and Inbound Foundation",
     "completed_acceptance_units": [
       "SHEEP-080",
       "SHEEP-081",
@@ -3515,7 +3583,7 @@
       "SHEEP-089",
       "SHEEP-090"
     ],
-    "next_authoritative_roadmap_id": "SHEEP-091",
+    "next_authoritative_roadmap_id": "SHEEP-300",
     "sheep_080_approved": true,
     "sheep_081_closed": true,
     "sheep_082_execution_authorized": false,

@@ -24,7 +24,9 @@ Before any project task, read in this order:
 
 All SHEEP task prompts must follow the active reviewed Codex Task Template.
 Resolve exact active paths from `project/PROJECT_STATE.json`; do not infer them
-from old filenames.
+from old filenames. The current execution authorities are the V1.1 Roadmap
+and V1.1 Task Template. V1.0 Roadmap/Template/task definitions are historical
+governance and unfinished V1.0 IDs remain deferred, not reusable.
 
 `project/PROJECT_STATE.json` owns current lifecycle/authorization. It must not
 be treated as product narrative. The North Star and PDD MVP documents own

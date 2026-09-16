@@ -615,6 +615,80 @@ RolloutMode definitions, constitutional rules, and current authorization state
 remain with their existing canonical owners.
 
 ---
+## DEC-041 — Roadmap V1.1 Supersedes V1.0 as Current Execution Authority
+**Status:** LOCKED
+**Decision package:** AI-First Roadmap V1.1 Migration, 2026-09-17
+
+`FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md` becomes the current execution
+authority. `FAST_SHEEP_CODING_ROADMAP_V1.0_REVIEWED.md` remains immutable
+historical reviewed governance.
+
+---
+
+## DEC-042 — V1.0 Historical Task IDs Remain Immutable
+**Status:** LOCKED
+**Decision package:** AI-First Roadmap V1.1 Migration, 2026-09-17
+
+All V1.0 task definitions and IDs remain immutable and are not reused or
+redefined. Unfinished V1.0 IDs `SHEEP-091` through `SHEEP-281` are classified
+as `DEFERRED_HISTORICAL_V1_0` unless explicitly migrated by reference.
+
+---
+
+## DEC-043 — New Execution Block Begins at SHEEP-300
+**Status:** LOCKED
+**Decision package:** AI-First Roadmap V1.1 Migration, 2026-09-17
+
+The AI-first execution plan uses a new validator-compatible task block
+beginning at `SHEEP-300`. Historical IDs `091–281` are not reused.
+
+---
+
+## DEC-044 — SHADOW Is the First Real Customer-Data Milestone
+**Status:** LOCKED
+**Decision package:** AI-First Roadmap V1.1 Migration, 2026-09-17
+
+The first real customer-data milestone is SHADOW:
+
+real PDD inbound -> canonical IdentityLock -> durable normalized message ->
+aggregation -> scene -> ContextEnvelope -> AI ReplyPlan -> deterministic policy
+-> persistent audit, with `TRANSPORT SEND CALLS = 0`.
+
+---
+
+## DEC-045 — HUMAN_CONFIRM Precedes AUTO and Requires Retry Safety
+**Status:** LOCKED
+**Decision package:** AI-First Roadmap V1.1 Migration, 2026-09-17
+
+HUMAN_CONFIRM precedes AUTO. The
+`ConversationOrchestrator.performSend()` automatic-retry conflict must be
+resolved before the first real production send, and wrong-target pre-send
+validation is mandatory.
+
+---
+
+## DEC-046 — AUTO Requires Separate Production Authorization
+**Status:** LOCKED
+**Decision package:** AI-First Roadmap V1.1 Migration, 2026-09-17
+
+Completing AUTO implementation tasks does not authorize production AUTO.
+AUTO requires a separate Controller production authorization after all
+identity, wrong-target, retry, verification, audit, escalation, and isolation
+prerequisites pass.
+
+---
+
+## DEC-047 — SHEEP-091 Is Deferred Rather Than Resumed
+**Status:** LOCKED
+**Decision package:** AI-First Roadmap V1.1 Migration, 2026-09-17
+
+`SHEEP-091` remains `NOT_STARTED / PAUSED / DEFERRED_HISTORICAL_V1_0`.
+
+Product/SKU Context is not required by default for the first `SHIPPING_TIME`
+scene and may be reconsidered only if the approved SHIPPING_TIME rule explicitly
+requires product-level exceptions.
+
+---
 # Operational Reference Sources
 
 These are not new product decisions; they define currently available evidence sources.
