@@ -57,14 +57,27 @@ test("app-shell keeps one stable platform host outside the local-details scroll 
 
 test("app-main and local-details-scroll preserve the stable height contract", () => {
   const styles = readFileSync(STYLES_SRC, "utf-8");
+  const localDetailsRule = /\.local-details-scroll\s*\{([^}]*)\}/.exec(styles)?.[1] ?? "";
   assert.match(styles, /html,\s*body\s*\{[^}]*height:\s*100%[^}]*\}/, "html/body must remain bounded to the viewport height");
   assert.match(styles, /#app\s*\{[^}]*height:\s*100%[^}]*\}/, "renderer root must remain bounded to the viewport height");
   assert.match(styles, /\.app-shell\s*\{[^}]*height:\s*100%[^}]*\}/, "app-shell must remain bounded to the viewport height");
   assert.match(styles, /\.app-body\s*\{[^}]*flex:\s*1[^}]*min-height:\s*0[^}]*\}/, "app-body must flex and permit its children to shrink");
   assert.match(styles, /\.app-main\s*\{[^}]*min-height:\s*0[^}]*overflow:\s*hidden[^}]*\}/, "app-main must be bounded and non-scrolling");
   assert.match(styles, /\.platform-host\s*\{[^}]*flex:\s*1 1 auto[^}]*min-width:\s*0[^}]*min-height:\s*260px[^}]*\}/, "platform-host must retain priority and minimum useful height");
-  assert.match(styles, /\.local-details-scroll\s*\{[^}]*min-height:\s*0[^}]*overflow:\s*auto[^}]*\}/, "local-details-scroll must own local vertical overflow");
+  assert.ok(localDetailsRule, "local-details-scroll rule must exist");
+  assert.doesNotMatch(localDetailsRule, /flex:\s*0\s+1\s+40%/, "local-details-scroll must not retain the old 40% reservation");
+  assert.match(localDetailsRule, /flex:\s*0\s+1\s+200px/, "local-details-scroll must use the A200 shrinkable basis");
+  assert.match(localDetailsRule, /max-height:\s*200px/, "local-details-scroll must retain the A200 preferred maximum");
+  assert.match(localDetailsRule, /min-height:\s*0/, "local-details-scroll must be allowed to shrink");
+  assert.match(localDetailsRule, /overflow:\s*auto/, "local-details-scroll must own local vertical overflow");
   assert.match(styles, /\.header-host,\s*\.status-row,\s*\.countdown-host\s*\{\s*flex:\s*none;\s*\}/, "stable workbench header/status items must not shrink");
+});
+
+test("A200 allocation remains runtime-state neutral", () => {
+  const styles = readFileSync(STYLES_SRC, "utf-8");
+  for (const token of [".pdd-active", ".runtime-active", ".platform-active", ".details-expanded", ".details-collapsed"]) {
+    assert.ok(!styles.includes(token), "A200 allocation must not introduce state-dependent selector " + token);
+  }
 });
 
 test("option B introduces no scroll-driven platform bounds tracking", () => {
