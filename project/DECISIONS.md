@@ -333,6 +333,167 @@ Each controller turn should:
 
 ---
 
+## DEC-023 — AI-First Product Identity
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 1, 2026-09-16
+
+Fast Sheep is an:
+
+- AI-first
+- multi-shop-ready
+- future multi-platform
+- ecommerce customer-service automation product
+
+Primary customer value:
+
+> Reduce required human customer-service work safely.
+
+Fast Sheep is not primarily a PDD embedded-workbench/UI product.
+
+Stable product identity is owned by `docs/product/FAST_SHEEP_NORTH_STAR.md`.
+
+---
+
+## DEC-024 — PDD Adapter and Transport Role
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 1, 2026-09-16
+
+PDD is the first Platform Adapter / Transport Runtime.
+
+The embedded PDD workbench is:
+
+- transport infrastructure
+- authentication/session infrastructure
+- diagnostic/fallback surface
+
+It is not the primary product experience.
+
+This decision supplements DEC-004 and does not remove PDD's Tier-1
+reference-first engineering role. It changes product framing, not the platform
+tier order or UI asset/license rules.
+
+---
+
+## DEC-025 — Identity, Fact, and Action Safety Priority
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 1, 2026-09-16
+
+The global identity/fact/action safety hierarchy is adopted as locked policy.
+
+Detailed definitions are owned by
+`docs/product/FAST_SHEEP_NORTH_STAR.md` §7 and must not be duplicated here.
+This decision locks the priority: target identity and fact/action correctness
+outrank wording variance, and AI confidence never grants execution authority.
+---
+
+## DEC-026 — UNKNOWN and Uncertain Outcome Semantics
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 1, 2026-09-16
+
+UNKNOWN handling and uncertain-outcome behavior are locked globally.
+
+Canonical detailed semantics are owned by
+`docs/product/FAST_SHEEP_NORTH_STAR.md` §7. PDD-specific operational
+consequences are owned by `docs/product/PDD_MVP_V1.md` §7. UNKNOWN is not to be
+guessed away, and uncertain execution must not retry automatically.
+---
+
+## DEC-027 — Multi-Shop-Ready Architecture / One-Shop Initial Rollout
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 1, 2026-09-16
+
+Architecture must be multi-shop ready from the start.
+
+The initial real rollout is one controlled PDD shop.
+
+Shop, session, customer, knowledge, policy, and audit boundaries remain
+logically isolated.
+
+One-shop success does not prove multi-shop isolation.
+
+AI Core, Policy, Knowledge, and Audit should not require platform-specific
+rewrites merely because a new platform adapter is introduced.
+
+---
+
+## DEC-028 — RolloutMode Semantics
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 1, 2026-09-16
+
+The `RolloutMode` model is adopted for PDD V1: `OFF`, `SHADOW`,
+`HUMAN_CONFIRM`, and `AUTO`.
+
+Canonical detailed definitions, the conceptual mapping to the existing runtime
+automation vocabulary, and the configuration hierarchy are owned by
+`docs/product/PDD_MVP_V1.md` §§3-4. This decision locks adoption by reference
+and supplements DEC-005 without replacing the existing runtime automation
+model. `FORCE_HANDOFF` remains a runtime safety/escalation override.
+---
+
+## DEC-029 — Human Notification V1
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 1, 2026-09-16
+
+V1 human handoff/intervention notification channel:
+
+> Fast Sheep desktop notification.
+
+Enterprise WeChat, mobile, and other notification channels are later backlog.
+
+---
+
+## DEC-030 — V1 Knowledge Authority and Historical Conversation Boundary
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 1, 2026-09-16
+
+PDD V1 knowledge authority is locked by reference.
+
+The concrete authoritative-source inventory and the historical-conversation
+boundary are owned by `docs/product/PDD_MVP_V1.md` §6. Historical conversations
+are not V1 authoritative truth.
+---
+
+## DEC-031 — PDD Surface Diagnostic/Fallback Role and Product Direction Guard
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 1, 2026-09-16
+
+The original PDD surface is diagnostic/fallback infrastructure.
+
+Raw PDD UI work is current priority only when it:
+
+- enables the AI customer-service loop
+- removes a Transport/runtime blocker
+- is explicitly authorized diagnostic/fallback work
+
+Otherwise the task decision is:
+
+`PRODUCT_DIRECTION_MISMATCH`
+
+Before substantial implementation, Codex must produce the product-alignment
+block required by `AGENTS.md`.
+
+---
+
+## DEC-032 — SHEEP-091 Pause and Governed Roadmap V1.1 Requirement
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 1, 2026-09-16
+
+`SHEEP-091` remains:
+
+`NOT_STARTED / PAUSED`
+
+Reason:
+
+Controller is re-aligning future execution to the AI-first MVP.
+
+PDD Product/SKU Context remains potentially useful future work, but it is not
+automatically resumed merely because it is next in the historical Roadmap.
+
+The reviewed Roadmap and Task Template remain unchanged in Product Alignment
+Package 1. A governed Roadmap V1.1 revision is required after the product
+authority is accepted.
+
+---
 # Operational Reference Sources
 
 These are not new product decisions; they define currently available evidence sources.

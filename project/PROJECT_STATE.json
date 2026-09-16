@@ -52,6 +52,22 @@
     "historical_authorization_field": "historical_authorization",
     "pdd_integration_policy": "DERIVED_OR_DEFERRED; no duplicate top-level current truth"
   },
+  "product_authority": {
+    "north_star_path": "docs\\product\\FAST_SHEEP_NORTH_STAR.md",
+    "pdd_mvp_path": "docs\\product\\PDD_MVP_V1.md",
+    "alignment_package": "PRODUCT_ALIGNMENT_PACKAGE_1",
+    "alignment_package_version": "1.0",
+    "alignment_package_status": "READY_FOR_CONTROLLER_REVIEW",
+    "product_identity": [
+      "AI_FIRST",
+      "MULTI_SHOP_READY",
+      "FUTURE_MULTI_PLATFORM",
+      "ECOMMERCE_CUSTOMER_SERVICE_AUTOMATION"
+    ],
+    "pdd_role": "FIRST_PLATFORM_ADAPTER_TRANSPORT_AUTH_SESSION_DIAGNOSTIC_FALLBACK_NOT_PRIMARY_PRODUCT_UI",
+    "second_v1_reply_scene": "OPEN_DECISION",
+    "roadmap_v1_1_required": true
+  },
   "pdd_production_access_decision": {
     "decision_status": "OWNER_ATTESTED_PERMISSION",
     "authority_provenance": "OWNER_ATTESTED_PERMISSION",
@@ -747,9 +763,17 @@
     ],
     "exactly_one_next_task": true
   },
-  "locked_decision_count": 22,
+  "locked_decision_count": 32,
   "open_blockers": [],
-  "open_decisions": [],
+  "open_decisions": [
+    {
+      "id": "V1_SECOND_REPLY_SCENE",
+      "status": "OPEN_DECISION",
+      "confirmed_first_scene": "SHIPPING_TIME",
+      "candidate_recommendation": "LOGISTICS",
+      "owner_approval_required": true
+    }
+  ],
   "deferred_items": [
     "TRUE_CLEAN_MACHINE_VALIDATION_FOR_FUTURE_COMMERCIAL_RELEASE",
     "CODE_SIGNING_FOR_FUTURE_COMMERCIAL_RELEASE",
