@@ -16,8 +16,11 @@ Before any project task, read in this order:
 2. `project/DECISIONS.md` — locked/superseding product and architecture decisions
 3. `docs/product/FAST_SHEEP_NORTH_STAR.md` — stable product identity
 4. `docs/product/PDD_MVP_V1.md` — current PDD MVP scope
-5. `project/PROJECT_STATE.json` — current execution ledger and authorization
-6. the reviewed Coding Roadmap plus the current SHEEP task prompt
+5. `docs/architecture/AI_CUSTOMER_SERVICE_CORE.md` — core lifecycle and ownership
+6. `docs/architecture/PLATFORM_ADAPTER_CONTRACT.md` — platform adapter boundary
+7. `docs/architecture/REPLY_AND_ACTION_SAFETY.md` — deterministic execution safety
+8. `project/PROJECT_STATE.json` — current execution ledger and authorization
+9. the reviewed Coding Roadmap plus the current SHEEP task prompt
 
 All SHEEP task prompts must follow the active reviewed Codex Task Template.
 Resolve exact active paths from `project/PROJECT_STATE.json`; do not infer them
@@ -129,6 +132,9 @@ The current review authority is:
 
 - Product identity: `docs/product/FAST_SHEEP_NORTH_STAR.md`
 - Current MVP: `docs/product/PDD_MVP_V1.md`
+- Core architecture: `docs/architecture/AI_CUSTOMER_SERVICE_CORE.md`
+- Adapter architecture: `docs/architecture/PLATFORM_ADAPTER_CONTRACT.md`
+- Execution safety: `docs/architecture/REPLY_AND_ACTION_SAFETY.md`
 - Locked decisions: `project/DECISIONS.md`
 - Current state/authorization: `project/PROJECT_STATE.json`
 - Execution order: reviewed Coding Roadmap

@@ -68,6 +68,27 @@
     "second_v1_reply_scene": "OPEN_DECISION",
     "roadmap_v1_1_required": true
   },
+  "architecture_authority": {
+    "customer_service_core_path": "docs\\architecture\\AI_CUSTOMER_SERVICE_CORE.md",
+    "platform_adapter_contract_path": "docs\\architecture\\PLATFORM_ADAPTER_CONTRACT.md",
+    "reply_action_safety_path": "docs\\architecture\\REPLY_AND_ACTION_SAFETY.md",
+    "alignment_package": "PRODUCT_ALIGNMENT_PACKAGE_2",
+    "alignment_package_version": "1.0",
+    "alignment_package_status": "READY_FOR_CONTROLLER_REVIEW",
+    "architecture_decisions": [
+      "DEC-033",
+      "DEC-034",
+      "DEC-035",
+      "DEC-036",
+      "DEC-037",
+      "DEC-038",
+      "DEC-039",
+      "DEC-040"
+    ],
+    "transport_strategy_extraction": "DEFERRED_UNTIL_SECOND_REAL_TRANSPORT",
+    "multi_shop_auto_precondition": "ADVERSARIAL_ISOLATION_AND_SCOPE_GATES_REQUIRED",
+    "current_retry_conflict": "RECORDED_IMPLEMENTATION_GAP / BLOCKING_PRODUCTION_AUTO"
+  },
   "pdd_production_access_decision": {
     "decision_status": "OWNER_ATTESTED_PERMISSION",
     "authority_provenance": "OWNER_ATTESTED_PERMISSION",
@@ -763,7 +784,7 @@
     ],
     "exactly_one_next_task": true
   },
-  "locked_decision_count": 32,
+  "locked_decision_count": 40,
   "open_blockers": [],
   "open_decisions": [
     {

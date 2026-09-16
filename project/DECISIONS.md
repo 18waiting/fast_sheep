@@ -494,6 +494,127 @@ Package 1. A governed Roadmap V1.1 revision is required after the product
 authority is accepted.
 
 ---
+## DEC-033 — IdentityLock Architecture
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 2, 2026-09-16
+
+The AI-first architecture adopts an immutable IdentityLock for replies and
+future actions.
+
+Canonical detailed semantics are owned by
+`docs/architecture/AI_CUSTOMER_SERVICE_CORE.md` and
+`docs/architecture/REPLY_AND_ACTION_SAFETY.md`.
+
+For PDD, `customerUid` remains the platform customer identity and is distinct
+from the internal conversation identity.
+
+---
+
+## DEC-034 — ReplyPlan Evolution / No Duplicate Reply Model
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 2, 2026-09-16
+
+ReplyPlan is the governed evolution/replacement direction of the existing
+Suggestion and SendRequest structures.
+
+Canonical detailed ownership is recorded in
+`docs/architecture/AI_CUSTOMER_SERVICE_CORE.md`. No competing second canonical
+reply model is permitted.
+
+---
+
+## DEC-035 — AI Proposes / Deterministic Code Executes
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 2, 2026-09-16
+
+AI proposes ReplyPlan or ActionPlan output. It does not directly execute
+platform side effects.
+
+Deterministic application code owns policy authorization and execution.
+Detailed boundaries are owned by
+`docs/architecture/AI_CUSTOMER_SERVICE_CORE.md` and
+`docs/architecture/REPLY_AND_ACTION_SAFETY.md`.
+
+---
+
+## DEC-036 — PlatformAdapter Hides Transport Implementation
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 2, 2026-09-16
+
+The product-level PlatformAdapter boundary hides implementation-private
+transport details.
+
+Canonical detailed semantics are owned by
+`docs/architecture/PLATFORM_ADAPTER_CONTRACT.md`.
+
+DOM selectors, WebContents mechanics, page bridge messages, fixture mechanics,
+and official API payloads remain implementation-private.
+
+---
+
+## DEC-037 — Separate Transport Strategy Deferred
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 2, 2026-09-16
+
+A mandatory separate transport-strategy architecture is not introduced for the
+current MVP.
+
+For the current PDD MVP, the PlatformAdapter implementation may encapsulate the
+embedded-runtime transport.
+
+A separate transport strategy may be extracted only when a real second
+transport exists or evidence proves the need. Detailed ownership is recorded in
+`docs/architecture/PLATFORM_ADAPTER_CONTRACT.md`.
+
+---
+
+## DEC-038 — Uncertain Side-Effect Retry Prohibition
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 2, 2026-09-16
+
+When an execution attempt may have caused a platform side effect, automatic
+retry is prohibited.
+
+A safe pre-attempt or authoritatively `NOT_ATTEMPTED` failure may become
+retryable only under future explicit policy.
+
+Canonical architecture semantics are owned by
+`docs/architecture/REPLY_AND_ACTION_SAFETY.md`.
+
+Current implementation gap: `ConversationOrchestrator.performSend` retries a
+failed send once. This must be reconciled before production AUTO.
+
+---
+
+## DEC-039 — Multi-Shop AUTO Isolation Precondition
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 2, 2026-09-16
+
+Multi-shop AUTO is not considered safe until production orchestration,
+worker identity scope, knowledge/context scope, audit/handoff scope, and
+adversarial cross-shop isolation have been resolved and validated.
+
+Canonical detailed precondition ownership is recorded in
+`docs/architecture/AI_CUSTOMER_SERVICE_CORE.md` and
+`docs/architecture/REPLY_AND_ACTION_SAFETY.md`.
+
+---
+
+## DEC-040 — Package 2 Architecture Authority Ownership
+**Status:** LOCKED
+**Decision package:** Product Alignment Package 2, 2026-09-16
+
+Architecture authority ownership is established as:
+
+- `docs/architecture/AI_CUSTOMER_SERVICE_CORE.md`
+- `docs/architecture/PLATFORM_ADAPTER_CONTRACT.md`
+- `docs/architecture/REPLY_AND_ACTION_SAFETY.md`
+
+Each document owns only the boundaries stated in its header. Product identity,
+RolloutMode definitions, constitutional rules, and current authorization state
+remain with their existing canonical owners.
+
+---
 # Operational Reference Sources
 
 These are not new product decisions; they define currently available evidence sources.
