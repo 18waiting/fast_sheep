@@ -106,3 +106,118 @@ test("Event envelope + typed event const", () => {
   assert.equal(le({ event: "other", payload: { job_id: "j1", progress: 50 } }), false);
 });
 
+
+
+// --- SHEEP-300 IdentityLock + InboundEnvelope ---
+function resolvedString(value) { return { status: "RESOLVED", value }; }
+function resolvedReference(value) { return { status: "RESOLVED", value: { value } }; }
+function makeIdentityLock(overrides = {}) {
+  return {
+    platform: "pdd",
+    runtimeShop: resolvedReference("runtime-shop-1"),
+    merchantId: resolvedString("merchant-1"),
+    storeId: { status: "UNKNOWN" },
+    platformAccountId: { status: "UNRESOLVED" },
+    platformCustomerId: resolvedReference("customer-1"),
+    internalConversationId: resolvedString("conversation-1"),
+    runtimeConversationReference: resolvedReference("runtime-conversation-1"),
+    triggerMessage: {
+      localMessageId: { status: "UNKNOWN" },
+      platformMessageIdentity: { provenance: "AUTHORITATIVE_PLATFORM_ID", value: "msg-1" },
+    },
+    runtimeEvidence: {
+      sessionId: "session-1",
+      documentGeneration: 1,
+      selectedCustomerObservation: { status: "SELECTED", platformCustomerId: { value: "customer-1" } },
+    },
+    ...overrides,
+  };
+}
+function makeInboundEnvelope(identityLock = makeIdentityLock()) {
+  return {
+    identityLock,
+    sourceContent: { kind: "text", text: "商品什么时候发货？" },
+    sourceOccurredAt: "2026-09-17T00:00:00Z",
+  };
+}
+
+test("IdentityLock + InboundEnvelope accept resolved, UNKNOWN, and UNRESOLVED identity states", () => {
+  const lockVal = v("fastwork:domain:identity-lock");
+  const envVal = v("fastwork:domain:inbound-envelope");
+  const resolved = makeIdentityLock({
+    storeId: resolvedString("store-1"),
+    platformAccountId: resolvedString("account-1"),
+  });
+  assert.ok(lockVal(resolved));
+  assert.ok(envVal(makeInboundEnvelope(resolved)));
+  assert.ok(lockVal(makeIdentityLock({ storeId: { status: "UNKNOWN" }, platformAccountId: { status: "UNKNOWN" } })));
+  assert.ok(lockVal(makeIdentityLock({ storeId: { status: "UNRESOLVED" }, platformAccountId: { status: "UNRESOLVED" } })));
+});
+
+test("IdentityLock does not infer Store or PlatformAccount from runtime shop", () => {
+  const lockVal = v("fastwork:domain:identity-lock");
+  const lock = makeIdentityLock({
+    runtimeShop: resolvedReference("shop-runtime-1"),
+    storeId: { status: "UNKNOWN" },
+    platformAccountId: { status: "UNRESOLVED" },
+  });
+  assert.ok(lockVal(lock));
+});
+
+test("IdentityLock permits equal opaque string values across semantically distinct fields", () => {
+  const lockVal = v("fastwork:domain:identity-lock");
+  const same = "same-opaque-value";
+  const lock = makeIdentityLock({
+    platformCustomerId: resolvedReference(same),
+    internalConversationId: resolvedString(same),
+    runtimeConversationReference: resolvedReference(same),
+  });
+  assert.ok(lockVal(lock));
+});
+
+test("IdentityLock enforces non-empty resolved values without lexical placeholder bans", () => {
+  const lockVal = v("fastwork:domain:identity-lock");
+  const empty = makeIdentityLock({ merchantId: resolvedString("") });
+  assert.equal(lockVal(empty), false, "empty RESOLVED value is rejected");
+  for (const value of ["0", "unknown", "null", "placeholder"]) {
+    const lock = makeIdentityLock({
+      merchantId: resolvedString(value),
+      platformCustomerId: resolvedReference(value),
+      internalConversationId: resolvedString(value),
+      runtimeConversationReference: resolvedReference(value),
+    });
+    assert.ok(lockVal(lock), JSON.stringify(value));
+  }
+  const unknownWithValue = makeIdentityLock({ merchantId: { status: "UNKNOWN", value: "0" } });
+  assert.equal(lockVal(unknownWithValue), false, "UNKNOWN must not carry a value");
+  const unresolvedWithValue = makeIdentityLock({ storeId: { status: "UNRESOLVED", value: "store-1" } });
+  assert.equal(lockVal(unresolvedWithValue), false, "UNRESOLVED must not carry a canonical value");
+});
+
+test("platform message provenance keeps authoritative, fingerprint, synthetic, and unknown distinct", () => {
+  const lockVal = v("fastwork:domain:identity-lock");
+  const { ajv } = compileAllSchemas();
+  const authoritative = ajv.getSchema("fastwork:domain:identity-lock#/$defs/authoritativePlatformMessageIdentity");
+  assert.ok(authoritative, "authoritative message identity definition must resolve");
+  assert.ok(authoritative({ provenance: "AUTHORITATIVE_PLATFORM_ID", value: "platform-msg-1" }));
+  const placeholderLikeFingerprint = { provenance: "LOCAL_FINGERPRINT", value: "unknown" };
+  assert.equal(authoritative(placeholderLikeFingerprint), false);
+  assert.ok(lockVal(makeIdentityLock({ triggerMessage: { localMessageId: { status: "UNKNOWN" }, platformMessageIdentity: placeholderLikeFingerprint } })));
+  assert.ok(lockVal(makeIdentityLock({ triggerMessage: { localMessageId: { status: "UNKNOWN" }, platformMessageIdentity: { provenance: "SYNTHETIC", value: "synthetic-1" } } })));
+  assert.ok(lockVal(makeIdentityLock({ triggerMessage: { localMessageId: { status: "UNKNOWN" }, platformMessageIdentity: { provenance: "UNKNOWN" } } })));
+});
+
+test("InboundEnvelope and IdentityLock reject forbidden downstream fields and PDD customerUid leakage", () => {
+  const lockVal = v("fastwork:domain:identity-lock");
+  const envVal = v("fastwork:domain:inbound-envelope");
+  const lock = makeIdentityLock();
+  lock.sourceContent = { kind: "text", text: "must not be in identity lock" };
+  assert.equal(lockVal(lock), false);
+  const customerUidLock = makeIdentityLock({ customerUid: "pdd-customer-1" });
+  assert.equal(lockVal(customerUidLock), false);
+  for (const field of ["scene", "aiReply", "contextEnvelope", "policyResult", "sendResult", "deliveryOutcome"]) {
+    const envelope = makeInboundEnvelope();
+    envelope[field] = "forbidden";
+    assert.equal(envVal(envelope), false, field);
+  }
+});

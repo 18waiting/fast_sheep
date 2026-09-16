@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:inbound-envelope",
+  "$title": "InboundEnvelope",
+  "description": "Canonical inbound source boundary. Source platform and message identity are owned by identityLock.triggerMessage; this envelope owns source content and occurrence time.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "identityLock",
+    "sourceContent",
+    "sourceOccurredAt"
+  ],
+  "properties": {
+    "identityLock": {
+      "$ref": "fastwork:domain:identity-lock"
+    },
+    "sourceContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "text"
+      ],
+      "properties": {
+        "kind": {
+          "const": "text"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "sourceOccurredAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

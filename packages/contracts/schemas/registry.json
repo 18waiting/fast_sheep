@@ -984,6 +984,32 @@
       "status": "REGISTERED"
     },
     {
+      "id": "fastwork:domain:identity-lock",
+      "version": "1.0",
+      "path": "domain/identity-lock.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "IdentityLock",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:inbound-envelope",
+      "version": "1.0",
+      "path": "domain/inbound-envelope.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "InboundEnvelope",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
       "id": "fastwork:domain:knowledge-candidate",
       "version": "1.0",
       "path": "domain/knowledge-candidate.schema.json",

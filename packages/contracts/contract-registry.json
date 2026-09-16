@@ -591,6 +591,26 @@
       "status": "IMPLEMENTED",
       "source": "spec/rebuild/domain-contracts.md",
       "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:identity-lock",
+      "version": "1.0",
+      "schema": "schemas/domain/identity-lock.schema.json",
+      "direction": "domain",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "docs/architecture/AI_CUSTOMER_SERVICE_CORE.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:inbound-envelope",
+      "version": "1.0",
+      "schema": "schemas/domain/inbound-envelope.schema.json",
+      "direction": "domain",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "docs/architecture/PLATFORM_ADAPTER_CONTRACT.md",
+      "behavior_ids": []
     }
   ]
 }

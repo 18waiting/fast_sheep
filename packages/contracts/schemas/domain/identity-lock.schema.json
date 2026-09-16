@@ -1,0 +1,301 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:identity-lock",
+  "$title": "IdentityLock",
+  "description": "Canonical immutable inbound identity scope. Source content, AI output, Scene, ContextEnvelope, Policy, ReplyPlan, and send/delivery results are excluded by contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "platform",
+    "runtimeShop",
+    "merchantId",
+    "storeId",
+    "platformAccountId",
+    "platformCustomerId",
+    "internalConversationId",
+    "runtimeConversationReference",
+    "triggerMessage"
+  ],
+  "properties": {
+    "platform": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtimeShop": {
+      "$ref": "#/$defs/referenceIdentity"
+    },
+    "merchantId": {
+      "$ref": "#/$defs/stringIdentity"
+    },
+    "storeId": {
+      "$ref": "#/$defs/stringIdentity"
+    },
+    "platformAccountId": {
+      "$ref": "#/$defs/stringIdentity"
+    },
+    "platformCustomerId": {
+      "$ref": "#/$defs/referenceIdentity"
+    },
+    "internalConversationId": {
+      "$ref": "#/$defs/stringIdentity"
+    },
+    "runtimeConversationReference": {
+      "$ref": "#/$defs/referenceIdentity"
+    },
+    "triggerMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "localMessageId",
+        "platformMessageIdentity"
+      ],
+      "properties": {
+        "localMessageId": {
+          "$ref": "#/$defs/stringIdentity"
+        },
+        "platformMessageIdentity": {
+          "$ref": "#/$defs/platformMessageIdentity"
+        }
+      }
+    },
+    "runtimeEvidence": {
+      "$ref": "#/$defs/runtimeEvidence"
+    }
+  },
+  "$defs": {
+    "identityValue": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resolvedStringIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "value"
+      ],
+      "properties": {
+        "status": {
+          "const": "RESOLVED"
+        },
+        "value": {
+          "$ref": "#/$defs/identityValue"
+        }
+      }
+    },
+    "unknownIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "const": "UNKNOWN"
+        }
+      }
+    },
+    "unresolvedIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "const": "UNRESOLVED"
+        }
+      }
+    },
+    "stringIdentity": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/resolvedStringIdentity"
+        },
+        {
+          "$ref": "#/$defs/unknownIdentity"
+        },
+        {
+          "$ref": "#/$defs/unresolvedIdentity"
+        }
+      ]
+    },
+    "referenceValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value"
+      ],
+      "properties": {
+        "value": {
+          "$ref": "#/$defs/identityValue"
+        }
+      }
+    },
+    "resolvedReferenceIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "value"
+      ],
+      "properties": {
+        "status": {
+          "const": "RESOLVED"
+        },
+        "value": {
+          "$ref": "#/$defs/referenceValue"
+        }
+      }
+    },
+    "referenceIdentity": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/resolvedReferenceIdentity"
+        },
+        {
+          "$ref": "#/$defs/unknownIdentity"
+        },
+        {
+          "$ref": "#/$defs/unresolvedIdentity"
+        }
+      ]
+    },
+    "authoritativePlatformMessageIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provenance",
+        "value"
+      ],
+      "properties": {
+        "provenance": {
+          "const": "AUTHORITATIVE_PLATFORM_ID"
+        },
+        "value": {
+          "$ref": "#/$defs/identityValue"
+        }
+      }
+    },
+    "localFingerprintPlatformMessageIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provenance",
+        "value"
+      ],
+      "properties": {
+        "provenance": {
+          "const": "LOCAL_FINGERPRINT"
+        },
+        "value": {
+          "$ref": "#/$defs/identityValue"
+        }
+      }
+    },
+    "syntheticPlatformMessageIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provenance",
+        "value"
+      ],
+      "properties": {
+        "provenance": {
+          "const": "SYNTHETIC"
+        },
+        "value": {
+          "$ref": "#/$defs/identityValue"
+        }
+      }
+    },
+    "unknownPlatformMessageIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provenance"
+      ],
+      "properties": {
+        "provenance": {
+          "const": "UNKNOWN"
+        }
+      }
+    },
+    "platformMessageIdentity": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/authoritativePlatformMessageIdentity"
+        },
+        {
+          "$ref": "#/$defs/localFingerprintPlatformMessageIdentity"
+        },
+        {
+          "$ref": "#/$defs/syntheticPlatformMessageIdentity"
+        },
+        {
+          "$ref": "#/$defs/unknownPlatformMessageIdentity"
+        }
+      ]
+    },
+    "selectedCustomerObservation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "platformCustomerId"
+          ],
+          "properties": {
+            "status": {
+              "const": "SELECTED"
+            },
+            "platformCustomerId": {
+              "$ref": "#/$defs/referenceValue"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "NONE"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "UNKNOWN"
+            }
+          }
+        }
+      ]
+    },
+    "runtimeEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/identityValue"
+        },
+        "documentGeneration": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "selectedCustomerObservation": {
+          "$ref": "#/$defs/selectedCustomerObservation"
+        }
+      }
+    }
+  }
+}

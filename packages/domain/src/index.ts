@@ -106,3 +106,6 @@ export * from "./entitlement.js";
 
 // M1.5-R02: Local Ownership Execution Semantics.
 export * from "./ownership-execution.js";
+
+// SHEEP-300: IdentityLock and InboundEnvelope contract foundation.
+export * from "./identity-inbound.js";
