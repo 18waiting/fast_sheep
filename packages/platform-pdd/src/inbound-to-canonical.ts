@@ -28,6 +28,10 @@ export interface PddCanonicalScopeBinding {
  * message before the internal conversation/local message bindings are trusted.
  */
 export interface PddInboundMessageAssociation {
+  /** Runtime shop that owned the association at creation/resolution time. */
+  readonly ownerRuntimeShopId: string;
+  /** Canonical scope that owned the association at creation/resolution time. */
+  readonly ownerScope: PddCanonicalScopeBinding;
   readonly platformCustomerId?: string;
   readonly platformMessageId?: string;
   readonly internalConversationId: IdentityResolution<ConversationId>;

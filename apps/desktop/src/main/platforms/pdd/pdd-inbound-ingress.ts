@@ -77,6 +77,8 @@ function isScopeBinding(value: unknown): value is PddCanonicalScopeBinding {
 
 function isMessageAssociation(value: unknown): boolean {
   if (!isRecord(value)) return false;
+  if (!isStringValue(value.ownerRuntimeShopId)) return false;
+  if (!isScopeBinding(value.ownerScope)) return false;
   if (value.platformCustomerId !== undefined && !isStringValue(value.platformCustomerId)) return false;
   if (value.platformMessageId !== undefined && !isStringValue(value.platformMessageId)) return false;
   return isIdentityResolution(value.internalConversationId, isStringValue)
@@ -220,6 +222,12 @@ export function processPddInboundIngress(options: PddInboundIngressProcessOption
 
   const association = identity.association;
   if (association !== undefined) {
+    if (association.ownerRuntimeShopId !== options.document.shopId) {
+      return { status: "REJECTED", reason: "ASSOCIATION_RUNTIME_SHOP_MISMATCH", diagnostics: sourceSnapshot.diagnostics };
+    }
+    if (!sameScope(association.ownerScope, authoritativeScope)) {
+      return { status: "REJECTED", reason: "ASSOCIATION_SCOPE_MISMATCH", diagnostics: sourceSnapshot.diagnostics };
+    }
     if (sourceSnapshot.customerUid === undefined) {
       if (association.platformCustomerId !== undefined) {
         return { status: "REJECTED", reason: "CUSTOMER_ASSOCIATION_UNEXPECTED", diagnostics: sourceSnapshot.diagnostics };

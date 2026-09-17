@@ -16,6 +16,12 @@ function identity(overrides: Record<string, unknown> = {}) {
     },
     runtimeConversationReference: resolution({ value: "runtime-conversation-1" }),
     association: {
+      ownerRuntimeShopId: "shop-1",
+      ownerScope: {
+        merchantId: resolution("merchant-1"),
+        storeId: resolution("store-1"),
+        platformAccountId: resolution("account-1"),
+      },
       platformCustomerId: "6318084722818",
       platformMessageId: "987654321098765432109876543210",
       internalConversationId: { status: "UNRESOLVED" },
@@ -112,6 +118,12 @@ test("trusted opaque values are preserved without lexical guessing", () => {
     normalized: normalize(payload({ from: { role: "user", uid: "0" }, msg_id: "unknown" })),
     identity: identity({
       association: {
+        ownerRuntimeShopId: "shop-1",
+        ownerScope: {
+          merchantId: resolution("merchant-1"),
+          storeId: resolution("store-1"),
+          platformAccountId: resolution("account-1"),
+        },
         platformCustomerId: "0",
         platformMessageId: "unknown",
         internalConversationId: resolution("unknown"),

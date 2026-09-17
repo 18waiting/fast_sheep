@@ -45,6 +45,8 @@ function baseIdentity(document, message) {
     association: record === undefined
       ? undefined
       : {
+          ownerRuntimeShopId: document.shopId,
+          ownerScope: scope(),
           platformCustomerId: message.customerUid,
           platformMessageId: message.platformMessageId,
           internalConversationId: resolution(record.conversation),

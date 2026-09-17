@@ -38,11 +38,13 @@ const controlledAssociations = new Map<string, { conversation: string; localMess
   ["B|m-b", { conversation: "conversation-b", localMessage: "local-message-b" }],
 ]);
 
-function associationFor(message: { customerUid?: string; platformMessageId?: string }) {
+function associationFor(document: { shopId: string }, message: { customerUid?: string; platformMessageId?: string }) {
   if (message.customerUid === undefined || message.platformMessageId === undefined) return undefined;
   const record = controlledAssociations.get(message.customerUid + "|" + message.platformMessageId);
   if (!record) return undefined;
   return {
+    ownerRuntimeShopId: document.shopId,
+    ownerScope: defaultScope(),
     platformCustomerId: message.customerUid,
     platformMessageId: message.platformMessageId,
     internalConversationId: resolution(record.conversation),
@@ -55,7 +57,7 @@ function baseIdentity(document: { shopId: string }, message: { customerUid?: str
     runtimeShop: resolution({ value: document.shopId }),
     scope: defaultScope(),
     runtimeConversationReference: resolution({ value: "runtime-" + document.shopId }),
-    association: associationFor(message),
+    association: associationFor(document, message),
   } as never;
 }
 
@@ -290,6 +292,26 @@ test("malformed outer input and malformed resolver binding return clear failures
   assert.equal(h.collected.length, 0);
 });
 
+test("canonical validator unavailable, false, or throwing fails closed without collector or downstream calls", async () => {
+  for (const [canonicalValidator, reason] of [
+    [null, "CANONICAL_VALIDATOR_UNAVAILABLE"],
+    [() => false, "CANONICAL_VALIDATION_FAILED"],
+    [() => { throw new Error("validator boom"); }, "CANONICAL_VALIDATOR_THREW"],
+  ] as const) {
+    const h = makeService({ canonicalValidator });
+    await h.service.activate("shop-a");
+    h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+    const sender = h.service.webContentsFor("shop-a")!;
+    const context = h.service.createInboundIngressContext(sender)!;
+    const result = h.service.handleTrustedInboundIngress(sender, context, { payload: validPayload() });
+    assert.equal(result.status, "FAILED");
+    assert.equal(result.reason, reason);
+    assert.equal(h.collected.length, 0);
+    assert.equal(h.calls.ai, 0);
+    assert.equal(h.calls.legacyInbound, 0);
+  }
+});
+
 test("collector missing, synchronous throw, and async return stop without MAPPED", async () => {
   const missing = makeService({ collector: null });
   await missing.service.activate("shop-a");
@@ -307,8 +329,7 @@ test("collector missing, synchronous throw, and async return stop without MAPPED
   assert.equal(throwingResult.status, "FAILED");
   assert.equal(throwingResult.reason, "COLLECTOR_THREW");
 
-  let rejected = false;
-  const asyncResult = makeService({ collector: () => { const p = Promise.reject(new Error("async collector")); p.catch(() => { rejected = true; }); return p; } });
+  const asyncResult = makeService({ collector: () => Promise.reject(new Error("async collector")) });
   await asyncResult.service.activate("shop-a");
   asyncResult.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
   const asyncSender = asyncResult.service.webContentsFor("shop-a")!;
@@ -317,7 +338,6 @@ test("collector missing, synchronous throw, and async return stop without MAPPED
   await new Promise((resolve) => setTimeout(resolve, 0));
   assert.equal(result.status, "FAILED");
   assert.equal(result.reason, "ASYNC_COLLECTOR_UNSUPPORTED");
-  assert.equal(rejected, true);
 });
 
 test("source time valid/missing/invalid branches keep source and observed semantics separate", async () => {
@@ -325,13 +345,94 @@ test("source time valid/missing/invalid branches keep source and observed semant
   const valid = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload(), sourceOccurredAt: "2026-09-17T12:00:00.123Z" });
   const missing = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload(), sourceOccurredAt: null });
   const invalid = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload(), sourceOccurredAt: "2026-02-30T12:00:00" });
+  const missingZone = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload(), sourceOccurredAt: "2026-09-17T12:00:00" });
+  const trailingGarbage = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload(), sourceOccurredAt: "2026-09-17T12:00:00Zjunk" });
+  const illegalCalendar = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload(), sourceOccurredAt: "2026-02-30T12:00:00Z" });
   assert.equal(valid.status, "MAPPED");
   assert.equal(missing.status, "MAPPED");
   assert.equal(invalid.status, "MAPPED");
+  assert.equal(missingZone.status, "MAPPED");
+  assert.equal(trailingGarbage.status, "MAPPED");
+  assert.equal(illegalCalendar.status, "MAPPED");
   if (valid.status === "MAPPED") assert.equal(valid.envelope.sourceOccurredAt, "2026-09-17T12:00:00.123Z");
   if (missing.status === "MAPPED") assert.equal(missing.envelope.sourceOccurredAt, null);
   if (invalid.status === "MAPPED") assert.equal(invalid.envelope.sourceOccurredAt, null);
-  if (invalid.status === "MAPPED") assert.ok(invalid.diagnostics.includes("SOURCE_TIME_INVALID"));
+  for (const result of [invalid, missingZone, trailingGarbage, illegalCalendar]) { if (result.status === "MAPPED") { assert.equal(result.envelope.sourceOccurredAt, null); assert.ok(result.diagnostics.includes("SOURCE_TIME_INVALID")); } }
+});
+
+test("cross-shop association reuse is rejected while correct A/B associations map", async () => {
+  const scopeA = { merchantId: resolution("merchant-a"), storeId: resolution("store-a"), platformAccountId: resolution("account-a") };
+  const scopeB = { merchantId: resolution("merchant-b"), storeId: resolution("store-b"), platformAccountId: resolution("account-b") };
+  const assocA = { ownerRuntimeShopId: "shop-a", ownerScope: scopeA, platformCustomerId: "1001", platformMessageId: "same", internalConversationId: resolution("conversation-a"), localMessageId: resolution("local-message-a") };
+  const assocB = { ownerRuntimeShopId: "shop-b", ownerScope: scopeB, platformCustomerId: "1001", platformMessageId: "same", internalConversationId: resolution("conversation-b"), localMessageId: resolution("local-message-b") };
+  let reuseAForB = false;
+  const h = makeService({
+    resolveScope: (document: { shopId: string }) => document.shopId === "shop-a" ? scopeA : scopeB,
+    resolveIdentity: (_message: unknown, document: { shopId: string }) => ({
+      runtimeShop: resolution({ value: document.shopId }),
+      scope: document.shopId === "shop-a" ? scopeA : scopeB,
+      runtimeConversationReference: resolution({ value: "runtime-" + document.shopId }),
+      association: document.shopId === "shop-b" && reuseAForB ? assocA : document.shopId === "shop-a" ? assocA : assocB,
+    }),
+  });
+  await h.service.activate("shop-a");
+  h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+  const senderA = h.service.webContentsFor("shop-a")!;
+  const contextA = h.service.createInboundIngressContext(senderA)!;
+  await h.service.activate("shop-b");
+  h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-b", shop_id: "shop-b" } as never);
+  const senderB = h.service.webContentsFor("shop-b")!;
+  const contextB = h.service.createInboundIngressContext(senderB)!;
+  const samePayload = validPayload({ content: "same", from: { role: "user", uid: "1001" }, msg_id: "same" });
+  const correctA = h.service.handleTrustedInboundIngress(senderA, contextA, { payload: samePayload });
+  const correctB = h.service.handleTrustedInboundIngress(senderB, contextB, { payload: samePayload });
+  reuseAForB = true;
+  const reused = h.service.handleTrustedInboundIngress(senderB, contextB, { payload: samePayload });
+  assert.equal(correctA.status, "MAPPED");
+  assert.equal(correctB.status, "MAPPED");
+  assert.equal(reused.status, "REJECTED");
+  assert.equal(reused.reason, "ASSOCIATION_RUNTIME_SHOP_MISMATCH");
+  assert.equal(h.collected.length, 2);
+});
+
+test("same customer with a different message cannot reuse a local-message association", async () => {
+  const h = makeService({
+    resolveIdentity: (_message: unknown, document: { shopId: string }) => ({
+      runtimeShop: resolution({ value: document.shopId }),
+      scope: defaultScope(),
+      runtimeConversationReference: resolution({ value: "runtime-" + document.shopId }),
+      association: {
+        ownerRuntimeShopId: document.shopId,
+        ownerScope: defaultScope(),
+        platformCustomerId: "1001",
+        platformMessageId: "m-a",
+        internalConversationId: resolution("conversation-a"),
+        localMessageId: resolution("local-message-a"),
+      },
+    }),
+  });
+  await h.service.activate("shop-a");
+  h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+  const sender = h.service.webContentsFor("shop-a")!;
+  const context = h.service.createInboundIngressContext(sender)!;
+  const result = h.service.handleTrustedInboundIngress(sender, context, { payload: validPayload({ from: { role: "user", uid: "1001" }, msg_id: "m-b" }) });
+  assert.equal(result.status, "REJECTED");
+  assert.equal(result.reason, "MESSAGE_ASSOCIATION_MISMATCH");
+  assert.equal(h.collected.length, 0);
+});
+
+test("content cannot select identity: same content with different identity and different content with same identity", async () => {
+  const h = await makeReady("shop-a");
+  const sameContentA = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload({ content: "same-content", from: { role: "user", uid: "1001" }, msg_id: "m-a" }) });
+  const sameContentB = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload({ content: "same-content", from: { role: "user", uid: "1002" }, msg_id: "m-b" }) });
+  const changedContentA = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload({ content: "changed-content", from: { role: "user", uid: "1001" }, msg_id: "m-a" }) });
+  assert.equal(sameContentA.status, "MAPPED");
+  assert.equal(sameContentB.status, "MAPPED");
+  assert.equal(changedContentA.status, "MAPPED");
+  if (sameContentA.status === "MAPPED" && sameContentB.status === "MAPPED" && changedContentA.status === "MAPPED") {
+    assert.notEqual(sameContentA.envelope.identityLock.internalConversationId.value, sameContentB.envelope.identityLock.internalConversationId.value);
+    assert.equal(changedContentA.envelope.identityLock.internalConversationId.value, sameContentA.envelope.identityLock.internalConversationId.value);
+  }
 });
 
 test("source content remains exact for whitespace and long text", async () => {
