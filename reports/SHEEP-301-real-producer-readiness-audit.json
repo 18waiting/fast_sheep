@@ -1061,32 +1061,36 @@
       "connection-time requestId/session/document binding",
       "real normalizer, mapper, and default canonical validator",
       "test collector and controlled failure injection",
-      "reload, dispose/recreate, destroy, detach, stale frame, and stale connection-created handling"
+      "reload, dispose/recreate, destroy, detach, stale frame, and stale connection-created handling",
+      "terminal WebContents lifecycle registry"
     ],
     "not_proven": [
       "real PDD/Titan endpoint, framing, compression, replay, or reconnect behavior",
       "real PDD runtime compatibility",
       "real business sourceOccurredAt semantics",
-      "production implementation or production ingress readiness"
+      "production implementation or production ingress readiness",
+      "same-WebContents recovery after termination"
     ],
     "controller_repair": {
+      "decision": "REPAIR",
+      "baseline_commit": "8588d63b61f03191541e7efa88da74f094577a41",
+      "prior_repair_baseline_commit": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
+      "earlier_repair_baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
+      "repair_result": "COMPLETE",
+      "completion_gate": "PASS",
+      "scope": "R3C_TERMINAL_WEBCONTENTS_LIFECYCLE_CONSTRAINT",
+      "repaired_report": "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
+      "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
+      "historical_relation": "The prior ff85808 repair is retained in prior_controller_repair and the earlier ab20537 repair in earlier_controller_repair. The 8588d63 terminal-lifecycle repair closes the remaining same-WebContents activation gaps and remains awaiting Controller review."
+    },
+    "prior_controller_repair": {
       "decision": "REPAIR",
       "baseline_commit": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
       "prior_repair_baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
       "repair_result": "COMPLETE",
-      "completion_gate": "PASS",
       "scope": "R1_REPO_ROOT_PATH / R3A_RAW_OLD_EVENT / R3B_LIFECYCLE_CANCELLATION / R4_COMPLETION_GATE",
       "repaired_report": "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
-      "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
-      "historical_relation": "The prior ab20537 repaired proof is retained in prior_controller_repair. The ff85808 targeted repair addressed the remaining root, raw-old-event, and lifecycle-cancellation gaps and remains awaiting Controller review."
-    },
-    "prior_controller_repair": {
-      "decision": "REPAIR",
-      "baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
-      "repair_result": "COMPLETE",
-      "repaired_report": "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
-      "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
-      "historical_relation": "The earlier Codex COMPLETE was not a Controller PASS; Controller issued REPAIR and the repaired offline proof subsequently passed all required checks."
+      "controller_review_status": "AWAITING_CONTROLLER_REVIEW"
     },
     "proof_root": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof",
     "completion_gate": "PASS",
@@ -1109,13 +1113,34 @@
       "T07B1",
       "T07B2"
     ],
-    "same_webcontents_navigation_recovery": "NOT_SUPPORTED",
+    "same_webcontents_navigation_recovery": "NOT_SUPPORTED_AFTER_TERMINATION",
     "downstream_counter_assertions": {
       "legacyBridgeCalls": 0,
       "transportSendCalls": 0,
       "aiCalls": 0,
       "businessPersistenceWrites": 0,
       "synthetic_websocket_traffic_counted_separately": true
+    },
+    "earlier_controller_repair": {
+      "decision": "REPAIR",
+      "baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
+      "repair_result": "COMPLETE",
+      "repaired_report": "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
+      "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
+      "historical_relation": "The earlier Codex COMPLETE was not a Controller PASS; Controller issued REPAIR and the repaired offline proof subsequently passed all required checks."
+    },
+    "terminal_lifecycle_constraint": {
+      "identity": "WeakSet keyed by the actual WebContents object",
+      "recovery": "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED_AFTER_TERMINATION",
+      "enforced_entries": [
+        "start",
+        "reattach",
+        "attachDebugger",
+        "enableNetwork",
+        "replacement observer constructor",
+        "stopLifecycle"
+      ],
+      "new_webcontents_required": true
     }
   },
   "offline_boundary_proof_result": "COMPLETE / AWAITING_CONTROLLER_REVIEW"

@@ -441,3 +441,73 @@ This section supersedes only the status of the earlier repaired proof run in sec
 - Downstream counters: legacyBridgeCalls = 0, transportSendCalls = 0, AI calls = 0, business persistence writes = 0; loopback WebSocket traffic is reported separately.
 
 The repaired proof still does not establish real Titan URL/framing/compression/reconnect/replay behavior, real PDD runtime compatibility, real business source time, or production ingress readiness.
+
+---
+
+## 18. Terminal Lifecycle Repair Result (8588d63)
+
+- Task: SHEEP-301.
+- Acceptance unit: LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF.
+- Mode: TERMINAL_LIFECYCLE_REPAIR.
+- Controller decision: REPAIR.
+- Repair baseline: 8588d63b61f03191541e7efa88da74f094577a41.
+- Prior repair baselines retained: ff858088e018de5a5f12b8539d2d6c1a51c23c37 and ab205372f858db736405ff2195bc9a307acae9a1.
+- Repaired offline proof result: COMPLETE.
+- Completion gate: PASS.
+- Same-WebContents recovery: NOT_SUPPORTED_AFTER_TERMINATION.
+- Production implementation: NOT PERFORMED.
+- Production PDD ingress readiness: BLOCKED.
+- Live validation authorization: NOT_AUTHORIZED.
+- Live validation performed: false.
+- Full SHEEP-301: PARTIAL / OPEN.
+- Controller review status: AWAITING_CONTROLLER_REVIEW.
+
+### Baseline reproduction
+
+A local baseline probe against 8588d63 was saved under:
+E:\fast_sheep\.tmp\sheep-301-terminal-lifecycle-baseline\baseline-result.json.
+
+R3C-1 reproduced:
+- main-document replacement made the observer terminal;
+- reattach returned SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED;
+- direct start({waitForLoad:false}) nevertheless returned READY;
+- the old connection-created/text-frame route then resolved context and reached ingress and collector.
+
+R3C-2 reproduced:
+- external debugger detach terminated the observer and removed the navigation listener;
+- reattach on the same WebContents returned READY;
+- the old event route then resolved context and reached ingress and collector.
+
+### Terminal lifecycle constraint
+
+The repaired observer uses a module-level WeakSet keyed by the actual WebContents object. Once that object's diagnostic observation lifecycle terminates, every future activation entry is stopped:
+
+- start();
+- reattach();
+- attachDebugger();
+- enableNetwork();
+- construction of a replacement observer for the same WebContents.
+
+The terminal state survives terminal-state resets and does not rely on numeric WebContents id, shop string, or session string. A new WebContents object with the same business identifiers can establish a new trusted lifecycle.
+
+Every terminal activation request returns STOPPED with reason SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED, leaves terminal=true and enabled=false, removes listeners, does not resolve context, and does not call canonical ingress or collector.
+
+### Regression coverage
+
+- Main-document replacement: direct start and reattach are rejected; captured old callback, captured old text frame, and un-tokened raw old event cause zero context-resolution, ingress, and collector growth.
+- External debugger detach followed by a navigation event: direct start and reattach are rejected; listener counts remain zero.
+- A replacement BoundaryObserver on the same WebContents is terminal from construction and cannot acquire a binding.
+- A new WebContents object can establish a new lifecycle; the legal connection is bound and the legal frame reaches the real mapper/default validator/collector once.
+- Existing attach/enable failure, pending-completion cancellation, idempotent detach, same-document/subframe navigation, and listener-cleanup coverage remains.
+
+### Validation
+
+- Targeted Node path/lifecycle regressions: 14 passed / 0 failed.
+- Full sandboxed Electron loopback proof: exit 0.
+- Electron proof checks: 17 passed / 0 failed.
+- Completion gate: PASS.
+- Downstream counters: legacy bridge/send/AI/business persistence = 0.
+- Unhandled exceptions/rejections: 0.
+- PROJECT_STATE JSON parse, consistency validation, report JSON parse, diff check, and changed-file scope checks are run before delivery.
+
+Same-WebContents recovery remains unproven and is deliberately NOT SUPPORTED for this diagnostic unit. Real PDD/Titan runtime behavior, framing, reconnect/replay, and production ingress remain deferred and unauthorized.

@@ -1,4 +1,6 @@
 let observerSequence = 0;
+const terminatedWebContents = new WeakSet();
+const terminalReasonByWebContents = new WeakMap();
 
 export class BoundaryObserver {
   constructor({ webContents, shopId, allowedUrl, getService, onResult, allowedCdpSessionIds = [""], networkEnableCommand }) {
@@ -35,10 +37,18 @@ export class BoundaryObserver {
     this.readyResolve = null;
     this.navigationHandler = null;
     this.detachHandler = null;
-    this.sameWebContentsRecoverySupported = true;
+    const existingTerminalReason = terminalReasonByWebContents.get(webContents) ?? null;
+    this.terminal = existingTerminalReason !== null;
+    this.terminalReason = existingTerminalReason;
+    this.sameWebContentsRecoverySupported = existingTerminalReason === null;
+    if (this.terminal) {
+      this.readyStatus = "STOPPED";
+      this.ready = Promise.resolve({ status: "STOPPED", reason: "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED" });
+    }
   }
 
   start({ waitForLoad = true } = {}) {
+    if (this.isTerminal()) return this.stopActivation("SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED");
     if (this.attached || this.attachScheduled) return this.ready;
     this.lifecycleId += 1;
     this.terminal = false;
@@ -68,6 +78,34 @@ export class BoundaryObserver {
     this.attachScheduled = false;
   }
 
+  isTerminal() {
+    return this.terminal || terminatedWebContents.has(this.webContents);
+  }
+
+  markTerminated(reason) {
+    terminatedWebContents.add(this.webContents);
+    terminalReasonByWebContents.set(this.webContents, reason);
+    this.terminal = true;
+    this.terminalReason = reason;
+    this.sameWebContentsRecoverySupported = false;
+  }
+
+  stopActivation(reason = "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED") {
+    this.markTerminated(this.terminalReason ?? reason);
+    this.enabled = false;
+    this.attachScheduled = false;
+    this.activeToken = null;
+    this.bindings.clear();
+    this.cancelScheduledAttach();
+    this.removeListeners();
+    try { if (this.debugger.isAttached()) this.debugger.detach(); } catch {}
+    this.attached = false;
+    this.readyStatus = "STOPPED";
+    this.readyResolve = null;
+    this.ready = Promise.resolve({ status: "STOPPED", reason: "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED" });
+    return this.ready;
+  }
+
   resolveReady(value) {
     if (this.readyStatus === "PENDING" && this.readyResolve) {
       this.readyStatus = value.status ?? "SETTLED";
@@ -77,10 +115,10 @@ export class BoundaryObserver {
   }
 
   async attachDebugger(lifecycleId = this.lifecycleId) {
-    if (this.terminal || lifecycleId !== this.lifecycleId || this.attached) return;
+    if (this.isTerminal() || lifecycleId !== this.lifecycleId || this.attached) return;
     try {
       if (!this.debugger.isAttached()) this.debugger.attach("1.3");
-      if (this.terminal || lifecycleId !== this.lifecycleId) {
+      if (this.isTerminal() || lifecycleId !== this.lifecycleId) {
         try { this.debugger.detach(); } catch {}
         return;
       }
@@ -116,15 +154,15 @@ export class BoundaryObserver {
   }
 
   async enableNetwork(lifecycleId = this.lifecycleId) {
-    if (this.terminal || !this.attached || lifecycleId !== this.lifecycleId || this.enabled) return;
+    if (this.isTerminal() || !this.attached || lifecycleId !== this.lifecycleId || this.enabled) return;
     const callbackToken = this.activeToken;
     try {
       await this.networkEnableCommand();
-      if (this.terminal || !this.attached || lifecycleId !== this.lifecycleId || callbackToken !== this.activeToken) return;
+      if (this.isTerminal() || !this.attached || lifecycleId !== this.lifecycleId || callbackToken !== this.activeToken) return;
       this.enabled = true;
       this.resolveReady({ status: "READY", lifecycle: this.lifecycle, callbackGeneration: this.callbackGeneration, shopId: this.shopId });
     } catch (error) {
-      if (this.terminal || lifecycleId !== this.lifecycleId) return;
+      if (this.isTerminal() || lifecycleId !== this.lifecycleId) return;
       this.resolveReady({ status: "FAILED", reason: String(error?.message ?? error) });
       this.stopLifecycle("NETWORK_ENABLE_FAILED");
     }
@@ -235,8 +273,8 @@ export class BoundaryObserver {
   }
 
   stopLifecycle(reason, lifecycleId = this.lifecycleId) {
-    if (this.terminal || lifecycleId !== this.lifecycleId) return;
-    this.terminal = true;
+    if (this.isTerminal() || lifecycleId !== this.lifecycleId) return;
+    this.markTerminated(reason);
     this.enabled = false;
     this.attachScheduled = false;
     this.activeToken = null;
@@ -289,12 +327,14 @@ export class BoundaryObserver {
   }
 
   deliverRawConnectionCreatedThroughCurrentListener(params, cdpSessionId = "") {
-    if (!this.terminal && this.messageHandler) {
-      this.messageHandler({}, "Network.webSocketCreated", params, cdpSessionId);
-    } else {
-      this.handleDebuggerMessage("Network.webSocketCreated", params, cdpSessionId, this.activeToken, "raw-current-listener");
+    if (this.isTerminal() || !this.messageHandler) {
+      const result = { status: "STOPPED", reason: "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED", shopId: this.shopId, method: "Network.webSocketCreated", delivery: "raw-current-listener" };
+      this.recordResult(result);
+      return result;
     }
-    return this.results[this.results.length - 1] ?? { status: "STOPPED", reason: "OBSERVER_TERMINAL" };
+    const before = this.results.length;
+    this.messageHandler({}, "Network.webSocketCreated", params, cdpSessionId);
+    return this.results[this.results.length - 1] ?? { status: "ACCEPTED", reason: "CONNECTION_CONTEXT_RESOLVED", shopId: this.shopId };
   }
 
   async requestExternalDetach() {
@@ -308,16 +348,9 @@ export class BoundaryObserver {
   }
 
   async reattach() {
-    if (!this.sameWebContentsRecoverySupported) {
-      return { status: "STOPPED", reason: "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED" };
-    }
+    if (this.isTerminal()) return this.stopActivation("SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED");
     await this.detach();
-    this.lifecycle += 1;
-    this.capturedFrames = [];
-    this.terminal = false;
-    this.attached = false;
-    this.start({ waitForLoad: false });
-    return this.ready;
+    return this.stopActivation("SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED");
   }
 
   snapshot() {
@@ -329,7 +362,8 @@ export class BoundaryObserver {
       callbackGeneration: this.callbackGeneration,
       attached: this.attached,
       attachScheduled: this.attachScheduled,
-      terminal: this.terminal,
+      terminal: this.isTerminal(),
+      terminalReason: this.terminalReason,
       enabled: this.enabled,
       readyStatus: this.readyStatus,
       contextResolutionCalls: this.contextResolutionCalls,

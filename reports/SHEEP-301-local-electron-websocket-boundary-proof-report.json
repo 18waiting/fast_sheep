@@ -2,7 +2,7 @@
   "task": "SHEEP-301",
   "acceptance_unit": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
   "readiness_baseline_commit": "8fb05f70d264943447981d19aa71a1dd4618c2b5",
-  "repair_baseline_commit": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
+  "repair_baseline_commit": "8588d63b61f03191541e7efa88da74f094577a41",
   "result": "COMPLETE",
   "diagnostic_proof_implementation_performed": true,
   "offline_boundary_proof_performed": true,
@@ -22,12 +22,12 @@
   "execution_paths": {
     "repoRoot": "E:\\fast_sheep",
     "proofRoot": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof",
-    "runRoot": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24400-1789664067103",
-    "userData": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24400-1789664067103\\user-data",
-    "sessionData": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24400-1789664067103\\session-data",
-    "cache": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24400-1789664067103\\cache",
-    "temp": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24400-1789664067103\\temp",
-    "logs": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24400-1789664067103\\logs"
+    "runRoot": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24084-1789664834805",
+    "userData": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24084-1789664834805\\user-data",
+    "sessionData": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24084-1789664834805\\session-data",
+    "cache": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24084-1789664834805\\cache",
+    "temp": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24084-1789664834805\\temp",
+    "logs": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24084-1789664834805\\logs"
   },
   "path_validation": {
     "ok": true,
@@ -55,28 +55,29 @@
     },
     "memory_partitions": {
       "shop-a": {
-        "partition": "memory:sheep301-proof-run-24400-1789664067103-shop-a",
+        "partition": "memory:sheep301-proof-run-24084-1789664834805-shop-a",
+        "isPersistent": false,
+        "storagePath": null,
+        "webContentsId": 8
+      },
+      "shop-b": {
+        "partition": "memory:sheep301-proof-run-24084-1789664834805-shop-b",
         "isPersistent": false,
         "storagePath": null,
         "webContentsId": 6
-      },
-      "shop-b": {
-        "partition": "memory:sheep301-proof-run-24400-1789664067103-shop-b",
-        "isPersistent": false,
-        "storagePath": null,
-        "webContentsId": 4
       }
     }
   },
   "runtime_source": {
-    "repository_head": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
-    "repair_baseline": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
-    "prior_repair_baseline": "ab205372f858db736405ff2195bc9a307acae9a1",
-    "worktree_status_porcelain": "M project/PROJECT_STATE.json\n M project/SHEEP_301_REAL_PRODUCER_READINESS_AUDIT.md\n M reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json\n M reports/SHEEP-301-real-producer-readiness-audit.json\n M scripts/fixtures/sheep-301-local-electron-websocket-boundary/main.mjs\n M scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs\n M scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs\n?? scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer-lifecycle.test.mjs\n?? scripts/fixtures/sheep-301-local-electron-websocket-boundary/path-policy.mjs\n?? scripts/fixtures/sheep-301-local-electron-websocket-boundary/path-policy.test.mjs",
+    "repository_head": "8588d63b61f03191541e7efa88da74f094577a41",
+    "repair_baseline": "8588d63b61f03191541e7efa88da74f094577a41",
+    "prior_repair_baseline": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
+    "earlier_repair_baseline": "ab205372f858db736405ff2195bc9a307acae9a1",
+    "worktree_status_porcelain": "M project/PROJECT_STATE.json\n M project/SHEEP_301_REAL_PRODUCER_READINESS_AUDIT.md\n M reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json\n M reports/SHEEP-301-real-producer-readiness-audit.json\n M scripts/fixtures/sheep-301-local-electron-websocket-boundary/main.mjs\n M scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer-lifecycle.test.mjs\n M scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs",
     "script_digests": {
-      "runner": "8ad01788c30a2ea851c6fb151221ca130476c137d0e6c9bab5f9a393bd2a5006",
+      "runner": "3c2f2aed035fdca819d1a9b79e2ae395ac1476f52e9c17a75808ba03a8490fb9",
       "launcher": "eba7a822a2d1c583008bb630c8faa58d7e8bba5753a5dc40aa65807d6ba99708",
-      "observer": "11e75c28c99c177d544ed277515341c1bbb3273bfdf3f9e7ebec389f88ccd9ae",
+      "observer": "bcbd4bf930c27bdfb04840fcdb432be47d23b42a1a5409df6f90a4183c930c4a",
       "fixture": "5f168e564083bc16a6304c0b5f71711c9583917be5e9e4c27921fae162defd26"
     }
   },
@@ -91,6 +92,9 @@
     "R1": "Baseline runner used a literal sibling temp-root string, hardcoded ws installation path, sandbox-disabling switch, and default persistent partitions.",
     "R2": "Baseline bindings were keyed by requestId only and ignored CDP sessionId.",
     "R3": "Controller reproduced a captured old webSocketCreated delivery reacquiring the current document context after navigation; the repaired proof also exercises an un-tokened raw old event through the current listener path.",
+    "R3C_1": "At 8588d63, after main-document replacement, reattach returned STOPPED but a direct start became READY again; the old raw connection was accepted by the new lifecycle, resolved a new context, and the old legal frame reached ingress and collector.",
+    "R3C_2": "At 8588d63, external debugger detach terminated the observer but left sameWebContentsRecoverySupported true; reattach became READY on the same WebContents and the old event route resolved context and reached ingress and collector.",
+    "baseline_repro_artifact": "E:\\fast_sheep\\.tmp\\sheep-301-terminal-lifecycle-baseline\\baseline-result.json",
     "R4": "Baseline tests used content-marker association mutation, a non-text old frame, and no dynamic WebSocket traffic counters."
   },
   "r1_r4_repair_evidence": {
@@ -105,6 +109,10 @@
     "R3": {
       "before": "captured old connection-created could call the live callback and obtain current document context",
       "after": "main-document replacement stops the observer permanently; captured-old-callback and un-tokened raw deliveries fail with zero context resolution and zero collector growth; same-WebContents recovery is NOT_SUPPORTED"
+    },
+    "R3C": {
+      "before": "start() reset terminal and external detach left recovery enabled for the same WebContents",
+      "after": "a module-level WeakSet keyed by the actual WebContents object terminates every future activation; start, reattach, attach, enable, and replacement observers all return STOPPED and require a new WebContents"
     },
     "R4": {
       "before": "content-marker association mutation, non-text old-frame test, incomplete source counters",
@@ -125,7 +133,7 @@
     "frame_delivery": "frame lookup uses the pre-existing requestId binding",
     "reload": "Main document replacement permanently stops the old observer, removes its listeners, clears bindings, and retains NOT_SUPPORTED for same-WebContents recovery; old callback and un-tokened raw deliveries cannot resolve a new context",
     "dispose_recreate": "old observer terminal; new WebContents/session/observer lifecycle required",
-    "detach_reattach": "old events remain terminal; reattach starts a new lifecycle and new connection binding",
+    "detach_reattach": "any termination of the WebContents permanently disables same-WebContents recovery; new trusted ingress requires a new WebContents",
     "unknown_or_unbound": "dropped or rejected before canonical collector"
   },
   "evidence_types": {
@@ -154,6 +162,19 @@
     "prior_root_outside_run": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof",
     "repaired_new_proof_root": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof",
     "cleanup_authorized": false
+  },
+  "terminal_lifecycle_constraint": {
+    "web_contents_identity": "WeakSet keyed by the actual WebContents object; numeric id, shop, and session strings are not identity evidence",
+    "recovery": "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED_AFTER_TERMINATION",
+    "activation_entries": [
+      "start",
+      "reattach",
+      "attachDebugger",
+      "enableNetwork",
+      "replacement observer constructor",
+      "stopLifecycle"
+    ],
+    "new_webcontents_required": true
   },
   "known_limitations": [
     "The payload is synthetic fixture data and does not prove actual Titan outer framing, compression, fragmentation, reconnect, or replay behavior.",
@@ -198,13 +219,13 @@
         "observerCount": 2,
         "sessions": {
           "a": {
-            "partition": "memory:sheep301-proof-run-24400-1789664067103-shop-a",
+            "partition": "memory:sheep301-proof-run-24084-1789664834805-shop-a",
             "isPersistent": false,
             "storagePath": null,
             "webContentsId": 2
           },
           "b": {
-            "partition": "memory:sheep301-proof-run-24400-1789664067103-shop-b",
+            "partition": "memory:sheep301-proof-run-24084-1789664834805-shop-b",
             "isPersistent": false,
             "storagePath": null,
             "webContentsId": 4
@@ -218,10 +239,10 @@
       "status": "PASS",
       "evidence": {
         "a": [
-          "observer-1|2||14436.2"
+          "observer-1|2||22064.2"
         ],
         "b": [
-          "observer-2|4||5708.2"
+          "observer-2|4||23992.2"
         ]
       }
     },
@@ -388,34 +409,41 @@
     },
     {
       "id": "A6",
-      "name": "main-document replacement permanently stops old callback and un-tokened raw events",
+      "name": "main-document replacement terminates the WebContents for every activation entry",
       "status": "PASS",
       "evidence": {
         "oldLifecycle": 0,
-        "newLifecycle": 1,
         "terminal": true,
+        "directStart": "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED",
+        "refusedReattach": "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED",
         "staleFrame": "OBSERVER_TERMINAL",
         "staleConnection": "OBSERVER_TERMINAL",
-        "rawCurrentListener": "OBSERVER_TERMINAL",
-        "refusedReattach": "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED",
+        "rawCurrentListener": "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED",
         "contextResolutionDelta": 0,
         "collectorDelta": 0,
-        "support": "same-WebContents navigation recovery NOT_SUPPORTED"
+        "support": "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED_AFTER_TERMINATION"
       }
     },
     {
       "id": "A7",
-      "name": "dispose, destroy, external detach, and reattach cannot revive old events",
+      "name": "termination rejects same-WebContents recovery and a new WebContents maps normally",
       "status": "PASS",
       "evidence": {
-        "oldReplay": "OBSERVER_TERMINAL",
-        "oldListenerCounts": {
-          "message": 0,
-          "navigationRegistered": false
-        },
-        "detachedReplay": "OBSERVER_TERMINAL",
-        "observerLifecycle": 2,
-        "collectorDelta": 2
+        "oldBObserver": "observer-2",
+        "oldBWebContentsId": 4,
+        "directStart": "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED",
+        "reattach": "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED",
+        "staleFrame": "OBSERVER_TERMINAL",
+        "staleConnection": "OBSERVER_TERMINAL",
+        "rawOldEvent": "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED",
+        "contextResolutionDelta": 0,
+        "oldEventsCollectorDelta": 0,
+        "newBWebContentsId": 6,
+        "newAWebContentsId": 8,
+        "mappedRuntimeShops": [
+          "shop-b",
+          "shop-a"
+        ]
       }
     },
     {
@@ -586,14 +614,14 @@
     "transportSendCalls": 0,
     "businessPersistenceWrites": 0,
     "syntheticWebSocketTraffic": {
-      "connections": 4,
-      "commandsReceived": 17,
-      "framesSent": 17
+      "connections": 5,
+      "commandsReceived": 18,
+      "framesSent": 18
     }
   },
   "collector": {
-    "calls": 7,
-    "envelopes": 7
+    "calls": 8,
+    "envelopes": 8
   },
   "measurement_boundary": {
     "legacy_bridge": "dynamic orchestrator stub counter connected to the same boundary",
@@ -608,19 +636,17 @@
     "project/SHEEP_301_REAL_PRODUCER_READINESS_AUDIT.md",
     "reports/SHEEP-301-real-producer-readiness-audit.json",
     "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
-    "scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
     "scripts/fixtures/sheep-301-local-electron-websocket-boundary/main.mjs",
     "scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs",
-    "scripts/fixtures/sheep-301-local-electron-websocket-boundary/path-policy.mjs",
-    "scripts/fixtures/sheep-301-local-electron-websocket-boundary/path-policy.test.mjs",
     "scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer-lifecycle.test.mjs"
   ],
   "controller_repair_record": {
     "decision": "REPAIR",
-    "baseline_commit": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
-    "prior_repair_baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
+    "baseline_commit": "8588d63b61f03191541e7efa88da74f094577a41",
+    "prior_repair_baseline_commit": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
+    "earlier_repair_baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
     "repair_result": "COMPLETE",
-    "historical_relation": "Prior Codex COMPLETE was not Controller PASS; Controller REPAIR was applied, then a second targeted REPAIR at ff85808 addressed root, raw old-event, and lifecycle cancellation gaps. The repaired proof is reported separately and remains awaiting Controller review."
+    "historical_relation": "Prior Codex COMPLETE was not Controller PASS; Controller REPAIR was applied at ab20537, then targeted repair at ff85808 addressed root/raw-event/lifecycle cancellation, and the 8588d63 terminal-lifecycle repair closes the remaining same-WebContents activation gaps. The repaired proof remains awaiting Controller review."
   },
   "error": null
 }

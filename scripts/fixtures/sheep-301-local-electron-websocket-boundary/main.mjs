@@ -22,8 +22,9 @@ const RUN_ID = `run-${process.pid}-${Date.now()}`;
 const REPORT_PATH = join(REPO_ROOT, "reports", "SHEEP-301-local-electron-websocket-boundary-proof-report.json");
 const LAUNCHER_PATH = process.env.SHEEP301_PROOF_LAUNCHER ?? null;
 const READINESS_BASELINE = "8fb05f70d264943447981d19aa71a1dd4618c2b5";
-const REPAIR_BASELINE = "ff858088e018de5a5f12b8539d2d6c1a51c23c37";
-const PRIOR_REPAIR_BASELINE = "ab205372f858db736405ff2195bc9a307acae9a1";
+const REPAIR_BASELINE = "8588d63b61f03191541e7efa88da74f094577a41";
+const PRIOR_REPAIR_BASELINE = "ff858088e018de5a5f12b8539d2d6c1a51c23c37";
+const EARLIER_REPAIR_BASELINE = "ab205372f858db736405ff2195bc9a307acae9a1";
 
 function childPath(...parts) {
   const candidate = resolve(TEMP_ROOT, ...parts);
@@ -496,7 +497,7 @@ async function main() {
     });
     assert.equal(h.counters.legacyBridgeCalls, legacyBefore, "normal paths must not reach legacy bridge");
 
-    await step("A6", "main-document replacement permanently stops old callback and un-tokened raw events", async () => {
+    await step("A6", "main-document replacement terminates the WebContents for every activation entry", async () => {
       assert.ok(legalA?.binding, "legal A binding missing before lifecycle test");
       const oldFrameIndex = legalA.frameIndex;
       const oldBinding = legalA.binding;
@@ -505,52 +506,71 @@ async function main() {
       const beforeCollector = h.collectorState.envelopes.length;
       await h.service.reload("shop-a");
       await waitFor("A main document replacement", () => observerA.lifecycle > oldLifecycle && observerA.terminal);
-      const staleFrame = observerA.replayCapturedFrame(oldFrameIndex);
-      assert.equal(staleFrame.status, "STOPPED");
-      assert.equal(staleFrame.reason, "OBSERVER_TERMINAL");
-      const staleConnection = observerA.replayCapturedConnectionCreated(oldBinding);
-      assert.equal(staleConnection.status, "STOPPED");
-      assert.equal(staleConnection.reason, "OBSERVER_TERMINAL");
-      const rawCurrentListener = observerA.deliverRawConnectionCreatedThroughCurrentListener({ requestId: "late-old-request", url: `ws://127.0.0.1:${port}/?shop=shop-a` }, "");
-      assert.equal(rawCurrentListener.status, "STOPPED");
-      assert.equal(rawCurrentListener.reason, "OBSERVER_TERMINAL");
+      const directStart = await observerA.start({ waitForLoad: false });
       const refusedReattach = await observerA.reattach();
+      const staleFrame = observerA.replayCapturedFrame(oldFrameIndex);
+      const staleConnection = observerA.replayCapturedConnectionCreated(oldBinding);
+      const rawCurrentListener = observerA.deliverRawConnectionCreatedThroughCurrentListener({ requestId: "late-old-request", url: `ws://127.0.0.1:${port}/?shop=shop-a` }, "");
+      assert.equal(directStart.status, "STOPPED");
+      assert.equal(directStart.reason, "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED");
       assert.equal(refusedReattach.status, "STOPPED");
       assert.equal(refusedReattach.reason, "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED");
+      assert.equal(staleFrame.status, "STOPPED");
+      assert.equal(staleFrame.reason, "OBSERVER_TERMINAL");
+      assert.equal(staleConnection.status, "STOPPED");
+      assert.equal(staleConnection.reason, "OBSERVER_TERMINAL");
+      assert.equal(rawCurrentListener.status, "STOPPED");
+      assert.equal(rawCurrentListener.reason, "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED");
       assert.equal(observerA.contextResolutionCalls, oldContextCalls, "old raw event must not resolve current context");
       assert.equal(h.collectorState.envelopes.length, beforeCollector, "old events must not reach collector");
-      return { oldLifecycle, newLifecycle: observerA.lifecycle, terminal: observerA.terminal, staleFrame: staleFrame.reason, staleConnection: staleConnection.reason, rawCurrentListener: rawCurrentListener.reason, refusedReattach: refusedReattach.reason, contextResolutionDelta: observerA.contextResolutionCalls - oldContextCalls, collectorDelta: h.collectorState.envelopes.length - beforeCollector, support: "same-WebContents navigation recovery NOT_SUPPORTED" };
+      return { oldLifecycle, terminal: observerA.terminal, directStart: directStart.reason, refusedReattach: refusedReattach.reason, staleFrame: staleFrame.reason, staleConnection: staleConnection.reason, rawCurrentListener: rawCurrentListener.reason, contextResolutionDelta: observerA.contextResolutionCalls - oldContextCalls, collectorDelta: h.collectorState.envelopes.length - beforeCollector, support: "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED_AFTER_TERMINATION" };
     });
 
-    await step("A7", "dispose, destroy, external detach, and reattach cannot revive old events", async () => {
-      const oldObserver = observerA;
-      const oldFrameIndex = oldObserver.capturedFrames.length - 1;
-      const before = h.collectorState.envelopes.length;
-      h.service.disposeAll();
-      await oldObserver.requestExternalDetach();
-      const oldReplay = oldObserver.replayCapturedFrame(oldFrameIndex);
-      assert.equal(oldReplay.status, "STOPPED");
-      assert.equal(h.collectorState.envelopes.length, before);
-      const oldSnapshot = oldObserver.snapshot();
+    await step("A7", "termination rejects same-WebContents recovery and a new WebContents maps normally", async () => {
+      const oldObserverB = observerB;
+      await h.startSocket("shop-b");
+      const legalB = await h.emit("shop-b", payloadB, "2026-09-18T00:00:02Z");
+      assertMapped(legalB);
+      const oldBFrameIndex = oldObserverB.capturedFrames.length - 1;
+      const oldBBinding = [...oldObserverB.bindings.values()][0];
+      assert.ok(oldBBinding, "legal B binding required for lifecycle test");
+      const oldBContextCalls = oldObserverB.contextResolutionCalls;
+      const beforeDetachCollector = h.collectorState.envelopes.length;
+      await oldObserverB.requestExternalDetach();
+      await waitFor("B external debugger detach", () => oldObserverB.terminal);
+      oldObserverB.webContents.emit("did-start-navigation", {}, "https://replacement-during-detach.invalid", false, true);
+      const reattach = await oldObserverB.reattach();
+      const directStart = await oldObserverB.start({ waitForLoad: false });
+      const staleFrame = oldObserverB.replayCapturedFrame(oldBFrameIndex);
+      const staleConnection = oldObserverB.replayCapturedConnectionCreated(oldBBinding);
+      const rawOldEvent = oldObserverB.deliverRawConnectionCreatedThroughCurrentListener({ requestId: "detached-old-request", url: `ws://127.0.0.1:${port}/?shop=shop-b` }, "");
+      assert.equal(reattach.status, "STOPPED");
+      assert.equal(reattach.reason, "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED");
+      assert.equal(directStart.status, "STOPPED");
+      assert.equal(directStart.reason, "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED");
+      assert.equal(staleFrame.status, "STOPPED");
+      assert.equal(staleConnection.status, "STOPPED");
+      assert.equal(rawOldEvent.status, "STOPPED");
+      assert.equal(oldObserverB.contextResolutionCalls, oldBContextCalls, "old B events must not resolve context");
+      assert.equal(h.collectorState.envelopes.length, beforeDetachCollector, "old B events must not reach collector");
+      const oldSnapshot = oldObserverB.snapshot();
       assert.equal(oldSnapshot.messageListenerCount, 0);
       assert.equal(oldSnapshot.navigationListenerRegistered, false);
+
+      h.service.disposeAll();
+      await h.activate("shop-b");
+      const freshObserverB = h.observers.get("shop-b");
+      assert.notEqual(freshObserverB.webContents, oldObserverB.webContents, "new lifecycle must use a new WebContents object");
+      await h.startSocket("shop-b");
+      const freshB = await h.emit("shop-b", payloadB, "2026-09-18T00:00:03Z");
+      const freshBEnvelope = assertMapped(freshB);
       await h.activate("shop-a");
-      const freshObserver = h.observers.get("shop-a");
+      const freshObserverA = h.observers.get("shop-a");
+      assert.notEqual(freshObserverA.webContents, observerA.webContents, "new A lifecycle must use a new WebContents object");
       await h.startSocket("shop-a");
-      const fresh = await h.emit("shop-a", payloadA, "2026-09-18T00:00:03Z");
-      assertMapped(fresh);
-      const currentFrameIndex = freshObserver.capturedFrames.length - 1;
-      await freshObserver.requestExternalDetach();
-      assert.equal(freshObserver.snapshot().messageListenerCount, 0);
-      assert.equal(freshObserver.snapshot().navigationListenerRegistered, false);
-      const detachedReplay = freshObserver.replayCapturedFrame(currentFrameIndex);
-      assert.equal(detachedReplay.status, "STOPPED");
-      await freshObserver.reattach();
-      await freshObserver.ready;
-      await h.startSocket("shop-a");
-      const reattached = await h.emit("shop-a", payloadA, "2026-09-18T00:00:04Z");
-      assertMapped(reattached);
-      return { oldReplay: oldReplay.reason, oldListenerCounts: { message: oldSnapshot.messageListenerCount, navigationRegistered: oldSnapshot.navigationListenerRegistered }, detachedReplay: detachedReplay.reason, observerLifecycle: freshObserver.lifecycle, collectorDelta: h.collectorState.envelopes.length - before };
+      const freshA = await h.emit("shop-a", payloadA, "2026-09-18T00:00:04Z");
+      const freshAEnvelope = assertMapped(freshA);
+      return { oldBObserver: oldObserverB.observerId, oldBWebContentsId: oldObserverB.webContentsId, directStart: directStart.reason, reattach: reattach.reason, staleFrame: staleFrame.reason, staleConnection: staleConnection.reason, rawOldEvent: rawOldEvent.reason, contextResolutionDelta: oldObserverB.contextResolutionCalls - oldBContextCalls, oldEventsCollectorDelta: h.collectorState.envelopes.length - beforeDetachCollector - 2, newBWebContentsId: freshObserverB.webContentsId, newAWebContentsId: freshObserverA.webContentsId, mappedRuntimeShops: [freshBEnvelope.identityLock.runtimeShop.value.value, freshAEnvelope.identityLock.runtimeShop.value.value] };
     });
 
     await step("A8", "CDP session collision, unknown request, and wrong sender/context fail before collector", async () => {
@@ -695,7 +715,7 @@ async function main() {
       electron_executable: process.execPath,
       dependency_resolution: dependencyResolution,
       runtime_configuration: { sandbox: true, contextIsolation: true, nodeIntegration: false, webSecurity: true, sandbox_disabling_switch_used: false, command_line_switches: { disableGpu: true, noSandbox: false }, memory_partitions: Object.fromEntries(h.sessionInfo) },
-      runtime_source: { repository_head: runtimeRepositoryHead, repair_baseline: REPAIR_BASELINE, prior_repair_baseline: PRIOR_REPAIR_BASELINE, worktree_status_porcelain: runtimeWorktreeStatus, script_digests: scriptDigests },
+      runtime_source: { repository_head: runtimeRepositoryHead, repair_baseline: REPAIR_BASELINE, prior_repair_baseline: PRIOR_REPAIR_BASELINE, earlier_repair_baseline: EARLIER_REPAIR_BASELINE, worktree_status_porcelain: runtimeWorktreeStatus, script_digests: scriptDigests },
       build_commands: ["pnpm --filter @fastwork/domain build", "pnpm --filter @fastwork/platform-pdd build", "pnpm --filter @fastwork/desktop build"],
       exact_command: "node scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
       baseline_reproduction: {
@@ -703,12 +723,16 @@ async function main() {
         R1: "Baseline runner used a literal sibling temp-root string, hardcoded ws installation path, sandbox-disabling switch, and default persistent partitions.",
         R2: "Baseline bindings were keyed by requestId only and ignored CDP sessionId.",
         R3: "Controller reproduced a captured old webSocketCreated delivery reacquiring the current document context after navigation; the repaired proof also exercises an un-tokened raw old event through the current listener path.",
+        R3C_1: "At 8588d63, after main-document replacement, reattach returned STOPPED but a direct start became READY again; the old raw connection was accepted by the new lifecycle, resolved a new context, and the old legal frame reached ingress and collector.",
+        R3C_2: "At 8588d63, external debugger detach terminated the observer but left sameWebContentsRecoverySupported true; reattach became READY on the same WebContents and the old event route resolved context and reached ingress and collector.",
+        baseline_repro_artifact: "E:\\fast_sheep\\.tmp\\sheep-301-terminal-lifecycle-baseline\\baseline-result.json",
         R4: "Baseline tests used content-marker association mutation, a non-text old frame, and no dynamic WebSocket traffic counters.",
       },
       r1_r4_repair_evidence: {
         R1: { before: "sibling temp-root string, hardcoded ws installation path, sandbox-disabling CLI switch, default persistent partitions", after: "resolve(REPO_ROOT, '.tmp', ...) strict proof root, repository-resolved ws, sandboxed Electron, two distinct memory partitions" },
         R2: { before: "bindings keyed only by requestId; frame sessionId ignored", after: "WebContents id, observer lifecycle, CDP sessionId, callbackToken, and requestId form the source binding" },
         R3: { before: "captured old connection-created could call the live callback and obtain current document context", after: "main-document replacement stops the observer permanently; captured-old-callback and un-tokened raw deliveries fail with zero context resolution and zero collector growth; same-WebContents recovery is NOT_SUPPORTED" },
+        R3C: { before: "start() reset terminal and external detach left recovery enabled for the same WebContents", after: "a module-level WeakSet keyed by the actual WebContents object terminates every future activation; start, reattach, attach, enable, and replacement observers all return STOPPED and require a new WebContents" },
         R4: { before: "content-marker association mutation, non-text old-frame test, incomplete source counters", after: "creation-time association records with Main control injection, legal old text frame, dynamic WS and send-boundary counters, explicit completion gate" },
       },
       acceptance_matrix: {
@@ -725,7 +749,7 @@ async function main() {
         frame_delivery: "frame lookup uses the pre-existing requestId binding",
         reload: "Main document replacement permanently stops the old observer, removes its listeners, clears bindings, and retains NOT_SUPPORTED for same-WebContents recovery; old callback and un-tokened raw deliveries cannot resolve a new context",
         dispose_recreate: "old observer terminal; new WebContents/session/observer lifecycle required",
-        detach_reattach: "old events remain terminal; reattach starts a new lifecycle and new connection binding",
+        detach_reattach: "any termination of the WebContents permanently disables same-WebContents recovery; new trusted ingress requires a new WebContents",
         unknown_or_unbound: "dropped or rejected before canonical collector",
       },
       evidence_types: {
@@ -742,6 +766,12 @@ async function main() {
         prior_root_outside_run: "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof",
         repaired_new_proof_root: EXECUTION_PATHS.proofRoot,
         cleanup_authorized: false,
+      },
+      terminal_lifecycle_constraint: {
+        web_contents_identity: "WeakSet keyed by the actual WebContents object; numeric id, shop, and session strings are not identity evidence",
+        recovery: "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED_AFTER_TERMINATION",
+        activation_entries: ["start", "reattach", "attachDebugger", "enableNetwork", "replacement observer constructor", "stopLifecycle"],
+        new_webcontents_required: true,
       },
       known_limitations: [
         "The payload is synthetic fixture data and does not prove actual Titan outer framing, compression, fragmentation, reconnect, or replay behavior.",
@@ -773,19 +803,17 @@ async function main() {
         "project/SHEEP_301_REAL_PRODUCER_READINESS_AUDIT.md",
         "reports/SHEEP-301-real-producer-readiness-audit.json",
         "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
-        "scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
         "scripts/fixtures/sheep-301-local-electron-websocket-boundary/main.mjs",
         "scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs",
-        "scripts/fixtures/sheep-301-local-electron-websocket-boundary/path-policy.mjs",
-        "scripts/fixtures/sheep-301-local-electron-websocket-boundary/path-policy.test.mjs",
         "scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer-lifecycle.test.mjs",
       ],
       controller_repair_record: {
         decision: "REPAIR",
         baseline_commit: REPAIR_BASELINE,
         prior_repair_baseline_commit: PRIOR_REPAIR_BASELINE,
+        earlier_repair_baseline_commit: EARLIER_REPAIR_BASELINE,
         repair_result: result,
-        historical_relation: "Prior Codex COMPLETE was not Controller PASS; Controller REPAIR was applied, then a second targeted REPAIR at ff85808 addressed root, raw old-event, and lifecycle cancellation gaps. The repaired proof is reported separately and remains awaiting Controller review.",
+        historical_relation: "Prior Codex COMPLETE was not Controller PASS; Controller REPAIR was applied at ab20537, then targeted repair at ff85808 addressed root/raw-event/lifecycle cancellation, and the 8588d63 terminal-lifecycle repair closes the remaining same-WebContents activation gaps. The repaired proof remains awaiting Controller review.",
       },
       error: finalError,
     };
