@@ -520,9 +520,10 @@ Same-WebContents recovery remains unproven and is deliberately NOT SUPPORTED for
 - Acceptance unit: TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT.
 - Mode: READ_ONLY_CODE_AUDIT / DOCUMENTATION_ONLY.
 - Original audit baseline: 0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578.
-- Targeted readiness repair baseline: a5d4bfd73502e3569142186c85335e9e947aca64.
-- Targeted repair scope: R1_STARTUP_TIMING / R2_IDENTITY_HANDOVER / R3_LEGACY_ISOLATION / R4_CLASSIFICATION.
-- Targeted repair result: COMPLETE.
+- Previous targeted repair baseline: a5d4bfd73502e3569142186c85335e9e947aca64.
+- Current repair baseline: e8f9f6353f92efe5224d2429bfb9b3a0f18cec7f.
+- Current repair scope: PATH_AND_EVIDENCE_REPAIR / R1_STARTUP_TIMING / R2_IDENTITY_HANDOVER / R3_LEGACY_ISOLATION / R4_CLASSIFICATION.
+- Current repair result: COMPLETE.
 - Prerequisite acceptance: LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF COMPLETE / CONTROLLER PASS.
 - Reviewed implementation commit: 0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578.
 - Diagnostic implementation authorization: COMPLETED / CONSUMED.
@@ -578,41 +579,396 @@ Lifecycle handling currently behaves as follows:
 - dispose/recreate: PddSessionHost.dispose nulls the view, clears selected-customer evidence, and sets DISPOSED. A production recovery unit must create a new WebContents/session rather than reuse a terminated one.
 - recovery choices for the next unit: new WebContents per lifecycle (preferred and offline-verifiable), no recovery/STOP (current diagnostic-safe behavior), or same-WebContents recovery only after a separate Main-owned binding design and future live validation (not approved).
 
-### Startup probe and onViewCreated contract
+### Historical sibling-path probe
 
-A minimal local Electron probe was executed with the repository-locked runtime and no sandbox-disabling switch. Its artifacts are under:
+The prior audit recorded a startup probe run under the sibling path `E:/fast_sheep.tmp/sheep-301-ingress-startup-readiness`. That run is preserved as historical evidence but is not project-root execution evidence.
 
-E:\fast_sheep.tmp\sheep-301-ingress-startup-readiness\
+- Old probe root, read-only: `E:/fast_sheep.tmp/sheep-301-ingress-startup-readiness`
+- Historical archive: `E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/historical/e8f9f63`
+- Copies retained: `probe-main.mjs`, `probe-result.json`, `probe-precheck-timeout.json`, `probe-progress.log`
+- The old directory was not deleted, moved, renamed, or written to in this repair.
+- No old `user-data`, `session-data`, `cache`, `logs`, or `temp` directory was copied.
+- Archived SHA-256: `EBC5EE9ED50FACD4CE592968C4605B4D926C26B7E3325694E2D8569D19C49627`, `B9003F2B56C6310B11EA039800F446A05C7FE1FBFE38577E06E26EEF62F4A0C0`, `A784A28E4E32656AC5EE4FE7C568CD5F49FB1BDDDF845AC6B9BC1424D33AB559`, `B6547271D0AAD8A0C34FC836068F81FA7503B162519735C509037198ED6D04AA`
 
-Observed correct order:
+### Project-root startup probe (current)
 
-1. onViewCreated-start
-2. attach-start
-3. Network.enable sent
-4. first loadURL start
-5. did-start-navigation
-6. Network.enable resolved
-7. Network.webSocketCreated
-8. dom-ready
-9. did-finish-load
+The current probe was created from the archived source under the exact project-root path:
 
-The precheck observed a 20-second timeout at Network.enable when the probe awaited enable resolution before starting the first navigation. The successful probe therefore establishes this contract:
+`E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness`
 
-- onViewCreated may create/attach the observer and send Network.enable before load.
-- onViewCreated must not wait for Network.enable to resolve before starting first navigation.
-- first navigation establishes the initial document generation for production through did-start-navigation.
-- attach/enable and first navigation must be awaited concurrently; enable resolution follows did-start-navigation but must precede Network.webSocketCreated.
-- a late attach after dom-ready missed Network.webSocketCreated while later handshake/frame events were still observed, so late attachment cannot reconstruct a trusted connection binding.
-- success leaves the observer armed; attach/enable failure or cancellation must stop the WebContents lifecycle, clear listeners, and never fall back to legacy.
+Path derivation check: expected and actual candidate both resolve to `.tmp/sheep-301-ingress-startup-readiness` relative to `REPO_ROOT`; the sibling path is rejected as `PATH_OUTSIDE_REPO`; a parent-traversal candidate is rejected as `NOT_EXACT_PROBE_ROOT`.
+
+Exact command:
+
+`node E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/run-probe.mjs`
+
+Run result: exit `0`, signal `null`, Electron `43.6.0`, Chromium `150.0.7871.250`, Node `24.20.0`, sandbox `true`, no sandbox-disabling switch.
+
+Observed scenarios:
+
+1. Healthy concurrent startup: attach and `Network.enable` are initiated before first load; `did-start-navigation` occurs before enable resolution; `Network.webSocketCreated` is observed after enable resolution.
+2. Bounded timeout: awaiting `Network.enable` before first navigation returns `TIMEOUT` after 2000 ms; navigation is then started and enable resolves after `did-start-navigation`.
+3. Late attach: navigation and `dom-ready` occur before attach/enable; `Network.webSocketCreated` is missed while later handshake and frame events remain observable.
+
+Observed event order:
+
+`server:listening` -> `A:onViewCreated-start` -> `A:attach-start` -> `A:network-enable-sent` -> `A:loadURL-start` -> `A:did-start-navigation` -> `A:network-enable-resolved` -> `A:cdp:Network.webSocketCreated` -> `server:connection` -> `A:dom-ready` -> `A:did-finish-load` -> `A:load-and-enable-settled` -> `A:cdp:Network.webSocketWillSendHandshakeRequest` -> `server:message` -> `A:cdp:Network.webSocketHandshakeResponseReceived` -> `A:cdp:Network.webSocketFrameSent` -> `A:cdp:Network.webSocketFrameReceived` -> `A:onViewCreated-ready` -> `A:done` -> `B:attach-start` -> `B:network-enable-sent` -> `B:pre-navigation-enable-result` -> `B:loadURL-start-after-timeout-check` -> `B:did-start-navigation` -> `B:network-enable-resolved` -> `B:cdp:Network.webSocketCreated` -> `server:connection` -> `B:dom-ready` -> `B:did-finish-load` -> `B:enable-and-load-settled` -> `B:cdp:Network.webSocketWillSendHandshakeRequest` -> `B:cdp:Network.webSocketHandshakeResponseReceived` -> `B:cdp:Network.webSocketFrameSent` -> `server:message` -> `B:cdp:Network.webSocketFrameReceived` -> `B:done` -> `C:loadURL-start-before-observer` -> `C:did-start-navigation` -> `server:connection` -> `C:dom-ready` -> `C:dom-ready-before-observer` -> `C:attach-start` -> `C:network-enable-sent` -> `C:did-finish-load` -> `C:network-enable-resolved` -> `server:message` -> `C:cdp:Network.webSocketHandshakeResponseReceived` -> `C:cdp:Network.webSocketFrameSent` -> `C:cdp:Network.webSocketFrameReceived` -> `C:done`
+
+Observed versus inferred:
+
+- Observed: the ordering above, the bounded timeout, late-attach event loss, path rejection behavior, runtime versions, exit code, and cleanup exit.
+- Inferred: the production `onViewCreated` contract and the requirement that missing `webSocketCreated` evidence must fail closed. These are design conclusions, not claims that every future run has identical timing.
+
+Coverage limitation: pre-admission frames are DROPPED under the next-unit scope. Early messages are not collected; this probe and unit do not establish final production message completeness.
+
+#### New probe source
+
+`probe-main.mjs`
+
+```javascript
+import { app, BrowserWindow, WebContentsView } from "electron";
+import { createHash } from "node:crypto";
+import { createRequire } from "node:module";
+import { createServer } from "node:http";
+import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { isAbsolute, join, relative, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const PROBE_ROOT = process.env.SHEEP301_PROBE_ROOT ?? process.env.SHEEP301_STARTUP_PROBE_ROOT;
+const REPO_ROOT = process.env.SHEEP301_REPO_ROOT;
+if (!PROBE_ROOT || !REPO_ROOT) throw new Error("probe root and repo root are required");
+const EXPECTED_PROBE_ROOT = resolve(REPO_ROOT, ".tmp", "sheep-301-ingress-startup-readiness");
+const RESOLVED_PROBE_ROOT = resolve(PROBE_ROOT);
+const PROBE_RELATIVE_TO_REPO = relative(REPO_ROOT, RESOLVED_PROBE_ROOT);
+const PROBE_ROOT_INSIDE_REPO = PROBE_RELATIVE_TO_REPO !== "" && !PROBE_RELATIVE_TO_REPO.startsWith("..") && !isAbsolute(PROBE_RELATIVE_TO_REPO);
+const PATH_CHECK = {
+  ok: PROBE_ROOT_INSIDE_REPO && RESOLVED_PROBE_ROOT === EXPECTED_PROBE_ROOT,
+  reason: PROBE_ROOT_INSIDE_REPO && RESOLVED_PROBE_ROOT === EXPECTED_PROBE_ROOT ? "OK" : (PROBE_ROOT_INSIDE_REPO ? "NOT_EXACT_PROBE_ROOT" : "PATH_OUTSIDE_REPO"),
+  repoRoot: resolve(REPO_ROOT),
+  candidate: RESOLVED_PROBE_ROOT,
+  expected: EXPECTED_PROBE_ROOT,
+  relativeToRepo: PROBE_RELATIVE_TO_REPO,
+};
+if (!PATH_CHECK.ok) { console.error("invalid startup probe root: " + JSON.stringify(PATH_CHECK)); process.exit(3); }
+for (const name of ["user-data", "session-data", "cache", "temp", "logs"]) mkdirSync(join(RESOLVED_PROBE_ROOT, name), { recursive: true });
+app.setPath("userData", join(RESOLVED_PROBE_ROOT, "user-data"));
+app.setPath("sessionData", join(RESOLVED_PROBE_ROOT, "session-data"));
+app.setPath("cache", join(RESOLVED_PROBE_ROOT, "cache"));
+app.setPath("temp", join(RESOLVED_PROBE_ROOT, "temp"));
+app.setAppLogsPath(join(RESOLVED_PROBE_ROOT, "logs"));
+app.commandLine.appendSwitch("disable-gpu");
+
+const PROBE_SOURCE_PATH = fileURLToPath(import.meta.url);
+const PROBE_SOURCE_SHA256 = createHash("sha256").update(readFileSync(PROBE_SOURCE_PATH)).digest("hex");
+const packageRequire = createRequire(join(REPO_ROOT, "packages", "platform-pdd", "package.json"));
+const jsdomEntry = packageRequire.resolve("jsdom");
+const jsdomRequire = createRequire(jsdomEntry);
+const { WebSocketServer } = jsdomRequire("ws");
+
+function progress(name) { appendFileSync(join(RESOLVED_PROBE_ROOT, "new-probe-progress.log"), `${Date.now()} ${name}\n`, "utf8"); }
+
+let sequence = 0;
+const events = [];
+function record(name, detail = {}) {
+  const entry = { sequence: ++sequence, name, monotonicMs: Number(process.hrtime.bigint() / 1000000n), wall: new Date().toISOString(), detail };
+  events.push(entry);
+  return entry;
+}
+function waitFor(predicate, timeoutMs = 5000) {
+  return new Promise((resolve, reject) => {
+    const started = Date.now();
+    const timer = setInterval(() => {
+      if (predicate()) { clearInterval(timer); resolve(true); return; }
+      if (Date.now() - started > timeoutMs) { clearInterval(timer); reject(new Error("timeout")); }
+    }, 10);
+  });
+}
+function once(emitter, name) {
+  return new Promise((resolve) => emitter.once(name, (...args) => resolve(args)));
+}
+function hasEvent(name) { return events.some((entry) => entry.name === name); }
+function firstIndex(name) { return events.findIndex((entry) => entry.name === name); }
+function startServer() {
+  return new Promise((resolve, reject) => {
+    let port = 0;
+    const server = createServer((request, response) => {
+      if (request.url !== "/") { response.writeHead(404); response.end(); return; }
+      response.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" });
+      response.end("<!doctype html><html><body><script>const ws=new WebSocket('ws://127.0.0.1:" + port + "/socket');ws.onopen=()=>{document.title='open';ws.send('probe-client');};ws.onmessage=()=>{document.title='message';};</script></body></html>");
+    });
+    const wsServer = new WebSocketServer({ server, path: "/socket" });
+    wsServer.on("connection", (socket) => {
+      record("server:connection");
+      socket.on("message", () => record("server:message"));
+      setTimeout(() => { try { socket.send("probe-server"); } catch {} }, 25);
+    });
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", () => {
+      port = server.address().port;
+      record("server:listening", { port });
+      resolve({ server, wsServer, port });
+    });
+  });
+}
+function attachDebuggerOnly(webContents, label) {
+  record(label + ":attach-start");
+  progress(label + ":attach-start");
+  if (!webContents.debugger.isAttached()) webContents.debugger.attach("1.3");
+  const listener = (_event, method, params, sessionId) => {
+    if (method && method.startsWith("Network.webSocket")) {
+      record(label + ":cdp:" + method, { requestId: params?.requestId, cdpSessionId: sessionId ?? "" });
+    }
+  };
+  webContents.debugger.on("message", listener);
+  record(label + ":network-enable-sent");
+  progress(label + ":enable-sent");
+  const enablePromise = webContents.debugger.sendCommand("Network.enable").then(() => {
+    record(label + ":network-enable-resolved");
+    progress(label + ":enable-resolved");
+  });
+  return { listener, enablePromise };
+}
+function bindLifecycle(webContents, label) {
+  webContents.on("did-start-navigation", (_event, url, isInPlace, isMainFrame) => record(label + ":did-start-navigation", { url, isInPlace, isMainFrame }));
+  webContents.on("dom-ready", () => record(label + ":dom-ready"));
+  webContents.on("did-finish-load", () => record(label + ":did-finish-load"));
+}
+function cleanupView(window, view, handle) {
+  try { if (handle?.listener) view.webContents.debugger.removeListener("message", handle.listener); } catch {}
+  try { if (view.webContents.debugger.isAttached()) view.webContents.debugger.detach(); } catch {}
+  try { window.contentView.removeChildView(view); } catch {}
+  try { if (!view.webContents.isDestroyed()) view.webContents.close(); } catch {}
+}
+async function runScenarioA(window, url) {
+  const view = new WebContentsView({ webPreferences: { partition: "memory:sheep301-startup-a-" + Date.now(), sandbox: true, contextIsolation: true, nodeIntegration: false, webSecurity: true } });
+  window.contentView.addChildView(view);
+  bindLifecycle(view.webContents, "A");
+  record("A:onViewCreated-start");
+  const handle = attachDebuggerOnly(view.webContents, "A");
+  record("A:loadURL-start");
+  progress("A:loadURL-start");
+  const loadPromise = view.webContents.loadURL(url);
+  await Promise.allSettled([handle.enablePromise, loadPromise]);
+  record("A:load-and-enable-settled");
+  progress("A:load-and-enable-settled");
+  await waitFor(() => hasEvent("A:did-finish-load") && hasEvent("A:cdp:Network.webSocketCreated"), 5000).catch(() => {});
+  progress("A:wait-events-done");
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  record("A:onViewCreated-ready");
+  progress("A:onViewCreated-ready");
+  record("A:done");
+  return { view, handle };
+}
+async function runScenarioB(window, url) {
+  const view = new WebContentsView({ webPreferences: { partition: "memory:sheep301-startup-b-" + Date.now(), sandbox: true, contextIsolation: true, nodeIntegration: false, webSecurity: true } });
+  window.contentView.addChildView(view);
+  bindLifecycle(view.webContents, "B");
+  const handle = attachDebuggerOnly(view.webContents, "B");
+  const timeoutMs = 2000;
+  const timeoutResult = new Promise((resolve) => setTimeout(() => resolve({ status: "TIMEOUT", timeoutMs }), timeoutMs));
+  const enableSettled = handle.enablePromise.then(() => ({ status: "RESOLVED" }), (error) => ({ status: "REJECTED", error: String(error) }));
+  const beforeNavigation = await Promise.race([enableSettled, timeoutResult]);
+  record("B:pre-navigation-enable-result", beforeNavigation);
+  record("B:loadURL-start-after-timeout-check");
+  const loadPromise = view.webContents.loadURL(url);
+  const afterNavigation = await Promise.allSettled([enableSettled, loadPromise]);
+  record("B:enable-and-load-settled", { statuses: afterNavigation.map((entry) => entry.status) });
+  await waitFor(() => hasEvent("B:did-finish-load"), 7000).catch(() => {});
+  await waitFor(() => hasEvent("B:cdp:Network.webSocketCreated"), 7000).catch(() => {});
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  record("B:done");
+  return { view, handle, beforeNavigation };
+}
+async function runScenarioC(window, url) {
+  const view = new WebContentsView({ webPreferences: { partition: "memory:sheep301-startup-c-" + Date.now(), sandbox: true, contextIsolation: true, nodeIntegration: false, webSecurity: true } });
+  window.contentView.addChildView(view);
+  bindLifecycle(view.webContents, "C");
+  record("C:loadURL-start-before-observer");
+  const loadPromise = view.webContents.loadURL(url);
+  await once(view.webContents, "dom-ready");
+  record("C:dom-ready-before-observer");
+  const handle = attachDebuggerOnly(view.webContents, "C");
+  await Promise.allSettled([handle.enablePromise, loadPromise]);
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  record("C:done");
+  return { view, handle };
+}
+async function main() {
+  progress("main-start");
+  await app.whenReady();
+  progress("app-ready");
+  const { server, wsServer, port } = await startServer();
+  progress("server-ready");
+  const window = new BrowserWindow({ show: false, webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false, webSecurity: true } });
+  const url = "http://127.0.0.1:" + port + "/";
+  progress("scenario-a-start");
+  const a = await runScenarioA(window, url);
+  progress("scenario-a-done");
+  progress("scenario-b-start");
+  const b = await runScenarioB(window, url);
+  progress("scenario-b-done");
+  progress("scenario-c-start");
+  const c = await runScenarioC(window, url);
+  progress("scenario-c-done");
+  const checks = {
+    runtime: { electron: process.versions.electron, chrome: process.versions.chrome, node: process.versions.node },
+    sandbox: true,
+    noSandboxSwitchUsed: false,
+    scenarioA: {
+      observerSetupStartedBeforeLoad: firstIndex("A:attach-start") < firstIndex("A:loadURL-start"),
+      networkEnableSentBeforeLoad: firstIndex("A:network-enable-sent") < firstIndex("A:loadURL-start"),
+      navigationStartedBeforeEnableResolved: firstIndex("A:did-start-navigation") < firstIndex("A:network-enable-resolved"),
+      enableAndLoadSettledBeforeHookResolved: firstIndex("A:load-and-enable-settled") < firstIndex("A:onViewCreated-ready"),
+      navigationStarted: hasEvent("A:did-start-navigation"),
+      webSocketCreatedObserved: hasEvent("A:cdp:Network.webSocketCreated"),
+      webSocketCreatedBeforeDomReady: firstIndex("A:cdp:Network.webSocketCreated") >= 0 && firstIndex("A:cdp:Network.webSocketCreated") < firstIndex("A:dom-ready"),
+      mutualWaitExcluded: hasEvent("A:network-enable-resolved") && hasEvent("A:loadURL-start") && firstIndex("A:network-enable-resolved") > firstIndex("A:loadURL-start"),
+    },
+    scenarioB: {
+      preNavigationEnableResult: events.find((entry) => entry.name === "B:pre-navigation-enable-result")?.detail ?? null,
+      boundedTimeoutObserved: events.find((entry) => entry.name === "B:pre-navigation-enable-result")?.detail?.status === "TIMEOUT",
+      navigationStartedAfterTimeout: firstIndex("B:pre-navigation-enable-result") < firstIndex("B:did-start-navigation"),
+      enableResolvedAfterNavigation: firstIndex("B:did-start-navigation") < firstIndex("B:network-enable-resolved"),
+    },
+    scenarioC: {
+      navigationStartedBeforeObserverAttach: firstIndex("C:did-start-navigation") < firstIndex("C:attach-start"),
+      domReadyBeforeNetworkEnableSent: firstIndex("C:dom-ready") < firstIndex("C:network-enable-sent"),
+      lateWebSocketCreatedObserved: hasEvent("C:cdp:Network.webSocketCreated"),
+      lateObservationMissed: !hasEvent("C:cdp:Network.webSocketCreated"),
+    },
+    eventOrder: events.map((entry) => entry.name),
+  };
+  progress("result-write-start");
+  writeFileSync(join(RESOLVED_PROBE_ROOT, "new-probe-result.json"), JSON.stringify({ probe: "SHEEP-301_INGRESS_STARTUP_READINESS", generatedAt: new Date().toISOString(), command: "node E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/run-probe.mjs", source: { path: PROBE_SOURCE_PATH, sha256: PROBE_SOURCE_SHA256 }, pathCheck: PATH_CHECK, checks, events }, null, 2) + "\n", "utf8");
+  cleanupView(window, a.view, a.handle);
+  cleanupView(window, b.view, b.handle);
+  cleanupView(window, c.view, c.handle);
+  await new Promise((resolve) => wsServer.close(resolve));
+  await new Promise((resolve) => server.close(resolve));
+  if (!window.isDestroyed()) window.destroy();
+  progress("result-written");
+  app.exit(0);
+}
+
+main().catch((error) => {
+  if (PATH_CHECK.ok) writeFileSync(join(RESOLVED_PROBE_ROOT, "new-probe-error.json"), JSON.stringify({ error: String(error?.stack ?? error), pathCheck: PATH_CHECK, source: { path: PROBE_SOURCE_PATH, sha256: PROBE_SOURCE_SHA256 }, events }, null, 2) + "\n", "utf8");
+  app.exit(1);
+});
+```
+
+`run-probe.mjs` (launcher and path validation)
+
+```javascript
+import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
+import { readFileSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { basename, isAbsolute, resolve, relative } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const HERE = resolve(fileURLToPath(import.meta.url), "..");
+const REPO_ROOT = resolve(HERE, "..", "..");
+const PROBE_ROOT = resolve(REPO_ROOT, ".tmp", "sheep-301-ingress-startup-readiness");
+const PROBE_MAIN = resolve(PROBE_ROOT, "probe-main.mjs");
+
+function validateRoot(candidate) {
+  const resolvedRepo = resolve(REPO_ROOT);
+  const resolvedCandidate = resolve(candidate);
+  const rel = relative(resolvedRepo, resolvedCandidate);
+  const inside = rel !== "" && !rel.startsWith("..") && !isAbsolute(rel);
+  return {
+    ok: inside && resolvedCandidate === PROBE_ROOT,
+    reason: inside && resolvedCandidate === PROBE_ROOT ? "OK" : (inside ? "NOT_EXACT_PROBE_ROOT" : "PATH_OUTSIDE_REPO"),
+    resolvedRepo,
+    resolvedCandidate,
+    expected: PROBE_ROOT,
+    relativeToRepo: rel,
+  };
+}
+
+const pathCheck = validateRoot(PROBE_ROOT);
+const siblingCheck = validateRoot(resolve(REPO_ROOT, "..", basename(REPO_ROOT) + ".tmp", "sheep-301-ingress-startup-readiness"));
+const escapeCheck = validateRoot(resolve(REPO_ROOT, ".tmp", "..", "escape"));
+if (!pathCheck.ok || siblingCheck.ok || escapeCheck.ok) {
+  throw new Error("startup probe path policy failed: " + JSON.stringify({ pathCheck, siblingCheck, escapeCheck }));
+}
+
+const requireFromDesktop = createRequire(resolve(REPO_ROOT, "apps", "desktop", "package.json"));
+const electronPath = requireFromDesktop("electron");
+const probeSourceSha256 = createHash("sha256").update(readFileSync(PROBE_MAIN)).digest("hex");
+const startedAt = new Date().toISOString();
+const child = spawn(electronPath, ["--disable-gpu", PROBE_MAIN], {
+  cwd: REPO_ROOT,
+  stdio: "inherit",
+  windowsHide: true,
+  env: { ...process.env, SHEEP301_PROBE_ROOT: PROBE_ROOT, SHEEP301_REPO_ROOT: REPO_ROOT },
+});
+const timer = setTimeout(() => { child.kill(); process.exitCode = 2; }, 20000);
+child.on("error", (error) => {
+  clearTimeout(timer);
+  writeFileSync(resolve(PROBE_ROOT, "new-probe-launcher-result.json"), JSON.stringify({ command: "node " + resolve(PROBE_ROOT, "run-probe.mjs"), exitCode: null, signal: null, pathCheck, siblingCheck, escapeCheck, electronPath, probeSourceSha256, startedAt, finishedAt: new Date().toISOString(), error: String(error) }, null, 2) + "\n", "utf8");
+  process.exit(1);
+});
+child.on("exit", (code, signal) => {
+  clearTimeout(timer);
+  const result = { command: "node " + resolve(PROBE_ROOT, "run-probe.mjs"), exitCode: code, signal, pathCheck, siblingCheck, escapeCheck, electronPath, probeSourceSha256, startedAt, finishedAt: new Date().toISOString() };
+  writeFileSync(resolve(PROBE_ROOT, "new-probe-launcher-result.json"), JSON.stringify(result, null, 2) + "\n", "utf8");
+  process.exit(signal ? 1 : (code ?? 1));
+});
+```
+
+Evidence artifacts:
+
+- `E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/new-probe-result.json`
+- `E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/new-probe-launcher-result.json`
+- `E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/new-probe-progress.log`
+
+Source SHA-256: `a502d82e548fc5680cd8b1500dbd9f621e459ab204572c2d0748e4a36877e7dc`. Launcher SHA-256: `a6c037b500bb7001285477314d532c81e14a600cd46a175ad8b4f885c757c44a`.
 
 ### Identity handover after pre-READY binding
 
 - Immutable binding evidence is captured at Network.webSocketCreated: actual WebContents object, sessionId, shopId, documentGeneration, observer lifecycle, allowed URL/origin, cdpSessionId, requestId, and creation observation time.
-- Pre-READY, the observer may only hold this binding and a bounded, immutable early-frame queue. It must not call createInboundIngressContext, map identity, canonicalize content, create associations, or write owner evidence.
+- Pre-READY, the observer may save only the immutable connection binding. Every frame received before independent Main admission is DROPped with a bounded diagnostic reason such as EARLY_FRAME_WITHOUT_ADMISSION. No frame queue, buffer release, replay, or retry is added. It must not call createInboundIngressContext, map identity, canonicalize content, create associations, or write owner evidence.
 - If Network.webSocketCreated was not observed for a requestId, every frame with that requestId is rejected/dropped as UNBOUND_OR_STALE_SOURCE. Current WebContents/session/document state must never be used to infer a missing connection.
-- Early frames are processed only after READY. At that point createInboundIngressContext is called for the exact WebContents, and resolveInboundIngressBinding must return the same sessionId, shopId, documentGeneration, and WebContents object as the frozen connection binding.
-- A binding/context mismatch rejects the connection and queued frames. The old connection is never assigned the current document generation.
+- Early frames are not processed. After READY and a granted independent Main admission, createInboundIngressContext is called for the exact WebContents. The existing resolveInboundIngressBinding result supplies sessionId, shopId, and documentGeneration; actual WebContents object equality must be checked by the Main-owned admission record/service because its return type does not include WebContents.
+- A binding/context mismatch, missing admission, denied admission, or stale admission rejects the input. There are no queued frames to release. The old connection is never assigned the current document generation.
 - New frames after permission are accepted only against a pre-existing requestId binding from the same current lifecycle. Old-generation, detached, destroyed, or terminal events are dropped/STOPPED.
+
+### Main admission contract
+
+The next unit must use a Main-owned admission provider. Production default is DENY_ALL.
+
+Proposed Main-only types:
+
+    PddMainAdmissionRequest {
+      webContents: WebContents;
+      sessionId: string;
+      shopId: string;
+      documentGeneration: number;
+      observerLifecycleId: number;
+      connectionEvidenceHash: string;
+    }
+
+    PddMainAdmissionDecision =
+      | { granted: true; admissionId: string }
+      | { granted: false; reason: string }
+
+    PddMainAdmissionProvider.evaluate(request): PddMainAdmissionDecision
+
+Proposed service method:
+
+    handleAdmittedInboundIngress(sender, context, admissionId, input): PddInboundIngressResult
+
+Ownership and validation:
+
+- Main composition owns the provider; renderer/page/payload/DOM READY cannot create or refresh admission.
+- The service validates trusted sender and opaque context first.
+- The provider evaluates actual WebContents, sessionId, shopId, documentGeneration, observer lifecycle, and immutable connection evidence.
+- granted=true and a live admissionId are required before the existing handleTrustedInboundIngress(sender, context, input) is called.
+- The actual WebContents object identity must be retained by the Main admission record; resolveInboundIngressBinding alone is not sufficient because it returns only sessionId, shopId, and documentGeneration.
+- Missing, denied, thrown, stale, or revoked admission returns STOPPED/REJECTED with canonical ingress and collector counts zero.
+- Admission is invalidated by navigation/generation change, detach, destroyed WebContents, dispose/recreate, reauth, terminal lifecycle, or provider revocation.
+- page_ready and other page/renderer events may update sender-owned session state only; they cannot grant, refresh, or extend admission.
 
 ### Legacy isolation design
 
@@ -629,7 +985,7 @@ The precheck observed a 20-second timeout at Network.enable when the probe await
 | Gap | Current state and source | Impact on next unit | Required change | Offline verification | Live dependency | Classification |
 |---|---|---|---|---|---|---|
 | GAP-R1 | No Main-owned observer exists in PddPlatformService.activate / PddSessionHost.createAndLoad; view is created before load. | No attachment point before the first possible connection. | Add an onViewCreated startup hook that attaches Debugger and sends Network.enable, then returns a startup handle without awaiting enable or navigation. Activation starts first navigation and awaits the enable/navigation barrier concurrently. | Startup ordering probe plus attach/enable failure and cancellation tests. | No for mechanism; yes for real PDD events. | CONFIRMED / TODO_IMPLEMENTATION |
-| GAP-R2 | PddViewHost starts page observation after dom-ready; PddPageRuntime emits page_ready only after DOM health. | Connection-created events may occur before attach or READY and are not replayed. | Arm observation before load; bind requestId at webSocketCreated; hold/drop early frames without identity inference; do not require READY to create the immutable connection binding. | Early connection/frame ordering test plus startup probe. | Yes for real PDD timing. | CONFIRMED / TODO_IMPLEMENTATION |
+| GAP-R2 | PddViewHost starts page observation after dom-ready; PddPageRuntime emits page_ready only after DOM health. | Connection-created events may occur before attach or READY and are not replayed. | Arm observation before load; bind requestId at webSocketCreated; DROP all pre-admission frames and record the reason. Do not queue, replay, or require READY to create the immutable connection binding. | Early connection/frame ordering test plus startup probe. | Yes for real PDD timing. | CONFIRMED / TODO_IMPLEMENTATION |
 | GAP-R3 | READY is produced by domHealth over PDD_SELECTOR_PROFILE; required selectors are DESIGN provenance. | READY is not proven production authentication/session-health truth. | Separate connection-bound from canonical-output-allowed; require a Main-owned readiness policy before output. | Controlled readiness stub; production default-off test. | Yes for real session-health evidence. | CONFIRMED / BLOCKED_FOR_PRODUCTION |
 | GAP-R4 | bootstrap.ts constructs PddPlatformService without resolver/collector; worker-runtime supplies repositories but no PDD ingress wiring. | Accepted canonical ingress cannot be composed in production. | Add explicit resolver/collector injection options and controlled composition wiring. | Composition tests with controlled resolver/collector. | No for wiring; yes for real facts. | CONFIRMED / TODO_IMPLEMENTATION |
 | GAP-R5 | workspaceMerchant, StoreRepository, and PlatformAccountRepository are separate authorities; no runtime Shop mapping exists. | Runtime Shop cannot automatically equal canonical Store or PlatformAccount. A controlled mapping or legal UNKNOWN is sufficient for the next unit; no Owner decision is required now. | Use explicit trusted mapping when available; otherwise UNKNOWN/UNRESOLVED or reject according to contract. | Same-ID and missing-mapping isolation tests. | Potentially yes for real external identity facts. | CONFIRMED / CONTROLLED_MAPPING_OR_LEGAL_UNKNOWN |
@@ -665,6 +1021,7 @@ Proposed file scope for review:
 - apps/desktop/src/main/platforms/pdd/pdd-session-host.ts
 - apps/desktop/src/main/platforms/pdd/pdd-page-ipc.ts
 - apps/desktop/src/main/platforms/pdd/pdd-inbound-observer.ts (new)
+- apps/desktop/src/main/platforms/pdd/pdd-main-admission.ts (new)
 - apps/desktop/src/main/bootstrap.ts
 - apps/desktop/src/main/worker-runtime.ts
 - apps/desktop/src/main/index.ts only if a sender-bearing PDD path is selected
@@ -673,17 +1030,19 @@ Proposed file scope for review:
 - apps/desktop/tests/pdd-page-ipc-guard.test.ts
 - apps/desktop/tests/bootstrap-pdd-ingress-wiring.test.ts (new)
 
-Main wiring: create the observer in PddPlatformService.activate on onViewCreated. The hook may be async for attach/setup, but it must resolve after Debugger.attach and initiating Network.enable without awaiting enable resolution or first navigation. It returns a startup handle. Activate starts first navigation, then awaits the handle armed promise concurrently with load. Bind requestId at Network.webSocketCreated using the current Main document generation; before READY, store only immutable connection evidence and bounded early frames. After READY, create the canonical context for the exact WebContents and require resolveInboundIngressBinding to match the frozen connection binding before mapping.
+Main wiring: create the observer in PddPlatformService.activate on onViewCreated. The hook may be async for attach/setup, but it must resolve after Debugger.attach and initiating Network.enable without awaiting enable resolution or first navigation. It returns a startup handle. Activate starts first navigation, then awaits the handle armed promise concurrently with load. Bind requestId at Network.webSocketCreated using the current Main document generation; before READY, store only immutable connection evidence and DROP every pre-admission frame. After READY and a granted independent Main admission, create the canonical context for the exact WebContents and require resolveInboundIngressBinding to match the frozen connection binding before mapping.
 
-Default-off gate: add PddPlatformServiceOptions.canonicalIngressMode with DISABLED as the production default. page_ready and other session-state events cannot authorize canonical output by themselves. Only an explicitly armed observer plus a valid immutable connection binding plus READY may open canonical admission. In CANONICAL_CONTROLLED or DISABLED mode, handlePageEvent must not invoke legacy message_received/human_reply_detected/conversation_changed business consumers. Resolver, validator, mapper, or collector failure returns directly and never falls back to PddOrchestratorBridge.
+Default-off gate: add PddPlatformServiceOptions.canonicalIngressMode with DISABLED as the production default. page_ready and other session-state events cannot authorize canonical output by themselves. Only an explicitly armed observer plus a valid immutable connection binding plus READY plus granted Main admission may open canonical output. In CANONICAL_CONTROLLED or DISABLED mode, handlePageEvent must not invoke legacy message_received/human_reply_detected/conversation_changed business consumers. Resolver, validator, mapper, or collector failure returns directly and never falls back to PddOrchestratorBridge.
 
 Minimum acceptance:
 
 - Positive: one controlled WebContents/connection/text frame maps once through the real mapper/default validator; two same-service sessions remain isolated; explicit scope/identity resolver is used.
 - Startup: probe asserts attach and Network.enable are sent before load, did-start-navigation precedes enable resolution, and Network.webSocketCreated is observed after enable; awaiting enable before navigation is a regression.
-- Negative: missing Network.webSocketCreated evidence, early frame without binding, old terminal WebContents, same-WebContents restart, wrong CDP session/requestId, stale generation, forged/missing context, and wrong sender all stop before canonical ingress.
+- Negative: observer armed + binding valid + session READY but Main admission missing/denied/throws/stale => canonical ingress and collector calls are zero; old page_ready cannot change that result.
+- Negative: missing Network.webSocketCreated evidence, pre-admission frame, old terminal WebContents, same-WebContents restart, wrong CDP session/requestId, stale generation, forged/missing context, and wrong sender all stop before canonical ingress.
 - Failure: attach/enable failure cleans up; missing resolver/validator/collector and collector sync/async failure stop without legacy fallback, retry, AI, send, or persistence.
-- Composition: production default is DISABLED; controlled activation, resolver, and collector are explicit; legacy bridge counters remain zero during initialization, failure, detach, and termination.
+- Composition: production default is DISABLED and Main admission default is DENY_ALL; controlled activation, resolver, admission provider, and collector are explicit; legacy bridge counters remain zero during initialization, failure, detach, and termination.
+- Coverage: pre-admission frames are DROPPED and disclosed as not collected; no queue, replay, retry, or final message-completeness claim.
 
 STOP boundary: controlled Main composition and collector only. No live PDD/Titan, real seller session, production IPC observer channel, AI, persistence, send, HUMAN_CONFIRM, AUTO, or platform mutation. Do not approve same-WebContents recovery.
 

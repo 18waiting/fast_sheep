@@ -1322,6 +1322,7 @@
         "apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts",
         "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
         "apps/desktop/src/main/platforms/pdd/pdd-inbound-observer.ts (new)",
+        "apps/desktop/src/main/platforms/pdd/pdd-main-admission.ts (new)",
         "apps/desktop/src/main/platforms/pdd/pdd-page-ipc.ts",
         "apps/desktop/src/main/bootstrap.ts",
         "apps/desktop/src/main/worker-runtime.ts",
@@ -1331,8 +1332,8 @@
         "apps/desktop/tests/bootstrap-pdd-ingress-wiring.test.ts (new)",
         "apps/desktop/tests/pdd-page-ipc-guard.test.ts"
       ],
-      "main_wiring": "PddPlatformService.activate should create the observer in onViewCreated before first load. The hook attaches Debugger and sends Network.enable, returns a startup handle without awaiting enable, and activation starts first navigation and awaits the handle armed promise concurrently with load. Bind requestId at connection creation and hand only a Main-validated frozen binding plus frozen input to handleTrustedInboundIngress.",
-      "proposed_interface": "Add PddPlatformServiceOptions.createInboundObserver and canonicalIngressMode. The onViewCreated hook may be async for attach/setup, but must resolve after Debugger.attach and initiating Network.enable without awaiting enable resolution or first navigation. It returns a startup handle whose armed promise is awaited concurrently with first load. The observer receives WebContents, session/document-generation binding, and a readiness predicate, and hands only frozen Main binding plus frozen input to handleTrustedInboundIngress.",
+      "main_wiring": "Create the Main-owned admission provider and observer in PddPlatformService.activate/onViewCreated. The observer binds connection evidence at Network.webSocketCreated, DROPs every pre-admission frame, and delegates only after session READY, matching session/document binding, actual WebContents equality, and granted Main admission.",
+      "proposed_interface": "Add PddPlatformServiceOptions.createInboundObserver, canonicalIngressMode, and mainAdmissionProvider (default DENY_ALL). Proposed Main method: handleAdmittedInboundIngress(sender, context, admissionId, input). It validates sender and opaque context, evaluates Main admission against actual WebContents/session/document/observer lifecycle, then calls the existing handleTrustedInboundIngress. A frozen connection binding cannot replace the opaque context.",
       "minimum_positive_acceptance": [
         "Startup regression proves attach and Network.enable are sent before first load, first load is not blocked on enable resolution, and Network.webSocketCreated is observed after enable.",
         "One controlled WebContents, one synthetic connection, and one text frame reach the real canonical mapper and default validator exactly once.",
@@ -1342,7 +1343,9 @@
       ],
       "minimum_negative_acceptance": [
         "Awaiting Network.enable before first navigation is forbidden by timeout/regression test.",
-        "Connection before observer attach, missing Network.webSocketCreated evidence, early frame without binding, old terminal WebContents, same-WebContents restart, wrong CDP session/requestId, stale generation, forged/missing context, and wrong sender stop before canonical ingress.",
+        "Observer armed, connection binding valid, and session READY but Main admission missing/denied/throws/stale => canonical ingress and collector calls are zero.",
+        "Old page_ready changes session state or receives another page event but cannot grant admission or make the denied result pass.",
+        "Connection before observer attach, missing Network.webSocketCreated evidence, pre-admission frame, late attach without creation evidence, old terminal WebContents, same-WebContents restart, wrong CDP session/requestId, stale generation, forged/missing context, and wrong sender all stop before canonical ingress.",
         "Missing resolver, validator unavailable/false/throw, and missing collector stop before legacy fallback.",
         "Collector throw and unsupported Promise return FAILED once with no retry, no AI/send/persistence, and no legacy call."
       ],
@@ -1351,7 +1354,7 @@
         "Legacy message_received bridge, AI, persistence, and send counters remain zero for all selected-path success and failure cases.",
         "Unknown scope/identity facts remain explicit UNKNOWN/UNRESOLVED and never enable downstream actions."
       ],
-      "stop_boundary": "STOP at a controlled, default-off Main composition and collector boundary. No live PDD/Titan, real seller profile/session, production IPC observer channel, AI, persistence, send, HUMAN_CONFIRM, AUTO, or platform mutation.",
+      "stop_boundary": "STOP at the controlled default-DENY Main admission boundary, observer binding, and controlled collector. No live PDD/Titan, real seller session, production activation, AI, persistence, send, HUMAN_CONFIRM, AUTO, platform mutation, same-WebContents recovery approval, or production message-completeness claim.",
       "out_of_scope": [
         "real PDD/Titan observation or compatibility claims",
         "production activation of the selected path",
@@ -1376,7 +1379,8 @@
         "enable_resolution_after_navigation_start": true,
         "webSocketCreated_after_enable_in_healthy_path": true,
         "late_attach_after_dom_ready_must_fail_closed": true
-      }
+      },
+      "early_frame_coverage": "Pre-admission frames are DROPPED and recorded. No frame queue, buffer release, replay, or retry is added. The unit must disclose that early messages are not collected and does not claim final production message completeness."
     },
     "live_evidence_boundaries": [
       {
@@ -1419,40 +1423,562 @@
     },
     "startup_probe": {
       "performed": true,
-      "probe_root": "E:\\fast_sheep.tmp\\sheep-301-ingress-startup-readiness",
-      "result_artifact": "E:\\fast_sheep.tmp\\sheep-301-ingress-startup-readiness\\probe-result.json",
-      "precheck_artifact": "E:\\fast_sheep.tmp\\sheep-301-ingress-startup-readiness\\probe-precheck-timeout.json",
+      "probe_root": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness",
+      "source_artifact": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/probe-main.mjs",
+      "source_sha256": "a502d82e548fc5680cd8b1500dbd9f621e459ab204572c2d0748e4a36877e7dc",
+      "launcher_artifact": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/run-probe.mjs",
+      "launcher_sha256": "a6c037b500bb7001285477314d532c81e14a600cd46a175ad8b4f885c757c44a",
+      "result_artifact": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/new-probe-result.json",
+      "launcher_result_artifact": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/new-probe-launcher-result.json",
+      "command": "node E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/run-probe.mjs",
+      "exit_code": 0,
+      "signal": null,
       "runtime": {
         "electron": "43.6.0",
         "chrome": "150.0.7871.250",
         "node": "24.20.0"
       },
-      "sandbox": true,
-      "no_sandbox_switch_used": false,
-      "precheck": {
-        "attempted": "Await Debugger.attach and Network.enable before first loadURL.",
-        "observed": "TIMEOUT_AFTER_20S at A:enable-sent; Network.enable did not resolve before first navigation.",
-        "conclusion": "Awaiting Network.enable before first navigation creates a startup deadlock."
+      "path_check": {
+        "ok": true,
+        "reason": "OK",
+        "repoRoot": "E:/fast_sheep",
+        "candidate": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness",
+        "expected": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness",
+        "relativeToRepo": ".tmp/sheep-301-ingress-startup-readiness"
       },
-      "correct_order_observed": [
-        "onViewCreated-start",
-        "attach-start",
-        "network-enable-sent",
-        "loadURL-start",
-        "did-start-navigation",
-        "network-enable-resolved",
-        "Network.webSocketCreated",
-        "dom-ready",
-        "did-finish-load"
+      "launcher_path_checks": {
+        "sibling": {
+          "ok": false,
+          "reason": "PATH_OUTSIDE_REPO",
+          "resolvedRepo": "E:/fast_sheep",
+          "resolvedCandidate": "E:/fast_sheep.tmp/sheep-301-ingress-startup-readiness",
+          "expected": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness",
+          "relativeToRepo": "../fast_sheep.tmp/sheep-301-ingress-startup-readiness"
+        },
+        "escape": {
+          "ok": false,
+          "reason": "NOT_EXACT_PROBE_ROOT",
+          "resolvedRepo": "E:/fast_sheep",
+          "resolvedCandidate": "E:/fast_sheep/escape",
+          "expected": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness",
+          "relativeToRepo": "escape"
+        }
+      },
+      "configuration": {
+        "sandbox": true,
+        "contextIsolation": true,
+        "nodeIntegration": false,
+        "webSecurity": true,
+        "noSandboxSwitchUsed": false,
+        "uniqueMemoryPartitions": true,
+        "projectRootRunFilesOnly": true
+      },
+      "scenario_a": {
+        "observerSetupStartedBeforeLoad": true,
+        "networkEnableSentBeforeLoad": true,
+        "navigationStartedBeforeEnableResolved": true,
+        "enableAndLoadSettledBeforeHookResolved": true,
+        "navigationStarted": true,
+        "webSocketCreatedObserved": true,
+        "webSocketCreatedBeforeDomReady": true,
+        "mutualWaitExcluded": true
+      },
+      "scenario_b": {
+        "preNavigationEnableResult": {
+          "status": "TIMEOUT",
+          "timeoutMs": 2000
+        },
+        "boundedTimeoutObserved": true,
+        "navigationStartedAfterTimeout": true,
+        "enableResolvedAfterNavigation": true
+      },
+      "scenario_c": {
+        "navigationStartedBeforeObserverAttach": true,
+        "domReadyBeforeNetworkEnableSent": true,
+        "lateWebSocketCreatedObserved": false,
+        "lateObservationMissed": true
+      },
+      "event_order": [
+        "server:listening",
+        "A:onViewCreated-start",
+        "A:attach-start",
+        "A:network-enable-sent",
+        "A:loadURL-start",
+        "A:did-start-navigation",
+        "A:network-enable-resolved",
+        "A:cdp:Network.webSocketCreated",
+        "server:connection",
+        "A:dom-ready",
+        "A:did-finish-load",
+        "A:load-and-enable-settled",
+        "A:cdp:Network.webSocketWillSendHandshakeRequest",
+        "server:message",
+        "A:cdp:Network.webSocketHandshakeResponseReceived",
+        "A:cdp:Network.webSocketFrameSent",
+        "A:cdp:Network.webSocketFrameReceived",
+        "A:onViewCreated-ready",
+        "A:done",
+        "B:attach-start",
+        "B:network-enable-sent",
+        "B:pre-navigation-enable-result",
+        "B:loadURL-start-after-timeout-check",
+        "B:did-start-navigation",
+        "B:network-enable-resolved",
+        "B:cdp:Network.webSocketCreated",
+        "server:connection",
+        "B:dom-ready",
+        "B:did-finish-load",
+        "B:enable-and-load-settled",
+        "B:cdp:Network.webSocketWillSendHandshakeRequest",
+        "B:cdp:Network.webSocketHandshakeResponseReceived",
+        "B:cdp:Network.webSocketFrameSent",
+        "server:message",
+        "B:cdp:Network.webSocketFrameReceived",
+        "B:done",
+        "C:loadURL-start-before-observer",
+        "C:did-start-navigation",
+        "server:connection",
+        "C:dom-ready",
+        "C:dom-ready-before-observer",
+        "C:attach-start",
+        "C:network-enable-sent",
+        "C:did-finish-load",
+        "C:network-enable-resolved",
+        "server:message",
+        "C:cdp:Network.webSocketHandshakeResponseReceived",
+        "C:cdp:Network.webSocketFrameSent",
+        "C:cdp:Network.webSocketFrameReceived",
+        "C:done"
       ],
-      "findings": {
-        "onViewCreated_must_not_await_enable_before_load": true,
-        "network_enable_resolved_after_navigation_start": true,
-        "webSocketCreated_observed_after_enable_in_correct_order": true,
-        "late_attach_after_dom_ready_missed_webSocketCreated": true,
-        "late_attach_still_observed_later_handshake_and_frames": true
+      "event_records": [
+        {
+          "sequence": 1,
+          "name": "server:listening",
+          "monotonicMs": 22176908,
+          "wall": "2026-09-17T17:58:54.079Z",
+          "detail": {
+            "port": 33442
+          }
+        },
+        {
+          "sequence": 2,
+          "name": "A:onViewCreated-start",
+          "monotonicMs": 22176930,
+          "wall": "2026-09-17T17:58:54.101Z",
+          "detail": {}
+        },
+        {
+          "sequence": 3,
+          "name": "A:attach-start",
+          "monotonicMs": 22176930,
+          "wall": "2026-09-17T17:58:54.101Z",
+          "detail": {}
+        },
+        {
+          "sequence": 4,
+          "name": "A:network-enable-sent",
+          "monotonicMs": 22176931,
+          "wall": "2026-09-17T17:58:54.102Z",
+          "detail": {}
+        },
+        {
+          "sequence": 5,
+          "name": "A:loadURL-start",
+          "monotonicMs": 22176931,
+          "wall": "2026-09-17T17:58:54.102Z",
+          "detail": {}
+        },
+        {
+          "sequence": 6,
+          "name": "A:did-start-navigation",
+          "monotonicMs": 22176937,
+          "wall": "2026-09-17T17:58:54.108Z",
+          "detail": {
+            "url": "http://127.0.0.1:33442/",
+            "isInPlace": false,
+            "isMainFrame": true
+          }
+        },
+        {
+          "sequence": 7,
+          "name": "A:network-enable-resolved",
+          "monotonicMs": 22177125,
+          "wall": "2026-09-17T17:58:54.296Z",
+          "detail": {}
+        },
+        {
+          "sequence": 8,
+          "name": "A:cdp:Network.webSocketCreated",
+          "monotonicMs": 22177126,
+          "wall": "2026-09-17T17:58:54.296Z",
+          "detail": {
+            "requestId": "10328.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 9,
+          "name": "server:connection",
+          "monotonicMs": 22177128,
+          "wall": "2026-09-17T17:58:54.298Z",
+          "detail": {}
+        },
+        {
+          "sequence": 10,
+          "name": "A:dom-ready",
+          "monotonicMs": 22177129,
+          "wall": "2026-09-17T17:58:54.300Z",
+          "detail": {}
+        },
+        {
+          "sequence": 11,
+          "name": "A:did-finish-load",
+          "monotonicMs": 22177129,
+          "wall": "2026-09-17T17:58:54.300Z",
+          "detail": {}
+        },
+        {
+          "sequence": 12,
+          "name": "A:load-and-enable-settled",
+          "monotonicMs": 22177129,
+          "wall": "2026-09-17T17:58:54.300Z",
+          "detail": {}
+        },
+        {
+          "sequence": 13,
+          "name": "A:cdp:Network.webSocketWillSendHandshakeRequest",
+          "monotonicMs": 22177130,
+          "wall": "2026-09-17T17:58:54.300Z",
+          "detail": {
+            "requestId": "10328.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 14,
+          "name": "server:message",
+          "monotonicMs": 22177130,
+          "wall": "2026-09-17T17:58:54.301Z",
+          "detail": {}
+        },
+        {
+          "sequence": 15,
+          "name": "A:cdp:Network.webSocketHandshakeResponseReceived",
+          "monotonicMs": 22177131,
+          "wall": "2026-09-17T17:58:54.302Z",
+          "detail": {
+            "requestId": "10328.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 16,
+          "name": "A:cdp:Network.webSocketFrameSent",
+          "monotonicMs": 22177131,
+          "wall": "2026-09-17T17:58:54.302Z",
+          "detail": {
+            "requestId": "10328.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 17,
+          "name": "A:cdp:Network.webSocketFrameReceived",
+          "monotonicMs": 22177166,
+          "wall": "2026-09-17T17:58:54.337Z",
+          "detail": {
+            "requestId": "10328.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 18,
+          "name": "A:onViewCreated-ready",
+          "monotonicMs": 22177258,
+          "wall": "2026-09-17T17:58:54.429Z",
+          "detail": {}
+        },
+        {
+          "sequence": 19,
+          "name": "A:done",
+          "monotonicMs": 22177259,
+          "wall": "2026-09-17T17:58:54.430Z",
+          "detail": {}
+        },
+        {
+          "sequence": 20,
+          "name": "B:attach-start",
+          "monotonicMs": 22177262,
+          "wall": "2026-09-17T17:58:54.433Z",
+          "detail": {}
+        },
+        {
+          "sequence": 21,
+          "name": "B:network-enable-sent",
+          "monotonicMs": 22177263,
+          "wall": "2026-09-17T17:58:54.434Z",
+          "detail": {}
+        },
+        {
+          "sequence": 22,
+          "name": "B:pre-navigation-enable-result",
+          "monotonicMs": 22179264,
+          "wall": "2026-09-17T17:58:56.434Z",
+          "detail": {
+            "status": "TIMEOUT",
+            "timeoutMs": 2000
+          }
+        },
+        {
+          "sequence": 23,
+          "name": "B:loadURL-start-after-timeout-check",
+          "monotonicMs": 22179264,
+          "wall": "2026-09-17T17:58:56.434Z",
+          "detail": {}
+        },
+        {
+          "sequence": 24,
+          "name": "B:did-start-navigation",
+          "monotonicMs": 22179268,
+          "wall": "2026-09-17T17:58:56.439Z",
+          "detail": {
+            "url": "http://127.0.0.1:33442/",
+            "isInPlace": false,
+            "isMainFrame": true
+          }
+        },
+        {
+          "sequence": 25,
+          "name": "B:network-enable-resolved",
+          "monotonicMs": 22179322,
+          "wall": "2026-09-17T17:58:56.493Z",
+          "detail": {}
+        },
+        {
+          "sequence": 26,
+          "name": "B:cdp:Network.webSocketCreated",
+          "monotonicMs": 22179322,
+          "wall": "2026-09-17T17:58:56.493Z",
+          "detail": {
+            "requestId": "23412.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 27,
+          "name": "server:connection",
+          "monotonicMs": 22179323,
+          "wall": "2026-09-17T17:58:56.494Z",
+          "detail": {}
+        },
+        {
+          "sequence": 28,
+          "name": "B:dom-ready",
+          "monotonicMs": 22179325,
+          "wall": "2026-09-17T17:58:56.496Z",
+          "detail": {}
+        },
+        {
+          "sequence": 29,
+          "name": "B:did-finish-load",
+          "monotonicMs": 22179325,
+          "wall": "2026-09-17T17:58:56.496Z",
+          "detail": {}
+        },
+        {
+          "sequence": 30,
+          "name": "B:enable-and-load-settled",
+          "monotonicMs": 22179325,
+          "wall": "2026-09-17T17:58:56.496Z",
+          "detail": {
+            "statuses": [
+              "fulfilled",
+              "fulfilled"
+            ]
+          }
+        },
+        {
+          "sequence": 31,
+          "name": "B:cdp:Network.webSocketWillSendHandshakeRequest",
+          "monotonicMs": 22179326,
+          "wall": "2026-09-17T17:58:56.496Z",
+          "detail": {
+            "requestId": "23412.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 32,
+          "name": "B:cdp:Network.webSocketHandshakeResponseReceived",
+          "monotonicMs": 22179326,
+          "wall": "2026-09-17T17:58:56.497Z",
+          "detail": {
+            "requestId": "23412.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 33,
+          "name": "B:cdp:Network.webSocketFrameSent",
+          "monotonicMs": 22179326,
+          "wall": "2026-09-17T17:58:56.497Z",
+          "detail": {
+            "requestId": "23412.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 34,
+          "name": "server:message",
+          "monotonicMs": 22179326,
+          "wall": "2026-09-17T17:58:56.497Z",
+          "detail": {}
+        },
+        {
+          "sequence": 35,
+          "name": "B:cdp:Network.webSocketFrameReceived",
+          "monotonicMs": 22179357,
+          "wall": "2026-09-17T17:58:56.528Z",
+          "detail": {
+            "requestId": "23412.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 36,
+          "name": "B:done",
+          "monotonicMs": 22179467,
+          "wall": "2026-09-17T17:58:56.638Z",
+          "detail": {}
+        },
+        {
+          "sequence": 37,
+          "name": "C:loadURL-start-before-observer",
+          "monotonicMs": 22179470,
+          "wall": "2026-09-17T17:58:56.641Z",
+          "detail": {}
+        },
+        {
+          "sequence": 38,
+          "name": "C:did-start-navigation",
+          "monotonicMs": 22179473,
+          "wall": "2026-09-17T17:58:56.644Z",
+          "detail": {
+            "url": "http://127.0.0.1:33442/",
+            "isInPlace": false,
+            "isMainFrame": true
+          }
+        },
+        {
+          "sequence": 39,
+          "name": "server:connection",
+          "monotonicMs": 22179523,
+          "wall": "2026-09-17T17:58:56.693Z",
+          "detail": {}
+        },
+        {
+          "sequence": 40,
+          "name": "C:dom-ready",
+          "monotonicMs": 22179523,
+          "wall": "2026-09-17T17:58:56.694Z",
+          "detail": {}
+        },
+        {
+          "sequence": 41,
+          "name": "C:dom-ready-before-observer",
+          "monotonicMs": 22179523,
+          "wall": "2026-09-17T17:58:56.694Z",
+          "detail": {}
+        },
+        {
+          "sequence": 42,
+          "name": "C:attach-start",
+          "monotonicMs": 22179523,
+          "wall": "2026-09-17T17:58:56.694Z",
+          "detail": {}
+        },
+        {
+          "sequence": 43,
+          "name": "C:network-enable-sent",
+          "monotonicMs": 22179523,
+          "wall": "2026-09-17T17:58:56.694Z",
+          "detail": {}
+        },
+        {
+          "sequence": 44,
+          "name": "C:did-finish-load",
+          "monotonicMs": 22179523,
+          "wall": "2026-09-17T17:58:56.694Z",
+          "detail": {}
+        },
+        {
+          "sequence": 45,
+          "name": "C:network-enable-resolved",
+          "monotonicMs": 22179525,
+          "wall": "2026-09-17T17:58:56.696Z",
+          "detail": {}
+        },
+        {
+          "sequence": 46,
+          "name": "server:message",
+          "monotonicMs": 22179526,
+          "wall": "2026-09-17T17:58:56.697Z",
+          "detail": {}
+        },
+        {
+          "sequence": 47,
+          "name": "C:cdp:Network.webSocketHandshakeResponseReceived",
+          "monotonicMs": 22179526,
+          "wall": "2026-09-17T17:58:56.697Z",
+          "detail": {
+            "requestId": "21824.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 48,
+          "name": "C:cdp:Network.webSocketFrameSent",
+          "monotonicMs": 22179526,
+          "wall": "2026-09-17T17:58:56.697Z",
+          "detail": {
+            "requestId": "21824.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 49,
+          "name": "C:cdp:Network.webSocketFrameReceived",
+          "monotonicMs": 22179564,
+          "wall": "2026-09-17T17:58:56.735Z",
+          "detail": {
+            "requestId": "21824.2",
+            "cdpSessionId": ""
+          }
+        },
+        {
+          "sequence": 50,
+          "name": "C:done",
+          "monotonicMs": 22179689,
+          "wall": "2026-09-17T17:58:56.860Z",
+          "detail": {}
+        }
+      ],
+      "cleanup": {
+        "exit_code": 0,
+        "signal": null,
+        "cleanup_attempted": true
       },
-      "implication": "The activation contract must start attach and Network.enable, start the first navigation without waiting for enable resolution, and await enable/navigation concurrently. The observer must not depend on did-finish-load or READY to arm Network observation."
+      "observed_facts": [
+        "Healthy order: attach and Network.enable are initiated before first load; did-start-navigation precedes enable resolution; Network.webSocketCreated is observed after enable resolution.",
+        "Awaiting Network.enable before first navigation hits the bounded timeout.",
+        "Late attach after dom-ready misses Network.webSocketCreated while later handshake/frame events remain observable.",
+        "The launcher rejects the sibling old path as PATH_OUTSIDE_REPO and rejects a parent-traversal candidate as NOT_EXACT_PROBE_ROOT before spawning Electron."
+      ],
+      "inferences": [
+        "The production onViewCreated hook must return a startup handle without awaiting enable resolution or navigation; activation must await the enable/navigation barrier concurrently.",
+        "A connection-created binding cannot be reconstructed after late attach; missing creation evidence must fail closed."
+      ],
+      "coverage_limitation": "This probe validates startup ordering and event visibility only. It does not establish a complete early-message collection design. Under the approved next-unit scope, pre-admission frames are DROPped and disclosed as uncovered."
     },
     "identity_handover": {
       "phase_1_connection_observed_before_ready": {
@@ -1460,13 +1986,14 @@
         "prohibited": "Do not call createInboundIngressContext, parse inbound payload, map canonical identity, or write owner/association data at this phase."
       },
       "phase_2_frame_before_ready": {
-        "policy": "A frame for an observed connection may be held only in a bounded Main queue keyed by the immutable connection binding. Do not map it until READY and context validation succeed.",
-        "unobserved_connection": "If no Network.webSocketCreated evidence exists for requestId, reject/drop the frame as UNBOUND_OR_STALE_SOURCE; never infer connection identity from the current state.",
-        "overflow_or_eviction": "Drop/STOP deterministically; no legacy fallback and no current-state rebinding."
+        "policy": "DROP every frame received before independent Main admission. Record a bounded diagnostic reason (for example EARLY_FRAME_WITHOUT_ADMISSION). Do not queue, buffer, release, replay, retry, or map it.",
+        "unobserved_connection": "If no Network.webSocketCreated evidence exists for requestId, reject/drop the frame as UNBOUND_OR_STALE_SOURCE; never infer connection identity from current state.",
+        "disclosure": "Early messages will not be collected under this controlled unit. This is not a final production message-completeness design."
       },
       "phase_3_ready_and_canonical_context": {
         "policy": "After READY, create a canonical context for the exact WebContents and require PddSessionHost.resolveInboundIngressBinding to return the same sessionId, shopId, documentGeneration, and WebContents object as the frozen connection binding.",
-        "mismatch": "REJECT/DROP the connection and queued frames; do not refresh or repair identity from current state."
+        "mismatch": "REJECT/DROP the connection and queued frames; do not refresh or repair identity from current state.",
+        "webContents_equality_verifier": "The Main-owned admission provider/service must retain the actual WebContents object from Network.webSocketCreated and compare it by object identity with the sender used for createInboundIngressContext/resolveInboundIngressBinding. The existing resolveInboundIngressBinding result is insufficient by itself because it returns only sessionId, shopId, and documentGeneration."
       },
       "phase_4_new_frame_after_permission": {
         "policy": "Only a frame whose requestId was bound at connection creation under the same current lifecycle may be mapped. New frames on an unobserved requestId are dropped."
@@ -1488,17 +2015,79 @@
         "apps/desktop/src/main/index.ts",
         "apps/desktop/src/main/bootstrap.ts",
         "apps/desktop/src/main/worker-runtime.ts"
-      ]
+      ],
+      "sender_responsibilities": {
+        "pdd-page-ipc.ts": "Receive event.sender, validate trusted WebContents, and call onPageEvent(payload, sender). If the schema validator is unavailable, fail closed instead of forwarding.",
+        "main/index.ts": "Pass sender through to the service; never invoke handlePageEvent(payload) with payload alone.",
+        "pdd-platform-service.ts": "Resolve the session by the actual sender object first. A payload session_id/shop_id cannot authorize or mutate another shop session. In canonical/disabled mode, legacy business consumers remain unreachable."
+      }
     },
     "original_audit_baseline_commit": "0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578",
-    "repair_baseline_commit": "a5d4bfd73502e3569142186c85335e9e947aca64",
+    "repair_baseline_commit": "e8f9f6353f92efe5224d2429bfb9b3a0f18cec7f",
     "targeted_repair": {
       "controller_decision": "REPAIR",
-      "repair_baseline": "a5d4bfd73502e3569142186c85335e9e947aca64",
+      "repair_baseline": "e8f9f6353f92efe5224d2429bfb9b3a0f18cec7f",
+      "previous_repair_baseline": "a5d4bfd73502e3569142186c85335e9e947aca64",
       "repair_result": "COMPLETE",
-      "scope": "R1_STARTUP_TIMING / R2_IDENTITY_HANDOVER / R3_LEGACY_ISOLATION / R4_CLASSIFICATION",
-      "startup_probe": "E:\\fast_sheep.tmp\\sheep-301-ingress-startup-readiness\\probe-result.json",
+      "scope": "PATH_EVIDENCE_REPAIR / R1_STARTUP_TIMING / R2_IDENTITY_HANDOVER / R3_LEGACY_ISOLATION / R4_CLASSIFICATION",
       "controller_review_status": "AWAITING_CONTROLLER_REVIEW"
+    },
+    "previous_repair_baseline_commit": "a5d4bfd73502e3569142186c85335e9e947aca64",
+    "historical_startup_probe": {
+      "classification": "HISTORICAL_SIBLING_PATH_PROBE_NOT_PROJECT_ROOT_EVIDENCE",
+      "instruction_conflict_note": "The prior task text directed the probe to a sibling path; this archive preserves that run without treating it as project-root execution evidence.",
+      "old_probe_root_read_only": "E:/fast_sheep.tmp/sheep-301-ingress-startup-readiness",
+      "historical_evidence_archive": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/historical/e8f9f63",
+      "files": [
+        {
+          "file": "probe-main.mjs",
+          "sha256": "EBC5EE9ED50FACD4CE592968C4605B4D926C26B7E3325694E2D8569D19C49627"
+        },
+        {
+          "file": "probe-result.json",
+          "sha256": "B9003F2B56C6310B11EA039800F446A05C7FE1FBFE38577E06E26EEF62F4A0C0"
+        },
+        {
+          "file": "probe-precheck-timeout.json",
+          "sha256": "A784A28E4E32656AC5EE4FE7C568CD5F49FB1BDDDF845AC6B9BC1424D33AB559"
+        },
+        {
+          "file": "probe-progress.log",
+          "sha256": "B6547271D0AAD8A0C34FC836068F81FA7503B162519735C509037198ED6D04AA"
+        }
+      ],
+      "old_root_modified": false,
+      "old_root_deleted": false,
+      "old_runtime_directories_copied": false,
+      "old_run_used_as_new_evidence": false
+    },
+    "main_admission_contract": {
+      "status": "PROPOSED / NOT_IMPLEMENTED",
+      "ownership": "The admission provider is created and owned by Main composition (bootstrap.ts / worker-runtime.ts). Renderer, page events, payload, DOM READY, selected customer, and request IDs cannot create or refresh admission.",
+      "default": "Production default is DENY_ALL. No admission provider means canonical output is denied.",
+      "proposed_types": [
+        "PddMainAdmissionRequest { webContents: WebContents; sessionId: string; shopId: string; documentGeneration: number; observerLifecycleId: number; connectionEvidenceHash: string }",
+        "PddMainAdmissionDecision = { granted: true; admissionId: string } | { granted: false; reason: string }",
+        "PddMainAdmissionProvider.evaluate(request: PddMainAdmissionRequest): PddMainAdmissionDecision"
+      ],
+      "proposed_service_method": "handleAdmittedInboundIngress(sender: unknown, context: unknown, admissionId: string, input: unknown): PddInboundIngressResult",
+      "validation": [
+        "Validate trusted sender and opaque PddInboundIngressContext first.",
+        "Call PddMainAdmissionProvider.evaluate with the actual WebContents, sessionId, shopId, documentGeneration, observer lifecycle, and immutable connection evidence.",
+        "Require granted=true and a live admissionId before calling the existing handleTrustedInboundIngress(sender, context, input).",
+        "Recheck actual WebContents equality, session/document binding, observer lifecycle, and admission validity before canonical ingress and immediately before collector."
+      ],
+      "denied_or_failed_behavior": "Missing, denied, thrown, or stale admission returns STOPPED/REJECTED with canonical ingress and collector counts zero; no legacy fallback, retry, or refresh.",
+      "invalidation": [
+        "navigation/document-generation change",
+        "observer detach",
+        "WebContents destroyed",
+        "session dispose/recreate",
+        "reauth",
+        "terminal lifecycle",
+        "provider restart or revocation"
+      ],
+      "page_event_rule": "page_ready and other page/renderer state events may update only the sender-owned session state; they cannot grant, refresh, or extend admission."
     }
   },
   "historical_stage_readiness": {
