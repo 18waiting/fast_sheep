@@ -2,7 +2,7 @@
   "task": "SHEEP-301",
   "acceptance_unit": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
   "readiness_baseline_commit": "8fb05f70d264943447981d19aa71a1dd4618c2b5",
-  "repair_baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
+  "repair_baseline_commit": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
   "result": "COMPLETE",
   "diagnostic_proof_implementation_performed": true,
   "offline_boundary_proof_performed": true,
@@ -21,13 +21,21 @@
   },
   "execution_paths": {
     "repoRoot": "E:\\fast_sheep",
-    "proofRoot": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof",
-    "runRoot": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-22812-1789662913696",
-    "userData": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-22812-1789662913696\\user-data",
-    "sessionData": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-22812-1789662913696\\session-data",
-    "cache": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-22812-1789662913696\\cache",
-    "temp": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-22812-1789662913696\\temp",
-    "logs": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-22812-1789662913696\\logs"
+    "proofRoot": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof",
+    "runRoot": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24400-1789664067103",
+    "userData": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24400-1789664067103\\user-data",
+    "sessionData": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24400-1789664067103\\session-data",
+    "cache": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24400-1789664067103\\cache",
+    "temp": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24400-1789664067103\\temp",
+    "logs": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-24400-1789664067103\\logs"
+  },
+  "path_validation": {
+    "ok": true,
+    "reason": "OK",
+    "resolvedRepo": "E:\\fast_sheep",
+    "resolvedCandidate": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof",
+    "expected": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof",
+    "relativeToRepo": ".tmp\\sheep-301-local-electron-websocket-boundary-proof"
   },
   "electron_executable": "E:\\fast_sheep\\node_modules\\.pnpm\\electron@43.6.0\\node_modules\\electron\\dist\\electron.exe",
   "dependency_resolution": {
@@ -40,16 +48,20 @@
     "contextIsolation": true,
     "nodeIntegration": false,
     "webSecurity": true,
-    "no_sandbox_switch_used": false,
+    "sandbox_disabling_switch_used": false,
+    "command_line_switches": {
+      "disableGpu": true,
+      "noSandbox": false
+    },
     "memory_partitions": {
       "shop-a": {
-        "partition": "memory:sheep301-proof-run-22812-1789662913696-shop-a",
+        "partition": "memory:sheep301-proof-run-24400-1789664067103-shop-a",
         "isPersistent": false,
         "storagePath": null,
         "webContentsId": 6
       },
       "shop-b": {
-        "partition": "memory:sheep301-proof-run-22812-1789662913696-shop-b",
+        "partition": "memory:sheep301-proof-run-24400-1789664067103-shop-b",
         "isPersistent": false,
         "storagePath": null,
         "webContentsId": 4
@@ -57,13 +69,14 @@
     }
   },
   "runtime_source": {
-    "repository_head": "ab205372f858db736405ff2195bc9a307acae9a1",
-    "repair_baseline": "ab205372f858db736405ff2195bc9a307acae9a1",
-    "worktree_status_porcelain": "M project/PROJECT_STATE.json\n M project/SHEEP_301_REAL_PRODUCER_READINESS_AUDIT.md\n M reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json\n M reports/SHEEP-301-real-producer-readiness-audit.json\n M scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs\n M scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs\n?? scripts/fixtures/sheep-301-local-electron-websocket-boundary/main.mjs",
+    "repository_head": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
+    "repair_baseline": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
+    "prior_repair_baseline": "ab205372f858db736405ff2195bc9a307acae9a1",
+    "worktree_status_porcelain": "M project/PROJECT_STATE.json\n M project/SHEEP_301_REAL_PRODUCER_READINESS_AUDIT.md\n M reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json\n M reports/SHEEP-301-real-producer-readiness-audit.json\n M scripts/fixtures/sheep-301-local-electron-websocket-boundary/main.mjs\n M scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs\n M scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs\n?? scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer-lifecycle.test.mjs\n?? scripts/fixtures/sheep-301-local-electron-websocket-boundary/path-policy.mjs\n?? scripts/fixtures/sheep-301-local-electron-websocket-boundary/path-policy.test.mjs",
     "script_digests": {
-      "runner": "b2bad481d15cf4e2da37701a75106d54545a61a378c24eec47bc8dc857313996",
-      "launcher": "39ea4ef07f88510840d67aca9f00eb65cd07ec4077f957f5d1426f0c7b1a9436",
-      "observer": "e5bb0f144a27f8a0baf1c692a6adf9b0dadeb528844e70fef2e6fde714ef2bce",
+      "runner": "8ad01788c30a2ea851c6fb151221ca130476c137d0e6c9bab5f9a393bd2a5006",
+      "launcher": "eba7a822a2d1c583008bb630c8faa58d7e8bba5753a5dc40aa65807d6ba99708",
+      "observer": "11e75c28c99c177d544ed277515341c1bbb3273bfdf3f9e7ebec389f88ccd9ae",
       "fixture": "5f168e564083bc16a6304c0b5f71711c9583917be5e9e4c27921fae162defd26"
     }
   },
@@ -77,25 +90,25 @@
     "classification": "CONFIRMED_BY_BASELINE_SOURCE_AND_CONTROLLER_REPRO",
     "R1": "Baseline runner used a literal sibling temp-root string, hardcoded ws installation path, sandbox-disabling switch, and default persistent partitions.",
     "R2": "Baseline bindings were keyed by requestId only and ignored CDP sessionId.",
-    "R3": "Controller reproduced old webSocketCreated delivery reacquiring the current document context after navigation.",
+    "R3": "Controller reproduced a captured old webSocketCreated delivery reacquiring the current document context after navigation; the repaired proof also exercises an un-tokened raw old event through the current listener path.",
     "R4": "Baseline tests used content-marker association mutation, a non-text old frame, and no dynamic WebSocket traffic counters."
   },
   "r1_r4_repair_evidence": {
     "R1": {
       "before": "sibling temp-root string, hardcoded ws installation path, sandbox-disabling CLI switch, default persistent partitions",
-      "after": "REPO_ROOT-derived strict temp root, repository-resolved ws, sandboxed Electron, two distinct memory partitions"
+      "after": "resolve(REPO_ROOT, '.tmp', ...) strict proof root, repository-resolved ws, sandboxed Electron, two distinct memory partitions"
     },
     "R2": {
       "before": "bindings keyed only by requestId; frame sessionId ignored",
       "after": "WebContents id, observer lifecycle, CDP sessionId, callbackToken, and requestId form the source binding"
     },
     "R3": {
-      "before": "old connection-created could call the live callback and obtain current document context",
-      "after": "callback generation is rolled on navigation/detach; captured old callback deliveries fail before context lookup"
+      "before": "captured old connection-created could call the live callback and obtain current document context",
+      "after": "main-document replacement stops the observer permanently; captured-old-callback and un-tokened raw deliveries fail with zero context resolution and zero collector growth; same-WebContents recovery is NOT_SUPPORTED"
     },
     "R4": {
       "before": "content-marker association mutation, non-text old-frame test, incomplete source counters",
-      "after": "creation-time association records with Main control injection, legal old text frame, dynamic WS and send-boundary counters"
+      "after": "creation-time association records with Main control injection, legal old text frame, dynamic WS and send-boundary counters, explicit completion gate"
     }
   },
   "acceptance_matrix": {
@@ -110,7 +123,7 @@
   "lifecycle_timeline": {
     "connection_created": "observer binds WebContents/session/document context before any frame is accepted",
     "frame_delivery": "frame lookup uses the pre-existing requestId binding",
-    "reload": "Main navigation rolls the callback token and clears bindings; old callback deliveries are rejected before context lookup",
+    "reload": "Main document replacement permanently stops the old observer, removes its listeners, clears bindings, and retains NOT_SUPPORTED for same-WebContents recovery; old callback and un-tokened raw deliveries cannot resolve a new context",
     "dispose_recreate": "old observer terminal; new WebContents/session/observer lifecycle required",
     "detach_reattach": "old events remain terminal; reattach starts a new lifecycle and new connection binding",
     "unknown_or_unbound": "dropped or rejected before canonical collector"
@@ -120,7 +133,8 @@
       "A1-A7 real loopback WebSocket traffic through WebContents.debugger"
     ],
     "captured_event_controlled_delivery": [
-      "A6 legal text frame and connection-created captured event delivered after reload"
+      "A6 captured legal text frame and captured old callback connection-created delivered after reload",
+      "A6 un-tokened raw old connection-created delivered through the current listener path after reload"
     ],
     "unit_level_event_injection": [
       "A5 non-text opcode injection",
@@ -137,7 +151,8 @@
     "classification": "ACTUAL_ROOT_OUTSIDE_WRITE",
     "prior_script": "E:\\fast_sheep.tmp\\sheep-301-real-producer-audit\\probe-main.cjs",
     "prior_result": "E:\\fast_sheep.tmp\\sheep-301-real-producer-audit\\probe-result.json",
-    "corrected_new_proof_root": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof",
+    "prior_root_outside_run": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof",
+    "repaired_new_proof_root": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof",
     "cleanup_authorized": false
   },
   "known_limitations": [
@@ -145,7 +160,9 @@
     "The fixture connects after document READY and does not prove early page connection behavior.",
     "The local loopback endpoint is not a real PDD/Titan endpoint.",
     "The sourceOccurredAt values are synthetic and do not establish real platform time semantics.",
-    "The test uses test-owned resolver, collector, and option mutation; it does not prove production composition wiring."
+    "The test uses test-owned resolver, collector, and option mutation; it does not prove production composition wiring.",
+    "Same-WebContents navigation recovery is NOT_SUPPORTED: the old observer is terminal and reattach is refused after main-document replacement; a new WebContents lifecycle is required.",
+    "The raw old-event negative is a test-owned delivery path after the real Electron navigation removed the listener; it is not evidence that CDP naturally emitted the event through a current listener."
   ],
   "proven": [
     "Electron/WebContents/Debugger/Network event boundary",
@@ -162,6 +179,12 @@
     "real business source time",
     "production implementation or authorization"
   ],
+  "not_run": [
+    "real PDD/Titan observation and live validation",
+    "production bootstrap, IPC, or production observer wiring",
+    "AI, business persistence, transport send, HUMAN_CONFIRM, AUTO, or platform mutation",
+    "SHEEP-302 and later tasks"
+  ],
   "checks": [
     {
       "id": "A0",
@@ -175,13 +198,13 @@
         "observerCount": 2,
         "sessions": {
           "a": {
-            "partition": "memory:sheep301-proof-run-22812-1789662913696-shop-a",
+            "partition": "memory:sheep301-proof-run-24400-1789664067103-shop-a",
             "isPersistent": false,
             "storagePath": null,
             "webContentsId": 2
           },
           "b": {
-            "partition": "memory:sheep301-proof-run-22812-1789662913696-shop-b",
+            "partition": "memory:sheep301-proof-run-24400-1789664067103-shop-b",
             "isPersistent": false,
             "storagePath": null,
             "webContentsId": 4
@@ -195,10 +218,10 @@
       "status": "PASS",
       "evidence": {
         "a": [
-          "observer-1|2||13292.2"
+          "observer-1|2||14436.2"
         ],
         "b": [
-          "observer-2|4||22588.2"
+          "observer-2|4||5708.2"
         ]
       }
     },
@@ -365,14 +388,19 @@
     },
     {
       "id": "A6",
-      "name": "reload rejects the original callback and both old event classes",
+      "name": "main-document replacement permanently stops old callback and un-tokened raw events",
       "status": "PASS",
       "evidence": {
         "oldLifecycle": 0,
         "newLifecycle": 1,
-        "staleFrame": "STALE_CALLBACK_GENERATION",
-        "staleConnection": "STALE_CALLBACK_GENERATION",
-        "collectorDelta": 1
+        "terminal": true,
+        "staleFrame": "OBSERVER_TERMINAL",
+        "staleConnection": "OBSERVER_TERMINAL",
+        "rawCurrentListener": "OBSERVER_TERMINAL",
+        "refusedReattach": "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED",
+        "contextResolutionDelta": 0,
+        "collectorDelta": 0,
+        "support": "same-WebContents navigation recovery NOT_SUPPORTED"
       }
     },
     {
@@ -383,10 +411,10 @@
         "oldReplay": "OBSERVER_TERMINAL",
         "oldListenerCounts": {
           "message": 0,
-          "navigation": 1
+          "navigationRegistered": false
         },
         "detachedReplay": "OBSERVER_TERMINAL",
-        "observerLifecycle": 1,
+        "observerLifecycle": 2,
         "collectorDelta": 2
       }
     },
@@ -396,6 +424,7 @@
       "status": "PASS",
       "evidence": {
         "unauthorizedFrame": "UNAUTHORIZED_CDP_SESSION",
+        "unauthorizedConnection": "UNAUTHORIZED_CDP_SESSION",
         "unknownRequest": "UNBOUND_OR_STALE_SOURCE",
         "wrongSender": "UNTRUSTED_SENDER",
         "wrongContext": "INVALID_DOCUMENT_CONTEXT",
@@ -468,20 +497,103 @@
     }
   ],
   "failures": [],
+  "completion_gate": {
+    "status": "PASS",
+    "reasons": [],
+    "requiredChecks": [
+      {
+        "id": "A0",
+        "status": "PASS"
+      },
+      {
+        "id": "A1",
+        "status": "PASS"
+      },
+      {
+        "id": "A2",
+        "status": "PASS"
+      },
+      {
+        "id": "A3",
+        "status": "PASS"
+      },
+      {
+        "id": "A3b",
+        "status": "PASS"
+      },
+      {
+        "id": "A4",
+        "status": "PASS"
+      },
+      {
+        "id": "A5",
+        "status": "PASS"
+      },
+      {
+        "id": "A6",
+        "status": "PASS"
+      },
+      {
+        "id": "A7",
+        "status": "PASS"
+      },
+      {
+        "id": "A8",
+        "status": "PASS"
+      },
+      {
+        "id": "T07A1",
+        "status": "PASS"
+      },
+      {
+        "id": "T07A2",
+        "status": "PASS"
+      },
+      {
+        "id": "T07A3",
+        "status": "PASS"
+      },
+      {
+        "id": "T07A4",
+        "status": "PASS"
+      },
+      {
+        "id": "T07A5",
+        "status": "PASS"
+      },
+      {
+        "id": "T07B1",
+        "status": "PASS"
+      },
+      {
+        "id": "T07B2",
+        "status": "PASS"
+      }
+    ],
+    "pathValid": true,
+    "legacyBridgeCalls": 0,
+    "transportSendCalls": 0,
+    "aiCalls": 0,
+    "businessPersistenceWrites": 0,
+    "countersAbsoluteZero": true,
+    "unhandledRejections": 0,
+    "cleanupPassed": true,
+    "finalError": null
+  },
   "counters": {
     "legacyBridgeCalls": 0,
     "aiCalls": 0,
     "transportSendCalls": 0,
     "businessPersistenceWrites": 0,
     "syntheticWebSocketTraffic": {
-      "connections": 5,
-      "commandsReceived": 18,
-      "framesSent": 18
+      "connections": 4,
+      "commandsReceived": 17,
+      "framesSent": 17
     }
   },
   "collector": {
-    "calls": 8,
-    "envelopes": 8
+    "calls": 7,
+    "envelopes": 7
   },
   "measurement_boundary": {
     "legacy_bridge": "dynamic orchestrator stub counter connected to the same boundary",
@@ -497,31 +609,18 @@
     "reports/SHEEP-301-real-producer-readiness-audit.json",
     "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
     "scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
-    "scripts/fixtures/sheep-301-local-electron-websocket-boundary/fixture.html",
     "scripts/fixtures/sheep-301-local-electron-websocket-boundary/main.mjs",
-    "scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs"
+    "scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs",
+    "scripts/fixtures/sheep-301-local-electron-websocket-boundary/path-policy.mjs",
+    "scripts/fixtures/sheep-301-local-electron-websocket-boundary/path-policy.test.mjs",
+    "scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer-lifecycle.test.mjs"
   ],
   "controller_repair_record": {
     "decision": "REPAIR",
-    "baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
+    "baseline_commit": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
+    "prior_repair_baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
     "repair_result": "COMPLETE",
-    "historical_relation": "Prior Codex COMPLETE was not Controller PASS; Controller REPAIR was applied and the repaired proof is reported separately."
+    "historical_relation": "Prior Codex COMPLETE was not Controller PASS; Controller REPAIR was applied, then a second targeted REPAIR at ff85808 addressed root, raw old-event, and lifecycle cancellation gaps. The repaired proof is reported separately and remains awaiting Controller review."
   },
-  "error": null,
-  "validation": {
-    "runner_self_check": "COMPLETE / PROOF_EXIT_CODE=0",
-    "exact_proof_command": "node scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
-    "project_state_json_parse": "PASS",
-    "project_state_consistency": "PASS",
-    "project_state_consistency_tests": "18 passed / 0 failed",
-    "focused_desktop_pdd_regression": "48 passed / 0 failed",
-    "focused_platform_pdd_regression": "17 passed / 0 failed",
-    "report_json_parse": "PASS",
-    "git_diff_check": "PASS",
-    "changed_file_scope": "PASS",
-    "notes": [
-      "The runner report captures the in-observation proof checks and dynamic counters.",
-      "The focused regression and project-state results are external validation results recorded here for the same repaired source revision."
-    ]
-  }
+  "error": null
 }

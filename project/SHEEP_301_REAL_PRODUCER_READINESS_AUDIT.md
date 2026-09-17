@@ -374,3 +374,70 @@ Validation for the repaired unit:
 - Focused desktop PDD regressions: 48 passed / 0 failed.
 - Focused platform-pdd regressions: 17 passed / 0 failed.
 - Report JSON parse, diff check, changed-file scope, and authorization gates: PASS.
+
+---
+
+## 17. Targeted Boundary Proof Repair Result (ff85808)
+
+- Task: SHEEP-301.
+- Acceptance unit: LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF.
+- Mode: TARGETED_DIAGNOSTIC_REPAIR.
+- Controller decision: REPAIR.
+- Repair baseline: ff858088e018de5a5f12b8539d2d6c1a51c23c37.
+- Prior repair baseline retained: ab205372f858db736405ff2195bc9a307acae9a1.
+- Repaired offline proof result: COMPLETE.
+- Completion gate: PASS.
+- Production implementation: NOT PERFORMED.
+- Production PDD ingress readiness: BLOCKED.
+- Live validation authorization: NOT_AUTHORIZED.
+- Live validation performed: false.
+- Full SHEEP-301: PARTIAL / OPEN.
+- Controller review status: AWAITING_CONTROLLER_REVIEW.
+
+This section supersedes only the status of the earlier repaired proof run in section 16 for the purpose of current review. Section 16 remains the historical record of the first REPAIR at ab20537 and is not rewritten as a Controller PASS.
+
+### R1 — Project-root proof directory
+
+- The runner resolves the proof root with resolve(REPO_ROOT, ".tmp", "sheep-301-local-electron-websocket-boundary-proof").
+- The actual proof root for this run is E:\fast_sheep\.tmp\sheep-301-local-electron-websocket-boundary-proof.
+- The launcher validates the derived path before spawning Electron; main.mjs validates again before creating userData, sessionData, cache, log, temp, or run directories.
+- The path policy checks relative REPO_ROOT containment and exact proof-root equality. It rejects the sibling E:\fast_sheep.tmp path and parent-traversal candidates.
+- Node path regressions: 4 passed / 0 failed; the rejected paths remain absent.
+- Historical outside-root writes from the old readiness probe, ab20537, and ff85808 remain preserved as historical facts. No cleanup or further write outside the project root is authorized by this task.
+
+### R3A — Old callback versus raw old event
+
+- Captured old callback delivery after main-document replacement: rejected as OBSERVER_TERMINAL before context resolution.
+- Un-tokened raw old connection-created delivery through the current listener path after main-document replacement: rejected as OBSERVER_TERMINAL without manually supplying an old callback token.
+- Both negatives assert zero context-resolution delta and zero collector growth.
+- Same-WebContents navigation recovery is explicitly NOT_SUPPORTED; reattach is refused with SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED. A new trusted lifecycle requires a new WebContents.
+- The raw old-event negative is a test-owned delivery path after Electron navigation removed the listener. It is not described as a naturally observed CDP event.
+
+### R3B — Cancellation and navigation lifecycle
+
+- start(waitForLoad=true) followed by detach removes the pending did-finish-load listener and prevents attach.
+- A pending Network.enable completion after detach cannot restore enabled or ready state.
+- An old asynchronous completion after a replacement lifecycle cannot mutate the replacement lifecycle.
+- did-start-navigation ignores same-document navigation and subframe navigation; main-document replacement stops the lifecycle and clears bindings/listeners.
+- Attach failure, Network.enable failure, external debugger detach, and repeated detach clean up listeners and settle the lifecycle without unhandled rejection.
+- Node observer lifecycle regressions: 10 passed / 0 failed.
+
+### R4 — Completion gate
+
+- The proof declares the full required check set A0-A8, A3b, T07A1-T07A5, and T07B1-T07B2.
+- The final completion gate requires every listed check to be present and PASS.
+- It independently requires path validation PASS, legacyBridgeCalls = 0, transportSendCalls = 0, zero unhandled rejections or exceptions, and cleanup success.
+- A missing check, path violation, lifecycle negative failure, unresolved rejection, or cleanup failure forces PARTIAL and a non-zero process exit.
+
+### Validation for this repair
+
+- Fresh builds: @fastwork/domain, @fastwork/platform-pdd, and @fastwork/desktop all exited 0.
+- Targeted Node regressions: 14 passed / 0 failed (4 path-policy + 10 observer lifecycle).
+- Full local Electron proof: node scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs exited 0.
+- Electron proof checks: 17 passed / 0 failed.
+- Completion gate: PASS.
+- Runtime: Electron 43.6.0, Chromium 150.0.7871.250, Node 24.20.0.
+- Runtime security: sandbox enabled, contextIsolation enabled, nodeIntegration disabled, webSecurity enabled, no sandbox-disabling switch, two distinct non-persistent memory sessions.
+- Downstream counters: legacyBridgeCalls = 0, transportSendCalls = 0, AI calls = 0, business persistence writes = 0; loopback WebSocket traffic is reported separately.
+
+The repaired proof still does not establish real Titan URL/framing/compression/reconnect/replay behavior, real PDD runtime compatibility, real business source time, or production ingress readiness.

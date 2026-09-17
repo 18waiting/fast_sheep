@@ -1071,11 +1071,51 @@
     ],
     "controller_repair": {
       "decision": "REPAIR",
+      "baseline_commit": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
+      "prior_repair_baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
+      "repair_result": "COMPLETE",
+      "completion_gate": "PASS",
+      "scope": "R1_REPO_ROOT_PATH / R3A_RAW_OLD_EVENT / R3B_LIFECYCLE_CANCELLATION / R4_COMPLETION_GATE",
+      "repaired_report": "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
+      "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
+      "historical_relation": "The prior ab20537 repaired proof is retained in prior_controller_repair. The ff85808 targeted repair addressed the remaining root, raw-old-event, and lifecycle-cancellation gaps and remains awaiting Controller review."
+    },
+    "prior_controller_repair": {
+      "decision": "REPAIR",
       "baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
       "repair_result": "COMPLETE",
       "repaired_report": "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
       "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
       "historical_relation": "The earlier Codex COMPLETE was not a Controller PASS; Controller issued REPAIR and the repaired offline proof subsequently passed all required checks."
+    },
+    "proof_root": "E:\\fast_sheep\\.tmp\\sheep-301-local-electron-websocket-boundary-proof",
+    "completion_gate": "PASS",
+    "required_check_ids": [
+      "A0",
+      "A1",
+      "A2",
+      "A3",
+      "A3b",
+      "A4",
+      "A5",
+      "A6",
+      "A7",
+      "A8",
+      "T07A1",
+      "T07A2",
+      "T07A3",
+      "T07A4",
+      "T07A5",
+      "T07B1",
+      "T07B2"
+    ],
+    "same_webcontents_navigation_recovery": "NOT_SUPPORTED",
+    "downstream_counter_assertions": {
+      "legacyBridgeCalls": 0,
+      "transportSendCalls": 0,
+      "aiCalls": 0,
+      "businessPersistenceWrites": 0,
+      "synthetic_websocket_traffic_counted_separately": true
     }
   },
   "offline_boundary_proof_result": "COMPLETE / AWAITING_CONTROLLER_REVIEW"

@@ -4,24 +4,26 @@ import { createRequire } from "node:module";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { basename, dirname, isAbsolute, join, relative, resolve } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { PddPlatformService } from "../../../apps/desktop/dist/main/platforms/pdd/pdd-platform-service.js";
 import { PddViewHost } from "../../../apps/desktop/dist/main/platforms/pdd/pdd-view-host.js";
 import { BoundaryObserver } from "./observer.mjs";
+import { assertProofRoot, proofRootForRepo } from "./path-policy.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(HERE, "..", "..", "..");
 const FIXTURE_PATH = join(HERE, "fixture.html");
 const PDD_PRELOAD = join(REPO_ROOT, "apps", "desktop", "dist", "platforms", "pdd", "preload.js");
-const PROJECT_TEMP_PARENT = resolve(dirname(REPO_ROOT), `${basename(REPO_ROOT)}.tmp`);
-const EXPECTED_TEMP_ROOT = resolve(PROJECT_TEMP_PARENT, "sheep-301-local-electron-websocket-boundary-proof");
-const TEMP_ROOT = EXPECTED_TEMP_ROOT;
+const TEMP_ROOT = process.env.SHEEP301_PROOF_ROOT ?? proofRootForRepo(REPO_ROOT);
+const PATH_CHECK = assertProofRoot(REPO_ROOT, TEMP_ROOT);
+
 const RUN_ID = `run-${process.pid}-${Date.now()}`;
 const REPORT_PATH = join(REPO_ROOT, "reports", "SHEEP-301-local-electron-websocket-boundary-proof-report.json");
 const LAUNCHER_PATH = process.env.SHEEP301_PROOF_LAUNCHER ?? null;
 const READINESS_BASELINE = "8fb05f70d264943447981d19aa71a1dd4618c2b5";
-const REPAIR_BASELINE = "ab205372f858db736405ff2195bc9a307acae9a1";
+const REPAIR_BASELINE = "ff858088e018de5a5f12b8539d2d6c1a51c23c37";
+const PRIOR_REPAIR_BASELINE = "ab205372f858db736405ff2195bc9a307acae9a1";
 
 function childPath(...parts) {
   const candidate = resolve(TEMP_ROOT, ...parts);
@@ -29,7 +31,7 @@ function childPath(...parts) {
   if (rel === "" || (!rel.startsWith("..") && !isAbsolute(rel))) return candidate;
   throw new Error("proof path escapes derived temp root: " + candidate);
 }
-if (resolve(TEMP_ROOT) !== EXPECTED_TEMP_ROOT) throw new Error("derived proof temp root mismatch");
+
 const RUN_ROOT = childPath(RUN_ID);
 const EXECUTION_PATHS = {
   repoRoot: REPO_ROOT,
@@ -315,6 +317,44 @@ function assertResolution(actual, expectedValue, label) {
   assert.deepEqual(actual.value, expectedValue, `${label} value`);
 }
 function assertUnknown(actual, label) { assert.equal(actual?.status, "UNKNOWN", `${label} must be UNKNOWN`); }
+
+const REQUIRED_CHECK_IDS = [
+  "A0", "A1", "A2", "A3", "A3b", "A4", "A5", "A6", "A7", "A8",
+  "T07A1", "T07A2", "T07A3", "T07A4", "T07A5", "T07B1", "T07B2",
+];
+
+function evaluateCompletionGate(counters, cleanupPassed, finalError) {
+  const checksById = new Map(checks.map((check) => [check.id, check]));
+  const requiredChecks = REQUIRED_CHECK_IDS.map((id) => ({ id, status: checksById.get(id)?.status ?? "MISSING" }));
+  const allRequiredChecksPassed = requiredChecks.every((check) => check.status === "PASS");
+  const pathValid = PATH_CHECK.ok === true;
+  const legacyBridgeZero = counters.legacyBridgeCalls === 0;
+  const transportSendZero = counters.transportSendCalls === 0;
+  const aiCallsZero = counters.aiCalls === 0;
+  const businessPersistenceZero = counters.businessPersistenceWrites === 0;
+  const countersAbsoluteZero = legacyBridgeZero && transportSendZero && aiCallsZero && businessPersistenceZero;
+  const noUnhandledExceptionOrRejection = unhandledRejections.length === 0 && finalError === null;
+  const reasons = [];
+  if (!allRequiredChecksPassed) reasons.push("REQUIRED_CHECK_MISSING_OR_FAILED");
+  if (!pathValid) reasons.push("PATH_VALIDATION_FAILED");
+  if (!countersAbsoluteZero) reasons.push("ABSOLUTE_ZERO_COUNTER_FAILED");
+  if (!noUnhandledExceptionOrRejection) reasons.push("UNHANDLED_EXCEPTION_OR_REJECTION");
+  if (!cleanupPassed) reasons.push("CLEANUP_FAILED");
+  return {
+    status: reasons.length === 0 ? "PASS" : "FAIL",
+    reasons,
+    requiredChecks,
+    pathValid,
+    legacyBridgeCalls: counters.legacyBridgeCalls,
+    transportSendCalls: counters.transportSendCalls,
+    aiCalls: counters.aiCalls,
+    businessPersistenceWrites: counters.businessPersistenceWrites,
+    countersAbsoluteZero,
+    unhandledRejections: unhandledRejections.length,
+    cleanupPassed,
+    finalError,
+  };
+}
 function identitySummary(envelope) {
   return {
     platform: envelope.identityLock.platform,
@@ -456,27 +496,30 @@ async function main() {
     });
     assert.equal(h.counters.legacyBridgeCalls, legacyBefore, "normal paths must not reach legacy bridge");
 
-    await step("A6", "reload rejects the original callback and both old event classes", async () => {
+    await step("A6", "main-document replacement permanently stops old callback and un-tokened raw events", async () => {
       assert.ok(legalA?.binding, "legal A binding missing before lifecycle test");
       const oldFrameIndex = legalA.frameIndex;
       const oldBinding = legalA.binding;
       const oldLifecycle = observerA.lifecycle;
-      const before = h.collectorState.envelopes.length;
+      const oldContextCalls = observerA.contextResolutionCalls;
+      const beforeCollector = h.collectorState.envelopes.length;
       await h.service.reload("shop-a");
-      await waitFor("A reload lifecycle", () => observerA.lifecycle > oldLifecycle);
-      await waitFor("A READY after reload", () => h.service.status("shop-a")?.session_status === "READY");
+      await waitFor("A main document replacement", () => observerA.lifecycle > oldLifecycle && observerA.terminal);
       const staleFrame = observerA.replayCapturedFrame(oldFrameIndex);
-      assert.equal(staleFrame.status, "REJECTED");
-      assert.equal(staleFrame.reason, "STALE_CALLBACK_GENERATION");
+      assert.equal(staleFrame.status, "STOPPED");
+      assert.equal(staleFrame.reason, "OBSERVER_TERMINAL");
       const staleConnection = observerA.replayCapturedConnectionCreated(oldBinding);
-      assert.equal(staleConnection.status, "REJECTED");
-      assert.equal(staleConnection.reason, "STALE_CALLBACK_GENERATION");
-      assert.equal(h.collectorState.envelopes.length, before, "old events must not reach collector");
-      await h.startSocket("shop-a");
-      const fresh = await h.emit("shop-a", payloadA, "2026-09-18T00:00:02Z");
-      assertMapped(fresh);
-      assert.equal(h.collectorState.envelopes.length, before + 1);
-      return { oldLifecycle, newLifecycle: observerA.lifecycle, staleFrame: staleFrame.reason, staleConnection: staleConnection.reason, collectorDelta: h.collectorState.envelopes.length - before };
+      assert.equal(staleConnection.status, "STOPPED");
+      assert.equal(staleConnection.reason, "OBSERVER_TERMINAL");
+      const rawCurrentListener = observerA.deliverRawConnectionCreatedThroughCurrentListener({ requestId: "late-old-request", url: `ws://127.0.0.1:${port}/?shop=shop-a` }, "");
+      assert.equal(rawCurrentListener.status, "STOPPED");
+      assert.equal(rawCurrentListener.reason, "OBSERVER_TERMINAL");
+      const refusedReattach = await observerA.reattach();
+      assert.equal(refusedReattach.status, "STOPPED");
+      assert.equal(refusedReattach.reason, "SAME_WEBCONTENTS_RECOVERY_NOT_SUPPORTED");
+      assert.equal(observerA.contextResolutionCalls, oldContextCalls, "old raw event must not resolve current context");
+      assert.equal(h.collectorState.envelopes.length, beforeCollector, "old events must not reach collector");
+      return { oldLifecycle, newLifecycle: observerA.lifecycle, terminal: observerA.terminal, staleFrame: staleFrame.reason, staleConnection: staleConnection.reason, rawCurrentListener: rawCurrentListener.reason, refusedReattach: refusedReattach.reason, contextResolutionDelta: observerA.contextResolutionCalls - oldContextCalls, collectorDelta: h.collectorState.envelopes.length - beforeCollector, support: "same-WebContents navigation recovery NOT_SUPPORTED" };
     });
 
     await step("A7", "dispose, destroy, external detach, and reattach cannot revive old events", async () => {
@@ -507,7 +550,7 @@ async function main() {
       await h.startSocket("shop-a");
       const reattached = await h.emit("shop-a", payloadA, "2026-09-18T00:00:04Z");
       assertMapped(reattached);
-      return { oldReplay: oldReplay.reason, oldListenerCounts: { message: oldSnapshot.messageListenerCount, navigation: oldSnapshot.navigationListenerCount }, detachedReplay: detachedReplay.reason, observerLifecycle: freshObserver.lifecycle, collectorDelta: h.collectorState.envelopes.length - before };
+      return { oldReplay: oldReplay.reason, oldListenerCounts: { message: oldSnapshot.messageListenerCount, navigationRegistered: oldSnapshot.navigationListenerRegistered }, detachedReplay: detachedReplay.reason, observerLifecycle: freshObserver.lifecycle, collectorDelta: h.collectorState.envelopes.length - before };
     });
 
     await step("A8", "CDP session collision, unknown request, and wrong sender/context fail before collector", async () => {
@@ -517,11 +560,13 @@ async function main() {
       assert.ok(binding, "active legal binding required for source-scope checks");
       const legalFrame = observer.capturedFrames[observer.capturedFrames.length - 1];
       assert.ok(legalFrame, "captured legal frame required for source-scope checks");
-      const unauthorizedSession = observer.injectFrameWithSession({ requestId: binding.requestId, response: legalFrame.response }, "forbidden-cdp-session", observer.activeToken);
-      assert.equal(unauthorizedSession.status, "REJECTED");
-      assert.equal(unauthorizedSession.reason, "UNAUTHORIZED_CDP_SESSION");
       const beforeBindings = observer.bindings.size;
-      const unauthorizedConnection = observer.handleDebuggerMessage("Network.webSocketCreated", { requestId: "forbidden-request", url: `ws://127.0.0.1:${port}/?shop=shop-a` }, "forbidden-cdp-session", observer.activeToken);
+      const unauthorizedFrame = observer.injectFrameWithSession({ requestId: binding.requestId, response: legalFrame.response }, "forbidden-cdp-session", observer.activeToken);
+      assert.equal(unauthorizedFrame.status, "REJECTED");
+      assert.equal(unauthorizedFrame.reason, "UNAUTHORIZED_CDP_SESSION");
+      const unauthorizedConnection = observer.deliverRawConnectionCreatedThroughCurrentListener({ requestId: "forbidden-request", url: `ws://127.0.0.1:${port}/?shop=shop-a` }, "forbidden-cdp-session");
+      assert.equal(unauthorizedConnection.status, "REJECTED");
+      assert.equal(unauthorizedConnection.reason, "UNAUTHORIZED_CDP_SESSION");
       assert.equal(observer.bindings.size, beforeBindings, "unauthorized connection must not create a binding");
       const unknownRequest = observer.injectFrameWithSession({ requestId: "unknown-request", response: legalFrame.response }, "", observer.activeToken);
       assert.equal(unknownRequest.status, "REJECTED");
@@ -531,7 +576,7 @@ async function main() {
       const wrongContext = h.service.handleTrustedInboundIngress(observer.webContents, {}, { payload: payloadA });
       assert.equal(wrongContext.status, "REJECTED");
       assert.equal(h.collectorState.envelopes.length, preceding);
-      return { unauthorizedFrame: unauthorizedSession.reason, unauthorizedConnection: unauthorizedConnection, unknownRequest: unknownRequest.reason, wrongSender: wrongSender.reason, wrongContext: wrongContext.reason, collectorDelta: h.collectorState.envelopes.length - preceding };
+      return { unauthorizedFrame: unauthorizedFrame.reason, unauthorizedConnection: unauthorizedConnection.reason, unknownRequest: unknownRequest.reason, wrongSender: wrongSender.reason, wrongContext: wrongContext.reason, collectorDelta: h.collectorState.envelopes.length - preceding };
     });
     const failureShop = "shop-a";
     const originalValidator = h.service.options.canonicalEnvelopeValidator;
@@ -603,13 +648,31 @@ async function main() {
       return { reason: record.result.reason, calls, unhandledRejections: unhandledRejections.length };
     });
     assert.equal(h.counters.legacyBridgeCalls, legacyBefore, "failure paths must not reach legacy bridge");
-    result = failures.length === 0 ? "COMPLETE" : "PARTIAL";
+    const preCleanupGate = evaluateCompletionGate(h.counters, true, null);
+    result = failures.length === 0 && preCleanupGate.status === "PASS" ? "COMPLETE" : "PARTIAL";
   } catch (error) {
     finalError = String(error?.stack ?? error);
     result = "PARTIAL";
   } finally {
-    try { h.cleanup(); } catch (error) { checks.push({ id: "CLEANUP", name: "cleanup", status: "FAIL", error: String(error?.stack ?? error) }); result = "PARTIAL"; }
-    try { server.close(); } catch {}
+    let cleanupPassed = true;
+    try { h.cleanup(); } catch (error) {
+      cleanupPassed = false;
+      checks.push({ id: "CLEANUP", name: "cleanup", status: "FAIL", error: String(error?.stack ?? error) });
+    }
+    try { server.close(); } catch (error) {
+      cleanupPassed = false;
+      checks.push({ id: "SERVER_CLOSE", name: "server close", status: "FAIL", error: String(error?.stack ?? error) });
+    }
+    const completionGate = evaluateCompletionGate(h.counters, cleanupPassed, finalError);
+    if (completionGate.status === "FAIL") {
+      if (!finalError) finalError = "completion gate failed: " + completionGate.reasons.join(", ");
+      if (!failures.some((failure) => failure.id === "COMPLETION_GATE")) {
+        const failure = { id: "COMPLETION_GATE", name: "all required checks executed and passed", status: "FAIL", error: JSON.stringify(completionGate) };
+        checks.push(failure);
+        failures.push(failure);
+      }
+      result = "PARTIAL";
+    }
     const report = {
       task: "SHEEP-301",
       acceptance_unit: "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
@@ -628,24 +691,25 @@ async function main() {
       command: "node scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
       versions: { electron: process.versions.electron, chrome: process.versions.chrome, node: process.versions.node },
       execution_paths: EXECUTION_PATHS,
+      path_validation: PATH_CHECK,
       electron_executable: process.execPath,
       dependency_resolution: dependencyResolution,
-      runtime_configuration: { sandbox: true, contextIsolation: true, nodeIntegration: false, webSecurity: true, no_sandbox_switch_used: false, memory_partitions: Object.fromEntries(h.sessionInfo) },
-      runtime_source: { repository_head: runtimeRepositoryHead, repair_baseline: REPAIR_BASELINE, worktree_status_porcelain: runtimeWorktreeStatus, script_digests: scriptDigests },
+      runtime_configuration: { sandbox: true, contextIsolation: true, nodeIntegration: false, webSecurity: true, sandbox_disabling_switch_used: false, command_line_switches: { disableGpu: true, noSandbox: false }, memory_partitions: Object.fromEntries(h.sessionInfo) },
+      runtime_source: { repository_head: runtimeRepositoryHead, repair_baseline: REPAIR_BASELINE, prior_repair_baseline: PRIOR_REPAIR_BASELINE, worktree_status_porcelain: runtimeWorktreeStatus, script_digests: scriptDigests },
       build_commands: ["pnpm --filter @fastwork/domain build", "pnpm --filter @fastwork/platform-pdd build", "pnpm --filter @fastwork/desktop build"],
       exact_command: "node scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
       baseline_reproduction: {
         classification: "CONFIRMED_BY_BASELINE_SOURCE_AND_CONTROLLER_REPRO",
         R1: "Baseline runner used a literal sibling temp-root string, hardcoded ws installation path, sandbox-disabling switch, and default persistent partitions.",
         R2: "Baseline bindings were keyed by requestId only and ignored CDP sessionId.",
-        R3: "Controller reproduced old webSocketCreated delivery reacquiring the current document context after navigation.",
+        R3: "Controller reproduced a captured old webSocketCreated delivery reacquiring the current document context after navigation; the repaired proof also exercises an un-tokened raw old event through the current listener path.",
         R4: "Baseline tests used content-marker association mutation, a non-text old frame, and no dynamic WebSocket traffic counters.",
       },
       r1_r4_repair_evidence: {
-        R1: { before: "sibling temp-root string, hardcoded ws installation path, sandbox-disabling CLI switch, default persistent partitions", after: "REPO_ROOT-derived strict temp root, repository-resolved ws, sandboxed Electron, two distinct memory partitions" },
+        R1: { before: "sibling temp-root string, hardcoded ws installation path, sandbox-disabling CLI switch, default persistent partitions", after: "resolve(REPO_ROOT, '.tmp', ...) strict proof root, repository-resolved ws, sandboxed Electron, two distinct memory partitions" },
         R2: { before: "bindings keyed only by requestId; frame sessionId ignored", after: "WebContents id, observer lifecycle, CDP sessionId, callbackToken, and requestId form the source binding" },
-        R3: { before: "old connection-created could call the live callback and obtain current document context", after: "callback generation is rolled on navigation/detach; captured old callback deliveries fail before context lookup" },
-        R4: { before: "content-marker association mutation, non-text old-frame test, incomplete source counters", after: "creation-time association records with Main control injection, legal old text frame, dynamic WS and send-boundary counters" },
+        R3: { before: "captured old connection-created could call the live callback and obtain current document context", after: "main-document replacement stops the observer permanently; captured-old-callback and un-tokened raw deliveries fail with zero context resolution and zero collector growth; same-WebContents recovery is NOT_SUPPORTED" },
+        R4: { before: "content-marker association mutation, non-text old-frame test, incomplete source counters", after: "creation-time association records with Main control injection, legal old text frame, dynamic WS and send-boundary counters, explicit completion gate" },
       },
       acceptance_matrix: {
         A_real_local_transport: "A0-A2 and A5",
@@ -659,14 +723,14 @@ async function main() {
       lifecycle_timeline: {
         connection_created: "observer binds WebContents/session/document context before any frame is accepted",
         frame_delivery: "frame lookup uses the pre-existing requestId binding",
-        reload: "Main navigation rolls the callback token and clears bindings; old callback deliveries are rejected before context lookup",
+        reload: "Main document replacement permanently stops the old observer, removes its listeners, clears bindings, and retains NOT_SUPPORTED for same-WebContents recovery; old callback and un-tokened raw deliveries cannot resolve a new context",
         dispose_recreate: "old observer terminal; new WebContents/session/observer lifecycle required",
         detach_reattach: "old events remain terminal; reattach starts a new lifecycle and new connection binding",
         unknown_or_unbound: "dropped or rejected before canonical collector",
       },
       evidence_types: {
         actual_electron_cdp_events: ["A1-A7 real loopback WebSocket traffic through WebContents.debugger"],
-        captured_event_controlled_delivery: ["A6 legal text frame and connection-created captured event delivered after reload"],
+        captured_event_controlled_delivery: ["A6 captured legal text frame and captured old callback connection-created delivered after reload", "A6 un-tokened raw old connection-created delivered through the current listener path after reload"],
         unit_level_event_injection: ["A5 non-text opcode injection", "A8 unauthorized CDP session and unknown requestId injection"],
         option_mutation: ["T07A/T07B validator, resolver, and collector option mutation"],
         static_code_boundary: ["AI and business persistence dependencies are absent from the selected path; send adapter methods are fail-fast spies"],
@@ -675,7 +739,8 @@ async function main() {
         classification: "ACTUAL_ROOT_OUTSIDE_WRITE",
         prior_script: "E:\\fast_sheep.tmp\\sheep-301-real-producer-audit\\probe-main.cjs",
         prior_result: "E:\\fast_sheep.tmp\\sheep-301-real-producer-audit\\probe-result.json",
-        corrected_new_proof_root: "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof",
+        prior_root_outside_run: "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof",
+        repaired_new_proof_root: EXECUTION_PATHS.proofRoot,
         cleanup_authorized: false,
       },
       known_limitations: [
@@ -684,11 +749,15 @@ async function main() {
         "The local loopback endpoint is not a real PDD/Titan endpoint.",
         "The sourceOccurredAt values are synthetic and do not establish real platform time semantics.",
         "The test uses test-owned resolver, collector, and option mutation; it does not prove production composition wiring.",
+        "Same-WebContents navigation recovery is NOT_SUPPORTED: the old observer is terminal and reattach is refused after main-document replacement; a new WebContents lifecycle is required.",
+        "The raw old-event negative is a test-owned delivery path after the real Electron navigation removed the listener; it is not evidence that CDP naturally emitted the event through a current listener.",
       ],
       proven: ["Electron/WebContents/Debugger/Network event boundary", "connection-time requestId binding", "same-service two-shop isolation", "reload/dispose/recreate/destroy/detach invalidation", "collector-before and collector-after failure semantics", "downstream counters at the selected boundary"],
       not_proven: ["real PDD/Titan URL and runtime compatibility", "actual Titan payload framing or compression", "real reconnect/replay semantics", "real business source time", "production implementation or authorization"],
+      not_run: ["real PDD/Titan observation and live validation", "production bootstrap, IPC, or production observer wiring", "AI, business persistence, transport send, HUMAN_CONFIRM, AUTO, or platform mutation", "SHEEP-302 and later tasks"],
       checks,
       failures,
+      completion_gate: completionGate,
       counters: { ...h.counters, syntheticWebSocketTraffic: h.wsTraffic },
       collector: { calls: h.collectorState.calls, envelopes: h.collectorState.envelopes.length },
       measurement_boundary: {
@@ -705,15 +774,18 @@ async function main() {
         "reports/SHEEP-301-real-producer-readiness-audit.json",
         "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
         "scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
-        "scripts/fixtures/sheep-301-local-electron-websocket-boundary/fixture.html",
         "scripts/fixtures/sheep-301-local-electron-websocket-boundary/main.mjs",
         "scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs",
+        "scripts/fixtures/sheep-301-local-electron-websocket-boundary/path-policy.mjs",
+        "scripts/fixtures/sheep-301-local-electron-websocket-boundary/path-policy.test.mjs",
+        "scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer-lifecycle.test.mjs",
       ],
       controller_repair_record: {
         decision: "REPAIR",
         baseline_commit: REPAIR_BASELINE,
+        prior_repair_baseline_commit: PRIOR_REPAIR_BASELINE,
         repair_result: result,
-        historical_relation: "Prior Codex COMPLETE was not Controller PASS; Controller REPAIR was applied and the repaired proof is reported separately.",
+        historical_relation: "Prior Codex COMPLETE was not Controller PASS; Controller REPAIR was applied, then a second targeted REPAIR at ff85808 addressed root, raw old-event, and lifecycle cancellation gaps. The repaired proof is reported separately and remains awaiting Controller review.",
       },
       error: finalError,
     };
