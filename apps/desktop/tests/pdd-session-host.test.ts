@@ -342,3 +342,51 @@ test("session host ignores an event from another session", () => {
   host.handleEvent({ event: "page_ready", session_id: "other-session" } as PddPageEvent);
   assert.equal(host.state.getStatus(), "STOPPED");
 });
+
+
+test("inbound ingress context is document-bound, sender-bound, and invalidated by reload", async () => {
+  let view;
+  const host = new PddSessionHost({ shopId: "shop-ingress", makeView: () => { view = new FakeView(); return view as never; } });
+  await host.createAndLoad("/fixtures/chat-basic.html");
+  assert.equal(host.createInboundIngressContext(view!.webContents), null, "not ready yet");
+  host.handleEvent({ event: "page_ready", session_id: host.state.sessionId } as PddPageEvent);
+  const sender = view!.webContents;
+  const context = host.createInboundIngressContext(sender);
+  assert.ok(context);
+  assert.deepEqual(host.resolveInboundIngressBinding(context, sender), {
+    sessionId: host.state.sessionId,
+    shopId: "shop-ingress",
+    documentGeneration: 1,
+  });
+  assert.equal(host.resolveInboundIngressBinding(context, {}), null, "sender mismatch");
+  assert.equal(host.resolveInboundIngressBinding({}, sender), null, "forged context");
+
+  await host.reload("/fixtures/chat-basic.html");
+  assert.equal(host.resolveInboundIngressBinding(context, sender), null, "old document generation rejected");
+  host.handleEvent({ event: "page_ready", session_id: host.state.sessionId } as PddPageEvent);
+  const fresh = host.createInboundIngressContext(sender);
+  assert.ok(fresh);
+  assert.deepEqual(host.resolveInboundIngressBinding(fresh, sender), {
+    sessionId: host.state.sessionId,
+    shopId: "shop-ingress",
+    documentGeneration: 2,
+  });
+});
+
+test("inbound ingress context cannot cross session instances and is invalid after dispose", async () => {
+  let firstView;
+  const first = new PddSessionHost({ shopId: "shop-same", makeView: () => { firstView = new FakeView(); return firstView as never; } });
+  await first.createAndLoad("/fixtures/chat-basic.html");
+  first.handleEvent({ event: "page_ready", session_id: first.state.sessionId } as PddPageEvent);
+  const context = first.createInboundIngressContext(firstView!.webContents);
+  assert.ok(context);
+
+  let secondView;
+  const second = new PddSessionHost({ shopId: "shop-same", makeView: () => { secondView = new FakeView(); return secondView as never; } });
+  await second.createAndLoad("/fixtures/chat-basic.html");
+  second.handleEvent({ event: "page_ready", session_id: second.state.sessionId } as PddPageEvent);
+  assert.equal(second.resolveInboundIngressBinding(context, secondView!.webContents), null);
+
+  first.dispose();
+  assert.equal(first.resolveInboundIngressBinding(context, firstView!.webContents), null);
+});

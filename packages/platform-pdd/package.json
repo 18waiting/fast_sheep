@@ -11,6 +11,7 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@fastwork/domain": "workspace:*",
     "@fastwork/orchestrator": "workspace:*"
   },
   "devDependencies": {

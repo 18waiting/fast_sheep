@@ -1,11 +1,11 @@
 # SHEEP-301 Readiness Review — Bounded Main-Local Fixture Mapping
 
-> Status: CONTROLLER PASS / BOUNDED IMPLEMENTATION AUTHORIZATION RECORDED  
-> Date: 2026-09-17  
-> Audit baseline: `79faea827fb6100a2860757ff61e838dbf9ac70a`  
-> Controller decision: `PASS`  
-> Scope: controlled Main-local raw-ingress fixture mapping acceptance unit only  
-> Implementation state: `NOT_STARTED`  
+> Status: CONTROLLER PASS / BOUNDED IMPLEMENTATION AUTHORIZATION RECORDED
+> Date: 2026-09-17
+> Audit baseline: `79faea827fb6100a2860757ff61e838dbf9ac70a`
+> Controller decision: `PASS`
+> Scope: controlled Main-local raw-ingress fixture mapping acceptance unit only
+> Implementation state: `NOT_STARTED`
 > This review record does not replace product, architecture, decisions, or execution-state authority.
 
 ---
@@ -161,8 +161,8 @@ Field behavior:
 | `runtimeEvidence.documentGeneration` | Copy only when it matches the live accepted generation |
 | `runtimeEvidence.selectedCustomerObservation` | Independent evidence only; never a message sender substitute |
 
-`UNKNOWN` means no usable identity evidence is available.  
-`UNRESOLVED` means candidate evidence exists but canonical binding is incomplete or conflicting.  
+`UNKNOWN` means no usable identity evidence is available.
+`UNRESOLVED` means candidate evidence exists but canonical binding is incomplete or conflicting.
 `RESOLVED` requires both trusted evidence and a satisfied canonical binding condition.
 
 No generic blacklist applies to opaque resolved values such as `"0"`, `"unknown"`, `"null"`, or `"placeholder"`. A producer-invented value is invalid because of provenance, not because of its string shape.

@@ -23,6 +23,9 @@ importers:
       '@fastwork/desktop-ipc':
         specifier: workspace:*
         version: link:../../packages/desktop-ipc
+      '@fastwork/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@fastwork/feedback':
         specifier: workspace:*
         version: link:../../packages/feedback
@@ -261,6 +264,9 @@ importers:
 
   packages/platform-pdd:
     dependencies:
+      '@fastwork/domain':
+        specifier: workspace:*
+        version: link:../domain
       '@fastwork/orchestrator':
         specifier: workspace:*
         version: link:../orchestrator

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { normalizePddInbound } from "../dist/inbound-normalizer.js";
+import { normalizePddInbound, normalizePddInboundForCanonical } from "../dist/inbound-normalizer.js";
 
 const valid = () => ({
   content: "  有货吗？\n",
@@ -61,4 +61,59 @@ test("repeated payloads normalize independently without replay or dedup semantic
   const first = normalizePddInbound(valid());
   const second = normalizePddInbound(valid());
   assert.deepEqual(first, second);
+});
+
+
+test("canonical-ingress normalization accepts missing identity facts while preserving the inbound fact", () => {
+  const result = normalizePddInboundForCanonical({
+    content: "  有货吗？\n",
+    from: { role: "user" },
+    to: { role: "mall_cs" },
+  });
+  assert.deepEqual(result, {
+    status: "ACCEPTED",
+    value: {
+      direction: "inbound",
+      content: "  有货吗？\n",
+      diagnostics: ["CUSTOMER_UID_MISSING", "PLATFORM_MESSAGE_ID_MISSING"],
+    },
+  });
+});
+
+test("canonical-ingress normalization rejects present-but-invalid identity facts", () => {
+  assert.deepEqual(normalizePddInboundForCanonical({ content: "x", from: { role: "user", uid: "buyer-1" }, to: { role: "mall_cs" }, msg_id: "m1" }), {
+    status: "REJECTED",
+    reason: "customer_uid_invalid",
+    diagnostics: [],
+  });
+  assert.deepEqual(normalizePddInboundForCanonical({ content: "x", from: { role: "user", uid: "1" }, to: { role: "mall_cs" }, msg_id: " " }), {
+    status: "REJECTED",
+    reason: "platform_message_id_invalid",
+    diagnostics: [],
+  });
+});
+
+test("canonical-ingress normalization preserves content exactly", () => {
+  const content = "  " + "x".repeat(5000) + "\n";
+  const result = normalizePddInboundForCanonical({
+    content,
+    from: { role: "user", uid: "1" },
+    to: { role: "mall_cs" },
+    msg_id: "m1",
+  });
+  assert.equal(result.status, "ACCEPTED");
+  if (result.status !== "ACCEPTED") return;
+  assert.equal(result.value.content, content);
+});
+
+
+test("canonical-ingress normalization rejects wrong roles and contradictory direction", () => {
+  assert.equal(normalizePddInboundForCanonical({ content: "x", from: { role: "mall_cs", uid: "1" }, to: { role: "mall_cs" }, msg_id: "m1" }).status, "REJECTED");
+  assert.equal(normalizePddInboundForCanonical({ content: "x", from: { role: "user", uid: "1" }, to: { role: "user" }, msg_id: "m1" }).status, "REJECTED");
+  assert.deepEqual(normalizePddInboundForCanonical({ direction: "outbound", content: "x", from: { role: "user", uid: "1" }, to: { role: "mall_cs" }, msg_id: "m1" }), {
+    status: "REJECTED",
+    reason: "direction_not_inbound",
+    diagnostics: [],
+  });
+  assert.equal(normalizePddInboundForCanonical({ direction: "unknown", content: "x", from: { role: "user", uid: "1" }, to: { role: "mall_cs" }, msg_id: "m1" }).status, "REJECTED");
 });

@@ -25,6 +25,26 @@ const SESSION_EVENTS: ReadonlySet<PddPageEvent["event"]> = new Set([
   "selected_customer_observed",
 ]);
 
+export interface PddInboundDocumentBinding {
+  readonly sessionId: string;
+  readonly shopId: string;
+  readonly documentGeneration: number;
+}
+
+export class PddInboundIngressContext {
+  private readonly __pddInboundIngressContextBrand!: void;
+}
+
+interface PddInboundIngressContextRecord {
+  readonly view: PddViewHost;
+  readonly sender: object;
+  readonly documentGeneration: number;
+}
+
+function asObject(value: unknown): object | null {
+  return typeof value === "object" && value !== null ? value : null;
+}
+
 export class PddSessionHost {
   readonly state: PddSessionState;
   private view: PddViewHost | null = null;
@@ -35,6 +55,7 @@ export class PddSessionHost {
   private startedDocumentGeneration: number | null = null;
   private fixtureDocumentGeneration: number | null = null;
   private awaitingExplicitNavigationStart = false;
+  private readonly inboundIngressContexts = new WeakMap<PddInboundIngressContext, PddInboundIngressContextRecord>();
 
   constructor(options: PddSessionHostOptions) {
     this.state = new PddSessionState(options.shopId, "pdd-session-" + options.shopId);
@@ -141,6 +162,42 @@ export class PddSessionHost {
       this.failClosed("ILLEGAL_SESSION_EVENT");
     }
     this.onEventHook?.(ev);
+  }
+
+  createInboundIngressContext(sender: unknown): PddInboundIngressContext | null {
+    const senderObject = asObject(sender);
+    if (!senderObject || !this.view || this.view.webContents !== senderObject) return null;
+    if (this.state.getStatus() !== "READY") return null;
+    if (this.activeDocumentGeneration === null || !this.isLiveView(this.view)) return null;
+    const context = new PddInboundIngressContext();
+    this.inboundIngressContexts.set(context, {
+      view: this.view,
+      sender: senderObject,
+      documentGeneration: this.activeDocumentGeneration,
+    });
+    return context;
+  }
+
+  resolveInboundIngressBinding(context: unknown, sender: unknown): PddInboundDocumentBinding | null {
+    const senderObject = asObject(sender);
+    if (!senderObject || !(context instanceof PddInboundIngressContext)) return null;
+    const record = this.inboundIngressContexts.get(context);
+    if (!record || record.sender !== senderObject || record.view !== this.view) return null;
+    if (!this.view || this.state.getStatus() !== "READY" || !this.isLiveView(this.view)) return null;
+    if (record.documentGeneration !== this.activeDocumentGeneration) return null;
+    return Object.freeze({
+      sessionId: this.state.sessionId,
+      shopId: this.state.shopId,
+      documentGeneration: record.documentGeneration,
+    });
+  }
+
+  private isLiveView(view: PddViewHost): boolean {
+    try {
+      return !view.webContents.isDestroyed();
+    } catch {
+      return false;
+    }
   }
 
   dispose(): void {

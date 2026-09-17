@@ -13,6 +13,7 @@
   "dependencies": {
     "@fastwork/contracts": "workspace:*",
     "@fastwork/desktop-ipc": "workspace:*",
+    "@fastwork/domain": "workspace:*",
     "@fastwork/orchestrator": "workspace:*",
     "@fastwork/persistence": "workspace:*",
     "@fastwork/worker-rpc": "workspace:*",

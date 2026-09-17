@@ -2,14 +2,16 @@
 // vertical slice: per-shop sessions/views, routing PlatformAdapter, page-event
 // routing to the orchestrator, status projection.
 import type { PlatformAdapter, ConversationOrchestrator, SendAttempt, TransferDecision } from "@fastwork/orchestrator";
-import type { PddPageEvent, PddPageCommandResult } from "@fastwork/platform-pdd";
+import type { InboundEnvelope } from "@fastwork/domain";
+import type { PddPageEvent, PddPageCommandResult, PddCanonicalIdentityBinding, PddCanonicalInboundMessage } from "@fastwork/platform-pdd";
 import { PddPlatformAdapter } from "@fastwork/platform-pdd";
 import type { PlatformStatusChangedEvent } from "@fastwork/desktop-ipc";
 import type { WebContents } from "electron";
-import { PddSessionHost } from "./pdd-session-host.js";
+import { PddSessionHost, type PddInboundDocumentBinding, type PddInboundIngressContext } from "./pdd-session-host.js";
 import { PddViewHost, type ViewBounds } from "./pdd-view-host.js";
 import { PddPreloadBridge } from "./pdd-preload-bridge.js";
 import { PddOrchestratorBridge, type PddInboundMessage } from "./pdd-orchestrator-bridge.js";
+import { processPddInboundIngress, type PddCanonicalEnvelopeValidator, type PddInboundIngressInput, type PddInboundIngressResult } from "./pdd-inbound-ingress.js";
 import { PDD_PRODUCTION_CHAT_URL, PDD_TOP_LEVEL_HOST, type PddNavigationMode } from "./pdd-navigation-policy.js";
 
 export interface PlatformStatusViewLike {
@@ -33,7 +35,17 @@ export interface PddPlatformServiceOptions {
   onInboundMessage?: (message: PddInboundMessage) => Promise<void>;
   onHumanReply?: (shopId: string, conversationId: string) => Promise<void>;
   onConversationChange?: (shopId: string) => void;
+  resolveInboundIdentity?: (
+    message: PddCanonicalInboundMessage,
+    document: PddInboundDocumentBinding,
+  ) => PddCanonicalIdentityBinding | null;
+  onCanonicalInbound?: (envelope: InboundEnvelope) => void;
+  canonicalEnvelopeValidator?: PddCanonicalEnvelopeValidator | null;
   revision?: () => number;
+}
+
+function asObject(value: unknown): object | null {
+  return typeof value === "object" && value !== null ? value : null;
 }
 
 export class PddPlatformService {
@@ -41,6 +53,7 @@ export class PddPlatformService {
   private readonly bridges = new Map<string, PddPreloadBridge>();
   private readonly adapters = new Map<string, PddPlatformAdapter>();
   private readonly trustedWebContents = new Set<WebContents>();
+  private readonly senderSessions = new Map<object, PddSessionHost>();
   private readonly orchestratorBridge: PddOrchestratorBridge;
   private readonly options: PddPlatformServiceOptions;
   private readonly navigationMode: PddNavigationMode;
@@ -132,6 +145,7 @@ export class PddPlatformService {
         // preload's very first events pass the sender guard.
         onViewCreated: (view) => {
           self.trustedWebContents.add(view.webContents);
+          self.senderSessions.set(view.webContents as object, session!);
           const bridge = new PddPreloadBridge(view);
           self.bridges.set(shopId, bridge);
           bridge.setMutationCommandsEnabled(self.navigationMode === "FIXTURE");
@@ -208,6 +222,60 @@ export class PddPlatformService {
     return this.trustedWebContents.has(wc);
   }
 
+  createInboundIngressContext(sender: unknown): PddInboundIngressContext | null {
+    const senderObject = asObject(sender);
+    if (!senderObject) return null;
+    const session = this.senderSessions.get(senderObject);
+    if (!session) return null;
+    return session.createInboundIngressContext(senderObject);
+  }
+
+  handleTrustedInboundIngress(
+    sender: unknown,
+    context: unknown,
+    input: PddInboundIngressInput,
+  ): PddInboundIngressResult {
+    const senderObject = asObject(sender);
+    if (!senderObject) {
+      return { status: "REJECTED", reason: "UNTRUSTED_SENDER", diagnostics: Object.freeze([]) };
+    }
+    const session = this.senderSessions.get(senderObject);
+    if (!session) {
+      return { status: "REJECTED", reason: "UNTRUSTED_SENDER", diagnostics: Object.freeze([]) };
+    }
+    const document = session.resolveInboundIngressBinding(context, senderObject);
+    if (!document) {
+      return { status: "REJECTED", reason: "INVALID_DOCUMENT_CONTEXT", diagnostics: Object.freeze([]) };
+    }
+    const resolveIdentity = this.options.resolveInboundIdentity;
+    if (!resolveIdentity) {
+      return { status: "FAILED", reason: "IDENTITY_BINDING_RESOLVER_MISSING", diagnostics: Object.freeze([]) };
+    }
+
+    const result = processPddInboundIngress({
+      document,
+      input,
+      resolveIdentity,
+      canonicalValidator: this.options.canonicalEnvelopeValidator,
+    });
+    if (result.status !== "MAPPED") return result;
+
+    const currentDocument = session.resolveInboundIngressBinding(context, senderObject);
+    if (!currentDocument) {
+      return { status: "FAILED", reason: "DOCUMENT_CONTEXT_INVALIDATED", diagnostics: result.diagnostics };
+    }
+    const collector = this.options.onCanonicalInbound;
+    if (!collector) {
+      return { status: "STOPPED", reason: "COLLECTOR_MISSING", diagnostics: result.diagnostics };
+    }
+    try {
+      collector(result.envelope);
+    } catch {
+      return { status: "FAILED", reason: "COLLECTOR_THREW", diagnostics: result.diagnostics };
+    }
+    return result;
+  }
+
   adapterFor(shopId: string): PddPlatformAdapter | null {
     return this.adapters.get(shopId) ?? null;
   }
@@ -261,5 +329,6 @@ export class PddPlatformService {
     this.bridges.clear();
     this.adapters.clear();
     this.trustedWebContents.clear();
+    this.senderSessions.clear();
   }
 }
