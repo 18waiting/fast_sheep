@@ -1068,7 +1068,15 @@
       "real PDD runtime compatibility",
       "real business sourceOccurredAt semantics",
       "production implementation or production ingress readiness"
-    ]
+    ],
+    "controller_repair": {
+      "decision": "REPAIR",
+      "baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
+      "repair_result": "COMPLETE",
+      "repaired_report": "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
+      "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
+      "historical_relation": "The earlier Codex COMPLETE was not a Controller PASS; Controller issued REPAIR and the repaired offline proof subsequently passed all required checks."
+    }
   },
   "offline_boundary_proof_result": "COMPLETE / AWAITING_CONTROLLER_REVIEW"
 }

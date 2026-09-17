@@ -349,3 +349,28 @@ STOP. Awaiting Controller review; no production implementation or live validatio
 The proof exercised two real WebContentsView sessions managed by one PddPlatformService, loopback WebSocket traffic through Main-owned Debugger/Network observation, connection-time requestId binding, real canonical ingress/mapper/default validator, collector-before/after failure behavior, downstream isolation, reload, dispose/recreate, destroy, detach, stale frame, and stale connection-created paths.
 
 The proof does not establish real Titan URL/framing/compression/reconnect/replay behavior, real PDD runtime compatibility, real business source time, or production readiness.
+
+---
+
+## 16. Local Boundary Proof Repair Record
+
+- Controller decision on the prior proof: REPAIR.
+- Repair baseline: ab205372f858db736405ff2195bc9a307acae9a1.
+- Repaired offline proof result: COMPLETE.
+- Repaired report: reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json.
+- Controller review status: AWAITING_CONTROLLER_REVIEW.
+- Production implementation: NOT PERFORMED.
+- Production PDD ingress readiness: BLOCKED.
+- Live validation authorization: NOT_AUTHORIZED.
+- Full SHEEP-301: PARTIAL / OPEN.
+
+The repaired run used sandboxed Electron, distinct non-persistent memory sessions, repository-resolved Electron/ws dependencies, a strict REPO_ROOT-derived temporary root, CDP session plus callback lifecycle validation, legal-text stale-event tests, Main-controlled association configuration, and dynamic local WebSocket/send-boundary counters. The historical prior Codex COMPLETE is preserved; it is not rewritten as a Controller PASS.
+
+Validation for the repaired unit:
+- Exact proof command: node scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs.
+- Proof runner exit: 0.
+- PROJECT_STATE JSON parse and consistency: PASS.
+- project-state consistency suite: 18 passed / 0 failed.
+- Focused desktop PDD regressions: 48 passed / 0 failed.
+- Focused platform-pdd regressions: 17 passed / 0 failed.
+- Report JSON parse, diff check, changed-file scope, and authorization gates: PASS.

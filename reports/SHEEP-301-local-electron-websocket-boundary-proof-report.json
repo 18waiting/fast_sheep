@@ -1,7 +1,8 @@
 {
   "task": "SHEEP-301",
   "acceptance_unit": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
-  "baseline_commit": "8fb05f70d264943447981d19aa71a1dd4618c2b5",
+  "readiness_baseline_commit": "8fb05f70d264943447981d19aa71a1dd4618c2b5",
+  "repair_baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
   "result": "COMPLETE",
   "diagnostic_proof_implementation_performed": true,
   "offline_boundary_proof_performed": true,
@@ -12,39 +13,104 @@
   "full_sheep_301_closed": false,
   "next_stage_not_executed": true,
   "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
-  "command": "electron --no-sandbox --disable-gpu scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
+  "command": "node scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
   "versions": {
     "electron": "43.6.0",
     "chrome": "150.0.7871.250",
     "node": "24.20.0"
   },
-  "source_version": {
-    "repository_head": "8fb05f70d264943447981d19aa71a1dd4618c2b5",
-    "proof_runner": "scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
-    "fixture": "scripts/fixtures/sheep-301-local-electron-websocket-boundary/fixture.html",
-    "observer": "scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs",
-    "proof_sources_committed_at_run": false,
-    "source_state_note": "Repository HEAD was the baseline; new proof scripts/report were uncommitted at runtime. Product modules were freshly built from the current source worktree before this proof."
+  "execution_paths": {
+    "repoRoot": "E:\\fast_sheep",
+    "proofRoot": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof",
+    "runRoot": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-22812-1789662913696",
+    "userData": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-22812-1789662913696\\user-data",
+    "sessionData": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-22812-1789662913696\\session-data",
+    "cache": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-22812-1789662913696\\cache",
+    "temp": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-22812-1789662913696\\temp",
+    "logs": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof\\run-22812-1789662913696\\logs"
+  },
+  "electron_executable": "E:\\fast_sheep\\node_modules\\.pnpm\\electron@43.6.0\\node_modules\\electron\\dist\\electron.exe",
+  "dependency_resolution": {
+    "electronExecutable": "E:\\fast_sheep\\node_modules\\.pnpm\\electron@43.6.0\\node_modules\\electron\\dist\\electron.exe",
+    "wsEntry": "E:\\fast_sheep\\node_modules\\.pnpm\\ws@8.21.3\\node_modules\\ws\\index.js",
+    "wsResolver": "E:\\fast_sheep\\node_modules\\.pnpm\\jsdom@26.1.0\\node_modules\\jsdom\\lib\\api.js"
+  },
+  "runtime_configuration": {
+    "sandbox": true,
+    "contextIsolation": true,
+    "nodeIntegration": false,
+    "webSecurity": true,
+    "no_sandbox_switch_used": false,
+    "memory_partitions": {
+      "shop-a": {
+        "partition": "memory:sheep301-proof-run-22812-1789662913696-shop-a",
+        "isPersistent": false,
+        "storagePath": null,
+        "webContentsId": 6
+      },
+      "shop-b": {
+        "partition": "memory:sheep301-proof-run-22812-1789662913696-shop-b",
+        "isPersistent": false,
+        "storagePath": null,
+        "webContentsId": 4
+      }
+    }
+  },
+  "runtime_source": {
+    "repository_head": "ab205372f858db736405ff2195bc9a307acae9a1",
+    "repair_baseline": "ab205372f858db736405ff2195bc9a307acae9a1",
+    "worktree_status_porcelain": "M project/PROJECT_STATE.json\n M project/SHEEP_301_REAL_PRODUCER_READINESS_AUDIT.md\n M reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json\n M reports/SHEEP-301-real-producer-readiness-audit.json\n M scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs\n M scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs\n?? scripts/fixtures/sheep-301-local-electron-websocket-boundary/main.mjs",
+    "script_digests": {
+      "runner": "b2bad481d15cf4e2da37701a75106d54545a61a378c24eec47bc8dc857313996",
+      "launcher": "39ea4ef07f88510840d67aca9f00eb65cd07ec4077f957f5d1426f0c7b1a9436",
+      "observer": "e5bb0f144a27f8a0baf1c692a6adf9b0dadeb528844e70fef2e6fde714ef2bce",
+      "fixture": "5f168e564083bc16a6304c0b5f71711c9583917be5e9e4c27921fae162defd26"
+    }
   },
   "build_commands": [
     "pnpm --filter @fastwork/domain build",
     "pnpm --filter @fastwork/platform-pdd build",
     "pnpm --filter @fastwork/desktop build"
   ],
-  "exact_command": ".\\node_modules\\.pnpm\\electron@43.6.0\\node_modules\\electron\\dist\\electron.exe --no-sandbox --disable-gpu .\\scripts\\run-sheep-301-local-electron-websocket-boundary-proof.mjs",
+  "exact_command": "node scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
+  "baseline_reproduction": {
+    "classification": "CONFIRMED_BY_BASELINE_SOURCE_AND_CONTROLLER_REPRO",
+    "R1": "Baseline runner used a literal sibling temp-root string, hardcoded ws installation path, sandbox-disabling switch, and default persistent partitions.",
+    "R2": "Baseline bindings were keyed by requestId only and ignored CDP sessionId.",
+    "R3": "Controller reproduced old webSocketCreated delivery reacquiring the current document context after navigation.",
+    "R4": "Baseline tests used content-marker association mutation, a non-text old frame, and no dynamic WebSocket traffic counters."
+  },
+  "r1_r4_repair_evidence": {
+    "R1": {
+      "before": "sibling temp-root string, hardcoded ws installation path, sandbox-disabling CLI switch, default persistent partitions",
+      "after": "REPO_ROOT-derived strict temp root, repository-resolved ws, sandboxed Electron, two distinct memory partitions"
+    },
+    "R2": {
+      "before": "bindings keyed only by requestId; frame sessionId ignored",
+      "after": "WebContents id, observer lifecycle, CDP sessionId, callbackToken, and requestId form the source binding"
+    },
+    "R3": {
+      "before": "old connection-created could call the live callback and obtain current document context",
+      "after": "callback generation is rolled on navigation/detach; captured old callback deliveries fail before context lookup"
+    },
+    "R4": {
+      "before": "content-marker association mutation, non-text old-frame test, incomplete source counters",
+      "after": "creation-time association records with Main control injection, legal old text frame, dynamic WS and send-boundary counters"
+    }
+  },
   "acceptance_matrix": {
     "A_real_local_transport": "A0-A2 and A5",
-    "B_same_service_two_shop_isolation": "A0-A3",
-    "C_lifecycle": "A6-A7",
+    "B_same_service_two_shop_isolation": "A0-A3b",
+    "C_lifecycle": "A6-A8",
     "D_field_semantics": "A2-A5",
     "E_t07a_pre_collector": "T07A1-T07A5",
     "F_t07b_post_collector": "T07B1-T07B2",
-    "G_downstream_isolation": "counters and legacy bridge checks"
+    "G_downstream_isolation": "counters, traffic counters, send spy, and legacy bridge checks"
   },
   "lifecycle_timeline": {
     "connection_created": "observer binds WebContents/session/document context before any frame is accepted",
     "frame_delivery": "frame lookup uses the pre-existing requestId binding",
-    "reload": "Main navigation invalidates bindings; old frame and old connection-created replays are rejected",
+    "reload": "Main navigation rolls the callback token and clears bindings; old callback deliveries are rejected before context lookup",
     "dispose_recreate": "old observer terminal; new WebContents/session/observer lifecycle required",
     "detach_reattach": "old events remain terminal; reattach starts a new lifecycle and new connection binding",
     "unknown_or_unbound": "dropped or rejected before canonical collector"
@@ -53,15 +119,18 @@
     "actual_electron_cdp_events": [
       "A1-A7 real loopback WebSocket traffic through WebContents.debugger"
     ],
-    "controlled_replay": [
+    "captured_event_controlled_delivery": [
+      "A6 legal text frame and connection-created captured event delivered after reload"
+    ],
+    "unit_level_event_injection": [
       "A5 non-text opcode injection",
-      "A6 old frame and old connection-created replay"
+      "A8 unauthorized CDP session and unknown requestId injection"
     ],
-    "synthetic_failure_injection": [
-      "T07A/T07B option mutation for validator/resolver/collector failures"
+    "option_mutation": [
+      "T07A/T07B validator, resolver, and collector option mutation"
     ],
-    "code_boundary": [
-      "no AI/send/persistence dependency in selected path"
+    "static_code_boundary": [
+      "AI and business persistence dependencies are absent from the selected path; send adapter methods are fail-fast spies"
     ]
   },
   "historical_probe_path_verification": {
@@ -96,14 +165,28 @@
   "checks": [
     {
       "id": "A0",
-      "name": "same PddPlatformService activates two real WebContents sessions",
+      "name": "same PddPlatformService activates two real isolated WebContents sessions",
       "status": "PASS",
       "evidence": {
         "shops": [
           "shop-a",
           "shop-b"
         ],
-        "observerCount": 2
+        "observerCount": 2,
+        "sessions": {
+          "a": {
+            "partition": "memory:sheep301-proof-run-22812-1789662913696-shop-a",
+            "isPersistent": false,
+            "storagePath": null,
+            "webContentsId": 2
+          },
+          "b": {
+            "partition": "memory:sheep301-proof-run-22812-1789662913696-shop-b",
+            "isPersistent": false,
+            "storagePath": null,
+            "webContentsId": 4
+          }
+        }
       }
     },
     {
@@ -112,10 +195,10 @@
       "status": "PASS",
       "evidence": {
         "a": [
-          "22028.2"
+          "observer-1|2||13292.2"
         ],
         "b": [
-          "22616.2"
+          "observer-2|4||22588.2"
         ]
       }
     },
@@ -282,25 +365,41 @@
     },
     {
       "id": "A6",
-      "name": "reload invalidates old connection and old connection-created events",
+      "name": "reload rejects the original callback and both old event classes",
       "status": "PASS",
       "evidence": {
-        "oldLifecycle": 1,
-        "newLifecycle": 2,
-        "staleFrame": "UNBOUND_OR_STALE_REQUEST_ID",
-        "staleConnection": "STALE_CONNECTION_CREATED",
+        "oldLifecycle": 0,
+        "newLifecycle": 1,
+        "staleFrame": "STALE_CALLBACK_GENERATION",
+        "staleConnection": "STALE_CALLBACK_GENERATION",
         "collectorDelta": 1
       }
     },
     {
       "id": "A7",
-      "name": "dispose/recreate/destroy/detach cannot revive old events",
+      "name": "dispose, destroy, external detach, and reattach cannot revive old events",
       "status": "PASS",
       "evidence": {
         "oldReplay": "OBSERVER_TERMINAL",
+        "oldListenerCounts": {
+          "message": 0,
+          "navigation": 1
+        },
         "detachedReplay": "OBSERVER_TERMINAL",
-        "observerLifecycle": 2,
+        "observerLifecycle": 1,
         "collectorDelta": 2
+      }
+    },
+    {
+      "id": "A8",
+      "name": "CDP session collision, unknown request, and wrong sender/context fail before collector",
+      "status": "PASS",
+      "evidence": {
+        "unauthorizedFrame": "UNAUTHORIZED_CDP_SESSION",
+        "unknownRequest": "UNBOUND_OR_STALE_SOURCE",
+        "wrongSender": "UNTRUSTED_SENDER",
+        "wrongContext": "INVALID_DOCUMENT_CONTEXT",
+        "collectorDelta": 0
       }
     },
     {
@@ -373,18 +472,56 @@
     "legacyBridgeCalls": 0,
     "aiCalls": 0,
     "transportSendCalls": 0,
-    "businessPersistenceWrites": 0
+    "businessPersistenceWrites": 0,
+    "syntheticWebSocketTraffic": {
+      "connections": 5,
+      "commandsReceived": 18,
+      "framesSent": 18
+    }
   },
   "collector": {
     "calls": 8,
     "envelopes": 8
   },
   "measurement_boundary": {
-    "legacy_bridge": "dynamic orchestrator stub counter",
-    "ai_send_persistence": "no AI, send, or persistence dependency is present in the selected test path; counters remain zero by code-boundary construction",
-    "synthetic_ws_traffic": "loopback-only test traffic, counted separately from business send",
+    "legacy_bridge": "dynamic orchestrator stub counter connected to the same boundary",
+    "transport_send": "fail-fast spy on created adapter sendText/onTransfer methods",
+    "ai_persistence": "static code boundary: no AiEngineClient or persistence repository is injected into the selected producer path",
+    "synthetic_ws_traffic": "dynamic loopback server counters for connections, commands, and frames sent",
     "diagnostic_report_write": "one test report write, not business persistence"
   },
   "unhandled_rejections": [],
-  "error": null
+  "files_changed": [
+    "project/PROJECT_STATE.json",
+    "project/SHEEP_301_REAL_PRODUCER_READINESS_AUDIT.md",
+    "reports/SHEEP-301-real-producer-readiness-audit.json",
+    "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
+    "scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
+    "scripts/fixtures/sheep-301-local-electron-websocket-boundary/fixture.html",
+    "scripts/fixtures/sheep-301-local-electron-websocket-boundary/main.mjs",
+    "scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs"
+  ],
+  "controller_repair_record": {
+    "decision": "REPAIR",
+    "baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
+    "repair_result": "COMPLETE",
+    "historical_relation": "Prior Codex COMPLETE was not Controller PASS; Controller REPAIR was applied and the repaired proof is reported separately."
+  },
+  "error": null,
+  "validation": {
+    "runner_self_check": "COMPLETE / PROOF_EXIT_CODE=0",
+    "exact_proof_command": "node scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
+    "project_state_json_parse": "PASS",
+    "project_state_consistency": "PASS",
+    "project_state_consistency_tests": "18 passed / 0 failed",
+    "focused_desktop_pdd_regression": "48 passed / 0 failed",
+    "focused_platform_pdd_regression": "17 passed / 0 failed",
+    "report_json_parse": "PASS",
+    "git_diff_check": "PASS",
+    "changed_file_scope": "PASS",
+    "notes": [
+      "The runner report captures the in-observation proof checks and dynamic counters.",
+      "The focused regression and project-state results are external validation results recorded here for the same repaired source revision."
+    ]
+  }
 }

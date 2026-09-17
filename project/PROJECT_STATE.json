@@ -31,7 +31,7 @@
     "reviewed_version": "V1.1_REVIEWED",
     "reviewed_path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md",
     "authority_status": "CURRENT_EXECUTION_AUTHORITY",
-    "execution_authorization": "BOUNDED_FIXTURE_MAPPING_AUTHORIZATION_COMPLETED_CONSUMED / REAL_PRODUCER_READINESS_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_COMPLETED_AWAITING_CONTROLLER_REVIEW / NO_PRODUCTION_EXECUTION_AUTHORIZATION",
+    "execution_authorization": "BOUNDED_FIXTURE_MAPPING_AUTHORIZATION_COMPLETED_CONSUMED / REAL_PRODUCER_READINESS_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_REPAIR_COMPLETE_AWAITING_CONTROLLER_REVIEW / NO_PRODUCTION_EXECUTION_AUTHORIZATION",
     "task_range": [
       "SHEEP-300",
       "SHEEP-301",
@@ -788,13 +788,13 @@
   "current_phase": "MVP_A_FOUNDATION",
   "current_milestone": "M-A.1 Identity and Inbound Foundation",
   "last_closed_task": "SHEEP-300",
-  "current_task": "SHEEP-301 (M-A.1 PDD Inbound Producer Mapping) — PARTIAL / OPEN / BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF COMPLETE; awaiting Controller review",
-  "next_action": "SHEEP-301 remains PARTIAL / OPEN. The test-owned LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF diagnostic is COMPLETE and awaiting Controller review. No production IPC/Titan/WebSocket, live, send, HUMAN_CONFIRM, AUTO, persistence, or platform mutation is authorized.",
+  "current_task": "SHEEP-301 (M-A.1 PDD Inbound Producer Mapping) — PARTIAL / OPEN / BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF REPAIR_COMPLETE; awaiting Controller review",
+  "next_action": "SHEEP-301 remains PARTIAL / OPEN. The test-owned LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF diagnostic repair is COMPLETE and awaiting Controller review. No production IPC/Titan/WebSocket, live, send, HUMAN_CONFIRM, AUTO, persistence, or platform mutation is authorized.",
   "next_authoritative_roadmap_id": "SHEEP-301",
   "next_task_execution_authorized": false,
   "current_execution_authorization": false,
   "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
-  "current_authorization_pause_reason": "SHEEP_301_BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WS_DIAGNOSTIC_COMPLETED_AWAITING_CONTROLLER_REVIEW / PRODUCTION_LIVE_SEND_HUMAN_CONFIRM_AUTO_PERSISTENCE_PLATFORM_MUTATION_NOT_AUTHORIZED",
+  "current_authorization_pause_reason": "SHEEP_301_BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WS_DIAGNOSTIC_REPAIR_COMPLETE_AWAITING_CONTROLLER_REVIEW / PRODUCTION_LIVE_SEND_HUMAN_CONFIRM_AUTO_PERSISTENCE_PLATFORM_MUTATION_NOT_AUTHORIZED",
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
   "next_sheep_task_after_governance": "SHEEP-301",
@@ -983,7 +983,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-301 (M-A.1 PDD Inbound Producer Mapping; PARTIAL / OPEN / BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS) — LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF COMPLETE; awaiting Controller review",
+  "next_task": "SHEEP-301 (M-A.1 PDD Inbound Producer Mapping; PARTIAL / OPEN / BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS) — LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF REPAIR_COMPLETE; awaiting Controller review",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -3589,11 +3589,11 @@
     "next_stage_not_executed": true
   },
   "sheep_301": {
-  "roadmap_status": "PARTIAL / BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WS_DIAGNOSTIC_COMPLETED_AWAITING_CONTROLLER_REVIEW",
+  "roadmap_status": "PARTIAL / BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WS_DIAGNOSTIC_REPAIR_COMPLETE_AWAITING_CONTROLLER_REVIEW",
   "phase": "MVP_A_FOUNDATION",
   "milestone": "M-A.1 Identity and Inbound Foundation",
   "status": "PARTIAL / OPEN",
-  "owner_scope": "BOUNDED_ACCEPTANCE_UNIT_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_DIAGNOSTIC_ONLY / NO_PRODUCTION_IPC_TITAN_WEBSOCKET_AI_PERSISTENCE_OR_SEND",
+  "owner_scope": "BOUNDED_ACCEPTANCE_UNIT_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_DIAGNOSTIC_REPAIR_COMPLETE / NO_PRODUCTION_IPC_TITAN_WEBSOCKET_AI_PERSISTENCE_OR_SEND",
   "implementation_authorization": "COMPLETED / CONSUMED",
   "implementation_authorization_scope": "CONTROLLED_MAIN_LOCAL_FIXTURE_MAPPING_ACCEPTANCE_UNIT_ONLY / COMPLETED / CONSUMED",
   "implementation_authorization_history": {
@@ -3610,7 +3610,7 @@
   "execution_authorized": false,
   "current_execution_authorization": false,
   "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
-  "current_authorization_pause_reason": "SHEEP_301_BOUNDED_FIXTURE_MAPPING_ACCEPTED / FULL_TASK_PARTIAL_OPEN / NEXT_REAL_PRODUCER_READINESS_AUDIT_NOT_STARTED / LIVE_SEND_HUMAN_CONFIRM_AUTO_PERSISTENCE_PLATFORM_MUTATION_NOT_AUTHORIZED",
+  "current_authorization_pause_reason": "SHEEP_301_BOUNDED_FIXTURE_MAPPING_ACCEPTED / FULL_TASK_PARTIAL_OPEN / LOCAL_ELECTRON_WS_DIAGNOSTIC_REPAIR_COMPLETE_AWAITING_CONTROLLER_REVIEW / PRODUCTION_LIVE_SEND_HUMAN_CONFIRM_AUTO_PERSISTENCE_PLATFORM_MUTATION_NOT_AUTHORIZED",
   "readiness_review": {
     "codex_audit_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -3696,10 +3696,10 @@
   "full_task_state": "PARTIAL / OPEN",
   "full_sheep_301_closed": false,
   "next_step": "SHEEP-301 — LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF (test-owned diagnostic only)",
-      "next_step_status": "COMPLETED / AWAITING_CONTROLLER_REVIEW",
+      "next_step_status": "REPAIR_COMPLETE / AWAITING_CONTROLLER_REVIEW",
     "diagnostic_authorization": {
       "acceptance_unit": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
-      "status": "EXECUTED / COMPLETED / AWAITING_CONTROLLER_REVIEW",
+      "status": "EXECUTED / REPAIRED / AWAITING_CONTROLLER_REVIEW",
       "authority": "SHEEP_301_REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS",
       "baseline_commit": "8fb05f70d264943447981d19aa71a1dd4618c2b5",
       "production_implementation_authorized": false,
@@ -3707,6 +3707,13 @@
       "test_owned_observer_authorized": true,
       "loopback_websocket_traffic_authorized": true,
       "production_bootstrap_or_ipc_authorized": false,
+      "controller_repair": {
+        "decision": "REPAIR",
+        "baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
+        "repair_result": "COMPLETE",
+        "report": "reports\\SHEEP-301-local-electron-websocket-boundary-proof-report.json",
+        "controller_review_status": "AWAITING_CONTROLLER_REVIEW"
+      },
       "result": "COMPLETE",
       "report": "reports\\SHEEP-301-local-electron-websocket-boundary-proof-report.json",
       "local_electron_websocket_boundary_proof_performed": true,
@@ -3718,16 +3725,17 @@
       "recorded_script": "E:\\fast_sheep.tmp\\sheep-301-real-producer-audit\\probe-main.cjs",
       "recorded_result": "E:\\fast_sheep.tmp\\sheep-301-real-producer-audit\\probe-result.json",
       "classification": "ACTUAL_ROOT_OUTSIDE_WRITE / HISTORICAL_FACT",
+      "ab20537_root_outside_proof_run": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof",
       "new_proof_temp_root": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof",
       "cleanup_authorized": false,
       "note": "The path was an actual prior diagnostic write outside the project root, not merely a documentation typo. It is preserved as historical evidence; this task does not authorize cleanup or further writes there."
     }
 },
   "mvp_a_foundation_entry": {
-    "status": "SHEEP_300_CLOSED / SHEEP_301_PARTIAL_OPEN / BOUNDED_FIXTURE_MAPPING_CONTROLLER_PASS / LOCAL_ELECTRON_WS_DIAGNOSTIC_COMPLETE_AWAITING_CONTROLLER_REVIEW",
+    "status": "SHEEP_300_CLOSED / SHEEP_301_PARTIAL_OPEN / BOUNDED_FIXTURE_MAPPING_CONTROLLER_PASS / LOCAL_ELECTRON_WS_DIAGNOSTIC_REPAIR_COMPLETE_AWAITING_CONTROLLER_REVIEW",
     "current_milestone": "M-A.1 Identity and Inbound Foundation",
     "next_authoritative_roadmap_id": "SHEEP-301",
-    "execution_authorization": "BOUNDED_FIXTURE_MAPPING_AUTHORIZATION_COMPLETED_CONSUMED / REAL_PRODUCER_READINESS_CONTROLLER_PASS / LOCAL_ELECTRON_WS_DIAGNOSTIC_COMPLETE_AWAITING_CONTROLLER_REVIEW / NO_PRODUCTION_EXECUTION_AUTHORIZATION"
+    "execution_authorization": "BOUNDED_FIXTURE_MAPPING_AUTHORIZATION_COMPLETED_CONSUMED / REAL_PRODUCER_READINESS_CONTROLLER_PASS / LOCAL_ELECTRON_WS_DIAGNOSTIC_REPAIR_COMPLETE_AWAITING_CONTROLLER_REVIEW / NO_PRODUCTION_EXECUTION_AUTHORIZATION"
   },
   "phase_5_entry": {
     "status": "ACTIVE",
