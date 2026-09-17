@@ -28,30 +28,43 @@ const scope = () => ({
   platformAccountId: resolution("account-1"),
 });
 
+function associationKey(shopId, ownerScope, customerUid, platformMessageId) {
+  const scopeKey = [ownerScope.merchantId, ownerScope.storeId, ownerScope.platformAccountId]
+    .map((entry) => entry.status === "RESOLVED" ? entry.value : entry.status)
+    .join("|");
+  return [shopId, scopeKey, customerUid, platformMessageId].join("|");
+}
+
+function fixtureRecord(ownerRuntimeShopId, ownerScope, customerUid, platformMessageId, conversation, localMessage) {
+  return {
+    ownerRuntimeShopId,
+    ownerScope,
+    platformCustomerId: customerUid,
+    platformMessageId,
+    internalConversationId: resolution(conversation),
+    localMessageId: resolution(localMessage),
+  };
+}
+
+const scopeA = scope();
+const scopeB = scope();
 const associations = new Map([
-  ["1001|msg-1", { conversation: "conversation-1", localMessage: "local-1" }],
-  ["1001|same-id", { conversation: "conversation-1", localMessage: "local-a" }],
-  ["1002|same-id", { conversation: "conversation-2", localMessage: "local-b" }],
+  [associationKey("shop-a", scopeA, "1001", "msg-1"), fixtureRecord("shop-a", scopeA, "1001", "msg-1", "conversation-1", "local-1")],
+  [associationKey("shop-b", scopeB, "1001", "msg-1"), fixtureRecord("shop-b", scopeB, "1001", "msg-1", "conversation-b", "local-b")],
+  [associationKey("shop-a", scopeA, "1001", "same-id"), fixtureRecord("shop-a", scopeA, "1001", "same-id", "conversation-1", "local-a")],
+  [associationKey("shop-a", scopeA, "1002", "same-id"), fixtureRecord("shop-a", scopeA, "1002", "same-id", "conversation-2", "local-b")],
 ]);
 
 function baseIdentity(document, message) {
+  const ownerScope = document.shopId === "shop-a" ? scopeA : scopeB;
   const record = message.customerUid === undefined || message.platformMessageId === undefined
     ? undefined
-    : associations.get(message.customerUid + "|" + message.platformMessageId);
+    : associations.get(associationKey(document.shopId, ownerScope, message.customerUid, message.platformMessageId));
   return {
     runtimeShop: resolution({ value: document.shopId }),
-    scope: scope(),
+    scope: ownerScope,
     runtimeConversationReference: resolution({ value: "runtime-" + document.shopId }),
-    association: record === undefined
-      ? undefined
-      : {
-          ownerRuntimeShopId: document.shopId,
-          ownerScope: scope(),
-          platformCustomerId: message.customerUid,
-          platformMessageId: message.platformMessageId,
-          internalConversationId: resolution(record.conversation),
-          localMessageId: resolution(record.localMessage),
-        },
+    association: record,
   };
 }
 

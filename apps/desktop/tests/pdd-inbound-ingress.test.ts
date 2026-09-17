@@ -8,7 +8,8 @@ class FakeView {
   webContents: { destroyed: boolean; send(): void; isDestroyed(): boolean };
   constructor() {
     const wc = { destroyed: false, send: () => {} };
-    this.webContents = { ...wc, isDestroyed: () => wc.destroyed };
+    wc.isDestroyed = () => wc.destroyed;
+    this.webContents = wc;
   }
   async loadLocalFixture(): Promise<void> {}
   show(): void { this.visible = true; }
@@ -28,28 +29,51 @@ const defaultScope = () => ({
   platformAccountId: resolution("account-1"),
 });
 
-const controlledAssociations = new Map<string, { conversation: string; localMessage: string }>([
-  ["6318084722818|pdd-message-1", { conversation: "conversation-1", localMessage: "local-message-1" }],
-  ["1|same", { conversation: "same-conversation", localMessage: "same-local-message" }],
-  ["1001|m-a", { conversation: "conversation-a", localMessage: "local-message-a" }],
-  ["1001|same-id", { conversation: "conversation-1", localMessage: "local-message-a" }],
-  ["1002|same-id", { conversation: "conversation-2", localMessage: "local-message-b" }],
-  ["A|m-a", { conversation: "conversation-a", localMessage: "local-message-a" }],
-  ["B|m-b", { conversation: "conversation-b", localMessage: "local-message-b" }],
+interface FixtureAssociationRecord {
+  ownerRuntimeShopId: string;
+  ownerScope: ReturnType<typeof defaultScope>;
+  platformCustomerId: string;
+  platformMessageId: string;
+  internalConversationId: ReturnType<typeof resolution>;
+  localMessageId: ReturnType<typeof resolution>;
+}
+
+function associationKey(shopId: string, scope: ReturnType<typeof defaultScope>, customerUid: string, platformMessageId: string): string {
+  const scopeKey = [scope.merchantId, scope.storeId, scope.platformAccountId]
+    .map((entry) => entry.status === "RESOLVED" ? entry.value : entry.status)
+    .join("|");
+  return [shopId, scopeKey, customerUid, platformMessageId].join("|");
+}
+
+function fixtureRecord(shopId: string, scope: ReturnType<typeof defaultScope>, customerUid: string, platformMessageId: string, conversation: string, localMessage: string): FixtureAssociationRecord {
+  return {
+    ownerRuntimeShopId: shopId,
+    ownerScope: scope,
+    platformCustomerId: customerUid,
+    platformMessageId,
+    internalConversationId: resolution(conversation),
+    localMessageId: resolution(localMessage),
+  };
+}
+
+const scopeA = defaultScope();
+const scopeB = defaultScope();
+const controlledAssociations = new Map<string, FixtureAssociationRecord>([
+  [associationKey("shop-a", scopeA, "6318084722818", "pdd-message-1"), fixtureRecord("shop-a", scopeA, "6318084722818", "pdd-message-1", "conversation-1", "local-message-1")],
+  [associationKey("shop-b", scopeB, "6318084722818", "pdd-message-1"), fixtureRecord("shop-b", scopeB, "6318084722818", "pdd-message-1", "conversation-b", "local-message-b")],
+  [associationKey("shop-a", scopeA, "1", "same"), fixtureRecord("shop-a", scopeA, "1", "same", "same-conversation-a", "same-local-message-a")],
+  [associationKey("shop-b", scopeB, "1", "same"), fixtureRecord("shop-b", scopeB, "1", "same", "same-conversation-b", "same-local-message-b")],
+  [associationKey("shop-a", scopeA, "1001", "m-a"), fixtureRecord("shop-a", scopeA, "1001", "m-a", "conversation-a", "local-message-a")],
+  [associationKey("shop-a", scopeA, "1002", "m-b"), fixtureRecord("shop-a", scopeA, "1002", "m-b", "conversation-b", "local-message-b")],
+  [associationKey("shop-a", scopeA, "1001", "same-id"), fixtureRecord("shop-a", scopeA, "1001", "same-id", "conversation-1", "local-message-a")],
+  [associationKey("shop-a", scopeA, "1002", "same-id"), fixtureRecord("shop-a", scopeA, "1002", "same-id", "conversation-2", "local-message-b")],
 ]);
 
 function associationFor(document: { shopId: string }, message: { customerUid?: string; platformMessageId?: string }) {
   if (message.customerUid === undefined || message.platformMessageId === undefined) return undefined;
-  const record = controlledAssociations.get(message.customerUid + "|" + message.platformMessageId);
-  if (!record) return undefined;
-  return {
-    ownerRuntimeShopId: document.shopId,
-    ownerScope: defaultScope(),
-    platformCustomerId: message.customerUid,
-    platformMessageId: message.platformMessageId,
-    internalConversationId: resolution(record.conversation),
-    localMessageId: resolution(record.localMessage),
-  };
+  const records = controlledAssociations as Map<string, unknown>;
+  const record = records.get(associationKey(document.shopId, defaultScope(), message.customerUid, message.platformMessageId));
+  return record as FixtureAssociationRecord | undefined;
 }
 
 function baseIdentity(document: { shopId: string }, message: { customerUid?: string; platformMessageId?: string }) {
@@ -240,6 +264,19 @@ test("dispose/recreate invalidates old context regardless of repeated labels", a
   assert.equal(h.service.handleTrustedInboundIngress(oldSender, oldContext, { payload: validPayload() }).reason, "UNTRUSTED_SENDER");
 });
 
+test("destroyed webContents invalidates an existing context and blocks collector", async () => {
+  const h = await makeReady("shop-a");
+  const view = h.views[0];
+  assert.equal(view.webContents.isDestroyed(), false);
+  view.webContents.destroyed = true;
+  assert.equal(view.webContents.isDestroyed(), true);
+  const before = h.collected.length;
+  const result = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload() });
+  assert.equal(result.status, "REJECTED");
+  assert.equal(result.reason, "INVALID_DOCUMENT_CONTEXT");
+  assert.equal(h.collected.length, before);
+});
+
 test("selected observation remains evidence and never fills sender identity", async () => {
   const h = makeService({
     resolveIdentity: (_message: unknown, document: { shopId: string }) => ({
@@ -390,9 +427,62 @@ test("cross-shop association reuse is rejected while correct A/B associations ma
   const reused = h.service.handleTrustedInboundIngress(senderB, contextB, { payload: samePayload });
   assert.equal(correctA.status, "MAPPED");
   assert.equal(correctB.status, "MAPPED");
+  if (correctA.status === "MAPPED") {
+    const lock = correctA.envelope.identityLock;
+    assert.deepEqual(lock.runtimeShop, { status: "RESOLVED", value: { value: "shop-a" } });
+    assert.deepEqual(lock.merchantId, { status: "RESOLVED", value: "merchant-a" });
+    assert.deepEqual(lock.storeId, { status: "RESOLVED", value: "store-a" });
+    assert.deepEqual(lock.platformAccountId, { status: "RESOLVED", value: "account-a" });
+    assert.deepEqual(lock.platformCustomerId, { status: "RESOLVED", value: { value: "1001" } });
+    assert.deepEqual(lock.internalConversationId, { status: "RESOLVED", value: "conversation-a" });
+    assert.deepEqual(lock.triggerMessage.localMessageId, { status: "RESOLVED", value: "local-message-a" });
+    assert.deepEqual(lock.triggerMessage.platformMessageIdentity, { provenance: "AUTHORITATIVE_PLATFORM_ID", value: "same" });
+  }
+  if (correctB.status === "MAPPED") {
+    const lock = correctB.envelope.identityLock;
+    assert.deepEqual(lock.runtimeShop, { status: "RESOLVED", value: { value: "shop-b" } });
+    assert.deepEqual(lock.merchantId, { status: "RESOLVED", value: "merchant-b" });
+    assert.deepEqual(lock.storeId, { status: "RESOLVED", value: "store-b" });
+    assert.deepEqual(lock.platformAccountId, { status: "RESOLVED", value: "account-b" });
+    assert.deepEqual(lock.platformCustomerId, { status: "RESOLVED", value: { value: "1001" } });
+    assert.deepEqual(lock.internalConversationId, { status: "RESOLVED", value: "conversation-b" });
+    assert.deepEqual(lock.triggerMessage.localMessageId, { status: "RESOLVED", value: "local-message-b" });
+    assert.deepEqual(lock.triggerMessage.platformMessageIdentity, { provenance: "AUTHORITATIVE_PLATFORM_ID", value: "same" });
+  }
   assert.equal(reused.status, "REJECTED");
   assert.equal(reused.reason, "ASSOCIATION_RUNTIME_SHOP_MISMATCH");
   assert.equal(h.collected.length, 2);
+  assert.equal(h.collected[0], correctA.status === "MAPPED" ? correctA.envelope : undefined);
+  assert.equal(h.collected[1], correctB.status === "MAPPED" ? correctB.envelope : undefined);
+});
+
+test("association owner scope mismatch is rejected before collector", async () => {
+  const correctScope = defaultScope();
+  const otherScope = { merchantId: resolution("merchant-other"), storeId: resolution("store-other"), platformAccountId: resolution("account-other") };
+  const h = makeService({
+    resolveScope: () => correctScope,
+    resolveIdentity: (_message: unknown, document: { shopId: string }) => ({
+      runtimeShop: resolution({ value: document.shopId }),
+      scope: correctScope,
+      runtimeConversationReference: resolution({ value: "runtime-" + document.shopId }),
+      association: {
+        ownerRuntimeShopId: document.shopId,
+        ownerScope: otherScope,
+        platformCustomerId: "1001",
+        platformMessageId: "m-a",
+        internalConversationId: resolution("conversation-a"),
+        localMessageId: resolution("local-message-a"),
+      },
+    }),
+  });
+  await h.service.activate("shop-a");
+  h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+  const sender = h.service.webContentsFor("shop-a")!;
+  const context = h.service.createInboundIngressContext(sender)!;
+  const result = h.service.handleTrustedInboundIngress(sender, context, { payload: validPayload({ from: { role: "user", uid: "1001" }, msg_id: "m-a" }) });
+  assert.equal(result.status, "REJECTED");
+  assert.equal(result.reason, "ASSOCIATION_SCOPE_MISMATCH");
+  assert.equal(h.collected.length, 0);
 });
 
 test("same customer with a different message cannot reuse a local-message association", async () => {
@@ -430,8 +520,9 @@ test("content cannot select identity: same content with different identity and d
   assert.equal(sameContentB.status, "MAPPED");
   assert.equal(changedContentA.status, "MAPPED");
   if (sameContentA.status === "MAPPED" && sameContentB.status === "MAPPED" && changedContentA.status === "MAPPED") {
-    assert.notEqual(sameContentA.envelope.identityLock.internalConversationId.value, sameContentB.envelope.identityLock.internalConversationId.value);
-    assert.equal(changedContentA.envelope.identityLock.internalConversationId.value, sameContentA.envelope.identityLock.internalConversationId.value);
+    assert.deepEqual(sameContentA.envelope.identityLock.internalConversationId, { status: "RESOLVED", value: "conversation-a" });
+    assert.deepEqual(sameContentB.envelope.identityLock.internalConversationId, { status: "RESOLVED", value: "conversation-b" });
+    assert.deepEqual(changedContentA.envelope.identityLock.internalConversationId, { status: "RESOLVED", value: "conversation-a" });
   }
 });
 
