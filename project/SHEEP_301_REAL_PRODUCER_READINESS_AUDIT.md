@@ -300,7 +300,7 @@ IPC/schema impact for the offline proof: no production IPC channel, no canonical
 - project-state-consistency tests: 18 passed / 0 failed.
 - Audit source reference paths: PASS.
 - Isolated Electron 43.6.0 synthetic loopback WebSocket probe: PASS; webSocketCreated, handshake, frameSent, and frameReceived were observed.
-- Full LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF was not performed by this repair and remains the recommended next unit.
+- At the readiness-repair baseline, the full LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF had not yet been performed; it was subsequently completed in section 15.
 - git diff --cached --check: PASS with line-ending normalization warnings only.
 - Changed-file scope: PASS; exactly the two permitted audit artifacts.
 - Artifact consistency check: PASS.
@@ -329,3 +329,23 @@ full_sheep_301_closed = false
 next_stage_not_executed = true
 
 STOP. Awaiting Controller review; no production implementation or live validation may begin from this audit.
+
+---
+
+## 15. Local Electron/WebSocket Boundary Proof Result
+
+- Acceptance unit: LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF.
+- Controller readiness PASS baseline: 8fb05f70d264943447981d19aa71a1dd4618c2b5.
+- Diagnostic implementation: PERFORMED / test-owned only.
+- Offline boundary proof: COMPLETE.
+- Report: reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json.
+- Runner: scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs.
+- Production implementation: NOT PERFORMED.
+- Production PDD ingress readiness: BLOCKED.
+- Live validation authorization: NOT_AUTHORIZED.
+- Full SHEEP-301: PARTIAL / OPEN.
+- Controller review status: AWAITING_CONTROLLER_REVIEW.
+
+The proof exercised two real WebContentsView sessions managed by one PddPlatformService, loopback WebSocket traffic through Main-owned Debugger/Network observation, connection-time requestId binding, real canonical ingress/mapper/default validator, collector-before/after failure behavior, downstream isolation, reload, dispose/recreate, destroy, detach, stale frame, and stale connection-created paths.
+
+The proof does not establish real Titan URL/framing/compression/reconnect/replay behavior, real PDD runtime compatibility, real business source time, or production readiness.

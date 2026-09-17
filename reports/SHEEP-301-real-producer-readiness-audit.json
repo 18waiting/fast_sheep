@@ -545,7 +545,7 @@
   },
   "recommended_next_acceptance_unit": {
     "id": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
-    "state": "RECOMMENDED_FOR_CONTROLLER_REVIEW / NOT_AUTHORIZED / NOT_STARTED",
+    "state": "COMPLETED / AWAITING_CONTROLLER_REVIEW",
     "purpose": "Prove, entirely offline, that a Main-owned observer can bind an isolated Electron WebContents WebSocket connection to the originating session/document and deliver synthetic inbound messages into a test-only canonical collector without legacy fallback.",
     "solves": "The mechanism uncertainty about WebSocket observation, requestId continuity, document-generation binding, and lifecycle invalidation. It does not prove PDD/Titan compatibility or authorize production wiring.",
     "scope": [
@@ -812,12 +812,13 @@
     "offline_boundary_proof_readiness": "READY_WITH_CONSTRAINTS",
     "production_pdd_ingress_readiness": "BLOCKED",
     "live_validation_authorization": "NOT_AUTHORIZED",
-    "recommended_next_acceptance_unit": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF"
+    "recommended_next_acceptance_unit": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
+    "local_electron_websocket_boundary_proof": "COMPLETE / report generated"
   },
   "repair_baseline_commit": "e3aa108a69bee71df44ea7272452b583fca0d63d",
   "repair_scope": "READ_ONLY_AUDIT_REPAIR",
   "repaired_interpretation": "The previous audit correctly found real producer wiring absent, but over-coupled production integration gaps to the offline observer boundary and treated sourceOccurredAt as a general production blocker. This repair separates stage readiness and preserves the unresolved real-PDD behavior.",
-  "offline_boundary_proof_readiness": "READY_WITH_CONSTRAINTS",
+  "offline_boundary_proof_readiness": "READY_WITH_CONSTRAINTS / SUBSEQUENTLY PROVEN BY LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
   "production_pdd_ingress_readiness": "BLOCKED",
   "live_validation_authorization": "NOT_AUTHORIZED",
   "offline_boundary_analysis": {
@@ -1040,5 +1041,34 @@
     "legal_unknown_future_consumer_requirement": [
       "GAP-11"
     ]
-  }
+  },
+  "local_electron_websocket_boundary_proof": {
+    "acceptance_unit": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
+    "result": "COMPLETE",
+    "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
+    "reviewed_readiness_commit": "8fb05f70d264943447981d19aa71a1dd4618c2b5",
+    "report": "reports/SHEEP-301-local-electron-websocket-boundary-proof-report.json",
+    "runner": "scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
+    "offline_boundary_proof_performed": true,
+    "production_implementation_performed": false,
+    "production_pdd_ingress_readiness": "BLOCKED",
+    "live_validation_authorization": "NOT_AUTHORIZED",
+    "live_validation_performed": false,
+    "full_sheep_301_closed": false,
+    "proof_scope": [
+      "same PddPlatformService with two real WebContentsView sessions",
+      "isolated loopback WebSocket traffic",
+      "connection-time requestId/session/document binding",
+      "real normalizer, mapper, and default canonical validator",
+      "test collector and controlled failure injection",
+      "reload, dispose/recreate, destroy, detach, stale frame, and stale connection-created handling"
+    ],
+    "not_proven": [
+      "real PDD/Titan endpoint, framing, compression, replay, or reconnect behavior",
+      "real PDD runtime compatibility",
+      "real business sourceOccurredAt semantics",
+      "production implementation or production ingress readiness"
+    ]
+  },
+  "offline_boundary_proof_result": "COMPLETE / AWAITING_CONTROLLER_REVIEW"
 }

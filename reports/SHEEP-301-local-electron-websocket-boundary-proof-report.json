@@ -1,0 +1,390 @@
+{
+  "task": "SHEEP-301",
+  "acceptance_unit": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
+  "baseline_commit": "8fb05f70d264943447981d19aa71a1dd4618c2b5",
+  "result": "COMPLETE",
+  "diagnostic_proof_implementation_performed": true,
+  "offline_boundary_proof_performed": true,
+  "production_implementation_performed": false,
+  "production_pdd_ingress_readiness": "BLOCKED",
+  "live_validation_authorization": "NOT_AUTHORIZED",
+  "live_validation_performed": false,
+  "full_sheep_301_closed": false,
+  "next_stage_not_executed": true,
+  "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
+  "command": "electron --no-sandbox --disable-gpu scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
+  "versions": {
+    "electron": "43.6.0",
+    "chrome": "150.0.7871.250",
+    "node": "24.20.0"
+  },
+  "source_version": {
+    "repository_head": "8fb05f70d264943447981d19aa71a1dd4618c2b5",
+    "proof_runner": "scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
+    "fixture": "scripts/fixtures/sheep-301-local-electron-websocket-boundary/fixture.html",
+    "observer": "scripts/fixtures/sheep-301-local-electron-websocket-boundary/observer.mjs",
+    "proof_sources_committed_at_run": false,
+    "source_state_note": "Repository HEAD was the baseline; new proof scripts/report were uncommitted at runtime. Product modules were freshly built from the current source worktree before this proof."
+  },
+  "build_commands": [
+    "pnpm --filter @fastwork/domain build",
+    "pnpm --filter @fastwork/platform-pdd build",
+    "pnpm --filter @fastwork/desktop build"
+  ],
+  "exact_command": ".\\node_modules\\.pnpm\\electron@43.6.0\\node_modules\\electron\\dist\\electron.exe --no-sandbox --disable-gpu .\\scripts\\run-sheep-301-local-electron-websocket-boundary-proof.mjs",
+  "acceptance_matrix": {
+    "A_real_local_transport": "A0-A2 and A5",
+    "B_same_service_two_shop_isolation": "A0-A3",
+    "C_lifecycle": "A6-A7",
+    "D_field_semantics": "A2-A5",
+    "E_t07a_pre_collector": "T07A1-T07A5",
+    "F_t07b_post_collector": "T07B1-T07B2",
+    "G_downstream_isolation": "counters and legacy bridge checks"
+  },
+  "lifecycle_timeline": {
+    "connection_created": "observer binds WebContents/session/document context before any frame is accepted",
+    "frame_delivery": "frame lookup uses the pre-existing requestId binding",
+    "reload": "Main navigation invalidates bindings; old frame and old connection-created replays are rejected",
+    "dispose_recreate": "old observer terminal; new WebContents/session/observer lifecycle required",
+    "detach_reattach": "old events remain terminal; reattach starts a new lifecycle and new connection binding",
+    "unknown_or_unbound": "dropped or rejected before canonical collector"
+  },
+  "evidence_types": {
+    "actual_electron_cdp_events": [
+      "A1-A7 real loopback WebSocket traffic through WebContents.debugger"
+    ],
+    "controlled_replay": [
+      "A5 non-text opcode injection",
+      "A6 old frame and old connection-created replay"
+    ],
+    "synthetic_failure_injection": [
+      "T07A/T07B option mutation for validator/resolver/collector failures"
+    ],
+    "code_boundary": [
+      "no AI/send/persistence dependency in selected path"
+    ]
+  },
+  "historical_probe_path_verification": {
+    "classification": "ACTUAL_ROOT_OUTSIDE_WRITE",
+    "prior_script": "E:\\fast_sheep.tmp\\sheep-301-real-producer-audit\\probe-main.cjs",
+    "prior_result": "E:\\fast_sheep.tmp\\sheep-301-real-producer-audit\\probe-result.json",
+    "corrected_new_proof_root": "E:\\fast_sheep.tmp\\sheep-301-local-electron-websocket-boundary-proof",
+    "cleanup_authorized": false
+  },
+  "known_limitations": [
+    "The payload is synthetic fixture data and does not prove actual Titan outer framing, compression, fragmentation, reconnect, or replay behavior.",
+    "The fixture connects after document READY and does not prove early page connection behavior.",
+    "The local loopback endpoint is not a real PDD/Titan endpoint.",
+    "The sourceOccurredAt values are synthetic and do not establish real platform time semantics.",
+    "The test uses test-owned resolver, collector, and option mutation; it does not prove production composition wiring."
+  ],
+  "proven": [
+    "Electron/WebContents/Debugger/Network event boundary",
+    "connection-time requestId binding",
+    "same-service two-shop isolation",
+    "reload/dispose/recreate/destroy/detach invalidation",
+    "collector-before and collector-after failure semantics",
+    "downstream counters at the selected boundary"
+  ],
+  "not_proven": [
+    "real PDD/Titan URL and runtime compatibility",
+    "actual Titan payload framing or compression",
+    "real reconnect/replay semantics",
+    "real business source time",
+    "production implementation or authorization"
+  ],
+  "checks": [
+    {
+      "id": "A0",
+      "name": "same PddPlatformService activates two real WebContents sessions",
+      "status": "PASS",
+      "evidence": {
+        "shops": [
+          "shop-a",
+          "shop-b"
+        ],
+        "observerCount": 2
+      }
+    },
+    {
+      "id": "A1",
+      "name": "actual loopback connections bind at connection creation",
+      "status": "PASS",
+      "evidence": {
+        "a": [
+          "22028.2"
+        ],
+        "b": [
+          "22616.2"
+        ]
+      }
+    },
+    {
+      "id": "A2",
+      "name": "A/B canonical identity and exact content assertions",
+      "status": "PASS",
+      "evidence": {
+        "collectorCount": 2,
+        "a": {
+          "platform": "pdd",
+          "runtimeShop": {
+            "status": "RESOLVED",
+            "value": {
+              "value": "shop-a"
+            }
+          },
+          "merchantId": {
+            "status": "RESOLVED",
+            "value": "merchant-shop-a"
+          },
+          "storeId": {
+            "status": "RESOLVED",
+            "value": "store-shop-a"
+          },
+          "platformAccountId": {
+            "status": "RESOLVED",
+            "value": "account-shop-a"
+          },
+          "platformCustomerId": {
+            "status": "RESOLVED",
+            "value": {
+              "value": "6318084722818"
+            }
+          },
+          "internalConversationId": {
+            "status": "RESOLVED",
+            "value": "conversation-shop-a"
+          },
+          "localMessageId": {
+            "status": "RESOLVED",
+            "value": "local-shop-a"
+          },
+          "platformMessageIdentity": {
+            "provenance": "AUTHORITATIVE_PLATFORM_ID",
+            "value": "opaque-message"
+          },
+          "runtimeEvidence": {
+            "sessionId": "pdd-session-shop-a",
+            "documentGeneration": 1,
+            "selectedCustomerObservation": {
+              "status": "SELECTED",
+              "platformCustomerId": {
+                "value": "999999"
+              }
+            }
+          },
+          "sourceContent": {
+            "kind": "text",
+            "text": "  alpha\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          "sourceOccurredAt": "2026-09-18T00:00:00Z"
+        },
+        "b": {
+          "platform": "pdd",
+          "runtimeShop": {
+            "status": "RESOLVED",
+            "value": {
+              "value": "shop-b"
+            }
+          },
+          "merchantId": {
+            "status": "RESOLVED",
+            "value": "merchant-shop-b"
+          },
+          "storeId": {
+            "status": "RESOLVED",
+            "value": "store-shop-b"
+          },
+          "platformAccountId": {
+            "status": "RESOLVED",
+            "value": "account-shop-b"
+          },
+          "platformCustomerId": {
+            "status": "RESOLVED",
+            "value": {
+              "value": "6318084722818"
+            }
+          },
+          "internalConversationId": {
+            "status": "RESOLVED",
+            "value": "conversation-shop-b"
+          },
+          "localMessageId": {
+            "status": "RESOLVED",
+            "value": "local-shop-b"
+          },
+          "platformMessageIdentity": {
+            "provenance": "AUTHORITATIVE_PLATFORM_ID",
+            "value": "opaque-message"
+          },
+          "runtimeEvidence": {
+            "sessionId": "pdd-session-shop-b",
+            "documentGeneration": 1,
+            "selectedCustomerObservation": {
+              "status": "SELECTED",
+              "platformCustomerId": {
+                "value": "999999"
+              }
+            }
+          },
+          "sourceContent": {
+            "kind": "text",
+            "text": "  beta\nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+          },
+          "sourceOccurredAt": "2026-09-18T00:00:01Z"
+        }
+      }
+    },
+    {
+      "id": "A3",
+      "name": "invalid/cross-scope association is rejected without collector growth",
+      "status": "PASS",
+      "evidence": {
+        "reason": "ASSOCIATION_SCOPE_MISMATCH",
+        "before": 2,
+        "after": 2
+      }
+    },
+    {
+      "id": "A3b",
+      "name": "owner-runtime-shop association mismatch is rejected without collector growth",
+      "status": "PASS",
+      "evidence": {
+        "reason": "ASSOCIATION_RUNTIME_SHOP_MISMATCH",
+        "before": 2,
+        "after": 2
+      }
+    },
+    {
+      "id": "A4",
+      "name": "missing identity remains explicit UNKNOWN",
+      "status": "PASS",
+      "evidence": {
+        "diagnostics": [
+          "CUSTOMER_UID_MISSING",
+          "PLATFORM_MESSAGE_ID_MISSING",
+          "SOURCE_TIME_MISSING",
+          "CUSTOMER_UID_MISSING",
+          "PLATFORM_MESSAGE_ID_MISSING"
+        ]
+      }
+    },
+    {
+      "id": "A5",
+      "name": "invalid identity is rejected and content/source-time boundaries hold",
+      "status": "PASS",
+      "evidence": {
+        "invalid": "customer_uid_invalid",
+        "missingTime": null,
+        "invalidTime": null,
+        "binary": "UNSUPPORTED_NON_TEXT_FRAME"
+      }
+    },
+    {
+      "id": "A6",
+      "name": "reload invalidates old connection and old connection-created events",
+      "status": "PASS",
+      "evidence": {
+        "oldLifecycle": 1,
+        "newLifecycle": 2,
+        "staleFrame": "UNBOUND_OR_STALE_REQUEST_ID",
+        "staleConnection": "STALE_CONNECTION_CREATED",
+        "collectorDelta": 1
+      }
+    },
+    {
+      "id": "A7",
+      "name": "dispose/recreate/destroy/detach cannot revive old events",
+      "status": "PASS",
+      "evidence": {
+        "oldReplay": "OBSERVER_TERMINAL",
+        "detachedReplay": "OBSERVER_TERMINAL",
+        "observerLifecycle": 2,
+        "collectorDelta": 2
+      }
+    },
+    {
+      "id": "T07A1",
+      "name": "validator unavailable fails before collector",
+      "status": "PASS",
+      "evidence": {
+        "reason": "CANONICAL_VALIDATOR_UNAVAILABLE",
+        "collectorCalls": 0
+      }
+    },
+    {
+      "id": "T07A2",
+      "name": "validator false fails before collector",
+      "status": "PASS",
+      "evidence": {
+        "reason": "CANONICAL_VALIDATION_FAILED",
+        "collectorCalls": 0
+      }
+    },
+    {
+      "id": "T07A3",
+      "name": "validator throw fails before collector",
+      "status": "PASS",
+      "evidence": {
+        "reason": "CANONICAL_VALIDATOR_THREW",
+        "collectorCalls": 0
+      }
+    },
+    {
+      "id": "T07A4",
+      "name": "identity resolver throw fails before collector",
+      "status": "PASS",
+      "evidence": {
+        "reason": "IDENTITY_BINDING_RESOLVER_THREW",
+        "collectorCalls": 0
+      }
+    },
+    {
+      "id": "T07A5",
+      "name": "missing collector returns STOPPED without a call",
+      "status": "PASS",
+      "evidence": {
+        "reason": "COLLECTOR_MISSING",
+        "collectorCalls": 0
+      }
+    },
+    {
+      "id": "T07B1",
+      "name": "collector sync throw returns FAILED after one call",
+      "status": "PASS",
+      "evidence": {
+        "reason": "COLLECTOR_THREW",
+        "calls": 1
+      }
+    },
+    {
+      "id": "T07B2",
+      "name": "collector rejected Promise returns FAILED, observes rejection, no retry",
+      "status": "PASS",
+      "evidence": {
+        "reason": "ASYNC_COLLECTOR_UNSUPPORTED",
+        "calls": 1,
+        "unhandledRejections": 0
+      }
+    }
+  ],
+  "failures": [],
+  "counters": {
+    "legacyBridgeCalls": 0,
+    "aiCalls": 0,
+    "transportSendCalls": 0,
+    "businessPersistenceWrites": 0
+  },
+  "collector": {
+    "calls": 8,
+    "envelopes": 8
+  },
+  "measurement_boundary": {
+    "legacy_bridge": "dynamic orchestrator stub counter",
+    "ai_send_persistence": "no AI, send, or persistence dependency is present in the selected test path; counters remain zero by code-boundary construction",
+    "synthetic_ws_traffic": "loopback-only test traffic, counted separately from business send",
+    "diagnostic_report_write": "one test report write, not business persistence"
+  },
+  "unhandled_rejections": [],
+  "error": null
+}
