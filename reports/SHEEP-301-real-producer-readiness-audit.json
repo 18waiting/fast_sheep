@@ -1,0 +1,750 @@
+{
+  "schema_version": "1.0",
+  "task": "SHEEP-301",
+  "acceptance_unit": "REMAINING_REAL_PRODUCER_INTEGRATION_READINESS_AUDIT",
+  "mode": "READ_ONLY_IMPLEMENTATION_READINESS_AUDIT",
+  "baseline_commit": "e82dd4ca46a61aa2148ed693039fad6c325b0a4b",
+  "audit_result": "COMPLETE",
+  "implementation_readiness_recommendation": "BLOCKED",
+  "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
+  "objective": "Find the remaining gap between the accepted canonical ingress and a real PDD inbound observation path, then recommend the smallest evidence-supported next acceptance unit.",
+  "product_alignment": {
+    "current_mvp_relevance": "HIGH",
+    "customer_value": "Reliable capture of actual customer messages without identity substitution or silent loss.",
+    "safety_impact": "HIGH",
+    "out_of_scope": [
+      "product or source implementation",
+      "production IPC/Titan/WebSocket wiring",
+      "live PDD validation",
+      "AI",
+      "persistence",
+      "transport send",
+      "platform business action",
+      "SHEEP-302 and later tasks"
+    ],
+    "decision": "PROCEED"
+  },
+  "authority_read": [
+    "AGENTS.md",
+    "project/FAST_SHEEP_MASTER_PROMPT.md",
+    "project/DECISIONS.md",
+    "docs/product/FAST_SHEEP_NORTH_STAR.md",
+    "docs/product/PDD_MVP_V1.md",
+    "docs/architecture/AI_CUSTOMER_SERVICE_CORE.md",
+    "docs/architecture/PLATFORM_ADAPTER_CONTRACT.md",
+    "docs/architecture/REPLY_AND_ACTION_SAFETY.md",
+    "project/PROJECT_STATE.json",
+    "project/FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md",
+    "project/FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.1_REVIEWED.md"
+  ],
+  "confirmed_state": {
+    "sheep_300": "CLOSED",
+    "bounded_fixture_unit": "IMPLEMENTED / COMPLETE / CONTROLLER PASS",
+    "full_sheep_301": "PARTIAL / OPEN",
+    "last_closed_task": "SHEEP-300",
+    "next_authoritative_roadmap_id": "SHEEP-301",
+    "current_execution_authorization": false,
+    "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
+    "next_stage_not_executed": true
+  },
+  "source_inventory": [
+    {
+      "path": "packages/platform-pdd/src/inbound-normalizer.ts",
+      "role": "Raw historical PDD payload semantic normalizer and canonical-ingress input normalizer.",
+      "classification": "CONFIRMED",
+      "evidence": "Lines 6-20 define the observed raw fields; lines 52-80 define the legacy normalizer; lines 108-155 preserve missing customerUid/msg_id as diagnostics while rejecting present-but-invalid values."
+    },
+    {
+      "path": "packages/platform-pdd/src/inbound-to-canonical.ts",
+      "role": "Pure PDD inbound to canonical IdentityLock/InboundEnvelope mapper.",
+      "classification": "CONFIRMED",
+      "evidence": "Lines 20-63 define scope, association, identity and runtime binding inputs; lines 126-186 construct the canonical envelope without persistence, AI, or send."
+    },
+    {
+      "path": "apps/desktop/src/main/platforms/pdd/pdd-inbound-ingress.ts",
+      "role": "Accepted Main-side canonical ingress gate.",
+      "classification": "CONFIRMED",
+      "evidence": "Lines 176-279 normalize raw input, resolve Main scope and identity, enforce association ownership, map the envelope, validate it, and stop."
+    },
+    {
+      "path": "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
+      "role": "Main-only sender, session, view, document-generation and liveness binding.",
+      "classification": "CONFIRMED",
+      "evidence": "Lines 167-201 create and resolve PddInboundIngressContext using object identity, READY state, active generation, and isDestroyed()."
+    },
+    {
+      "path": "apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts",
+      "role": "Main composition root. Supports canonical ingress and a separate legacy page-event path.",
+      "classification": "CONFIRMED",
+      "evidence": "Lines 77-105 route message_received into handleInbound; lines 231-308 resolve sender/context and invoke the canonical gate; no production caller is present for the latter."
+    },
+    {
+      "path": "apps/desktop/src/main/index.ts",
+      "role": "Electron Main PDD page IPC wiring.",
+      "classification": "CONFIRMED_GAP",
+      "evidence": "Lines 212-215 invoke handlePageEvent(payload) only, dropping the sender even though pdd-page-ipc.ts supplies it."
+    },
+    {
+      "path": "apps/desktop/src/main/platforms/pdd/pdd-page-ipc.ts",
+      "role": "Dedicated PDD page event/result IPC with sender guard.",
+      "classification": "CONFIRMED_GAP",
+      "evidence": "Lines 32-38 allow module-load validator lookup to return null; lines 50-53 forward events when the validator is null. The sender guard exists, but validation can fail open."
+    },
+    {
+      "path": "packages/platform-pdd/src/page/page-runtime.ts",
+      "role": "Production-preload DOM observer and page-event producer.",
+      "classification": "CONFIRMED_SYNTHETIC_ONLY",
+      "evidence": "Lines 120-144 read DOM messages, use lastConversationId fallback, hardcode normalized inbound direction, and deduplicate before Main using a per-runtime message key."
+    },
+    {
+      "path": "packages/platform-pdd/src/dom/message-reader.ts",
+      "role": "DOM transcript reader.",
+      "classification": "CONFIRMED_LOSSY",
+      "evidence": "Line 15 trims message content before normalization; lines 17-24 read synthetic data-direction, data-message-id, and data-ts attributes."
+    },
+    {
+      "path": "packages/platform-pdd/src/message-normalizer.ts",
+      "role": "Legacy DOM message normalizer.",
+      "classification": "CONFIRMED_LOSSY",
+      "evidence": "Line 18 slices content to 4000 characters; line 21 hardcodes inbound direction; line 24 substitutes a fallback fingerprint as platform_message_id."
+    },
+    {
+      "path": "packages/platform-pdd/src/selector-profile.ts",
+      "role": "PDD selector provenance and runtime readiness profile.",
+      "classification": "CONFIRMED_GAP",
+      "evidence": "Lines 20-24 state that confirmed production selectors were not observed; required selectors are synthetic data-fw-* entries marked DESIGN."
+    },
+    {
+      "path": "packages/platform-pdd/src/page/event-emitter.ts",
+      "role": "In-page event emitter used by PddPageRuntime.",
+      "classification": "CONFIRMED",
+      "evidence": "Used by page-runtime.ts to emit normalized PddPageEvent objects; it does not carry raw PDD payload provenance."
+    },
+    {
+      "path": "apps/desktop/src/main/platforms/pdd/pdd-orchestrator-bridge.ts",
+      "role": "Legacy normalized-message bridge to ConversationOrchestrator.",
+      "classification": "CONFIRMED",
+      "evidence": "Lines 19-28 construct BuyerMessage and call orchestrator.onBuyerMessage. This path is separate from the accepted canonical collector."
+    },
+    {
+      "path": "apps/desktop/src/main/bootstrap.ts",
+      "role": "Production composition root.",
+      "classification": "CONFIRMED_GAP",
+      "evidence": "Lines 283-299 construct the orchestrator with the default fake AI; lines 350-363 construct PddPlatformService without resolveInboundScope, resolveInboundIdentity, or onCanonicalInbound."
+    },
+    {
+      "path": "packages/contracts/schemas/platform/pdd-page-event.schema.json",
+      "role": "IPC event contract for the synthetic DOM page-event path.",
+      "classification": "CONFIRMED_GAP",
+      "evidence": "The event property is an unrestricted string and the schema does not express raw PDD provenance, customerUid, or a value-level message identity policy."
+    },
+    {
+      "path": "references/pdd-customer-service-sdk/workstation/workstation.py",
+      "role": "Imported external research snapshot showing a Playwright WebSocket frame observer as a design hint, not a Fast Sheep dependency.",
+      "classification": "INFERRED / DEFERRED",
+      "evidence": "Lines 393-426 show a websocket framereceived handler inspecting push_data.data.message. The import report records a research-only license and no production reuse authorization."
+    }
+  ],
+  "field_source_mapping_matrix": [
+    {
+      "field": "platform",
+      "raw_source": "Not a producer input; set by the PDD adapter/mapper.",
+      "transform": "mapPddInboundToCanonical sets platform to pdd.",
+      "trust_boundary": "Main-only canonical mapper.",
+      "canonical_target": "identityLock.platform",
+      "missing_or_conflict": "Fixed platform value.",
+      "evidence": "packages/platform-pdd/src/inbound-to-canonical.ts lines 164-184.",
+      "status": "CONFIRMED"
+    },
+    {
+      "field": "runtimeShop",
+      "raw_source": "Actual sender WebContents mapped through PddPlatformService senderSessions to the PddSessionHost.",
+      "transform": "createInboundIngressContext then resolveInboundIngressBinding produces document.shopId.",
+      "trust_boundary": "Main object identity and WeakMap; payload shop_id is not authority.",
+      "canonical_target": "identityLock.runtimeShop",
+      "missing_or_conflict": "UNTRUSTED_SENDER, INVALID_DOCUMENT_CONTEXT, or RUNTIME_SHOP_MISMATCH.",
+      "evidence": "pdd-platform-service.ts lines 227-267; pdd-session-host.ts lines 167-193.",
+      "status": "CONFIRMED_MECHANISM / NOT_WIRED_TO_REAL_PRODUCER"
+    },
+    {
+      "field": "merchantId / storeId / platformAccountId",
+      "raw_source": "No raw payload source. Must come from Main authority repositories or an explicit trusted binding.",
+      "transform": "resolveInboundScope callback, followed by sameScope comparison.",
+      "trust_boundary": "Main repository authority only; raw payload and runtime shop labels are not authority.",
+      "canonical_target": "identityLock.merchantId, storeId, platformAccountId",
+      "missing_or_conflict": "Production bootstrap supplies no resolver; accepted gate returns SCOPE_BINDING_RESOLVER_MISSING. Missing facts must remain UNKNOWN/UNRESOLVED.",
+      "evidence": "apps/desktop/src/main/bootstrap.ts lines 350-363; pdd-inbound-ingress.ts lines 194-221.",
+      "status": "BLOCKED"
+    },
+    {
+      "field": "platformCustomerId",
+      "raw_source": "Raw Titan from.uid, confirmed by historical live evidence as the customer identity anchor.",
+      "transform": "normalizePddInboundForCanonical validates a decimal string; mapPlatformCustomerId creates CustomerExternalRef.",
+      "trust_boundary": "Only after the frame is bound to the trusted Main session/document context.",
+      "canonical_target": "identityLock.platformCustomerId",
+      "missing_or_conflict": "Missing -> UNKNOWN; present-but-invalid -> REJECTED. Selected customer and display name never substitute.",
+      "evidence": "inbound-normalizer.ts lines 48-50 and 128-153; SHEEP-081 receive_text; SHEEP-087 evidence.",
+      "status": "CONFIRMED_CONTRACT / NO_CURRENT_RAW_PRODUCER"
+    },
+    {
+      "field": "platformMessageIdentity",
+      "raw_source": "Raw Titan msg_id.",
+      "transform": "Nonblank string becomes authoritative platform identity in the canonical mapper.",
+      "trust_boundary": "Only after trusted producer binding. Fingerprints and synthetic IDs must never be promoted to authoritative.",
+      "canonical_target": "identityLock.triggerMessage.platformMessageIdentity",
+      "missing_or_conflict": "Missing -> UNKNOWN; present-but-invalid -> REJECTED. Local fingerprint provenance is not preserved by the legacy DOM path.",
+      "evidence": "inbound-normalizer.ts lines 137-143; inbound-to-canonical.ts mapPlatformMessageIdentity; message-normalizer.ts line 24.",
+      "status": "CONFIRMED_CONTRACT / LEGACY_PATH_VIOLATES"
+    },
+    {
+      "field": "conversation_id / runtimeConversationReference",
+      "raw_source": "No confirmed raw conversation identity in current evidence; historical report says conversation identity is unresolved.",
+      "transform": "A trusted runtimeConversationReference binding supplied by Main; no raw fallback.",
+      "trust_boundary": "Main binding only. Never derive from display text, lastConversationId, buyer_id, or payload self-report.",
+      "canonical_target": "identityLock.runtimeConversationReference",
+      "missing_or_conflict": "UNKNOWN or UNRESOLVED; do not create a synthetic conversation id.",
+      "evidence": "SHEEP-081 conversation_selection; SHEEP-087 conversation_association; page-runtime.ts lines 122-136.",
+      "status": "BLOCKED"
+    },
+    {
+      "field": "internalConversationId",
+      "raw_source": "Only a trusted association record may supply the internal conversation identity.",
+      "transform": "resolveInboundIdentity.association, then owner scope/runtime shop checks.",
+      "trust_boundary": "Main resolver; association owner is verified against authoritative scope.",
+      "canonical_target": "identityLock.internalConversationId",
+      "missing_or_conflict": "If no valid association, UNKNOWN/UNRESOLVED. Mismatches are rejected.",
+      "evidence": "pdd-inbound-ingress.ts lines 223-239; production bootstrap has no resolver.",
+      "status": "BLOCKED"
+    },
+    {
+      "field": "localMessageId",
+      "raw_source": "Only a trusted association record may supply the local message identity.",
+      "transform": "resolveInboundIdentity.association.localMessageId.",
+      "trust_boundary": "Main resolver; association owner is verified.",
+      "canonical_target": "identityLock.triggerMessage.localMessageId",
+      "missing_or_conflict": "If no valid association, UNKNOWN/UNRESOLVED. It must not be synthesized from platform msg_id.",
+      "evidence": "pdd-inbound-ingress.ts lines 223-251; no production association source.",
+      "status": "BLOCKED"
+    },
+    {
+      "field": "session / WebContents / document generation",
+      "raw_source": "Actual sender WebContents, PddSessionHost instance, active document generation.",
+      "transform": "PddInboundIngressContext -> PddInboundDocumentBinding; runtime revalidation before collector.",
+      "trust_boundary": "Main-only object identity, WeakMap, READY state, active generation, isDestroyed liveness.",
+      "canonical_target": "runtimeEvidence.sessionId and runtimeEvidence.documentGeneration",
+      "missing_or_conflict": "Reject invalid, stale, disposed, or destroyed context.",
+      "evidence": "pdd-session-host.ts lines 167-201; pdd-platform-service.ts lines 251-289.",
+      "status": "CONFIRMED"
+    },
+    {
+      "field": "selected customer observation",
+      "raw_source": "Selected DOM row data-random prefix, if a producer supplies it.",
+      "transform": "Separate runtime observation only.",
+      "trust_boundary": "Never canonical platform customer identity or sender identity.",
+      "canonical_target": "runtimeEvidence.selectedCustomerObservation",
+      "missing_or_conflict": "NONE or UNKNOWN; never fill platformCustomerId.",
+      "evidence": "selected-customer-reader.ts; pdd-session-host.ts lines 74-77 and 135-143; accepted ingress selected-observation test.",
+      "status": "CONFIRMED_EVIDENCE_ONLY"
+    },
+    {
+      "field": "inbound direction",
+      "raw_source": "Historical raw roles from.role=user and to.role=mall_cs.",
+      "transform": "Canonical-ingress normalizer rejects contradictory direction and wrong roles.",
+      "trust_boundary": "Trusted producer payload after sender/context binding.",
+      "canonical_target": "Acceptance condition for inbound envelope; mapper only emits inbound.",
+      "missing_or_conflict": "Missing direction is allowed only when roles prove inbound. Unknown or outbound is rejected. The DOM path hardcodes inbound and must not be reused.",
+      "evidence": "inbound-normalizer.ts lines 108-121; message-normalizer.ts line 21.",
+      "status": "CONFIRMED_CONTRACT / LEGACY_PATH_VIOLATES"
+    },
+    {
+      "field": "content",
+      "raw_source": "Raw observed Titan content.",
+      "transform": "Canonical-ingress normalizer preserves the string exactly.",
+      "trust_boundary": "Trusted producer payload after sender/context binding.",
+      "canonical_target": "sourceContent.text",
+      "missing_or_conflict": "Empty content rejected; no trim, no 4000-character truncation.",
+      "evidence": "inbound-normalizer.ts lines 123-125 and 146-155; message-reader.ts line 15; message-normalizer.ts line 18.",
+      "status": "CONFIRMED_CONTRACT / LEGACY_PATH_VIOLATES"
+    },
+    {
+      "field": "sourceOccurredAt",
+      "raw_source": "No field is mapped by normalizePddInboundForCanonical; it is a separate Main ingress input.",
+      "transform": "normalizeSourceOccurredAt accepts only strict ISO-8601 UTC Z or null; malformed strings become null with diagnostics.",
+      "trust_boundary": "Must come from a trusted producer/time source; no local-time substitution.",
+      "canonical_target": "sourceOccurredAt",
+      "missing_or_conflict": "Missing or malformed -> null with diagnostics; non-string non-null is rejected.",
+      "evidence": "pdd-inbound-ingress.ts lines 148-170 and 254-265; page-event timestamp is not wired to this input.",
+      "status": "BLOCKED"
+    }
+  ],
+  "call_chains": {
+    "accepted_canonical_path": {
+      "status": "CONFIRMED_CODE_PATH / NO_PRODUCTION_CALLER",
+      "chain": [
+        "trusted sender + PddInboundIngressContext",
+        "PddSessionHost.resolveInboundIngressBinding",
+        "processPddInboundIngress",
+        "normalizePddInboundForCanonical",
+        "resolveInboundScope + resolveInboundIdentity",
+        "mapPddInboundToCanonical",
+        "canonical schema validation",
+        "onCanonicalInbound collector",
+        "STOP"
+      ],
+      "evidence": "pdd-platform-service.ts lines 231-308; pdd-inbound-ingress.ts lines 176-279."
+    },
+    "current_dom_preload_ipc_path": {
+      "status": "CONFIRMED_SYNTHETIC_ONLY / NOT_A_RAW_PDD_PRODUCER",
+      "chain": [
+        "PddPageRuntime.scan reads synthetic data-fw-* DOM selectors",
+        "normalizeMessage trims/truncates/hardcodes/fallback-fingerprints",
+        "buildMessageReceived creates normalized page event",
+        "preload sends pdd-page-event",
+        "pdd-page-ipc validates with possible fail-open validator",
+        "main/index drops sender and calls handlePageEvent(payload)",
+        "service.handlePageEvent routes message_received to legacy handleInbound"
+      ],
+      "evidence": "page-runtime.ts; page-events.ts; preload.ts; pdd-page-ipc.ts; main/index.ts; pdd-platform-service.ts."
+    },
+    "current_legacy_consumer_path": {
+      "status": "CONFIRMED",
+      "chain": [
+        "PddPlatformService.handleInbound",
+        "onInboundMessage callback if configured, otherwise PddOrchestratorBridge",
+        "ConversationOrchestrator.onBuyerMessage"
+      ],
+      "evidence": "pdd-platform-service.ts lines 91-100 and 119-122; pdd-orchestrator-bridge.ts lines 19-28."
+    },
+    "historical_raw_payload_evidence": {
+      "status": "HISTORICAL_LIVE_OBSERVATION_ONLY / NOT_WIRED",
+      "evidence": [
+        "SHEEP-081 receive_text confirms titan-ws.pinduoduo.com and fields content, from.role, from.uid, to.role, to.uid, msg_id, client_msg_id.",
+        "SHEEP-087 confirms from.role=user, to.role=mall_cs, decimal-string from.uid, nonblank msg_id, exact content, and no conversation identity assignment.",
+        "No repository implementation observes Titan WebSocket frames."
+      ]
+    }
+  },
+  "actual_real_producer_path": {
+    "status": "NONE_CURRENTLY_WIRED",
+    "summary": "The repository has a callable canonical ingress and historical raw PDD payload evidence, but no production producer binds a real observation to that ingress. The only wired page-event path is synthetic-only, sender-dropping, lossy, and still routes message_received to the legacy orchestrator branch."
+  },
+  "candidate_paths": [
+    {
+      "id": "CANDIDATE-DOM-PAGE-EVENT",
+      "classification": "BLOCKED",
+      "summary": "Reuse the existing DOM/preload/IPC page-event path.",
+      "blockers": [
+        "required selectors are DESIGN-only synthetic selectors",
+        "content trim and 4000-character truncation occur before Main",
+        "direction is hardcoded inbound",
+        "fallback fingerprints become platform_message_id without provenance",
+        "lastConversationId fallback can reuse a stale conversation",
+        "pre-mapper dedup is global to the runtime key",
+        "IPC sender is dropped in main/index.ts",
+        "validator can fail open",
+        "legacy message_received branch remains parallel"
+      ],
+      "conclusion": "Not acceptable for the real producer boundary without redesign; do not relabel normalized DOM events as raw PDD payloads."
+    },
+    {
+      "id": "CANDIDATE-TITAN-EMBEDDED-FRAME-OBSERVER",
+      "classification": "RECOMMENDED_DIRECTION_BLOCKED_PENDING_EVIDENCE",
+      "summary": "Use a Main-owned, read-only observer of the existing embedded PDD WebContents Titan frame channel, bound to the exact session and document generation, then feed the already accepted canonical ingress.",
+      "supporting_evidence": [
+        "Historical live evidence confirms titan-ws.pinduoduo.com and the received field shape.",
+        "The accepted canonical ingress already expects raw payload semantics and a separate sourceOccurredAt input.",
+        "PddSessionHost already provides sender, session, document generation, and liveness binding.",
+        "The existing embedded-runtime architecture is the current product direction."
+      ],
+      "missing_evidence": [
+        "exact current Electron-observable frame envelope and delivery mechanism",
+        "how a frame is bound to the active WebContents/session/document generation without payload self-report",
+        "binary versus text frame framing and JSON extraction semantics",
+        "sourceOccurredAt semantics, units, timezone, and missing behavior",
+        "production scope resolver values for merchant/store/platform account",
+        "authorization for the narrow network observation mechanism, if required"
+      ],
+      "conclusion": "Preferred single direction, but implementation readiness is BLOCKED until the frame boundary and binding evidence exist."
+    },
+    {
+      "id": "CANDIDATE-SEPARATE-TITAN-CLIENT",
+      "classification": "DEFERRED / NOT_RECOMMENDED",
+      "summary": "Create a separate Titan or WebSocket client outside the existing embedded PDD session.",
+      "reasons": [
+        "would duplicate session and credential ownership",
+        "has no current implementation evidence",
+        "increases cross-shop and secret-handling risk",
+        "external SDK snapshot is research-only and cannot be treated as production authority"
+      ]
+    }
+  ],
+  "critical_gaps": [
+    {
+      "id": "GAP-01-SENDER-DROPPED",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING",
+      "finding": "The production PDD page-event callback drops the authenticated IPC sender before PddPlatformService.handlePageEvent, so no production path can establish the accepted sender/document context.",
+      "evidence": "apps/desktop/src/main/index.ts lines 212-215; pdd-page-ipc.ts lines 24-27 and 50-53; pdd-platform-service.ts lines 231-267."
+    },
+    {
+      "id": "GAP-02-CANONICAL-CALLER-MISSING",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING",
+      "finding": "handleTrustedInboundIngress has no production caller. Existing references are tests, the bounded smoke script, and its definition.",
+      "evidence": "Only calls exist in apps/desktop/tests/pdd-inbound-ingress.test.ts and scripts/run-sheep-301-bounded-fixture-smoke.mjs."
+    },
+    {
+      "id": "GAP-03-RESOLVERS-MISSING",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING",
+      "finding": "Production bootstrap does not provide resolveInboundScope, resolveInboundIdentity, or onCanonicalInbound. A direct call would fail with missing scope resolver or collector.",
+      "evidence": "apps/desktop/src/main/bootstrap.ts lines 350-363; pdd-platform-service.ts lines 268-293."
+    },
+    {
+      "id": "GAP-04-LEGACY-PARALLEL-CONSUMER",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING",
+      "finding": "message_received still has an independent legacy branch after session.handleEvent. This branch is not gated by the canonical gate and reaches PddOrchestratorBridge when no onInboundMessage is configured.",
+      "evidence": "pdd-platform-service.ts lines 77-105 and 119-122; pdd-orchestrator-bridge.ts lines 19-28."
+    },
+    {
+      "id": "GAP-05-PAGE-IPC-FAIL-OPEN",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING_IF_PATH_REUSED",
+      "finding": "If validatorFor throws during module initialization, pdd-page-ipc forwards events without validation. The accepted path requires fail-closed behavior.",
+      "evidence": "pdd-page-ipc.ts lines 32-38 and 50-58."
+    },
+    {
+      "id": "GAP-06-SYNTHETIC-DOM-SELECTORS",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING",
+      "finding": "The production PDD WebContents is loaded with a selector profile whose required selectors are synthetic data-fw-* entries. No confirmed production PDD selectors are present.",
+      "evidence": "packages/platform-pdd/src/selector-profile.ts lines 20-24; packages/platform-pdd/tests/fixtures/chat-basic.html."
+    },
+    {
+      "id": "GAP-07-LOSSY-PRE-MAPPER",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING_IF_PATH_REUSED",
+      "finding": "The DOM path trims content, truncates at 4000 characters, hardcodes inbound direction, uses lastConversationId fallback, substitutes fallback fingerprints, and deduplicates before Main.",
+      "evidence": "message-reader.ts line 15; message-normalizer.ts lines 18-24; page-runtime.ts lines 122-144."
+    },
+    {
+      "id": "GAP-08-NO-RAW-PRODUCER",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING",
+      "finding": "No repository code observes or receives the historical Titan raw PDD inbound payload. The normalized DOM page event is not a raw PDD payload and must not be relabelled as one.",
+      "evidence": "No websocket/debugger/framereceived code in apps or packages; page-events.ts builds normalized fields; SHEEP-081 records historical evidence only."
+    },
+    {
+      "id": "GAP-09-NO-SCOPE-BINDING",
+      "classification": "BLOCKED",
+      "severity": "BLOCKING",
+      "finding": "Runtime shop is not mapped to canonical merchant/store/platform-account scope. ShopRow carries only shop_id, name, type, and enabled; the repositories exist but no PDD resolver is wired.",
+      "evidence": "apps/desktop/src/main/services/shop-service.ts line 2; bootstrap.ts lines 265-267 and 350-363."
+    },
+    {
+      "id": "GAP-10-NO-TRUSTED-SOURCE-TIME",
+      "classification": "BLOCKED",
+      "severity": "BLOCKING",
+      "finding": "The canonical gate requires a separate validated sourceOccurredAt input, but no real producer supplies it. The page-event timestamp is not wired to the gate and raw payload time semantics are not established.",
+      "evidence": "pdd-inbound-ingress.ts lines 148-170 and 254-265; pdd-platform-service.ts lines 277-283."
+    },
+    {
+      "id": "GAP-11-ASSOCIATION-SOURCE-MISSING",
+      "classification": "BLOCKED",
+      "severity": "NON_BLOCKING_FOR_MINIMAL_MAPPING",
+      "finding": "No production association resolver exists for internalConversationId or localMessageId. The minimal real-producer unit may leave these UNKNOWN/UNRESOLVED, but must not fabricate them or persist them.",
+      "evidence": "pdd-inbound-ingress.ts lines 223-251; production bootstrap has no resolveInboundIdentity."
+    }
+  ],
+  "blocking_gaps": [
+    {
+      "id": "GAP-01-SENDER-DROPPED",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING",
+      "finding": "The production PDD page-event callback drops the authenticated IPC sender before PddPlatformService.handlePageEvent, so no production path can establish the accepted sender/document context.",
+      "evidence": "apps/desktop/src/main/index.ts lines 212-215; pdd-page-ipc.ts lines 24-27 and 50-53; pdd-platform-service.ts lines 231-267."
+    },
+    {
+      "id": "GAP-02-CANONICAL-CALLER-MISSING",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING",
+      "finding": "handleTrustedInboundIngress has no production caller. Existing references are tests, the bounded smoke script, and its definition.",
+      "evidence": "Only calls exist in apps/desktop/tests/pdd-inbound-ingress.test.ts and scripts/run-sheep-301-bounded-fixture-smoke.mjs."
+    },
+    {
+      "id": "GAP-03-RESOLVERS-MISSING",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING",
+      "finding": "Production bootstrap does not provide resolveInboundScope, resolveInboundIdentity, or onCanonicalInbound. A direct call would fail with missing scope resolver or collector.",
+      "evidence": "apps/desktop/src/main/bootstrap.ts lines 350-363; pdd-platform-service.ts lines 268-293."
+    },
+    {
+      "id": "GAP-04-LEGACY-PARALLEL-CONSUMER",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING",
+      "finding": "message_received still has an independent legacy branch after session.handleEvent. This branch is not gated by the canonical gate and reaches PddOrchestratorBridge when no onInboundMessage is configured.",
+      "evidence": "pdd-platform-service.ts lines 77-105 and 119-122; pdd-orchestrator-bridge.ts lines 19-28."
+    },
+    {
+      "id": "GAP-05-PAGE-IPC-FAIL-OPEN",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING_IF_PATH_REUSED",
+      "finding": "If validatorFor throws during module initialization, pdd-page-ipc forwards events without validation. The accepted path requires fail-closed behavior.",
+      "evidence": "pdd-page-ipc.ts lines 32-38 and 50-58."
+    },
+    {
+      "id": "GAP-06-SYNTHETIC-DOM-SELECTORS",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING",
+      "finding": "The production PDD WebContents is loaded with a selector profile whose required selectors are synthetic data-fw-* entries. No confirmed production PDD selectors are present.",
+      "evidence": "packages/platform-pdd/src/selector-profile.ts lines 20-24; packages/platform-pdd/tests/fixtures/chat-basic.html."
+    },
+    {
+      "id": "GAP-07-LOSSY-PRE-MAPPER",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING_IF_PATH_REUSED",
+      "finding": "The DOM path trims content, truncates at 4000 characters, hardcodes inbound direction, uses lastConversationId fallback, substitutes fallback fingerprints, and deduplicates before Main.",
+      "evidence": "message-reader.ts line 15; message-normalizer.ts lines 18-24; page-runtime.ts lines 122-144."
+    },
+    {
+      "id": "GAP-08-NO-RAW-PRODUCER",
+      "classification": "CONFIRMED",
+      "severity": "BLOCKING",
+      "finding": "No repository code observes or receives the historical Titan raw PDD inbound payload. The normalized DOM page event is not a raw PDD payload and must not be relabelled as one.",
+      "evidence": "No websocket/debugger/framereceived code in apps or packages; page-events.ts builds normalized fields; SHEEP-081 records historical evidence only."
+    },
+    {
+      "id": "GAP-09-NO-SCOPE-BINDING",
+      "classification": "BLOCKED",
+      "severity": "BLOCKING",
+      "finding": "Runtime shop is not mapped to canonical merchant/store/platform-account scope. ShopRow carries only shop_id, name, type, and enabled; the repositories exist but no PDD resolver is wired.",
+      "evidence": "apps/desktop/src/main/services/shop-service.ts line 2; bootstrap.ts lines 265-267 and 350-363."
+    },
+    {
+      "id": "GAP-10-NO-TRUSTED-SOURCE-TIME",
+      "classification": "BLOCKED",
+      "severity": "BLOCKING",
+      "finding": "The canonical gate requires a separate validated sourceOccurredAt input, but no real producer supplies it. The page-event timestamp is not wired to the gate and raw payload time semantics are not established.",
+      "evidence": "pdd-inbound-ingress.ts lines 148-170 and 254-265; pdd-platform-service.ts lines 277-283."
+    }
+  ],
+  "recommended_next_acceptance_unit": {
+    "id": "BOUNDED_REAL_PDD_TITAN_FRAME_BOUNDARY_EVIDENCE",
+    "state": "BLOCKED_IMPLEMENTATION_READINESS",
+    "purpose": "Obtain the minimum missing read-only evidence needed to decide whether the embedded PDD WebContents can expose a trustworthy Titan inbound frame boundary.",
+    "scope": [
+      "one controlled, explicitly authorized live read-only observation",
+      "one inbound message only",
+      "record field presence and correlation only, not content or identifiers",
+      "verify frame origin and binding to the active PDD WebContents/session/document generation",
+      "verify whether source time is present and how it is represented",
+      "do not invoke AI, persistence, send, or platform mutation",
+      "do not implement product code or change the accepted canonical path"
+    ],
+    "unblock_criteria": [
+      "exact observed frame envelope is documented",
+      "frame-to-session/document binding is demonstrated without trusting payload shop/session",
+      "source time semantics are explicit",
+      "canonical scope resolver values are identified or explicitly remain UNKNOWN/UNRESOLVED",
+      "all failures stop before collector and legacy bridge"
+    ],
+    "follows_with": {
+      "proposed_implementation_unit": "TRUSTED_MAIN_TITAN_FRAME_INGRESS",
+      "description": "After the evidence unit passes, implement the Main-owned observer and route its raw confirmed fields through the accepted canonical ingress, with no DOM fallback, no legacy bridge, and no AI/persistence/send."
+    }
+  },
+  "proposed_follow_on_implementation_unit": {
+    "id": "TRUSTED_MAIN_TITAN_FRAME_INGRESS",
+    "state": "NOT_AUTHORIZED / PROPOSAL_ONLY",
+    "solves": "Binds a real inbound PDD observation to the accepted canonical ingress without the synthetic DOM, lossy normalization, or legacy orchestrator branch.",
+    "call_chain": [
+      "existing embedded PDD WebContents",
+      "Main-owned read-only Titan frame observer",
+      "strict frame/source validation",
+      "PddSessionHost sender/session/document context",
+      "handleTrustedInboundIngress",
+      "canonical mapper + real schema validator",
+      "canonical collector",
+      "STOP"
+    ],
+    "reuse": [
+      "PddSessionHost sender/context/document-generation binding",
+      "processPddInboundIngress gate",
+      "normalizePddInboundForCanonical",
+      "mapPddInboundToCanonical",
+      "canonical schema validator",
+      "accepted collector boundary"
+    ],
+    "candidate_files": [
+      "apps/desktop/src/main/platforms/pdd/pdd-view-host.ts",
+      "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
+      "apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts",
+      "apps/desktop/src/main/index.ts only if composition wiring requires it",
+      "new apps/desktop/src/main/platforms/pdd/pdd-titan-frame-observer.ts",
+      "new apps/desktop/tests/pdd-titan-ingress.test.ts",
+      "apps/desktop/tests/pdd-session-host.test.ts",
+      "apps/desktop/tests/pdd-inbound-ingress.test.ts for boundary regressions"
+    ],
+    "ipc_and_schema_impact": {
+      "new_ipc_channel": "NOT_PROPOSED_FOR_MINIMAL_MAIN_OWNED_OBSERVER",
+      "public_page_event_schema": "SHOULD_NOT_BE_REUSED_FOR_RAW_TITAN_PAYLOAD",
+      "generated_mirror": "NO_CHANGE_EXPECTED_FOR_MAIN_ONLY_OBSERVER",
+      "canonical_schema": "NO_CHANGE_EXPECTED"
+    },
+    "security_constraints": [
+      "attach only to the exact PDD WebContents owned by the session",
+      "filter to the exact Titan origin and discard all other frames before parsing",
+      "never log or persist raw frames, cookies, tokens, headers, or credentials",
+      "extract only confirmed raw fields needed by the canonical normalizer",
+      "keep conversation/local-message identities UNKNOWN/UNRESOLVED unless a trusted read-only association exists",
+      "fail closed if the canonical validator is unavailable",
+      "stop if collector is missing; never fall back to AI or legacy bridge",
+      "disable or remove the selected path on parse failure, navigation, dispose, or auth/reauth"
+    ]
+  },
+  "test_plan": [
+    {
+      "id": "T01",
+      "scenario": "One controlled inbound frame from exact trusted session/document generation",
+      "expected": "One canonical envelope collected with real validator.",
+      "offline_evidence": "fake frame source attached to a fake view boundary"
+    },
+    {
+      "id": "T02",
+      "scenario": "Same opaque customer/message IDs in two shops",
+      "expected": "Each frame maps only to its own runtime shop and scope.",
+      "offline_evidence": "two independent session/view fixtures"
+    },
+    {
+      "id": "T03",
+      "scenario": "Wrong owner scope/customer/message association",
+      "expected": "Rejected with the existing association mismatch reasons; collector unchanged.",
+      "offline_evidence": "test-owned identity resolver"
+    },
+    {
+      "id": "T04",
+      "scenario": "Frame delayed past reload, dispose/recreate, destroyed WebContents, missing or forged context, wrong sender/frame",
+      "expected": "Rejected or discarded before normalization; collector unchanged.",
+      "offline_evidence": "frame observer + fake WebContents"
+    },
+    {
+      "id": "T05",
+      "scenario": "Unknown customerUid/msg_id and present-but-invalid values",
+      "expected": "Missing remains explicit UNKNOWN; invalid/conflicting is rejected; no fallback fingerprint.",
+      "offline_evidence": "raw frame fixtures"
+    },
+    {
+      "id": "T06",
+      "scenario": "Direction, message provenance, exact content, and source time",
+      "expected": "Roles establish inbound; authoritative msg_id remains distinct from fingerprints; content is unchanged; invalid time is null with diagnostics and no local fallback.",
+      "offline_evidence": "raw frame fixtures"
+    },
+    {
+      "id": "T07",
+      "scenario": "Mapper failure, validator unavailable/false/throw, collector missing/throw/async return",
+      "expected": "Stop with no collector increase and no legacy bridge fallback.",
+      "offline_evidence": "focused gate tests"
+    },
+    {
+      "id": "T08",
+      "scenario": "Successful and failed paths",
+      "expected": "AI calls, transport sends, persistence writes, and legacy bridge calls remain zero at the selected boundary.",
+      "offline_evidence": "counters at the producer boundary; not claimed as universal runtime proof"
+    },
+    {
+      "id": "T09",
+      "scenario": "Real embedded WebContents frame reachability",
+      "expected": "Only a separately authorized live read-only observation can prove the actual frame boundary.",
+      "offline_evidence": "NOT_OFFLINE_PROVABLE"
+    }
+  ],
+  "evidence_classification": {
+    "confirmed": [
+      "accepted canonical ingress exists and is callable through tests/smoke",
+      "canonical ingress has no production caller",
+      "production page-event callback drops sender",
+      "page-event validator can fail open",
+      "page runtime is built on synthetic DESIGN selectors",
+      "DOM path trims/truncates/hardcodes/fallback-fingerprints and deduplicates before Main",
+      "message_received still reaches the legacy orchestrator branch independently",
+      "production bootstrap supplies no canonical scope, identity, or collector callbacks",
+      "production runtime shop is not mapped to canonical merchant/store/account scope",
+      "historical live evidence confirms Titan raw receive fields but no current Titan producer code exists"
+    ],
+    "inferred": [
+      "A Main-owned observer of the existing embedded PDD WebContents is the least-risk compatible direction if legal/platform authorization and exact frame evidence are obtained.",
+      "The accepted canonical mapper can consume the historical raw field shape without a second canonical model."
+    ],
+    "blocked": [
+      "implementation wiring for the real producer",
+      "exact Electron-observable Titan frame mechanism and document binding",
+      "sourceOccurredAt semantics",
+      "canonical scope mapping from runtime shop to merchant/store/platform account",
+      "production association source for internal conversation and local message identities"
+    ],
+    "product_decision_required": [],
+    "deferred": [
+      "durable dedupe/idempotency/replay semantics (SHEEP-302 and later)",
+      "commercial/platform-compliance approval for any network-observation mechanism",
+      "external SDK code or asset reuse",
+      "performSend retry conflict (SHEEP-310)"
+    ],
+    "not_run": [
+      "real PDD/Electron session startup",
+      "network or WebSocket inspection",
+      "Titan/WS producer execution",
+      "platform requests or business actions",
+      "AI Worker",
+      "persistence",
+      "transport send",
+      "live store validation"
+    ]
+  },
+  "implementation_flags": {
+    "implementation_performed": false,
+    "implementation_authorized": false,
+    "live_validation_performed": false,
+    "full_sheep_301_closed": false,
+    "next_stage_not_executed": true
+  },
+  "files_changed": [
+    "project/SHEEP_301_REAL_PRODUCER_READINESS_AUDIT.md",
+    "reports/SHEEP-301-real-producer-readiness-audit.json"
+  ],
+  "validation": {
+    "status": "PASS",
+    "commands": [
+      {
+        "command": "node -e JSON.parse(report)",
+        "result": "PASS"
+      },
+      {
+        "command": "node scripts/validate-project-state.mjs project/PROJECT_STATE.json",
+        "result": "PASS / PROJECT_STATE_CONSISTENCY=PASS"
+      },
+      {
+        "command": "node --test tests/project-state-consistency.test.mjs",
+        "result": "PASS / 18 passed / 0 failed"
+      },
+      {
+        "command": "audit reference path existence check",
+        "result": "PASS / AUDIT_REFERENCE_PATHS=PASS"
+      },
+      {
+        "command": "git diff --cached --check",
+        "result": "PASS"
+      },
+      {
+        "command": "git diff --cached --name-only scope check",
+        "result": "PASS / exactly the two audit artifacts"
+      }
+    ],
+    "changed_file_scope": [
+      "project/SHEEP_301_REAL_PRODUCER_READINESS_AUDIT.md",
+      "reports/SHEEP-301-real-producer-readiness-audit.json"
+    ],
+    "implementation_or_test_changes": false,
+    "live_validation_performed": false
+  }
+}
