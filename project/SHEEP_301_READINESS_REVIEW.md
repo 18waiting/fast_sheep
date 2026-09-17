@@ -5,7 +5,7 @@
 > Audit baseline: `79faea827fb6100a2860757ff61e838dbf9ac70a`
 > Controller decision: `PASS`
 > Scope: controlled Main-local raw-ingress fixture mapping acceptance unit only
-> Implementation state: `NOT_STARTED`
+> Implementation state at readiness baseline: `NOT_STARTED` (historical; current bounded acceptance state is recorded in section 12)
 > This review record does not replace product, architecture, decisions, or execution-state authority.
 
 ---
@@ -313,3 +313,70 @@ Not connected or not authorized:
 - platform mutation.
 
 Completion of this bounded acceptance unit will not close the full SHEEP-301 task and will not authorize SHEEP-302.
+
+---
+
+## 12. Bounded Implementation Acceptance and Current State
+
+This section records the Controller acceptance decision issued after the readiness review above. It preserves the historical readiness snapshot rather than rewriting it as if the original implementation had already been accepted at audit time.
+
+### 12.1 Controller decision
+
+- Acceptance unit: `MAIN_LOCAL_RAW_INGRESS_BOUND_CONTROLLED_FIXTURE_MAPPING`
+- Bounded unit state: `IMPLEMENTED / COMPLETE / CONTROLLER PASS`
+- Codex result for the bounded unit: `COMPLETE`
+- Controller decision: `PASS`
+- Reviewed HEAD: `c86fcdd12b26c377fb4e0247050c5bd223431628`
+- Governance reconciliation baseline: `c86fcdd12b26c377fb4e0247050c5bd223431628`
+- Full SHEEP-301 state: `PARTIAL / OPEN`
+
+The Controller PASS applies only to the bounded controlled fixture mapping unit. It does not close the full SHEEP-301 task.
+
+### 12.2 Accepted path
+
+```text
+controlled Main-local fixture
+-> document-bound trusted Main binding
+-> raw PDD semantic validation
+-> scoped identity association checks
+-> canonical IdentityLock / InboundEnvelope
+-> canonical schema validation
+-> controlled collector
+-> STOP
+```
+
+The accepted path uses the real canonical validator for successful and identity-conflict cases; injected validators are limited to unavailable, false, and throwing failure branches. The path remains disconnected from production IPC, Titan/WebSocket, the legacy DOM message bridge, AI generation, persistence, transport send, and platform mutation.
+
+### 12.3 Commit chain
+
+| Stage | Commit | Meaning |
+|---|---|---|
+| Original bounded implementation | `7dd7d4f0b8a50bba3034e04a4b37a9a37f99967f` | Initial controlled fixture-to-canonical implementation. |
+| Identity/exception repair | `fdfdca90215db2aea14a1ad5155a2a516fb9a1b6` | Repaired association validation and explicit failure handling. |
+| Association ownership repair | `2808c179529f6b820946a754553343e06e2fc8f6` | Scoped association records to trusted shop/scope evidence. |
+| Evidence completion / reviewed HEAD | `c86fcdd12b26c377fb4e0247050c5bd223431628` | Completed fixture, assertion, smoke, and evidence requirements. |
+
+The evidence-completion commit is not the sole product implementation commit. The original bounded implementation remains the product-source baseline, followed by the two repairs above.
+
+### 12.4 Remaining work and authorization boundary
+
+The full task remains `PARTIAL / OPEN` because real producer integration has not been accepted. The next step is recorded as:
+
+`SHEEP-301 — remaining real-producer integration readiness audit`
+
+That audit is `NOT_STARTED` and requires the next Controller audit prompt. No implementation authorization is active.
+
+Still not authorized or accepted:
+
+- production IPC/Titan/WebSocket receive integration;
+- the real PDD producer path;
+- live validation;
+- persistence or durable dedup;
+- AI generation;
+- transport send;
+- `HUMAN_CONFIRM`;
+- `AUTO`;
+- platform mutation;
+- SHEEP-302 or any later task.
+
+`full_sheep_301_closed = false` and `next_stage_not_executed = true`.

@@ -4,11 +4,11 @@
   "baseline_commit": "d28424c2fdd4587b775c26f4e8dc314b5c1d220f",
   "repair_baseline_commit": "fdfdca90215db2aea14a1ad5155a2a516fb9a1b6",
   "result": "COMPLETE",
-  "controller_decision": "AWAITING_CONTROLLER_REVIEW",
+  "controller_decision": "PASS",
   "objective": "Repair the bounded Main-local raw PDD ingress so canonical scope and per-message associations are verified, all declared input/extension failures stop explicitly, and successful mappings use the default real canonical validator without AI, transport send, persistence, or legacy bridge side effects.",
   "completed_requirements": 19,
   "total_requirements": 19,
-  "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
+  "implementation_authorization": "COMPLETED / CONSUMED",
   "execution_authorized": false,
   "implementation_performed": true,
   "full_sheep_301_closed": false,
@@ -182,8 +182,8 @@
     "not_claimed": "No Electron IPC, real PDD, Titan, WebSocket, AI Worker, database, or production bootstrap integration is claimed."
   },
   "modified_files": [
-    "apps/desktop/tests/pdd-inbound-ingress.test.ts",
-    "scripts/run-sheep-301-bounded-fixture-smoke.mjs",
+    "project/PROJECT_STATE.json",
+    "project/SHEEP_301_READINESS_REVIEW.md",
     "reports/SHEEP-301-bounded-fixture-mapping-report.json"
   ],
   "workspace_dependency_changes": [
@@ -211,8 +211,10 @@
     "observed_at_implemented": false
   },
   "remaining_real_producer_gap": {
-    "status": "DEFERRED",
-    "description": "The bounded unit still uses controlled Main-local raw PDD payload fixtures. A future real PDD/Titan/WebSocket producer requires separate integration review and must connect through the same trusted Main ingress rather than the legacy DOM message_received -> AI bridge."
+    "status": "OPEN / NOT_ACCEPTED / NEXT_STAGE_NOT_STARTED",
+    "description": "The bounded unit still uses controlled Main-local raw PDD payload fixtures. A future real PDD/Titan/WebSocket producer requires separate integration review and must connect through the same trusted Main ingress rather than the legacy DOM message_received -> AI bridge.",
+    "next_step": "SHEEP-301 — remaining real-producer integration readiness audit",
+    "authorization": "NOT_GRANTED"
   },
   "known_limitations": [
     "Source time accepts a strict ISO-8601 UTC Z subset; offsets and unverified platform time semantics are treated as invalid/unknown.",
@@ -266,11 +268,123 @@
     "packages/platform-pdd/package.json",
     "apps/desktop/package.json",
     "pnpm-lock.yaml",
-    "project/SHEEP_301_READINESS_REVIEW.md"
+    "project/SHEEP_301_READINESS_REVIEW.md",
+    "project/PROJECT_STATE.json"
   ],
   "evidence_completion_baseline_commit": "2808c179529f6b820946a754553343e06e2fc8f6",
   "evidence_source_distinction": {
     "controller_source_probe": "Controller source review is accepted as the reason for the earlier product-source repair but is not used as evidence that this fixture/assertion/report completion is correct.",
-    "this_run": "R5 before/after, normal mapping, identity-conflict, and fixture tests were executed from fresh builds. Default real canonical validator is used for normal and conflict paths; injected validators are used only for unavailable/false/throw failure branches."
+    "this_run": "R5 before/after, normal mapping, identity-conflict, and fixture tests were executed from fresh builds. Default real canonical validator is used for normal and conflict paths; injected validators are used only for unavailable/false/throw failure branches.",
+    "controller_source_review_and_stub_probes": "Controller source review and validator-stub probes are recorded separately from Codex build/test evidence and are not treated as verification of the governance-only changes in this reconciliation.",
+    "codex_real_canonical_validator_evidence": "Prior Codex evidence used fresh domain/platform-pdd/desktop builds and the default real canonical validator for normal success and identity-conflict cases; injected validators were used only for unavailable, false, and throwing failure branches.",
+    "not_run": [
+      "Electron IPC integration",
+      "real PDD / live shop validation",
+      "production producer integration",
+      "AI Worker integration",
+      "durable persistence and dedupe",
+      "transport send"
+    ],
+    "governance_task_test_execution": "This governance-only reconciliation did not rerun prior product tests; it only runs the state/report validation commands recorded in governance_reconciliation_validation."
+  },
+  "implementation_authorization_status": "COMPLETED / CONSUMED",
+  "implementation_authorized_history": true,
+  "historical_evidence_completion_files": [
+    "apps/desktop/tests/pdd-inbound-ingress.test.ts",
+    "scripts/run-sheep-301-bounded-fixture-smoke.mjs",
+    "reports/SHEEP-301-bounded-fixture-mapping-report.json"
+  ],
+  "governance_reconciliation_modified_files": [
+    "project/PROJECT_STATE.json",
+    "project/SHEEP_301_READINESS_REVIEW.md",
+    "reports/SHEEP-301-bounded-fixture-mapping-report.json"
+  ],
+  "evidence_completion_commit": "c86fcdd12b26c377fb4e0247050c5bd223431628",
+  "governance_reconciliation_baseline_commit": "c86fcdd12b26c377fb4e0247050c5bd223431628",
+  "controller_review": {
+    "decision": "PASS",
+    "accepted_acceptance_unit": "MAIN_LOCAL_RAW_INGRESS_BOUND_CONTROLLED_FIXTURE_MAPPING",
+    "bounded_unit_state": "IMPLEMENTED / COMPLETE / CONTROLLER PASS",
+    "reviewed_head": "c86fcdd12b26c377fb4e0247050c5bd223431628",
+    "governance_reconciliation_baseline_commit": "c86fcdd12b26c377fb4e0247050c5bd223431628",
+    "accepted_path": [
+      "controlled Main-local fixture",
+      "document-bound trusted Main binding",
+      "raw PDD semantic validation",
+      "scoped identity association checks",
+      "canonical IdentityLock / InboundEnvelope",
+      "canonical schema validation",
+      "controlled collector",
+      "STOP"
+    ],
+    "commit_chain": {
+      "original_bounded_implementation": "7dd7d4f0b8a50bba3034e04a4b37a9a37f99967f",
+      "identity_exception_repair": "fdfdca90215db2aea14a1ad5155a2a516fb9a1b6",
+      "association_ownership_repair": "2808c179529f6b820946a754553343e06e2fc8f6",
+      "evidence_completion_reviewed_head": "c86fcdd12b26c377fb4e0247050c5bd223431628"
+    },
+    "full_task_state": "PARTIAL / OPEN",
+    "full_sheep_301_closed": false,
+    "real_producer_integration": "NOT_ACCEPTED / SEPARATE_READINESS_AND_IMPLEMENTATION_AUTHORIZATION_REQUIRED",
+    "next_step": "SHEEP-301 — remaining real-producer integration readiness audit",
+    "next_step_status": "NOT_STARTED / AWAITING_CONTROLLER_AUDIT_PROMPT",
+    "next_stage_not_executed": true,
+    "authorization_boundary": {
+      "production_ipc_titan_websocket": "NOT_AUTHORIZED",
+      "live_validation": "NOT_AUTHORIZED",
+      "persistence": "NOT_AUTHORIZED",
+      "ai": "NOT_AUTHORIZED",
+      "transport_send": "NOT_AUTHORIZED",
+      "human_confirm": "NOT_AUTHORIZED",
+      "auto": "NOT_AUTHORIZED",
+      "platform_mutation": "NOT_AUTHORIZED",
+      "sheep_302_and_later": "NOT_AUTHORIZED / NOT_EXECUTED"
+    }
+  },
+  "governance_reconciliation_validation": {
+    "status": "PASS",
+    "cwd": "E:\\fast_sheep",
+    "commands": [
+      {
+        "command": "node -e \"JSON.parse(require('fs').readFileSync('project/PROJECT_STATE.json','utf8')); console.log('PROJECT_STATE_JSON_PARSE=PASS')\"",
+        "result": "PASS"
+      },
+      {
+        "command": "node scripts/validate-project-state.mjs project/PROJECT_STATE.json",
+        "result": "PASS / PROJECT_STATE_CONSISTENCY=PASS"
+      },
+      {
+        "command": "node --test tests/project-state-consistency.test.mjs",
+        "result": "PASS / 18 passed / 0 failed"
+      },
+      {
+        "command": "node -e \"JSON.parse(require('fs').readFileSync('reports/SHEEP-301-bounded-fixture-mapping-report.json','utf8')); console.log('REPORT_JSON=PASS')\"",
+        "result": "PASS"
+      },
+      {
+        "command": "git diff --check",
+        "result": "PASS / line-ending normalization warnings only"
+      },
+      {
+        "command": "git diff --name-only",
+        "result": "PASS / exactly the three governance files listed in modified_files"
+      },
+      {
+        "command": "governance gate assertions for full SHEEP-301 openness, last-closed task, and authorization gates",
+        "result": "PASS / GOVERNANCE_GATE_CHECK=PASS"
+      },
+      {
+        "command": "stale implementation-pending marker scan",
+        "result": "NONE"
+      }
+    ],
+    "changed_file_scope": [
+      "project/PROJECT_STATE.json",
+      "project/SHEEP_301_READINESS_REVIEW.md",
+      "reports/SHEEP-301-bounded-fixture-mapping-report.json"
+    ],
+    "product_tests_rerun_this_governance_task": false,
+    "prior_product_test_evidence_retained": true,
+    "controller_source_probe_or_stub_validation_used_for_governance": false
   }
 }
