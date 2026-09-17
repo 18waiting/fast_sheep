@@ -12,7 +12,7 @@
   "live_validation_performed": false,
   "full_sheep_301_closed": false,
   "next_stage_not_executed": true,
-  "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
+  "controller_review_status": "PASS",
   "command": "node scripts/run-sheep-301-local-electron-websocket-boundary-proof.mjs",
   "versions": {
     "electron": "43.6.0",
@@ -646,7 +646,21 @@
     "prior_repair_baseline_commit": "ff858088e018de5a5f12b8539d2d6c1a51c23c37",
     "earlier_repair_baseline_commit": "ab205372f858db736405ff2195bc9a307acae9a1",
     "repair_result": "COMPLETE",
-    "historical_relation": "Prior Codex COMPLETE was not Controller PASS; Controller REPAIR was applied at ab20537, then targeted repair at ff85808 addressed root/raw-event/lifecycle cancellation, and the 8588d63 terminal-lifecycle repair closes the remaining same-WebContents activation gaps. The repaired proof remains awaiting Controller review."
+    "historical_relation": "Prior Codex COMPLETE was not Controller PASS; Controller REPAIR was applied at ab20537, then targeted repair at ff85808 addressed root/raw-event/lifecycle cancellation, and the 8588d63 terminal-lifecycle repair closed the remaining same-WebContents activation gaps. Controller subsequently reviewed and PASSED the implementation at 0412a7d.",
+    "controller_decision": "PASS",
+    "reviewed_implementation_commit": "0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578",
+    "controller_review_status": "PASS"
   },
-  "error": null
+  "error": null,
+  "controller_acceptance": {
+    "decision": "PASS",
+    "acceptance_unit": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
+    "reviewed_implementation_commit": "0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578",
+    "controller_review_date_candidate": "2026-09-18",
+    "accepted_scope": "controlled local Electron/WebSocket diagnostic boundary only",
+    "same_webcontents_recovery": "NOT_SUPPORTED_AFTER_TERMINATION / DIAGNOSTIC_LIMIT_NOT_PRODUCTION_ARCHITECTURE_DECISION",
+    "full_sheep_301_closed": false,
+    "bounded_fixture_mapping_pass_preserved": true
+  },
+  "diagnostic_implementation_authorization": "COMPLETED / CONSUMED"
 }

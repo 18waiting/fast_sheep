@@ -511,3 +511,149 @@ Every terminal activation request returns STOPPED with reason SAME_WEBCONTENTS_R
 - PROJECT_STATE JSON parse, consistency validation, report JSON parse, diff check, and changed-file scope checks are run before delivery.
 
 Same-WebContents recovery remains unproven and is deliberately NOT SUPPORTED for this diagnostic unit. Real PDD/Titan runtime behavior, framing, reconnect/replay, and production ingress remain deferred and unauthorized.
+
+---
+
+## 19. Trusted Main PDD Ingress Readiness Audit (0412a7d)
+
+- Task: SHEEP-301.
+- Acceptance unit: TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT.
+- Mode: READ_ONLY_CODE_AUDIT / DOCUMENTATION_ONLY.
+- Baseline: 0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578.
+- Prerequisite acceptance: LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF COMPLETE / CONTROLLER PASS.
+- Reviewed implementation commit: 0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578.
+- Diagnostic implementation authorization: COMPLETED / CONSUMED.
+- AUDIT_RESULT: COMPLETE.
+- NEXT_UNIT_IMPLEMENTATION_READINESS: READY_WITH_CONSTRAINTS.
+- PRODUCTION_PDD_INGRESS_READINESS: BLOCKED.
+- LIVE_VALIDATION_AUTHORIZATION: NOT_AUTHORIZED.
+- Controller review status for this audit: AWAITING_CONTROLLER_REVIEW.
+- Full SHEEP-301: PARTIAL / OPEN.
+- last_closed_task: SHEEP-300.
+
+The proof PASS covers only the controlled local Electron/WebSocket diagnostic boundary. Same-WebContents recovery after termination is NOT_SUPPORTED for that diagnostic unit and is not a production architecture decision. The earlier bounded fixture mapping PASS remains unchanged.
+
+### Current production call chain
+
+    PddPlatformService.activate
+    -> PddSessionHost.createAndLoad
+    -> PddViewHost create + bindPddDocumentLifecycle
+    -> production loadProductionEntry
+    -> dom-ready
+    -> pdd-page-lifecycle-start preload message
+    -> PddPageRuntime.observeReadiness / domHealth using PDD_SELECTOR_PROFILE
+    -> page_ready only when required selectors match
+    -> PddSessionHost status READY
+
+The legacy page-event chain remains independently reachable:
+
+    PDD preload -> pdd-page-event IPC
+    -> main/index.ts callback drops sender
+    -> PddPlatformService.handlePageEvent(payload)
+    -> payload session_id/shop_id routing
+    -> handleInbound
+    -> onInboundMessage or PddOrchestratorBridge
+    -> ConversationOrchestrator
+
+No production caller currently invokes handleTrustedInboundIngress. Production composition constructs PddPlatformService without resolveInboundScope, resolveInboundIdentity, or onCanonicalInbound.
+
+### Authority and lifecycle facts
+
+The available Main authority sources are intentionally distinct:
+
+- workspaceMerchant provides a stable Main-owned merchant id and merchant containment only.
+- StoreRepository provides StoreRecord id/merchant/platform/name lookup and merchant listing.
+- PlatformAccountRepository provides PlatformAccountRecord id/merchant/platform and an optional opaque externalRef.
+- None of these repositories currently provides a runtime-Shop-to-canonical-Store or runtime-Shop-to-PlatformAccount mapping.
+- Until an explicit trusted mapping exists, the resolver must return UNKNOWN/UNRESOLVED or reject; runtime Shop must not be auto-equated with either canonical object.
+
+Lifecycle handling currently behaves as follows:
+
+- navigation: beginDocumentLifecycle clears selected-customer observation, increments documentGeneration, and invalidates old context records by generation equality.
+- reauth: AUTH_REAUTH_REQUIRED suppresses selected-customer handling; createInboundIngressContext requires READY, so no new canonical context is issued during the latch.
+- detach/destroy: observer listeners are removed and terminal; PddSessionHost revalidation additionally checks READY and webContents.isDestroyed().
+- dispose/recreate: PddSessionHost.dispose nulls the view, clears selected-customer evidence, and sets DISPOSED. A production recovery unit must create a new WebContents/session rather than reuse a terminated one.
+- recovery choices for the next unit: new WebContents per lifecycle (preferred and offline-verifiable), no recovery/STOP (current diagnostic-safe behavior), or same-WebContents recovery only after a separate Main-owned binding design and future live validation (not approved).
+
+### Gap table
+
+| Gap | Current state and source | Impact on next unit | Required change | Offline verification | Live dependency | Classification |
+|---|---|---|---|---|---|---|
+| GAP-R1 | No Main-owned observer exists in PddPlatformService.activate / PddSessionHost.createAndLoad; view is created before load. | No attachment point before the first possible connection. | Create an observer factory at onViewCreated before load; own it per WebContents/session/document generation. | Fake-WebContents unit plus controlled Electron loopback. | No for mechanism; yes for real PDD events. | CONFIRMED / TODO_IMPLEMENTATION |
+| GAP-R2 | PddViewHost starts page observation after dom-ready; PddPageRuntime emits page_ready only after DOM health. | Connection-created events may occur before attach or READY and are not replayed. | Attach and Network.enable before load; bind connection identity at creation; do not require READY to bind. | Early synthetic connection ordering test. | Yes for real PDD timing. | CONFIRMED / TODO_IMPLEMENTATION |
+| GAP-R3 | READY is produced by domHealth over PDD_SELECTOR_PROFILE; required selectors are DESIGN provenance. | READY is not proven production authentication/session-health truth. | Separate connection-bound from canonical-output-allowed; require a Main-owned readiness policy before output. | Controlled readiness stub; production default-off test. | Yes for real session-health evidence. | CONFIRMED / BLOCKED_FOR_PRODUCTION |
+| GAP-R4 | bootstrap.ts constructs PddPlatformService without resolver/collector; worker-runtime supplies repositories but no PDD ingress wiring. | Accepted canonical ingress cannot be composed in production. | Add explicit resolver/collector injection options and controlled composition wiring. | Composition tests with controlled resolver/collector. | No for wiring; yes for real facts. | CONFIRMED / TODO_IMPLEMENTATION |
+| GAP-R5 | workspaceMerchant, StoreRepository, and PlatformAccountRepository are separate authorities; no runtime Shop mapping exists. | Runtime Shop cannot automatically equal canonical Store or PlatformAccount. | Use explicit trusted mapping; otherwise UNKNOWN/UNRESOLVED or reject according to contract. | Same-ID and missing-mapping isolation tests. | Potentially yes for real external identity facts. | CONFIRMED / PRODUCT_DECISION_REQUIRED |
+| GAP-R6 | pdd-page-ipc receives sender but main/index.ts drops it; handlePageEvent routes by payload session_id/shop_id. | Legacy path is not sender-bound and can cross-route within trusted PDD WebContents. | Pass sender into the selected path and bind it to the owning session; do not reuse payload-only routing. | Same-service forged sender/session/shop tests. | No. | CONFIRMED / TODO_IMPLEMENTATION |
+| GAP-R7 | Legacy message_received -> handleInbound -> onInboundMessage/PddOrchestratorBridge remains independent. | New and legacy consumers can both process inbound traffic or a failure can fall back to AI/send. | Add a default-off selected-path gate; make legacy bridge unreachable for canonical success and failure. | Legacy-call counter and collector-count negatives. | No. | CONFIRMED / TODO_IMPLEMENTATION |
+| GAP-R8 | pdd-page-ipc accepts payload when eventValidator is unavailable. | Malformed legacy page events can pass if that route is reused. | Fail closed when validator unavailable for a selected path; otherwise keep the legacy route isolated. | Validator-unavailable negative test. | No. | CONFIRMED / TODO_IF_REUSED |
+| GAP-R9 | Diagnostic observer terminates a WebContents permanently; production recovery policy is absent and PddPlatformService reuses the session map. | Same-WebContents recovery must not become an accidental production default. | Define new-WebContents recreation or an explicit recovery contract; default fail closed. | New-WebContents positive and same-WebContents negative tests. | Yes for real reconnect/replay later. | CONFIRMED / PRODUCT_DECISION_REQUIRED |
+| GAP-R10 | PddCanonicalIdentityBinding.association is optional; no trusted production association resolver is wired. | Internal conversation/local message may remain UNKNOWN. | Keep UNKNOWN/UNRESOLVED; do not create or rewrite association ownership after receipt. | Existing controlled association tests; no persistence write. | No for minimal mapping. | LEGAL_UNKNOWN / DEFERRED |
+| GAP-R11 | normalizeSourceOccurredAt returns null plus diagnostics for missing/invalid values. | Source time is not a general blocker to minimal mapping. | Preserve valid business time or null; never use receipt time or CDP MonotonicTime. | Existing source-time regression set. | Yes for real source-time semantics. | DEFERRED_LIVE |
+| GAP-R12 | Only synthetic loopback proof exists; no real PDD/Titan evidence. | Actual URL/origin, framing, compression, fragmentation, reconnect/replay, and real time remain unverified. | Keep live separately authorized; do not infer platform behavior from loopback. | Not possible for real platform behavior. | Yes; future minimal live observation with STOP. | BLOCKED_FOR_PRODUCTION / LIVE_REQUIRED |
+
+### Canonical field audit
+
+- runtime shop: actual WebContents -> PddSessionHost binding; payload self-report is not authority.
+- merchant/store/platform account: repository facts exist, but no runtime-Shop-to-canonical mapping exists; use explicit resolver or UNKNOWN/UNRESOLVED.
+- CDP sessionId/requestId: CDP debugging/connection identifiers only; not PDD session, document generation, conversation, customer, or platform message identity.
+- customer: platformCustomerId from normalized from.uid; missing is UNKNOWN, present-invalid rejects.
+- platform message identity: from normalized msg_id; missing is UNKNOWN, never a fingerprint or fallback ID.
+- internal conversation/local message: only trusted association evidence; missing remains UNKNOWN/UNRESOLVED.
+- content: canonical normalizer preserves exact text; legacy DOM path trims and can truncate context blocks, so do not reuse it as the producer.
+- selected customer: runtime evidence only; never fills platformCustomerId.
+- sourceOccurredAt: nullable with diagnostics; do not substitute receipt time.
+
+### Recommended next acceptance unit
+
+TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING.
+
+Sole objective: wire one default-off Main-owned PDD producer from one controlled WebContents into the accepted canonical ingress with explicit scope/identity resolvers and a controlled collector, while keeping the legacy bridge unreachable and production output disabled.
+
+Proposed file scope for review:
+
+- apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts
+- apps/desktop/src/main/platforms/pdd/pdd-session-host.ts
+- apps/desktop/src/main/platforms/pdd/pdd-inbound-observer.ts (new)
+- apps/desktop/src/main/bootstrap.ts
+- apps/desktop/src/main/worker-runtime.ts
+- apps/desktop/src/main/index.ts only if a sender-bearing PDD path is selected
+- apps/desktop/tests/pdd-inbound-observer.test.ts (new)
+- apps/desktop/tests/pdd-platform-service.test.ts
+- apps/desktop/tests/bootstrap-pdd-ingress-wiring.test.ts (new)
+
+Main wiring: create the observer in PddPlatformService.activate on onViewCreated, before session.createAndLoad/loadProductionEntry. The observer must attach Debugger and Network.enable before load, bind requestId at connection creation, and pass only a Main-validated context plus frozen inbound input to handleTrustedInboundIngress. Do not copy the diagnostic observer into production.
+
+Default-off gate: add PddPlatformServiceOptions.canonicalIngressMode with DISABLED as the production default. Only an explicit controlled mode may create the observer and call handleTrustedInboundIngress. When that selected path is active, handlePageEvent must not independently invoke the legacy message_received -> handleInbound branch. Resolver, validator, mapper, or collector failure returns directly and never falls back to PddOrchestratorBridge.
+
+Minimum acceptance:
+
+- Positive: one controlled WebContents/connection/text frame maps once through the real mapper/default validator; two same-service sessions remain isolated; explicit scope/identity resolver is used.
+- Negative: early connection, old terminal WebContents, same-WebContents restart, wrong CDP session/requestId, stale generation, forged/missing context, and wrong sender all stop before canonical ingress.
+- Failure: attach/enable failure cleans up; missing resolver/validator/collector and collector sync/async failure stop without legacy fallback, retry, AI, send, or persistence.
+- Composition: production default is DISABLED; controlled activation, resolver, and collector are explicit; legacy bridge counters remain zero.
+
+STOP boundary: controlled Main composition and collector only. No live PDD/Titan, real seller session, production IPC observer channel, AI, persistence, send, HUMAN_CONFIRM, AUTO, or platform mutation. Do not approve same-WebContents recovery.
+
+Out of scope: real PDD/Titan compatibility, production activation, durable dedupe/observedAt, association creation, later SHEEP tasks.
+
+Contribution to full SHEEP-301: closes the missing Main-owned controlled producer/composition and legacy-isolation gap. It does not close real readiness evidence, real identity mapping, real Titan framing/time, or production activation.
+
+### Live evidence boundary
+
+- URL/origin and actual PDD connection: affects observer allowlist shape; controlled URL can be synthetic; real behavior requires future live observation.
+- Text/binary framing, compression, fragmentation: cannot be answered by the loopback proof; requires future minimal live evidence before production mapping claims.
+- Reconnect/replay and duplicate behavior: recovery and duplicate handling must remain conservative; real behavior is future live work.
+- Business sourceOccurredAt: keep null plus diagnostics; real semantics require future live evidence.
+- Real store/platform-account/customer facts: do not infer; require explicit trusted mapping or future authorized observation.
+
+AUDIT_RESULT: COMPLETE
+NEXT_UNIT_IMPLEMENTATION_READINESS: READY_WITH_CONSTRAINTS
+PRODUCTION_PDD_INGRESS_READINESS: BLOCKED
+LIVE_VALIDATION_AUTHORIZATION: NOT_AUTHORIZED
+CONTROLLER_REVIEW_STATUS: AWAITING_CONTROLLER_REVIEW
+implementation_performed = false
+implementation_authorized = false
+live_validation_performed = false
+full_sheep_301_closed = false
+next_stage_not_executed = true
