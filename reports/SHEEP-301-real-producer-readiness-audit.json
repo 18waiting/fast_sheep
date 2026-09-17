@@ -5,7 +5,7 @@
   "mode": "READ_ONLY_IMPLEMENTATION_READINESS_AUDIT",
   "baseline_commit": "e82dd4ca46a61aa2148ed693039fad6c325b0a4b",
   "audit_result": "COMPLETE",
-  "implementation_readiness_recommendation": "BLOCKED",
+  "implementation_readiness_recommendation": "BLOCKED_FOR_PRODUCTION_INGRESS_ONLY",
   "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
   "objective": "Find the remaining gap between the accepted canonical ingress and a real PDD inbound observation path, then recommend the smallest evidence-supported next acceptance unit.",
   "product_alignment": {
@@ -143,6 +143,12 @@
       "role": "Imported external research snapshot showing a Playwright WebSocket frame observer as a design hint, not a Fast Sheep dependency.",
       "classification": "INFERRED / DEFERRED",
       "evidence": "Lines 393-426 show a websocket framereceived handler inspecting push_data.data.message. The import report records a research-only license and no production reuse authorization."
+    },
+    {
+      "path": "apps/desktop/src/main/worker-runtime.ts",
+      "role": "Worker-backed Main composition supplies production persistence repositories and workspace merchant context.",
+      "classification": "CONFIRMED",
+      "evidence": "Lines 154-176 construct SQLite Store/PlatformAccount repositories and resolve workspaceMerchant; lines 204-212 pass controlledProductionPddShop and repositories into createMainContext. No PDD inbound scope resolver is wired."
     }
   ],
   "field_source_mapping_matrix": [
@@ -168,13 +174,13 @@
     },
     {
       "field": "merchantId / storeId / platformAccountId",
-      "raw_source": "No raw payload source. Must come from Main authority repositories or an explicit trusted binding.",
+      "raw_source": "Existing Main authority sources: workspaceMerchant, StoreRepository, PlatformAccountRepository; no PDD resolver is wired to PddPlatformService.",
       "transform": "resolveInboundScope callback, followed by sameScope comparison.",
-      "trust_boundary": "Main repository authority only; raw payload and runtime shop labels are not authority.",
+      "trust_boundary": "Main authority facts only; runtime ShopRow is not automatically Store or PlatformAccount.",
       "canonical_target": "identityLock.merchantId, storeId, platformAccountId",
-      "missing_or_conflict": "Production bootstrap supplies no resolver; accepted gate returns SCOPE_BINDING_RESOLVER_MISSING. Missing facts must remain UNKNOWN/UNRESOLVED.",
+      "missing_or_conflict": "Resolver wiring is a pending integration item. Facts may remain UNKNOWN/UNRESOLVED when no trusted mapping exists. Conflicting or missing Main authority fails closed where required. UNKNOWN does not grant persistence, aggregation, AI, or send authority.",
       "evidence": "apps/desktop/src/main/bootstrap.ts lines 350-363; pdd-inbound-ingress.ts lines 194-221.",
-      "status": "BLOCKED"
+      "status": "IMPLEMENTATION_WIRING_PENDING / FACTS_MAY_BE_UNKNOWN"
     },
     {
       "field": "platformCustomerId",
@@ -202,9 +208,9 @@
       "transform": "A trusted runtimeConversationReference binding supplied by Main; no raw fallback.",
       "trust_boundary": "Main binding only. Never derive from display text, lastConversationId, buyer_id, or payload self-report.",
       "canonical_target": "identityLock.runtimeConversationReference",
-      "missing_or_conflict": "UNKNOWN or UNRESOLVED; do not create a synthetic conversation id.",
+      "missing_or_conflict": "Legal UNKNOWN/UNRESOLVED is allowed. Runtime lastConversationId, buyer_id, display names, and payload self-report do not create authority.",
       "evidence": "SHEEP-081 conversation_selection; SHEEP-087 conversation_association; page-runtime.ts lines 122-136.",
-      "status": "BLOCKED"
+      "status": "NO_TRUSTED_SOURCE / LEGAL_UNKNOWN_ALLOWED"
     },
     {
       "field": "internalConversationId",
@@ -212,9 +218,9 @@
       "transform": "resolveInboundIdentity.association, then owner scope/runtime shop checks.",
       "trust_boundary": "Main resolver; association owner is verified against authoritative scope.",
       "canonical_target": "identityLock.internalConversationId",
-      "missing_or_conflict": "If no valid association, UNKNOWN/UNRESOLVED. Mismatches are rejected.",
+      "missing_or_conflict": "UNKNOWN/UNRESOLVED allowed for minimal inbound mapping; no create/write step. Required only when a later consumer needs the association.",
       "evidence": "pdd-inbound-ingress.ts lines 223-239; production bootstrap has no resolver.",
-      "status": "BLOCKED"
+      "status": "NO_TRUSTED_SOURCE / LEGAL_UNKNOWN_ALLOWED"
     },
     {
       "field": "localMessageId",
@@ -222,9 +228,9 @@
       "transform": "resolveInboundIdentity.association.localMessageId.",
       "trust_boundary": "Main resolver; association owner is verified.",
       "canonical_target": "identityLock.triggerMessage.localMessageId",
-      "missing_or_conflict": "If no valid association, UNKNOWN/UNRESOLVED. It must not be synthesized from platform msg_id.",
+      "missing_or_conflict": "UNKNOWN/UNRESOLVED allowed for minimal inbound mapping; never synthesize from platform msg_id. No persistence or write path.",
       "evidence": "pdd-inbound-ingress.ts lines 223-251; no production association source.",
-      "status": "BLOCKED"
+      "status": "NO_TRUSTED_SOURCE / LEGAL_UNKNOWN_ALLOWED"
     },
     {
       "field": "session / WebContents / document generation",
@@ -272,9 +278,11 @@
       "transform": "normalizeSourceOccurredAt accepts only strict ISO-8601 UTC Z or null; malformed strings become null with diagnostics.",
       "trust_boundary": "Must come from a trusted producer/time source; no local-time substitution.",
       "canonical_target": "sourceOccurredAt",
-      "missing_or_conflict": "Missing or malformed -> null with diagnostics; non-string non-null is rejected.",
+      "missing_or_conflict": "Missing -> MAPPED with sourceOccurredAt = null and SOURCE_TIME_MISSING. Malformed string -> MAPPED with null and SOURCE_TIME_INVALID. Non-string/non-null is normalized to null by the current ingress helper; it is not a mandatory whole-message rejection. No Date.now, receipt time, or unproven CDP timestamp substitution.",
       "evidence": "pdd-inbound-ingress.ts lines 148-170 and 254-265; page-event timestamp is not wired to this input.",
-      "status": "BLOCKED"
+      "status": "NULLABLE_PARTIAL / NOT_REQUIRED_FOR_MINIMAL_MAPPING",
+      "required_for_minimal_mapping": false,
+      "preservation_rule": "If a validated business source time is known, preserve it exactly. If absent or unverified, keep null; do not invent platform occurrence time."
     }
   ],
   "call_chains": {
@@ -326,7 +334,8 @@
   },
   "actual_real_producer_path": {
     "status": "NONE_CURRENTLY_WIRED",
-    "summary": "The repository has a callable canonical ingress and historical raw PDD payload evidence, but no production producer binds a real observation to that ingress. The only wired page-event path is synthetic-only, sender-dropping, lossy, and still routes message_received to the legacy orchestrator branch."
+    "corrected_scope": "Production PDD ingress is absent. A local Electron/WebSocket mechanism proof is feasible offline, but it does not establish PDD/Titan compatibility.",
+    "production_fact": "No product composition calls the accepted canonical ingress with a real PDD raw observation."
   },
   "candidate_paths": [
     {
@@ -344,11 +353,18 @@
         "validator can fail open",
         "legacy message_received branch remains parallel"
       ],
-      "conclusion": "Not acceptable for the real producer boundary without redesign; do not relabel normalized DOM events as raw PDD payloads."
+      "conclusion": "Not acceptable for the real producer boundary without redesign; do not relabel normalized DOM events as raw PDD payloads.",
+      "applies_to": "LEGACY_DOM_PAGE_EVENT_PATH",
+      "blocks": "Reuse of the synthetic page-event path as the real producer boundary.",
+      "does_not_block": [
+        "Main-owned WebContents frame observer",
+        "offline Electron/WebSocket boundary proof"
+      ],
+      "isolation_requirement": "A new observer must not call handlePageEvent and must not leave message_received reaching PddOrchestratorBridge. That legacy branch must be disabled, separated by source, or replaced for the selected path; absence of a current call is not sufficient isolation."
     },
     {
       "id": "CANDIDATE-TITAN-EMBEDDED-FRAME-OBSERVER",
-      "classification": "RECOMMENDED_DIRECTION_BLOCKED_PENDING_EVIDENCE",
+      "classification": "RECOMMENDED_DIRECTION / OFFLINE_PROOF_READY_WITH_CONSTRAINTS / PRODUCTION_BLOCKED_PENDING_LIVE_EVIDENCE",
       "summary": "Use a Main-owned, read-only observer of the existing embedded PDD WebContents Titan frame channel, bound to the exact session and document generation, then feed the already accepted canonical ingress.",
       "supporting_evidence": [
         "Historical live evidence confirms titan-ws.pinduoduo.com and the received field shape.",
@@ -357,14 +373,28 @@
         "The existing embedded-runtime architecture is the current product direction."
       ],
       "missing_evidence": [
-        "exact current Electron-observable frame envelope and delivery mechanism",
-        "how a frame is bound to the active WebContents/session/document generation without payload self-report",
-        "binary versus text frame framing and JSON extraction semantics",
-        "sourceOccurredAt semantics, units, timezone, and missing behavior",
-        "production scope resolver values for merchant/store/platform account",
-        "authorization for the narrow network observation mechanism, if required"
+        "real Titan URL/origin and connection establishment",
+        "real binary/text framing and payload extraction",
+        "reconnect/replay/fragment behavior",
+        "real source-time semantics",
+        "actual marketplace compatibility beyond the historical live contract"
       ],
-      "conclusion": "Preferred single direction, but implementation readiness is BLOCKED until the frame boundary and binding evidence exist."
+      "conclusion": "Preferred single direction. The offline Main-owned observer mechanism is READY_WITH_CONSTRAINTS; production PDD ingress remains BLOCKED until real PDD/Titan behavior and production authorization are separately established.",
+      "offline_proof": "READY_WITH_CONSTRAINTS",
+      "offline_proof_summary": "Electron 43.6.0 local probe proved that WebContents.debugger can observe synthetic loopback WebSocket creation and message frames through Network events. This proves the local mechanism, not PDD/Titan compatibility.",
+      "offline_resolved_mechanism": [
+        "Debugger/Network event availability in Electron 43.6.0",
+        "requestId-based synthetic WebSocket connection continuity",
+        "frame field shape for local loopback messages",
+        "Main-side target and generation invalidation design"
+      ],
+      "remaining_live_or_protocol_evidence": [
+        "real Titan URL/origin and connection establishment",
+        "real binary/text framing and payload extraction",
+        "reconnect/replay/fragment behavior",
+        "real source-time semantics",
+        "actual marketplace compatibility beyond the historical live contract"
+      ]
     },
     {
       "id": "CANDIDATE-SEPARATE-TITAN-CLIENT",
@@ -382,176 +412,164 @@
     {
       "id": "GAP-01-SENDER-DROPPED",
       "classification": "CONFIRMED",
-      "severity": "BLOCKING",
+      "severity": "BLOCKING_FOR_LEGACY_PATH_ONLY",
       "finding": "The production PDD page-event callback drops the authenticated IPC sender before PddPlatformService.handlePageEvent, so no production path can establish the accepted sender/document context.",
-      "evidence": "apps/desktop/src/main/index.ts lines 212-215; pdd-page-ipc.ts lines 24-27 and 50-53; pdd-platform-service.ts lines 231-267."
+      "evidence": "apps/desktop/src/main/index.ts lines 212-215; pdd-page-ipc.ts lines 24-27 and 50-53; pdd-platform-service.ts lines 231-267.",
+      "applies_to": "LEGACY_DOM_PAGE_EVENT_PATH",
+      "blocks": "Wiring the current page-event path into canonical sender/context binding.",
+      "class": "TODO_IMPLEMENTATION",
+      "minimal_resolution": "When that path is used, pass sender from pdd-page-ipc into service handling and resolve the session from sender, not payload. This does not block a separate Main-owned observer path."
     },
     {
       "id": "GAP-02-CANONICAL-CALLER-MISSING",
       "classification": "CONFIRMED",
-      "severity": "BLOCKING",
+      "severity": "PRODUCTION_BLOCKING",
       "finding": "handleTrustedInboundIngress has no production caller. Existing references are tests, the bounded smoke script, and its definition.",
-      "evidence": "Only calls exist in apps/desktop/tests/pdd-inbound-ingress.test.ts and scripts/run-sheep-301-bounded-fixture-smoke.mjs."
+      "evidence": "Only calls exist in apps/desktop/tests/pdd-inbound-ingress.test.ts and scripts/run-sheep-301-bounded-fixture-smoke.mjs.",
+      "applies_to": "PRODUCTION_INGRESS_COMPOSITION",
+      "blocks": "Production canonical ingestion, not offline mechanism proof.",
+      "class": "TODO_IMPLEMENTATION",
+      "minimal_resolution": "Add an authorized producer caller that supplies sender/context and raw input. A local proof may call a test-only adapter without production bootstrap."
     },
     {
       "id": "GAP-03-RESOLVERS-MISSING",
       "classification": "CONFIRMED",
-      "severity": "BLOCKING",
+      "severity": "PRODUCTION_BLOCKING",
       "finding": "Production bootstrap does not provide resolveInboundScope, resolveInboundIdentity, or onCanonicalInbound. A direct call would fail with missing scope resolver or collector.",
-      "evidence": "apps/desktop/src/main/bootstrap.ts lines 350-363; pdd-platform-service.ts lines 268-293."
+      "evidence": "apps/desktop/src/main/bootstrap.ts lines 350-363; pdd-platform-service.ts lines 268-293.",
+      "applies_to": "PRODUCTION_INGRESS_COMPOSITION",
+      "blocks": "Production canonical scope/identity resolution and collector delivery.",
+      "class": "TODO_IMPLEMENTATION",
+      "minimal_resolution": "Provide explicit resolvers and collector in composition; use isolated test resolvers for offline proof. Missing resolver must fail closed."
     },
     {
       "id": "GAP-04-LEGACY-PARALLEL-CONSUMER",
       "classification": "CONFIRMED",
-      "severity": "BLOCKING",
+      "severity": "PRODUCTION_BLOCKING",
       "finding": "message_received still has an independent legacy branch after session.handleEvent. This branch is not gated by the canonical gate and reaches PddOrchestratorBridge when no onInboundMessage is configured.",
-      "evidence": "pdd-platform-service.ts lines 77-105 and 119-122; pdd-orchestrator-bridge.ts lines 19-28."
+      "evidence": "pdd-platform-service.ts lines 77-105 and 119-122; pdd-orchestrator-bridge.ts lines 19-28.",
+      "applies_to": "SELECTED_PRODUCER_PATH + LEGACY_DOM_PATH",
+      "blocks": "Safe production ingress if the legacy message_received branch can consume the same source.",
+      "class": "TODO_IMPLEMENTATION",
+      "minimal_resolution": "Make the selected path exclusive: no handlePageEvent fallback, no orchestrator bridge on collector failure, and an explicit test proving the old consumer is not reached."
     },
     {
       "id": "GAP-05-PAGE-IPC-FAIL-OPEN",
       "classification": "CONFIRMED",
-      "severity": "BLOCKING_IF_PATH_REUSED",
+      "severity": "BLOCKING_IF_LEGACY_PATH_REUSED",
       "finding": "If validatorFor throws during module initialization, pdd-page-ipc forwards events without validation. The accepted path requires fail-closed behavior.",
-      "evidence": "pdd-page-ipc.ts lines 32-38 and 50-58."
+      "evidence": "pdd-page-ipc.ts lines 32-38 and 50-58.",
+      "applies_to": "LEGACY_DOM_PAGE_EVENT_PATH",
+      "blocks": "Safe reuse of that IPC path.",
+      "class": "TODO_IMPLEMENTATION",
+      "minimal_resolution": "Require validator availability at registration or fail closed before invoking the callback. This is not a blocker for a Main-owned observer that does not use the page-event channel."
     },
     {
       "id": "GAP-06-SYNTHETIC-DOM-SELECTORS",
       "classification": "CONFIRMED",
-      "severity": "BLOCKING",
+      "severity": "BLOCKING_FOR_DOM_SOURCE_ONLY",
       "finding": "The production PDD WebContents is loaded with a selector profile whose required selectors are synthetic data-fw-* entries. No confirmed production PDD selectors are present.",
-      "evidence": "packages/platform-pdd/src/selector-profile.ts lines 20-24; packages/platform-pdd/tests/fixtures/chat-basic.html."
+      "evidence": "packages/platform-pdd/src/selector-profile.ts lines 20-24; packages/platform-pdd/tests/fixtures/chat-basic.html.",
+      "applies_to": "LEGACY_DOM_PAGE_EVENT_PATH",
+      "blocks": "Using DOM as the real producer source.",
+      "class": "PRE_IMPLEMENTATION_EVIDENCE_GAP_OR_PATH_AVOIDANCE",
+      "minimal_resolution": "Either obtain confirmed selectors and metadata mapping under separate authorization, or avoid DOM by observing the embedded WebContents frame boundary."
     },
     {
       "id": "GAP-07-LOSSY-PRE-MAPPER",
       "classification": "CONFIRMED",
-      "severity": "BLOCKING_IF_PATH_REUSED",
+      "severity": "BLOCKING_IF_LEGACY_PATH_REUSED",
       "finding": "The DOM path trims content, truncates at 4000 characters, hardcodes inbound direction, uses lastConversationId fallback, substitutes fallback fingerprints, and deduplicates before Main.",
-      "evidence": "message-reader.ts line 15; message-normalizer.ts lines 18-24; page-runtime.ts lines 122-144."
+      "evidence": "message-reader.ts line 15; message-normalizer.ts lines 18-24; page-runtime.ts lines 122-144.",
+      "applies_to": "LEGACY_DOM_PAGE_EVENT_PATH",
+      "blocks": "Reuse of that path for exact identity/content/provenance.",
+      "class": "TODO_IMPLEMENTATION_IF_REUSED",
+      "minimal_resolution": "Do not reuse the legacy DOM normalization for the selected raw producer. If reused later, remove pre-mapper truncation, hardcoded direction, fingerprint substitution, stale conversation fallback, and global dedupe before canonical mapping."
     },
     {
       "id": "GAP-08-NO-RAW-PRODUCER",
       "classification": "CONFIRMED",
-      "severity": "BLOCKING",
+      "severity": "PRODUCTION_BLOCKING",
       "finding": "No repository code observes or receives the historical Titan raw PDD inbound payload. The normalized DOM page event is not a raw PDD payload and must not be relabelled as one.",
-      "evidence": "No websocket/debugger/framereceived code in apps or packages; page-events.ts builds normalized fields; SHEEP-081 records historical evidence only."
+      "evidence": "No websocket/debugger/framereceived code in apps or packages; page-events.ts builds normalized fields; SHEEP-081 records historical evidence only.",
+      "applies_to": "PRODUCTION_PDD_INGRESS",
+      "blocks": "Real PDD observation today.",
+      "class": "IMPLEMENTATION_AND_EVIDENCE_GAP",
+      "minimal_resolution": "First prove the local Main-owned observer boundary with synthetic data, then separately test a real PDD observation under explicit live authorization. The local proof cannot establish Titan semantics."
     },
     {
       "id": "GAP-09-NO-SCOPE-BINDING",
       "classification": "BLOCKED",
-      "severity": "BLOCKING",
+      "severity": "PRODUCTION_WIRING_BLOCKING / LEGAL_UNKNOWN_ALLOWED",
       "finding": "Runtime shop is not mapped to canonical merchant/store/platform-account scope. ShopRow carries only shop_id, name, type, and enabled; the repositories exist but no PDD resolver is wired.",
-      "evidence": "apps/desktop/src/main/services/shop-service.ts line 2; bootstrap.ts lines 265-267 and 350-363."
+      "evidence": "apps/desktop/src/main/services/shop-service.ts line 2; bootstrap.ts lines 265-267 and 350-363.",
+      "applies_to": "PRODUCTION_INGRESS_COMPOSITION",
+      "blocks": "Materializing known canonical scope values.",
+      "class": "IMPLEMENTATION_WIRING_PENDING / LEGAL_UNKNOWN_ALLOWED",
+      "minimal_resolution": "Use existing workspaceMerchant, StoreRepository, and PlatformAccountRepository sources where a trusted mapping exists. Do not equate runtime ShopRow with Store or PlatformAccount. Otherwise keep UNKNOWN/UNRESOLVED; never authorize persistence, AI, or send from UNKNOWN."
     },
     {
       "id": "GAP-10-NO-TRUSTED-SOURCE-TIME",
       "classification": "BLOCKED",
-      "severity": "BLOCKING",
+      "severity": "NON_BLOCKING_FOR_MINIMAL_MAPPING",
       "finding": "The canonical gate requires a separate validated sourceOccurredAt input, but no real producer supplies it. The page-event timestamp is not wired to the gate and raw payload time semantics are not established.",
-      "evidence": "pdd-inbound-ingress.ts lines 148-170 and 254-265; pdd-platform-service.ts lines 277-283."
+      "evidence": "pdd-inbound-ingress.ts lines 148-170 and 254-265; pdd-platform-service.ts lines 277-283.",
+      "applies_to": "PRODUCTION_INGRESS_SEMANTICS",
+      "blocks": "Known platform source-time fidelity, not minimal inbound mapping.",
+      "class": "EVIDENCE_GAP / NULLABLE_PARTIAL",
+      "minimal_resolution": "Keep sourceOccurredAt null when absent or unverified. Preserve a validated business source time only when evidenced. Do not substitute local receipt time or MonotonicTime."
     },
     {
       "id": "GAP-11-ASSOCIATION-SOURCE-MISSING",
       "classification": "BLOCKED",
-      "severity": "NON_BLOCKING_FOR_MINIMAL_MAPPING",
+      "severity": "NON_BLOCKING_FOR_MINIMAL_MAPPING / FUTURE_CONSUMER_REQUIREMENT",
       "finding": "No production association resolver exists for internalConversationId or localMessageId. The minimal real-producer unit may leave these UNKNOWN/UNRESOLVED, but must not fabricate them or persist them.",
-      "evidence": "pdd-inbound-ingress.ts lines 223-251; production bootstrap has no resolveInboundIdentity."
+      "evidence": "pdd-inbound-ingress.ts lines 223-251; production bootstrap has no resolveInboundIdentity.",
+      "applies_to": "PRODUCTION_INGRESS_ENRICHMENT",
+      "blocks": "Resolved internal conversation/local-message enrichment and downstream capabilities that require it.",
+      "class": "LEGAL_UNKNOWN_FACT / FUTURE_CONSUMER_REQUIREMENT",
+      "minimal_resolution": "Leave internalConversationId and localMessageId UNKNOWN/UNRESOLVED unless a trusted read-only association exists. Do not create or persist records in SHEEP-301."
     }
   ],
-  "blocking_gaps": [
-    {
-      "id": "GAP-01-SENDER-DROPPED",
-      "classification": "CONFIRMED",
-      "severity": "BLOCKING",
-      "finding": "The production PDD page-event callback drops the authenticated IPC sender before PddPlatformService.handlePageEvent, so no production path can establish the accepted sender/document context.",
-      "evidence": "apps/desktop/src/main/index.ts lines 212-215; pdd-page-ipc.ts lines 24-27 and 50-53; pdd-platform-service.ts lines 231-267."
-    },
-    {
-      "id": "GAP-02-CANONICAL-CALLER-MISSING",
-      "classification": "CONFIRMED",
-      "severity": "BLOCKING",
-      "finding": "handleTrustedInboundIngress has no production caller. Existing references are tests, the bounded smoke script, and its definition.",
-      "evidence": "Only calls exist in apps/desktop/tests/pdd-inbound-ingress.test.ts and scripts/run-sheep-301-bounded-fixture-smoke.mjs."
-    },
-    {
-      "id": "GAP-03-RESOLVERS-MISSING",
-      "classification": "CONFIRMED",
-      "severity": "BLOCKING",
-      "finding": "Production bootstrap does not provide resolveInboundScope, resolveInboundIdentity, or onCanonicalInbound. A direct call would fail with missing scope resolver or collector.",
-      "evidence": "apps/desktop/src/main/bootstrap.ts lines 350-363; pdd-platform-service.ts lines 268-293."
-    },
-    {
-      "id": "GAP-04-LEGACY-PARALLEL-CONSUMER",
-      "classification": "CONFIRMED",
-      "severity": "BLOCKING",
-      "finding": "message_received still has an independent legacy branch after session.handleEvent. This branch is not gated by the canonical gate and reaches PddOrchestratorBridge when no onInboundMessage is configured.",
-      "evidence": "pdd-platform-service.ts lines 77-105 and 119-122; pdd-orchestrator-bridge.ts lines 19-28."
-    },
-    {
-      "id": "GAP-05-PAGE-IPC-FAIL-OPEN",
-      "classification": "CONFIRMED",
-      "severity": "BLOCKING_IF_PATH_REUSED",
-      "finding": "If validatorFor throws during module initialization, pdd-page-ipc forwards events without validation. The accepted path requires fail-closed behavior.",
-      "evidence": "pdd-page-ipc.ts lines 32-38 and 50-58."
-    },
-    {
-      "id": "GAP-06-SYNTHETIC-DOM-SELECTORS",
-      "classification": "CONFIRMED",
-      "severity": "BLOCKING",
-      "finding": "The production PDD WebContents is loaded with a selector profile whose required selectors are synthetic data-fw-* entries. No confirmed production PDD selectors are present.",
-      "evidence": "packages/platform-pdd/src/selector-profile.ts lines 20-24; packages/platform-pdd/tests/fixtures/chat-basic.html."
-    },
-    {
-      "id": "GAP-07-LOSSY-PRE-MAPPER",
-      "classification": "CONFIRMED",
-      "severity": "BLOCKING_IF_PATH_REUSED",
-      "finding": "The DOM path trims content, truncates at 4000 characters, hardcodes inbound direction, uses lastConversationId fallback, substitutes fallback fingerprints, and deduplicates before Main.",
-      "evidence": "message-reader.ts line 15; message-normalizer.ts lines 18-24; page-runtime.ts lines 122-144."
-    },
-    {
-      "id": "GAP-08-NO-RAW-PRODUCER",
-      "classification": "CONFIRMED",
-      "severity": "BLOCKING",
-      "finding": "No repository code observes or receives the historical Titan raw PDD inbound payload. The normalized DOM page event is not a raw PDD payload and must not be relabelled as one.",
-      "evidence": "No websocket/debugger/framereceived code in apps or packages; page-events.ts builds normalized fields; SHEEP-081 records historical evidence only."
-    },
-    {
-      "id": "GAP-09-NO-SCOPE-BINDING",
-      "classification": "BLOCKED",
-      "severity": "BLOCKING",
-      "finding": "Runtime shop is not mapped to canonical merchant/store/platform-account scope. ShopRow carries only shop_id, name, type, and enabled; the repositories exist but no PDD resolver is wired.",
-      "evidence": "apps/desktop/src/main/services/shop-service.ts line 2; bootstrap.ts lines 265-267 and 350-363."
-    },
-    {
-      "id": "GAP-10-NO-TRUSTED-SOURCE-TIME",
-      "classification": "BLOCKED",
-      "severity": "BLOCKING",
-      "finding": "The canonical gate requires a separate validated sourceOccurredAt input, but no real producer supplies it. The page-event timestamp is not wired to the gate and raw payload time semantics are not established.",
-      "evidence": "pdd-inbound-ingress.ts lines 148-170 and 254-265; pdd-platform-service.ts lines 277-283."
-    }
-  ],
+  "blocking_gaps": {
+    "scope": "PRODUCTION_PDD_INGRESS_ONLY",
+    "ids": [
+      "GAP-02-CANONICAL-CALLER-MISSING",
+      "GAP-03-RESOLVERS-MISSING",
+      "GAP-04-LEGACY-PARALLEL-CONSUMER",
+      "GAP-08-NO-RAW-PRODUCER",
+      "GAP-09-NO-SCOPE-BINDING"
+    ],
+    "offline_boundary_blocking_ids": [],
+    "note": "GAP-01, GAP-05, GAP-06, and GAP-07 are scoped to the legacy DOM/page-event path; they do not block the separate Main-owned observer proof. GAP-10 is nullable/partial, not a minimal-mapping blocker. GAP-11 is a legal unknown or later consumer requirement."
+  },
   "recommended_next_acceptance_unit": {
-    "id": "BOUNDED_REAL_PDD_TITAN_FRAME_BOUNDARY_EVIDENCE",
-    "state": "BLOCKED_IMPLEMENTATION_READINESS",
-    "purpose": "Obtain the minimum missing read-only evidence needed to decide whether the embedded PDD WebContents can expose a trustworthy Titan inbound frame boundary.",
+    "id": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
+    "state": "RECOMMENDED_FOR_CONTROLLER_REVIEW / NOT_AUTHORIZED / NOT_STARTED",
+    "purpose": "Prove, entirely offline, that a Main-owned observer can bind an isolated Electron WebContents WebSocket connection to the originating session/document and deliver synthetic inbound messages into a test-only canonical collector without legacy fallback.",
+    "solves": "The mechanism uncertainty about WebSocket observation, requestId continuity, document-generation binding, and lifecycle invalidation. It does not prove PDD/Titan compatibility or authorize production wiring.",
     "scope": [
-      "one controlled, explicitly authorized live read-only observation",
-      "one inbound message only",
-      "record field presence and correlation only, not content or identifiers",
-      "verify frame origin and binding to the active PDD WebContents/session/document generation",
-      "verify whether source time is present and how it is represented",
-      "do not invoke AI, persistence, send, or platform mutation",
-      "do not implement product code or change the accepted canonical path"
+      "one isolated local Electron test session or two controlled sessions in the same test composition",
+      "synthetic loopback WebSocket server only",
+      "synthetic opaque IDs and messages only",
+      "test-only resolvers and collector; no production bootstrap",
+      "no PDD/Titan network connection",
+      "no AI, persistence, send, or platform business action",
+      "no production observer implementation"
     ],
-    "unblock_criteria": [
-      "exact observed frame envelope is documented",
-      "frame-to-session/document binding is demonstrated without trusting payload shop/session",
-      "source time semantics are explicit",
-      "canonical scope resolver values are identified or explicitly remain UNKNOWN/UNRESOLVED",
-      "all failures stop before collector and legacy bridge"
+    "required_evidence": [
+      "Debugger attach/detach, Network.enable, webSocketCreated and frame events",
+      "requestId to WebContents/session/document-generation binding established at connection creation",
+      "same-service isolation for two controlled shops with equal opaque IDs",
+      "reload, delayed old-connection event, dispose/recreate, destroyed WebContents, and debugger detach behavior",
+      "validator/collector failure semantics and no legacy bridge fallback",
+      "a diagnostic result that distinguishes API proof from PDD compatibility"
     ],
+    "offline_verifiable": true,
+    "live_required": false,
     "follows_with": {
       "proposed_implementation_unit": "TRUSTED_MAIN_TITAN_FRAME_INGRESS",
-      "description": "After the evidence unit passes, implement the Main-owned observer and route its raw confirmed fields through the accepted canonical ingress, with no DOM fallback, no legacy bridge, and no AI/persistence/send."
+      "description": "After the offline boundary proof passes, separately evaluate the production implementation under a new authorization. Real PDD/Titan behavior still requires a separately authorized live observation unit."
     }
   },
   "proposed_follow_on_implementation_unit": {
@@ -580,6 +598,9 @@
       "apps/desktop/src/main/platforms/pdd/pdd-view-host.ts",
       "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
       "apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts",
+      "apps/desktop/src/main/platforms/pdd/pdd-inbound-ingress.ts",
+      "apps/desktop/src/main/bootstrap.ts when resolver/collector composition is wired",
+      "apps/desktop/src/main/worker-runtime.ts only if production scope sources are injected through that composition",
       "apps/desktop/src/main/index.ts only if composition wiring requires it",
       "new apps/desktop/src/main/platforms/pdd/pdd-titan-frame-observer.ts",
       "new apps/desktop/tests/pdd-titan-ingress.test.ts",
@@ -601,6 +622,12 @@
       "fail closed if the canonical validator is unavailable",
       "stop if collector is missing; never fall back to AI or legacy bridge",
       "disable or remove the selected path on parse failure, navigation, dispose, or auth/reauth"
+    ],
+    "composition_requirements": [
+      "explicit Main-owned resolveInboundScope using workspaceMerchant, StoreRepository, and PlatformAccountRepository where a trusted mapping exists",
+      "explicit resolveInboundIdentity or deliberate UNKNOWN/UNRESOLVED when no trusted association exists",
+      "explicit test/control collector; missing collector must STOP",
+      "no legacy message_received branch to PddOrchestratorBridge on the selected path"
     ]
   },
   "test_plan": [
@@ -612,15 +639,15 @@
     },
     {
       "id": "T02",
-      "scenario": "Same opaque customer/message IDs in two shops",
-      "expected": "Each frame maps only to its own runtime shop and scope.",
-      "offline_evidence": "two independent session/view fixtures"
+      "scenario": "Two controlled sessions in the same management service use equal opaque customer/message IDs",
+      "expected": "Each session maps only to its own runtime shop/document/scope; no cross-session requestId or connection binding is reused.",
+      "offline_evidence": "same-service two-session test harness"
     },
     {
       "id": "T03",
-      "scenario": "Wrong owner scope/customer/message association",
-      "expected": "Rejected with the existing association mismatch reasons; collector unchanged.",
-      "offline_evidence": "test-owned identity resolver"
+      "scenario": "Wrong owner scope/customer/message association across the same-service two-session harness",
+      "expected": "Rejected with existing association mismatch reasons; collector unchanged.",
+      "offline_evidence": "same-service test-owned identity resolver"
     },
     {
       "id": "T04",
@@ -642,9 +669,9 @@
     },
     {
       "id": "T07",
-      "scenario": "Mapper failure, validator unavailable/false/throw, collector missing/throw/async return",
-      "expected": "Stop with no collector increase and no legacy bridge fallback.",
-      "offline_evidence": "focused gate tests"
+      "scenario": "Failure phase A and failure phase B",
+      "expected": "A. mapper/validator/identity checks fail before collector: collector is not called. B. collector was called and then throws or returns an unsupported Promise: return explicit FAILED, observe rejection, do not report MAPPED, do not retry, and do not fall back to legacy bridge. Collector-side effects that already occurred cannot be rolled back.",
+      "offline_evidence": "focused gate tests with collector call counters and rejection observation"
     },
     {
       "id": "T08",
@@ -657,6 +684,12 @@
       "scenario": "Real embedded WebContents frame reachability",
       "expected": "Only a separately authorized live read-only observation can prove the actual frame boundary.",
       "offline_evidence": "NOT_OFFLINE_PROVABLE"
+    },
+    {
+      "id": "T10",
+      "scenario": "Shared-service two-session connection binding",
+      "expected": "Request IDs, document generations, and observer detach state remain scoped to the originating session.",
+      "offline_evidence": "same-service two-session synthetic loopback harness"
     }
   ],
   "evidence_classification": {
@@ -677,11 +710,10 @@
       "The accepted canonical mapper can consume the historical raw field shape without a second canonical model."
     ],
     "blocked": [
-      "implementation wiring for the real producer",
-      "exact Electron-observable Titan frame mechanism and document binding",
-      "sourceOccurredAt semantics",
-      "canonical scope mapping from runtime shop to merchant/store/platform account",
-      "production association source for internal conversation and local message identities"
+      "production implementation wiring for a real PDD producer",
+      "real PDD/Titan compatibility and runtime behavior",
+      "actual business source-time semantics",
+      "production canonical scope mapping where trusted values are unavailable"
     ],
     "product_decision_required": [],
     "deferred": [
@@ -699,6 +731,23 @@
       "persistence",
       "transport send",
       "live store validation"
+    ],
+    "offline_boundary_probe": {
+      "classification": "CONFIRMED_OFFLINE_RUN",
+      "scope": "Electron 43.6.0 local synthetic loopback WebSocket",
+      "observed": "Debugger attach succeeded; webSocketCreated, handshake, frameSent, and frameReceived events were observed through Network domain; requestId, MonotonicTime timestamp, opcode, mask, and payloadData were present.",
+      "not_proven": "Real PDD/Titan origin, payload framing, reconnect/replay behavior, platform source time, and production authorization."
+    },
+    "implementation_pending": [
+      "canonical resolver/collector composition wiring",
+      "explicit isolation of the selected path from the legacy message_received consumer",
+      "exact production observer attachment and lifecycle implementation"
+    ],
+    "legal_unknown_allowed": [
+      "merchantId/storeId/platformAccountId when no trusted Main mapping exists",
+      "runtimeConversationReference when no trusted runtime binding exists",
+      "internalConversationId and localMessageId when no trusted association exists",
+      "sourceOccurredAt when no validated business source time exists"
     ]
   },
   "implementation_flags": {
@@ -706,7 +755,8 @@
     "implementation_authorized": false,
     "live_validation_performed": false,
     "full_sheep_301_closed": false,
-    "next_stage_not_executed": true
+    "next_stage_not_executed": true,
+    "diagnostic_probe_performed": true
   },
   "files_changed": [
     "project/SHEEP_301_REAL_PRODUCER_READINESS_AUDIT.md",
@@ -716,7 +766,7 @@
     "status": "PASS",
     "commands": [
       {
-        "command": "node -e JSON.parse(report)",
+        "command": "node -e JSON.parse(reports/SHEEP-301-real-producer-readiness-audit.json)",
         "result": "PASS"
       },
       {
@@ -728,23 +778,267 @@
         "result": "PASS / 18 passed / 0 failed"
       },
       {
-        "command": "audit reference path existence check",
+        "command": "audit source reference path existence check",
         "result": "PASS / AUDIT_REFERENCE_PATHS=PASS"
       },
       {
-        "command": "git diff --cached --check",
-        "result": "PASS"
+        "command": "isolated Electron 43.6.0 synthetic loopback WebSocket probe",
+        "result": "PASS / webSocketCreated, handshake, frameSent, frameReceived observed"
       },
       {
-        "command": "git diff --cached --name-only scope check",
+        "command": "git diff --cached --check",
+        "result": "PASS / line-ending normalization warnings only"
+      },
+      {
+        "command": "git diff --cached --name-only changed-scope check",
         "result": "PASS / exactly the two audit artifacts"
       }
     ],
+    "diagnostic_probe_performed": true,
+    "offline_boundary_proof_performed": false,
+    "live_validation_performed": false,
+    "product_tests_rerun": false,
     "changed_file_scope": [
       "project/SHEEP_301_REAL_PRODUCER_READINESS_AUDIT.md",
       "reports/SHEEP-301-real-producer-readiness-audit.json"
     ],
-    "implementation_or_test_changes": false,
-    "live_validation_performed": false
+    "notes": [
+      "The local probe is API/event evidence only; it is not the recommended full LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF.",
+      "No PDD/Titan, production bootstrap, real seller session/profile, AI, persistence, or send path was used."
+    ],
+    "artifact_consistency": "PASS",
+    "reference_paths": "PASS",
+    "project_state_consistency": "PASS",
+    "offline_boundary_proof_readiness": "READY_WITH_CONSTRAINTS",
+    "production_pdd_ingress_readiness": "BLOCKED",
+    "live_validation_authorization": "NOT_AUTHORIZED",
+    "recommended_next_acceptance_unit": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF"
+  },
+  "repair_baseline_commit": "e3aa108a69bee71df44ea7272452b583fca0d63d",
+  "repair_scope": "READ_ONLY_AUDIT_REPAIR",
+  "repaired_interpretation": "The previous audit correctly found real producer wiring absent, but over-coupled production integration gaps to the offline observer boundary and treated sourceOccurredAt as a general production blocker. This repair separates stage readiness and preserves the unresolved real-PDD behavior.",
+  "offline_boundary_proof_readiness": "READY_WITH_CONSTRAINTS",
+  "production_pdd_ingress_readiness": "BLOCKED",
+  "live_validation_authorization": "NOT_AUTHORIZED",
+  "offline_boundary_analysis": {
+    "diagnostic_probe_performed": true,
+    "probe_scope": "Isolated local Electron 43.6.0 BrowserWindow with memory partition, synthetic loopback WebSocket server, no PDD/Titan connection, no production bootstrap, no AI/database/send.",
+    "probe_script": "E:/fast_sheep.tmp/sheep-301-real-producer-audit/probe-main.cjs",
+    "probe_result": "E:/fast_sheep.tmp/sheep-301-real-producer-audit/probe-result.json",
+    "local_versions": {
+      "electron": "43.6.0",
+      "chrome": "150.0.7871.250",
+      "node": "24.20.0"
+    },
+    "observed_methods": [
+      "Network.webSocketCreated",
+      "Network.webSocketWillSendHandshakeRequest",
+      "Network.webSocketHandshakeResponseReceived",
+      "Network.webSocketFrameSent",
+      "Network.webSocketFrameReceived"
+    ],
+    "observed_fields": {
+      "Network.webSocketCreated": [
+        "requestId",
+        "url",
+        "initiator (optional)"
+      ],
+      "Network.webSocketWillSendHandshakeRequest": [
+        "requestId",
+        "timestamp (MonotonicTime)",
+        "wallTime",
+        "request.headers"
+      ],
+      "Network.webSocketHandshakeResponseReceived": [
+        "requestId",
+        "timestamp (MonotonicTime)",
+        "response.status",
+        "response.headers"
+      ],
+      "Network.webSocketFrameSent": [
+        "requestId",
+        "timestamp (MonotonicTime)",
+        "response.opcode",
+        "response.mask",
+        "response.payloadData"
+      ],
+      "Network.webSocketFrameReceived": [
+        "requestId",
+        "timestamp (MonotonicTime)",
+        "response.opcode",
+        "response.mask",
+        "response.payloadData"
+      ]
+    },
+    "observed_binding_facts": [
+      "The Electron Debugger message event supplies method, params, and sessionId.",
+      "The local root target produced sessionId = empty string in the probe; each WebContents has its own Debugger instance.",
+      "Network.webSocketCreated gives requestId, URL, and an optional script initiator.",
+      "WebSocket frame events give requestId but no document generation, frameId, platform timestamp, or platform identity.",
+      "The frame timestamp is MonotonicTime (seconds since an arbitrary point), not a platform business occurrence time.",
+      "WebSocketFrame represents an entire WebSocket message; opcode 1 payloadData is text and other opcodes are base64 binary strings.",
+      "No event proves that the socket belongs to the active document generation; Main must establish that mapping at attach/connection time and invalidate it on navigation."
+    ],
+    "connection_and_document_binding_model": [
+      "Attach a separate Debugger to the exact WebContents owned by each PddViewHost/session.",
+      "Record the WebContents object, session id, and active document generation at observer start.",
+      "On webSocketCreated, bind requestId/URL to that observer only if the URL matches the approved Titan origin and the observer is current.",
+      "Maintain connectionId/requestId to the original WebContents and document generation; do not replace the binding when a later frame arrives.",
+      "On did-start-navigation or equivalent Main lifecycle boundary, invalidate old connection bindings before/at document generation change.",
+      "Reject any frame whose requestId was not bound before the current generation, whose observer is detached, or whose WebContents no longer owns the session."
+    ],
+    "lifecycle_rules": {
+      "reload": "Increment/invalidate document generation at Main navigation start; frames for pre-reload requestIds are discarded even if delivered later.",
+      "delayed_old_connection_events": "Do not use a frame timestamp or current generation lookup to repair an old connection; use the connection binding created when the socket was observed.",
+      "dispose_recreate": "Destroy the old Debugger observer/connection map; new WebContents and new generation start with an empty binding map.",
+      "destroyed_webcontents": "Treat close/destruction as terminal; detach or discard observer state and never route queued frames.",
+      "debugger_detach": "The Electron Debugger detach event is terminal for that observer; dispatch no further frames and require a new attach/bind cycle.",
+      "ownership_unknown": "Discard or STOP. Never use payload shop/session/generation as authority."
+    },
+    "offline_verifiable": [
+      "Electron/CDP API availability in Electron 43.6.0",
+      "event method names and fields for synthetic WebSockets",
+      "requestId continuity and per-target Debugger isolation",
+      "Main-maintained connection/document-generation mapping",
+      "reload/dispose/detach invalidation using synthetic local sessions"
+    ],
+    "live_only_questions": [
+      "Whether the real PDD embedded page actually creates the expected Titan WebSocket and exact URL/origin",
+      "Whether Titan delivers the historical raw payload shape as text or binary and with which framing/extraction",
+      "Whether PDD reconnects, replays, compresses, or fragments messages in practice",
+      "Whether real Titan messages contain a trustworthy business source time",
+      "Whether a real frame remains attributable to the intended shop/session/document under all runtime transitions"
+    ],
+    "official_sources": [
+      {
+        "source": "Electron Debugger API",
+        "url": "https://www.electronjs.org/docs/latest/api/debugger",
+        "retrieved": "2026-09-17",
+        "use": "attach, detach, isAttached, sendCommand, message event and sessionId semantics"
+      },
+      {
+        "source": "Electron WebContents API",
+        "url": "https://www.electronjs.org/docs/latest/api/web-contents",
+        "retrieved": "2026-09-17",
+        "use": "webContents.debugger property"
+      },
+      {
+        "source": "Chrome DevTools Protocol Network domain",
+        "url": "https://chromedevtools.github.io/devtools-protocol/tot/Network/",
+        "retrieved": "2026-09-17",
+        "use": "webSocketCreated, webSocketFrameReceived, webSocketFrameSent, handshake/close events"
+      },
+      {
+        "source": "Chrome DevTools Protocol browser_protocol.json",
+        "url": "https://raw.githubusercontent.com/ChromeDevTools/devtools-protocol/master/json/browser_protocol.json",
+        "retrieved": "2026-09-17",
+        "use": "RequestId, WebSocketFrame, MonotonicTime and event parameter schemas"
+      },
+      {
+        "source": "Local Electron 43.6.0 types",
+        "url": "node_modules/.pnpm/electron@43.6.0/node_modules/electron/electron.d.ts",
+        "retrieved": "2026-09-17",
+        "use": "version-local Debugger and WebContents declarations"
+      }
+    ],
+    "version_caveats": [
+      "Official current docs are not a statement that every field/event is available in Electron 43.6.0; the local probe confirms the specific local WebSocket events used by this audit.",
+      "The local probe proves API behavior for a synthetic loopback WebSocket, not PDD/Titan identity, payload, auth, ordering, reconnect, or time semantics."
+    ],
+    "boundary_proof_performed": false,
+    "boundary_proof_note": "The probe proves only local API/event mechanics. It is not the recommended acceptance unit and does not prove same-service lifecycle isolation.",
+    "terminology_clarification": {
+      "debugger_session_id": "The Debugger message event sessionId identifies the attached CDP session. It was empty for the root local target and is not a WebSocket connection ID.",
+      "request_id": "Network RequestId identifies a network request/WebSocket connection. It is not a platform message ID or internal conversation identity.",
+      "websocket_frame": "CDP WebSocketFrame represents an entire WebSocket message, not a browser frame or a fragmented wire frame. It can contain text or base64 binary payloadData.",
+      "document_generation": "Main document generation is application-owned and was not present in the observed CDP WebSocket parameters."
+    }
+  },
+  "next_step_comparison": {
+    "preferred": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
+    "reason": "It directly resolves the current mechanism uncertainty with no platform/network access and no product implementation.",
+    "alternative": "A separately authorized real PDD minimal observation",
+    "alternative_required_only_for": [
+      "actual Titan URL/origin and connection establishment",
+      "actual text/binary framing and payload extraction",
+      "real reconnect/replay/fragmentation behavior",
+      "actual business source-time semantics"
+    ],
+    "not_sufficient_reason": "A live observation alone does not first prove lifecycle-safe Main binding or the same-service isolation model; those can be exercised offline."
+  },
+  "authorization_semantics": {
+    "owner_attested_permission": "PRESERVED",
+    "embedded_runtime_first": "PRESERVED",
+    "current_live_network_observation_authorization": "NOT_AUTHORIZED",
+    "live_validation_authorization": "NOT_AUTHORIZED",
+    "note": "No blanket commercial/compliance gate is added by this repair. Existing platform/commercial-compliance tracking remains unchanged and applies only if a future authorized implementation enters that scope."
+  },
+  "corrected_conclusions": [
+    "The previous audit treated sourceOccurredAt as a general blocker. Correct: missing or unvalidated source time maps with null and diagnostics; it is not required for minimal inbound mapping.",
+    "The previous audit treated DOM selector and IPC-sender gaps as blockers for the Main-owned observer. Correct: they apply to the legacy DOM/page-event route and do not block an independent WebContents debugger observer.",
+    "The previous audit grouped resolver/collector wiring, fact completeness, and lifecycle binding into one production blocker. Correct: wiring is a TODO implementation item, canonical values may be unknown, runtimeShop must remain trusted, and lifecycle binding is an offline-testable mechanism question.",
+    "The previous audit proposed a live evidence unit as the next step. Correct: local Electron/WebSocket boundary proof can resolve the current mechanism uncertainty offline; live PDD observation remains a later, separately authorized question."
+  ],
+  "unchanged_findings": [
+    "No production real PDD inbound producer is currently wired.",
+    "The accepted canonical ingress is exercised only by tests and the bounded fixture smoke.",
+    "The current page-event path drops the IPC sender and retains a legacy orchestrator branch.",
+    "The page-event validator can fail open.",
+    "The DOM runtime is synthetic-DESIGN-only and lossy before canonical mapping.",
+    "Production bootstrap does not inject canonical resolver/collector callbacks.",
+    "The real PDD runtime behavior and Titan payload compatibility remain unverified."
+  ],
+  "production_blocking_gaps": [
+    "No production raw PDD observer/producer is wired.",
+    "No production composition supplies canonical resolver/collector callbacks.",
+    "The legacy message_received consumer remains reachable if the selected path is not explicitly isolated.",
+    "Runtime shop to canonical scope mapping is not implemented.",
+    "Real PDD/Titan payload and source-time behavior remain unverified."
+  ],
+  "offline_blocking_gaps": [
+    "A Main-owned observer must establish requestId/session/document binding at connection creation rather than rebinding on frame arrival.",
+    "The proof must use two controlled sessions in one management service, not two independent services.",
+    "The proof must demonstrate reload, delayed old events, dispose/recreate, destruction, and debugger detach invalidation."
+  ],
+  "stage_readiness": {
+    "offline_boundary_proof": {
+      "value": "READY_WITH_CONSTRAINTS",
+      "reason": "The local Electron 43.6.0 probe observed the required WebSocket creation/frame events with requestId and frame fields on a synthetic loopback connection. Remaining work is an explicit lifecycle/binding proof, not a live platform prerequisite."
+    },
+    "production_pdd_ingress": {
+      "value": "BLOCKED",
+      "reason": "No production producer/composition is wired, legacy consumer isolation is incomplete, canonical scope wiring is absent, and real PDD/Titan behavior is unverified."
+    },
+    "live_validation": {
+      "value": "NOT_AUTHORIZED",
+      "reason": "Current execution and network/live observation gates remain closed; no live PDD access is authorized by this audit."
+    }
+  },
+  "gap_classification_summary": {
+    "todo_implementation": [
+      "GAP-01",
+      "GAP-02",
+      "GAP-03",
+      "GAP-04",
+      "GAP-05"
+    ],
+    "pre_implementation_evidence_or_path_avoidance": [
+      "GAP-06"
+    ],
+    "reuse_only_implementation_risk": [
+      "GAP-07"
+    ],
+    "production_raw_producer_gap": [
+      "GAP-08"
+    ],
+    "implementation_wiring_pending_legal_unknown": [
+      "GAP-09"
+    ],
+    "evidence_gap_nullable_partial": [
+      "GAP-10"
+    ],
+    "legal_unknown_future_consumer_requirement": [
+      "GAP-11"
+    ]
   }
 }

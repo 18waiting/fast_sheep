@@ -2,13 +2,16 @@
 
 > Task: SHEEP-301
 > Acceptance Unit: REMAINING_REAL_PRODUCER_INTEGRATION_READINESS_AUDIT
-> Mode: READ-ONLY IMPLEMENTATION READINESS AUDIT
-> Baseline: e82dd4ca46a61aa2148ed693039fad6c325b0a4b
+> Mode: READ-ONLY AUDIT REPAIR
+> Original baseline: e82dd4ca46a61aa2148ed693039fad6c325b0a4b
+> Repair baseline: e3aa108a69bee71df44ea7272452b583fca0d63d
 > Audit result: COMPLETE
-> Implementation readiness recommendation: BLOCKED
+> Offline boundary proof readiness: READY_WITH_CONSTRAINTS
+> Production PDD ingress readiness: BLOCKED
+> Live validation authorization: NOT_AUTHORIZED
 > Controller review status: AWAITING_CONTROLLER_REVIEW
 
-This audit records evidence and a proposed direction only. It does not authorize or perform product implementation, production wiring, live PDD validation, AI, persistence, send, or platform action. The full SHEEP-301 task remains PARTIAL / OPEN.
+This repair preserves the original findings of missing production producer wiring while correcting stage classification, UNKNOWN/null semantics, and the offline feasibility of a Main-owned WebSocket boundary proof. It does not authorize or implement production wiring, live PDD observation, AI, persistence, send, or platform action.
 
 ---
 
@@ -18,240 +21,306 @@ This audit records evidence and a proposed direction only. It does not authorize
 - CURRENT_MVP_RELEVANCE: HIGH.
 - CUSTOMER_VALUE: reliable capture of actual customer messages without identity substitution or silent loss.
 - SAFETY_IMPACT: HIGH.
-- OUT_OF_SCOPE: product/source changes, production IPC/Titan/WebSocket wiring, live validation, AI, persistence, send, platform business action, and SHEEP-302 or later.
+- OUT_OF_SCOPE: product/source implementation, production observer wiring, live PDD/network access, AI, persistence, send, and later tasks.
 - DECISION: PROCEED.
-- CANONICAL_AUTHORITY_READ: AGENTS.md authority order, PROJECT_STATE, the accepted bounded review/report, and the canonical IdentityLock/InboundEnvelope contracts.
+- CANONICAL_AUTHORITY_READ: AGENTS.md authority order, PROJECT_STATE, canonical IdentityLock/InboundEnvelope contracts, accepted bounded review/report, and the two audit artifacts.
 - IDENTITY_SCOPE: runtime shop/session/view/document generation plus canonical merchant/store/account/customer/conversation/message associations.
-- SIDE_EFFECT_CLASS: repository-read-only analysis; audit artifacts only.
-- UNKNOWN_BEHAVIOR: UNKNOWN/UNRESOLVED is preserved; no display-name, selected-customer, or coincident-string substitution.
-- ROLLBACK_OR_STOP_CONDITION: stop on any requirement to modify product code/tests/schema/governance, observe live PDD/network data, or open a forbidden side-effect path.
+- SIDE_EFFECT_CLASS: repository read and isolated offline diagnostic only.
+- UNKNOWN_BEHAVIOR: UNKNOWN/UNRESOLVED is preserved and never upgraded by display names, selected customer, or coincident strings.
+- ROLLBACK_OR_STOP_CONDITION: stop on any requirement to modify product code, run a production bootstrap, access live PDD/Titan, or open a forbidden side effect.
 
 ---
 
-## 2. Confirmed State
+## 2. Facts Preserved
 
 - SHEEP-300 is CLOSED.
-- MAIN_LOCAL_RAW_INGRESS_BOUND_CONTROLLED_FIXTURE_MAPPING is IMPLEMENTED / COMPLETE / CONTROLLER PASS.
+- MAIN_LOCAL_RAW_INGRESS_BOUND_CONTROLLED_FIXTURE_MAPPING remains PASS.
 - Full SHEEP-301 is PARTIAL / OPEN.
-- last_closed_task remains SHEEP-300.
-- next_authoritative_roadmap_id remains SHEEP-301.
-- execution, live evidence, send, persistence, HUMAN_CONFIRM, AUTO, platform mutation, and later-task gates remain closed.
+- No production real PDD inbound producer is currently wired.
+- Accepted canonical ingress remains callable only through tests/smoke and any future authorized caller.
+- The legacy page-event path still drops the IPC sender, can fail open validation, and retains an independent message_received to orchestrator branch.
+- The DOM path remains synthetic-DESIGN-only and lossy before canonical mapping.
+- Real PDD/Titan behavior remains unverified.
 
 ---
 
-## 3. Source Inventory
+## 3. Corrected Interpretations
 
-| Source | Role | Classification | Evidence |
-|---|---|---|---|
-| packages/platform-pdd/src/inbound-normalizer.ts | Raw payload normalizer and canonical-ingress normalizer | CONFIRMED | Defines observed raw fields and rejects present-but-invalid identity values while preserving missing/unknown facts. |
-| packages/platform-pdd/src/inbound-to-canonical.ts | Pure canonical mapper | CONFIRMED | Builds immutable IdentityLock / InboundEnvelope with no AI, persistence, send, or side effect. |
-| apps/desktop/src/main/platforms/pdd/pdd-inbound-ingress.ts | Accepted Main canonical gate | CONFIRMED | Resolves Main scope/identity, checks association ownership, validates canonical output, and stops. |
-| apps/desktop/src/main/platforms/pdd/pdd-session-host.ts | Sender/session/document binding | CONFIRMED | Context is bound to actual WebContents, view, READY state, active generation, and liveness. |
-| apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts | Main composition root | CONFIRMED / GAP | Exposes canonical ingress but also contains an independent legacy message_received branch. |
-| apps/desktop/src/main/index.ts | Electron PDD page IPC wiring | CONFIRMED_GAP | Invokes handlePageEvent(payload) and drops the sender. |
-| apps/desktop/src/main/platforms/pdd/pdd-page-ipc.ts | PDD page-event IPC | CONFIRMED_GAP | Sender guard exists, but validator lookup can fail open when validatorFor throws. |
-| packages/platform-pdd/src/page/page-runtime.ts | DOM observer and page-event producer | CONFIRMED_SYNTHETIC_ONLY | Uses synthetic DOM contract, lastConversationId fallback, and pre-Main dedup. |
-| packages/platform-pdd/src/dom/message-reader.ts | DOM transcript reader | CONFIRMED_LOSSY | Trims content before normalization. |
-| packages/platform-pdd/src/message-normalizer.ts | Legacy DOM normalizer | CONFIRMED_LOSSY | Truncates to 4000 characters, hardcodes inbound, and replaces missing IDs with fingerprints. |
-| packages/platform-pdd/src/selector-profile.ts | Selector provenance | CONFIRMED_GAP | Required production selectors were not observed; entries are DESIGN/synthetic data-fw-* selectors. |
-| apps/desktop/src/main/platforms/pdd/pdd-orchestrator-bridge.ts | Legacy consumer bridge | CONFIRMED | Forwards normalized messages to ConversationOrchestrator, not the canonical collector. |
-| apps/desktop/src/main/bootstrap.ts | Production composition | CONFIRMED_GAP | No canonical scope resolver, identity resolver, or collector callback is supplied. |
-| packages/contracts/schemas/platform/pdd-page-event.schema.json | PDD page-event IPC schema | CONFIRMED_GAP | event is an unrestricted string and does not model raw PDD provenance. |
-| references/pdd-customer-service-sdk/workstation/workstation.py | External research snapshot | INFERRED / DEFERRED | Shows a Playwright WebSocket frame observer, but import report marks it research-only and not production-authoritative. |
+### sourceOccurredAt
+
+The accepted ingress treats source time as nullable/partial:
+
+- missing -> sourceOccurredAt = null with SOURCE_TIME_MISSING;
+- malformed string -> sourceOccurredAt = null with SOURCE_TIME_INVALID;
+- current non-string/non-null input is normalized to null by the ingress helper, not a mandatory whole-message rejection;
+- a known valid business source time, if evidenced, must be preserved exactly;
+- Date.now, receipt time, and unproven CDP MonotonicTime must not replace platform occurrence time.
+
+Therefore source-time absence is not a general blocker to the minimal inbound mapping. It remains a production semantic completeness gap where downstream consumers require source time.
+
+### Resolver, collector, and canonical facts
+
+- Missing resolver/collector wiring is a pending implementation/composition item.
+- Whether a canonical value is known is a fact-completeness issue, separate from wiring.
+- runtimeShop must come from trusted Main session/document binding; payload self-report is not authority.
+- Missing or conflicting Main scope authority must fail closed where the capability requires it.
+- merchantId, storeId, platformAccountId, runtimeConversationReference, internalConversationId, localMessageId, and sourceOccurredAt may remain UNKNOWN/UNRESOLVED when legally unknown.
+- UNKNOWN does not grant persistence, aggregation, AI, or send authority.
+
+### Existing Main authority sources
+
+- workspaceMerchant is established in Main composition and represents the workspace merchant authority.
+- StoreRepository and PlatformAccountRepository are present in Main composition and are backed by SQLite in the worker-backed production path.
+- The runtime shop is not automatically a canonical Store or PlatformAccount.
+- No PDD resolveInboundScope/resolveInboundIdentity implementation currently connects these sources to canonical inbound values.
 
 ---
 
-## 4. Current Call Chains
+## 4. Source Inventory
+
+| Source | Role | Evidence status |
+|---|---|---|
+| packages/platform-pdd/src/inbound-normalizer.ts | Raw and canonical-ingress normalization | CONFIRMED |
+| packages/platform-pdd/src/inbound-to-canonical.ts | Pure canonical mapper | CONFIRMED |
+| apps/desktop/src/main/platforms/pdd/pdd-inbound-ingress.ts | Accepted Main gate | CONFIRMED |
+| apps/desktop/src/main/platforms/pdd/pdd-session-host.ts | Sender/session/document/liveness binding | CONFIRMED |
+| apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts | Canonical path plus legacy page-event path | CONFIRMED / GAP |
+| apps/desktop/src/main/index.ts | PDD IPC composition | CONFIRMED / GAP |
+| apps/desktop/src/main/platforms/pdd/pdd-page-ipc.ts | PDD page-event IPC | CONFIRMED / GAP |
+| packages/platform-pdd/src/page/page-runtime.ts | Synthetic DOM observer | CONFIRMED / SYNTHETIC_ONLY |
+| packages/platform-pdd/src/dom/message-reader.ts | Trims content before normalization | CONFIRMED / LOSSY |
+| packages/platform-pdd/src/message-normalizer.ts | Truncates, hardcodes direction, fingerprints | CONFIRMED / LOSSY |
+| packages/platform-pdd/src/selector-profile.ts | Required selectors are DESIGN-only | CONFIRMED / GAP |
+| apps/desktop/src/main/bootstrap.ts | Main composition | CONFIRMED / GAP |
+| apps/desktop/src/main/worker-runtime.ts | Production persistence and workspace-merchant sources | CONFIRMED |
+| packages/contracts/schemas/platform/pdd-page-event.schema.json | Synthetic page-event schema | CONFIRMED / GAP |
+| references/pdd-customer-service-sdk/workstation/workstation.py | Research-only external design hint | INFERRED / DEFERRED |
+
+---
+
+## 5. Actual and Proposed Call Chains
+
+### Current production path
+
+    PDD page runtime (synthetic DOM selectors)
+    -> pdd-page-event IPC
+    -> main/index drops sender
+    -> PddPlatformService.handlePageEvent(payload)
+    -> independent legacy message_received branch
+    -> onInboundMessage or PddOrchestratorBridge
+
+This is not the accepted canonical producer path and it is not a real PDD raw payload producer.
 
 ### Accepted canonical path
 
-CONFIRMED CODE PATH / NO PRODUCTION CALLER:
-
     trusted sender + PddInboundIngressContext
-    -> PddSessionHost.resolveInboundIngressBinding
-    -> processPddInboundIngress
-    -> normalizePddInboundForCanonical
-    -> resolveInboundScope + resolveInboundIdentity
-    -> mapPddInboundToCanonical
+    -> session/document-generation revalidation
+    -> raw PDD semantic normalization
+    -> Main scope and identity association checks
+    -> canonical mapper
     -> canonical schema validation
-    -> onCanonicalInbound collector
+    -> collector
     -> STOP
 
-This path is exercised by focused tests and the bounded smoke script. No product composition calls handleTrustedInboundIngress.
+### Proposed offline boundary chain
 
-### Current DOM / preload / IPC path
-
-CONFIRMED SYNTHETIC-ONLY PATH:
-
-    PddPageRuntime.scan reads data-fw-* DOM selectors
-    -> normalizeMessage trims, truncates, hardcodes inbound, and may create fallback fingerprint IDs
-    -> buildMessageReceived creates a normalized page event
-    -> preload sends pdd-page-event
-    -> pdd-page-ipc may fail open if its module-load validator is unavailable
-    -> main/index.ts drops the sender
-    -> PddPlatformService.handlePageEvent(payload)
-    -> message_received enters the independent legacy handleInbound branch
-
-This is not a raw PDD producer and must not be relabelled as the historical raw PDD payload path.
-
-### Current legacy consumer path
-
-CONFIRMED:
-
-    PddPlatformService.handleInbound
-    -> onInboundMessage callback if configured
-    else PddOrchestratorBridge
-    -> ConversationOrchestrator.onBuyerMessage
-
-Production bootstrap does not configure onInboundMessage, so the default bridge is available.
-
-### Historical raw producer evidence
-
-HISTORICAL LIVE OBSERVATION ONLY / NOT WIRED:
-
-SHEEP-081 confirms titan-ws.pinduoduo.com and the raw receive fields content, from.role, from.uid, to.role, to.uid, msg_id, and client_msg_id. SHEEP-087 confirms the normalization contract. No repository implementation observes or binds Titan frames.
-
----
-
-## 5. Field Source and Mapping Matrix
-
-| Field | Raw source | Transform and trust boundary | Canonical target | Missing/conflict behavior | Status |
-|---|---|---|---|---|---|
-| platform | Not a producer input | Main mapper sets pdd | identityLock.platform | Fixed | CONFIRMED |
-| runtimeShop | Actual sender WebContents -> senderSessions -> PddSessionHost | Main object identity and WeakMap; payload shop is not authority | identityLock.runtimeShop | Reject untrusted/invalid/stale context | CONFIRMED MECHANISM / NOT WIRED |
-| merchantId / storeId / platformAccountId | Main authority only; no raw source | resolveInboundScope callback | canonical scope resolutions | No production resolver; missing facts stay UNKNOWN/UNRESOLVED | BLOCKED |
-| platformCustomerId | Raw Titan from.uid | Decimal-string validation after trusted context binding | identityLock.platformCustomerId | Missing UNKNOWN; invalid REJECTED | CONFIRMED CONTRACT / NO RAW PRODUCER |
-| platformMessageIdentity | Raw Titan msg_id | Nonblank string -> authoritative identity | triggerMessage.platformMessageIdentity | Missing UNKNOWN; invalid REJECTED; never fingerprint | CONFIRMED CONTRACT / DOM PATH VIOLATES |
-| conversation_id / runtimeConversationReference | No confirmed raw identity | Main-owned trusted binding only | runtimeConversationReference | UNKNOWN/UNRESOLVED; no lastConversation or synthetic unknown | BLOCKED |
-| internalConversationId | Trusted association only | resolveInboundIdentity plus owner checks | identityLock.internalConversationId | Unknown if missing; mismatch reject; do not create | BLOCKED |
-| localMessageId | Trusted association only | resolveInboundIdentity plus owner checks | triggerMessage.localMessageId | Unknown if missing; never synthesize from msg_id | BLOCKED |
-| session / WebContents / document generation | Actual sender, host instance, active generation | Main WeakMap, READY, generation, isDestroyed checks | runtimeEvidence | Reject stale, disposed, or destroyed context | CONFIRMED |
-| selected customer observation | Selected DOM row, if present | Runtime evidence only | runtimeEvidence.selectedCustomerObservation | Never fills platformCustomerId | CONFIRMED EVIDENCE ONLY |
-| inbound direction | Titan roles user -> mall_cs | Canonical normalizer rejects contradictory roles/direction | inbound acceptance | Unknown/outbound reject; DOM path hardcodes inbound | CONFIRMED CONTRACT / DOM PATH VIOLATES |
-| content | Raw observed content | Preserve exact string | sourceContent.text | No trim; no 4000-character truncation | CONFIRMED CONTRACT / DOM PATH VIOLATES |
-| sourceOccurredAt | Separate Main ingress input, not mapped from payload | Strict ISO-8601 UTC Z or null | sourceOccurredAt | Missing/malformed -> null with diagnostics; no local fallback | BLOCKED |
-
-The DOM path trims content, truncates at 4000 characters, hardcodes direction, uses lastConversationId fallback, substitutes fallback fingerprints, and deduplicates before Main. It cannot be used as a transparent raw producer.
-
----
-
-## 6. Critical Gaps and Stop Boundary
-
-1. GAP-01 SENDER-DROPPED — CONFIRMED — BLOCKING: main/index.ts drops the IPC sender, so no production path can create the accepted sender/document context.
-2. GAP-02 CANONICAL-CALLER-MISSING — CONFIRMED — BLOCKING: handleTrustedInboundIngress has no product caller.
-3. GAP-03 RESOLVERS-MISSING — CONFIRMED — BLOCKING: production bootstrap supplies no scope resolver, identity resolver, or canonical collector.
-4. GAP-04 LEGACY-PARALLEL-CONSUMER — CONFIRMED — BLOCKING: message_received still reaches PddOrchestratorBridge independently of the canonical gate.
-5. GAP-05 PAGE-IPC-FAIL-OPEN — CONFIRMED — BLOCKING IF REUSED: validatorFor can return null and the IPC forwards unvalidated events.
-6. GAP-06 SYNTHETIC-DOM-SELECTORS — CONFIRMED — BLOCKING: required production selectors were never observed; the profile is DESIGN-only.
-7. GAP-07 LOSSY-PRE-MAPPER — CONFIRMED — BLOCKING IF REUSED: trim, 4000-character truncation, hardcoded inbound, fallback fingerprint, stale lastConversationId, and global pre-Main dedup.
-8. GAP-08 NO-RAW-PRODUCER — CONFIRMED — BLOCKING: no repository code observes Titan frames; DOM normalized events are not raw PDD payloads.
-9. GAP-09 NO-SCOPE-BINDING — BLOCKED — BLOCKING: the runtime shop is not mapped to canonical merchant/store/platform-account scope.
-10. GAP-10 NO-TRUSTED-SOURCE-TIME — BLOCKED — BLOCKING: no real producer supplies or establishes sourceOccurredAt semantics.
-11. GAP-11 ASSOCIATION-SOURCE-MISSING — BLOCKED — NON-BLOCKING FOR MINIMAL MAPPING: conversation/local-message associations have no production resolver and must remain UNKNOWN/UNRESOLVED rather than be fabricated.
-
-The proposed path must stop at the canonical collector: NO AI, NO PERSISTENCE, NO SEND, NO PLATFORM BUSINESS ACTION. There must be no fallback to PddOrchestratorBridge when the collector is missing, a validator fails, or mapping throws.
-
----
-
-## 7. Candidate Comparison
-
-### DOM / preload / IPC page-event reuse
-
-Status: BLOCKED. The current runtime is synthetic-only, performs lossy transformations before Main, drops the IPC sender, can fail open during validation, and has an independent legacy consumer branch. Reusing it without redesign would violate identity, provenance, and content preservation.
-
-### Main-owned embedded Titan frame observer
-
-Status: RECOMMENDED DIRECTION / BLOCKED PENDING EVIDENCE. Historical live evidence supports the Titan raw contract, and the existing PddSessionHost already provides trustworthy sender/session/document-generation binding. No current code observes frames, and the exact Electron-observable frame boundary is not established.
-
-### Separate Titan / WebSocket client
-
-Status: DEFERRED / NOT RECOMMENDED. It would duplicate credential and session ownership, increase multi-shop risk, and the imported external SDK is research-only and cannot be treated as production authority.
-
----
-
-## 8. Recommended Next Acceptance Unit
-
-Recommended next bounded unit: BOUNDED_REAL_PDD_TITAN_FRAME_BOUNDARY_EVIDENCE.
-
-Purpose: obtain the minimum missing read-only evidence needed to decide whether the embedded PDD WebContents can expose a trustworthy Titan inbound frame boundary.
-
-Scope:
-- one controlled, explicitly authorized live read-only observation;
-- one inbound message only;
-- record field presence and correlation only, not content or identifiers;
-- verify frame origin and binding to the active WebContents/session/document generation;
-- verify whether source time exists and how it is represented;
-- do not invoke AI, persistence, send, or platform mutation;
-- do not implement product code or change the accepted canonical path.
-
-Unblock criteria:
-- exact observed frame envelope is documented;
-- frame-to-session/document binding is demonstrated without trusting payload shop/session;
-- source time semantics are explicit;
-- canonical scope resolver values are identified or explicitly remain UNKNOWN/UNRESOLVED;
-- all failures stop before collector and legacy bridge.
-
-After that evidence passes, the proposed implementation unit is TRUSTED_MAIN_TITAN_FRAME_INGRESS:
-
-    existing embedded PDD WebContents
-    -> Main-owned read-only Titan frame observer
-    -> strict frame/source validation
-    -> PddSessionHost sender/session/document context
-    -> handleTrustedInboundIngress
-    -> canonical mapper + real schema validator
-    -> canonical collector
+    isolated local Electron WebContents
+    -> synthetic loopback WebSocket
+    -> Main-owned Debugger/Network instrumentation
+    -> requestId/connection binding to target WebContents and document generation
+    -> test-only normalization and canonical collector
     -> STOP
 
-Reused implementation: PddSessionHost context binding, processPddInboundIngress, normalizePddInboundForCanonical, mapPddInboundToCanonical, canonical schema validation, and the accepted collector boundary.
-
-Candidate files for the later unit: pdd-view-host.ts, pdd-session-host.ts, pdd-platform-service.ts, main/index.ts only if composition requires it, new pdd-titan-frame-observer.ts, new pdd-titan-ingress.test.ts, and focused session/ingress regressions.
-
-IPC/schema impact: no new IPC channel is proposed for the Main-owned observer. The public page-event schema should not be reused for raw Titan payloads. No canonical schema or generated mirror change is expected.
-
-Security constraints: attach only to the exact PDD WebContents; filter to the exact Titan origin; never log or persist frames, cookies, tokens, headers, or credentials; extract only confirmed fields; keep unknown internal IDs explicit; fail closed on validator failure or missing collector; never fall back to AI or the legacy bridge.
+This chain is a mechanism proof candidate, not a production Titan integration.
 
 ---
 
-## 9. Test Plan
+## 6. Field and Trust Matrix
+
+| Field | Source and trust boundary | Missing/conflict behavior | Corrected classification |
+|---|---|---|---|
+| runtimeShop | actual sender WebContents -> PddSessionHost; payload is not authority | reject untrusted/invalid/stale binding | trusted mechanism exists; production caller pending |
+| merchant/store/platform account | workspaceMerchant / StoreRepository / PlatformAccountRepository via explicit Main resolver | UNKNOWN/UNRESOLVED if no trusted mapping; conflict fails closed | wiring pending; facts may be unknown |
+| platformCustomerId | raw from.uid after trusted producer binding | missing UNKNOWN; invalid reject | contract confirmed; no current raw producer |
+| platformMessageIdentity | raw msg_id after trusted producer binding | missing UNKNOWN; invalid reject; never fingerprint | contract confirmed; legacy DOM path violates |
+| runtimeConversationReference | trusted Main binding only | UNKNOWN/UNRESOLVED; no lastConversation fallback | no trusted production source |
+| internalConversationId | trusted association only | UNKNOWN/UNRESOLVED; never create in SHEEP-301 | legal unknown allowed |
+| localMessageId | trusted association only | UNKNOWN/UNRESOLVED; never synthesize from msg_id | legal unknown allowed |
+| session / WebContents / generation | actual target, Main WeakMap, READY state, liveness | reject stale/disposed/destroyed | confirmed mechanism |
+| selected customer observation | runtime evidence only | never fills platformCustomerId | confirmed evidence only |
+| direction | roles from.role=user, to.role=mall_cs | reject contradictory/outbound; DOM hardcode is invalid | contract confirmed; DOM path violates |
+| content | raw observed content | preserve exactly; no trim/truncation | contract confirmed; DOM path violates |
+| sourceOccurredAt | separate validated input | missing/malformed -> null + diagnostics; do not invent time | nullable partial; not required for minimal mapping |
+
+---
+
+## 7. Gap Classification by Path and Stage
+
+| Gap | Applies to | Blocks | Class | Minimal resolution |
+|---|---|---|---|---|
+| GAP-01 sender dropped | legacy DOM/page-event path | canonical binding if that path is reused | TODO_IMPLEMENTATION | pass sender and resolve by sender; not a blocker to a separate observer |
+| GAP-02 no canonical production caller | production ingress composition | production canonical delivery | TODO_IMPLEMENTATION | add the authorized producer caller; offline proof may use a test adapter |
+| GAP-03 resolver/collector not wired | production ingress composition | production scope/identity resolution and collector delivery | TODO_IMPLEMENTATION | explicit composition injection; test-only resolver/collector for offline proof |
+| GAP-04 legacy parallel consumer | selected path plus legacy DOM path | safe production ingress if both can consume | TODO_IMPLEMENTATION | make selected path exclusive; prove old bridge is unreachable on failure |
+| GAP-05 page IPC fail-open | legacy page-event path | safe reuse of that IPC route | TODO_IMPLEMENTATION | fail closed when validator is unavailable; not a blocker for Main-owned observer |
+| GAP-06 synthetic DOM selectors | legacy DOM path | using DOM as real producer | evidence gap or path avoidance | get confirmed selectors separately or avoid DOM |
+| GAP-07 lossy DOM pre-mapper | legacy DOM path | exact identity/provenance/content if reused | TODO_IMPLEMENTATION_IF_REUSED | remove trim/truncate/hardcode/fingerprint/stale conversation/global dedup before mapping |
+| GAP-08 no current raw producer | production PDD ingress | observing real PDD today | implementation and evidence gap | prove Main observer offline, then separately prove real PDD under live authorization |
+| GAP-09 scope binding/facts | production ingress composition | known canonical scope values | wiring pending / legal unknown allowed | use existing Main sources only with trusted mapping; otherwise UNKNOWN/UNRESOLVED |
+| GAP-10 source time | production ingress semantics | known platform source-time fidelity, not minimal mapping | evidence gap / nullable partial | preserve a validated business time or keep null; never use receipt/MonotonicTime |
+| GAP-11 association source | production ingress enrichment | resolved conversation/local-message enrichment | legal unknown / future consumer requirement | keep UNKNOWN/UNRESOLVED; no create/write/persist in SHEEP-301 |
+
+Source-time absence and legal unknown canonical facts do not alone justify production readiness failure. Current missing producer wiring, unresolved legacy isolation, and unverified real PDD behavior remain distinct issues.
+
+---
+
+## 8. Offline Electron/WebSocket Boundary Feasibility
+
+### Observed local environment
+
+- Electron: 43.6.0.
+- Chromium: 150.0.7871.250 from the local diagnostic process.
+- Node: 24.20.0 from the local diagnostic process.
+- The project-local Electron declaration is node_modules/.pnpm/electron@43.6.0/node_modules/electron/electron.d.ts.
+- Official API references: https://www.electronjs.org/docs/latest/api/debugger, https://www.electronjs.org/docs/latest/api/web-contents, https://chromedevtools.github.io/devtools-protocol/tot/Network/.
+
+### Diagnostic probe
+
+diagnostic_probe_performed = true.
+
+The probe used an isolated local Electron BrowserWindow, memory partition, synthetic loopback WebSocket server, synthetic messages only, and no PDD/Titan/Live connection. It did not load the Fast Sheep production bootstrap and did not access AI, persistence, or send.
+
+Observed methods:
+
+- Network.webSocketCreated
+- Network.webSocketWillSendHandshakeRequest
+- Network.webSocketHandshakeResponseReceived
+- Network.webSocketFrameSent
+- Network.webSocketFrameReceived
+
+Observed fields:
+
+- webSocketCreated: requestId, url, optional initiator.
+- handshake request: requestId, MonotonicTime timestamp, wallTime, request headers.
+- handshake response: requestId, response status and headers.
+- frame sent/received: requestId, MonotonicTime timestamp, response opcode, mask, payloadData.
+
+The probe did not observe document generation, frameId, platform identity, or platform source time in WebSocket frame events. The sessionId supplied on the local root Debugger message event was empty. Main must maintain the binding itself.
+
+Terminology: Debugger sessionId identifies the CDP debugging session, Network requestId identifies the WebSocket connection, and CDP WebSocketFrame is an entire WebSocket message. None is a platform message ID, browser frame, document generation, or internal conversation identity.
+
+### Binding model
+
+1. Attach one Debugger to the exact WebContents owned by one PddViewHost/session.
+2. Record WebContents, session identity, and active document generation at observer attachment time.
+3. On webSocketCreated, bind requestId plus the approved URL/origin to that observer only if the observer is current.
+4. On every frame, use the pre-existing connection binding; do not look up and replace the current document generation after the frame arrives.
+5. On navigation start, invalidate old requestId bindings before or at the generation transition.
+6. Discard delayed old-connection events, unknown requestIds, detached observers, destroyed WebContents, and binding mismatches.
+7. Treat debugger detach as terminal for that observer. Require a new attach and connection-binding cycle.
+
+### Lifecycle expectations
+
+- reload: old document generation and all old requestId bindings are invalid; late events are discarded.
+- delayed old connection: no repair against the current generation; no payload shop/session/generation fallback.
+- dispose/recreate: destroy old observer state and connection maps; never reuse labels.
+- destroyed WebContents: stop routing and discard queued events.
+- debugger detach: stop that observer and do not infer ownership from later frames.
+- ownership unknown: discard or STOP; never route to canonical collector on a guess.
+
+### Offline versus live
+
+Offline can prove: API availability, event names and fields, requestId continuity for a synthetic WebSocket, per-target observer separation, lifecycle invalidation mechanics, and same-service isolation using controlled synthetic sessions.
+
+Only a future authorized real PDD observation can prove: actual Titan URL/origin and connection establishment, actual text/binary payload framing, compression/reconnect/replay behavior, real source-time semantics, and real PDD compatibility.
+
+---
+
+## 9. Next-Step Comparison
+
+Preferred next unit: LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF.
+
+- It resolves the current mechanism uncertainty without PDD/Titan or live access.
+- It can test the same-service two-controlled-session isolation model.
+- It can exercise reload, delayed old events, dispose/recreate, destruction, and detach using synthetic local data.
+- It does not prove PDD/Titan compatibility and must not claim production readiness.
+
+Alternative: a separately authorized real PDD minimal observation.
+
+- Needed only for actual Titan connection, payload framing, replay/reconnect, and real source-time questions.
+- It is later than the offline proof, not a prerequisite for the offline mechanism unit.
+
+---
+
+## 10. Recommended Next Acceptance Unit
+
+LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF
+
+Purpose: prove that a Main-owned observer can bind an isolated Electron WebContents WebSocket connection to the originating session/document and deliver synthetic inbound data to a test-only canonical collector without legacy fallback.
+
+Required evidence: Debugger attach/detach, Network event availability, requestId continuity, connection-to-document-generation binding, same-service isolation, lifecycle invalidation, validator/collector failure behavior, and no legacy consumer path.
+
+Implementation composition file scope for the later production unit must include, when authorized, apps/desktop/src/main/bootstrap.ts and apps/desktop/src/main/worker-runtime.ts if resolver or scope-source injection is required. The prior audit's candidate list omitted those composition requirements and is corrected here.
+
+IPC/schema impact for the offline proof: no production IPC channel, no canonical schema change, and no generated-mirror change. The proof needs only a test-owned observer adapter and synthetic loopback transport.
+
+---
+
+## 11. Test Plan
 
 1. T01: one controlled frame from the exact trusted session/document generation maps one canonical envelope through the real validator.
-2. T02: two shops with identical opaque customer/message IDs remain isolated.
-3. T03: wrong owner scope/customer/message association is rejected and collector is unchanged.
-4. T04: delayed old-document frames, reload, dispose/recreate, destroyed WebContents, forged/missing context, wrong sender/frame are rejected or discarded.
+2. T02: two controlled sessions in the same management service use equal opaque customer/message IDs and remain isolated.
+3. T03: wrong owner scope/customer/message association across the same-service harness is rejected; collector unchanged.
+4. T04: delayed old-document frames, reload, dispose/recreate, destroyed WebContents, missing/forged context, wrong sender/frame, and debugger detach are discarded or rejected.
 5. T05: missing customerUid/msg_id remains UNKNOWN; present-but-invalid/conflicting values are rejected; no fallback fingerprint.
-6. T06: direction, message provenance, exact content, and source time satisfy the canonical contract.
-7. T07: mapper, validator, collector, and async-return failures stop with no collector increase and no legacy fallback.
-8. T08: success and failure paths keep AI, transport send, persistence, and legacy bridge calls at zero at the selected boundary.
-9. T09: real WebContents frame reachability is only provable by a separately authorized live read-only observation; it is not offline-provable.
+6. T06: direction, message provenance, exact content, and source time follow the canonical contract; missing/invalid time remains null.
+7. T07A: mapper/validator/identity checks fail before collector; collector is not called.
+8. T07B: collector was called and then throws or returns an unsupported Promise; return explicit FAILED, observe rejection, do not report MAPPED, do not retry, and do not fall back to legacy bridge. Collector side effects already performed cannot be rolled back.
+9. T08: success and failure paths keep AI, send, persistence, and legacy bridge calls zero at the selected boundary.
+10. T09: real PDD/Titan frame compatibility remains a separately authorized live question.
+11. T10: requestId, document generation, and observer detach state remain scoped to the originating same-service session.
 
 ---
 
-## 10. Evidence Limitations
+## 12. Authorization Semantics
 
-- No live PDD/Electron session was started.
-- No network, WebSocket, Debugger, or Titan inspection was performed.
-- No product tests were run for this governance-level audit.
-- Historical live evidence is not a current runtime proof.
-- The external SDK is a research snapshot and is not production authority.
-- UNKNOWN remains a valid result; the audit does not upgrade missing facts to RESOLVED.
+- OWNER_ATTESTED_PERMISSION is preserved.
+- Embedded-runtime-first remains the PDD implementation direction.
+- Current live/network observation is NOT_AUTHORIZED.
+- This repair adds no blanket commercial/compliance gate.
+- Existing deferred platform/commercial-compliance tracking remains unchanged and applies only if a future authorized implementation reaches that scope.
+- Second reply scene, SHIPPING_TIME rule, and SHEEP-310 retry conflict remain unchanged.
 
 ---
 
-## 11. Validation
+## 13. Validation and Evidence Limits
 
 - REPORT_JSON_PARSE: PASS.
-- PROJECT_STATE_CONSISTENCY: PASS via node scripts/validate-project-state.mjs project/PROJECT_STATE.json.
+- PROJECT_STATE_CONSISTENCY: PASS.
 - project-state-consistency tests: 18 passed / 0 failed.
-- AUDIT_REFERENCE_PATHS: PASS.
-- git diff --cached --check: PASS.
-- Changed-file scope: exactly the two permitted audit artifacts.
+- Audit source reference paths: PASS.
+- Isolated Electron 43.6.0 synthetic loopback WebSocket probe: PASS; webSocketCreated, handshake, frameSent, and frameReceived were observed.
+- Full LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF was not performed by this repair and remains the recommended next unit.
+- git diff --cached --check: PASS with line-ending normalization warnings only.
+- Changed-file scope: PASS; exactly the two permitted audit artifacts.
+- Artifact consistency check: PASS.
+
+
+- diagnostic_probe_performed = true for the isolated local Electron/WebSocket API probe.
+- The probe used synthetic loopback data and did not connect to PDD/Titan.
+- No production bootstrap, real seller session/profile, AI, persistence, send, or platform business action was used.
+- Official docs prove API descriptions, not current project-version behavior; the local Electron 43.6.0 probe confirms only the observed local events and fields.
+- Real PDD/Titan behavior remains unverified and must not be inferred from the local probe or historical evidence alone.
 
 ---
 
-## 12. Final Audit Status
+## 14. Final Status
 
 AUDIT_RESULT: COMPLETE
-IMPLEMENTATION_READINESS_RECOMMENDATION: BLOCKED
+OFFLINE_BOUNDARY_PROOF_READINESS: READY_WITH_CONSTRAINTS
+PRODUCTION_PDD_INGRESS_READINESS: BLOCKED
+LIVE_VALIDATION_AUTHORIZATION: NOT_AUTHORIZED
+RECOMMENDED_NEXT_ACCEPTANCE_UNIT: LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF
 CONTROLLER_REVIEW_STATUS: AWAITING_CONTROLLER_REVIEW
 implementation_performed = false
 implementation_authorized = false
@@ -259,4 +328,4 @@ live_validation_performed = false
 full_sheep_301_closed = false
 next_stage_not_executed = true
 
-STOP. No implementation or live validation may begin from this audit.
+STOP. Awaiting Controller review; no production implementation or live validation may begin from this audit.
