@@ -1,0 +1,499 @@
+{
+  "task": "SHEEP-301",
+  "acceptance_unit": "TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING",
+  "result": "COMPLETE",
+  "command": "node scripts/run-sheep-301-producer-wiring-smoke.mjs",
+  "production_activation_performed": false,
+  "live_validation_performed": false,
+  "source_implementation_performed": true,
+  "controlled_offline_validation_performed": true,
+  "production_pdd_ingress_readiness": "BLOCKED",
+  "live_validation_authorization": "NOT_AUTHORIZED",
+  "full_sheep_301_closed": false,
+  "next_stage_not_executed": true,
+  "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
+  "path_check": {
+    "ok": true,
+    "repoRoot": "E:\\fast_sheep",
+    "candidate": "E:\\fast_sheep\\.tmp\\sheep-301-producer-wiring",
+    "expected": "E:\\fast_sheep\\.tmp\\sheep-301-producer-wiring",
+    "relativeToRepo": ".tmp\\sheep-301-producer-wiring",
+    "reason": "OK"
+  },
+  "execution_paths": {
+    "proofRoot": "E:\\fast_sheep\\.tmp\\sheep-301-producer-wiring",
+    "runRoot": "E:\\fast_sheep\\.tmp\\sheep-301-producer-wiring\\run-23532-1789670225931",
+    "userData": "E:\\fast_sheep\\.tmp\\sheep-301-producer-wiring\\run-23532-1789670225931\\user-data",
+    "sessionData": "E:\\fast_sheep\\.tmp\\sheep-301-producer-wiring\\run-23532-1789670225931\\session-data",
+    "cache": "E:\\fast_sheep\\.tmp\\sheep-301-producer-wiring\\run-23532-1789670225931\\cache",
+    "temp": "E:\\fast_sheep\\.tmp\\sheep-301-producer-wiring\\run-23532-1789670225931\\temp",
+    "logs": "E:\\fast_sheep\\.tmp\\sheep-301-producer-wiring\\run-23532-1789670225931\\logs"
+  },
+  "source_digests": {
+    "smokeMain": "f1ec00f5ca5aa9c96c38e13afe41c9b76381f3a58b9062f0d02d9f2a513bacac",
+    "fixture": "59a12ea506c7c803098585af5d4bc36d74a7ef08f0551aba56c0325c553818c8",
+    "platformService": "8f1b1af1fad2e50bb5ab03137a0bb7aaec7e6d83bfca806b50eb8505a3b0106e",
+    "observer": "b1fe3e806707c026ed0548a028eada6e9b9ab59bea43b2a481e314c2d9399edd",
+    "admission": "12c3c08801d00091abe761fc2af58ef948b452fa594ebe5cf6e56dd22528e24f",
+    "sessionHost": "4e107f4f18a59bc2671d25c035ef21cc892175a2d196e945cac7610fed3823df",
+    "pageIpc": "48a95682c82921ab63c8ca4fe50a6e5da43077635a455e9c316b8266cd762bb5"
+  },
+  "runtime": {
+    "electron": "43.6.0",
+    "chrome": "150.0.7871.250",
+    "node": "24.20.0"
+  },
+  "runtime_configuration": {
+    "sandbox": true,
+    "contextIsolation": true,
+    "nodeIntegration": false,
+    "webSecurity": true,
+    "noSandboxSwitchUsed": false,
+    "memoryPartitions": {
+      "shop-a": {
+        "partition": "memory:sheep301-producer-shop-a-run-23532-1789670225931",
+        "isPersistent": false,
+        "storagePath": null,
+        "webContentsId": 2
+      },
+      "shop-b": {
+        "partition": "memory:sheep301-producer-shop-b-run-23532-1789670225931",
+        "isPersistent": false,
+        "storagePath": null,
+        "webContentsId": 4
+      }
+    }
+  },
+  "counters": {
+    "legacyBridgeCalls": 0,
+    "aiCalls": 0,
+    "transportSendCalls": 0,
+    "businessPersistenceWrites": 0,
+    "syntheticWebSocketTraffic": {
+      "connections": 2,
+      "commandsReceived": 4,
+      "framesSent": 4
+    }
+  },
+  "measurement_boundary": {
+    "legacyBridgeCalls": "dynamic orchestrator stub counter",
+    "aiCalls": "code-boundary: canonical controlled path does not invoke AI; no AI client is bound to this smoke path",
+    "transportSendCalls": "dynamic fail-fast adapter send/transfer spy",
+    "businessPersistenceWrites": "code-boundary: no business persistence repository is injected into this smoke path",
+    "syntheticWebSocketTraffic": "dynamic loopback server counters",
+    "diagnosticReportWrite": "one report write, not business persistence"
+  },
+  "collector": {
+    "envelopes": 2,
+    "identities": [
+      {
+        "platform": "pdd",
+        "runtimeShop": {
+          "status": "RESOLVED",
+          "value": {
+            "value": "shop-a"
+          }
+        },
+        "merchantId": {
+          "status": "RESOLVED",
+          "value": "merchant-1"
+        },
+        "storeId": {
+          "status": "RESOLVED",
+          "value": "store-shop-a"
+        },
+        "platformAccountId": {
+          "status": "RESOLVED",
+          "value": "account-shop-a"
+        },
+        "platformCustomerId": {
+          "status": "RESOLVED",
+          "value": {
+            "value": "1001"
+          }
+        },
+        "internalConversationId": {
+          "status": "RESOLVED",
+          "value": "conversation-shop-a"
+        },
+        "runtimeConversationReference": {
+          "status": "RESOLVED",
+          "value": {
+            "value": "runtime-shop-a"
+          }
+        },
+        "triggerMessage": {
+          "localMessageId": {
+            "status": "RESOLVED",
+            "value": "local-message-shop-a"
+          },
+          "platformMessageIdentity": {
+            "provenance": "AUTHORITATIVE_PLATFORM_ID",
+            "value": "same-id"
+          }
+        },
+        "runtimeEvidence": {
+          "sessionId": "pdd-session-shop-a",
+          "documentGeneration": 1,
+          "selectedCustomerObservation": {
+            "status": "SELECTED",
+            "platformCustomerId": {
+              "value": "999999"
+            }
+          }
+        }
+      },
+      {
+        "platform": "pdd",
+        "runtimeShop": {
+          "status": "RESOLVED",
+          "value": {
+            "value": "shop-b"
+          }
+        },
+        "merchantId": {
+          "status": "RESOLVED",
+          "value": "merchant-1"
+        },
+        "storeId": {
+          "status": "RESOLVED",
+          "value": "store-shop-b"
+        },
+        "platformAccountId": {
+          "status": "RESOLVED",
+          "value": "account-shop-b"
+        },
+        "platformCustomerId": {
+          "status": "RESOLVED",
+          "value": {
+            "value": "1001"
+          }
+        },
+        "internalConversationId": {
+          "status": "RESOLVED",
+          "value": "conversation-shop-b"
+        },
+        "runtimeConversationReference": {
+          "status": "RESOLVED",
+          "value": {
+            "value": "runtime-shop-b"
+          }
+        },
+        "triggerMessage": {
+          "localMessageId": {
+            "status": "RESOLVED",
+            "value": "local-message-shop-b"
+          },
+          "platformMessageIdentity": {
+            "provenance": "AUTHORITATIVE_PLATFORM_ID",
+            "value": "same-id"
+          }
+        },
+        "runtimeEvidence": {
+          "sessionId": "pdd-session-shop-b",
+          "documentGeneration": 1,
+          "selectedCustomerObservation": {
+            "status": "SELECTED",
+            "platformCustomerId": {
+              "value": "999999"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "required_checks": [
+    "W01",
+    "W02",
+    "W03",
+    "W04",
+    "W05",
+    "W06",
+    "W07",
+    "W08",
+    "W09"
+  ],
+  "checks": [
+    {
+      "id": "W01",
+      "name": "production-facing service defaults to DISABLED and DENY_ALL",
+      "status": "PASS",
+      "evidence": {
+        "mode": "DISABLED",
+        "defaultDecision": {
+          "granted": false,
+          "reason": "MAIN_ADMISSION_DENIED_DEFAULT"
+        },
+        "defaultAdmittedResult": "STOPPED"
+      }
+    },
+    {
+      "id": "W02",
+      "name": "two real WebContents sessions activate under one service",
+      "status": "PASS",
+      "evidence": {
+        "sessions": {
+          "a": {
+            "partition": "memory:sheep301-producer-shop-a-run-23532-1789670225931",
+            "isPersistent": false,
+            "storagePath": null,
+            "webContentsId": 2
+          },
+          "b": {
+            "partition": "memory:sheep301-producer-shop-b-run-23532-1789670225931",
+            "isPersistent": false,
+            "storagePath": null,
+            "webContentsId": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "W03",
+      "name": "same service two shops reject pre-admission frame",
+      "status": "PASS",
+      "evidence": {
+        "collectorDelta": 0,
+        "decisions": {
+          "MAIN_ADMISSION_DENIED:CONTROLLED_DENY": 1
+        }
+      }
+    },
+    {
+      "id": "W04",
+      "name": "Main admission allows a new frame on the same bound connection",
+      "status": "PASS",
+      "evidence": {
+        "collectorCalls": 1,
+        "identity": {
+          "platform": "pdd",
+          "runtimeShop": {
+            "status": "RESOLVED",
+            "value": {
+              "value": "shop-a"
+            }
+          },
+          "merchantId": {
+            "status": "RESOLVED",
+            "value": "merchant-1"
+          },
+          "storeId": {
+            "status": "RESOLVED",
+            "value": "store-shop-a"
+          },
+          "platformAccountId": {
+            "status": "RESOLVED",
+            "value": "account-shop-a"
+          },
+          "platformCustomerId": {
+            "status": "RESOLVED",
+            "value": {
+              "value": "1001"
+            }
+          },
+          "internalConversationId": {
+            "status": "RESOLVED",
+            "value": "conversation-shop-a"
+          },
+          "runtimeConversationReference": {
+            "status": "RESOLVED",
+            "value": {
+              "value": "runtime-shop-a"
+            }
+          },
+          "triggerMessage": {
+            "localMessageId": {
+              "status": "RESOLVED",
+              "value": "local-message-shop-a"
+            },
+            "platformMessageIdentity": {
+              "provenance": "AUTHORITATIVE_PLATFORM_ID",
+              "value": "same-id"
+            }
+          },
+          "runtimeEvidence": {
+            "sessionId": "pdd-session-shop-a",
+            "documentGeneration": 1,
+            "selectedCustomerObservation": {
+              "status": "SELECTED",
+              "platformCustomerId": {
+                "value": "999999"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "W05",
+      "name": "same opaque IDs in shop-b remain scope-isolated",
+      "status": "PASS",
+      "evidence": {
+        "collectorCalls": 2,
+        "identity": {
+          "platform": "pdd",
+          "runtimeShop": {
+            "status": "RESOLVED",
+            "value": {
+              "value": "shop-b"
+            }
+          },
+          "merchantId": {
+            "status": "RESOLVED",
+            "value": "merchant-1"
+          },
+          "storeId": {
+            "status": "RESOLVED",
+            "value": "store-shop-b"
+          },
+          "platformAccountId": {
+            "status": "RESOLVED",
+            "value": "account-shop-b"
+          },
+          "platformCustomerId": {
+            "status": "RESOLVED",
+            "value": {
+              "value": "1001"
+            }
+          },
+          "internalConversationId": {
+            "status": "RESOLVED",
+            "value": "conversation-shop-b"
+          },
+          "runtimeConversationReference": {
+            "status": "RESOLVED",
+            "value": {
+              "value": "runtime-shop-b"
+            }
+          },
+          "triggerMessage": {
+            "localMessageId": {
+              "status": "RESOLVED",
+              "value": "local-message-shop-b"
+            },
+            "platformMessageIdentity": {
+              "provenance": "AUTHORITATIVE_PLATFORM_ID",
+              "value": "same-id"
+            }
+          },
+          "runtimeEvidence": {
+            "sessionId": "pdd-session-shop-b",
+            "documentGeneration": 1,
+            "selectedCustomerObservation": {
+              "status": "SELECTED",
+              "platformCustomerId": {
+                "value": "999999"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "W06",
+      "name": "revoked admission blocks later frames on the same connection",
+      "status": "PASS",
+      "evidence": {
+        "collectorDelta": 0,
+        "decisions": {
+          "MAIN_ADMISSION_DENIED:CONTROLLED_DENY": 1,
+          "MAPPED": 2,
+          "MAIN_ADMISSION_REVOKED": 1
+        }
+      }
+    },
+    {
+      "id": "W07",
+      "name": "admission cannot be reused across WebContents or scopes",
+      "status": "PASS",
+      "evidence": {
+        "result": {
+          "status": "STOPPED",
+          "reason": "MAIN_ADMISSION_INVALIDATED",
+          "diagnostics": []
+        }
+      }
+    },
+    {
+      "id": "W08",
+      "name": "legacy bridge, AI, send, and persistence counters are zero",
+      "status": "PASS",
+      "evidence": {
+        "counters": {
+          "legacyBridgeCalls": 0,
+          "aiCalls": 0,
+          "transportSendCalls": 0,
+          "businessPersistenceWrites": 0
+        }
+      }
+    },
+    {
+      "id": "W09",
+      "name": "required unit regressions are executed",
+      "status": "PASS",
+      "evidence": {
+        "unitRegressions": "pdd-main-admission/pdd-inbound-observer/bootstrap-pdd-ingress-wiring/pdd-platform-service/pdd-page-ipc-guard"
+      }
+    }
+  ],
+  "unit_regressions_passed": true,
+  "required_checks_executed": true,
+  "completion_gate": {
+    "status": "PASS",
+    "requiredChecks": [
+      {
+        "id": "W01",
+        "status": "PASS"
+      },
+      {
+        "id": "W02",
+        "status": "PASS"
+      },
+      {
+        "id": "W03",
+        "status": "PASS"
+      },
+      {
+        "id": "W04",
+        "status": "PASS"
+      },
+      {
+        "id": "W05",
+        "status": "PASS"
+      },
+      {
+        "id": "W06",
+        "status": "PASS"
+      },
+      {
+        "id": "W07",
+        "status": "PASS"
+      },
+      {
+        "id": "W08",
+        "status": "PASS"
+      },
+      {
+        "id": "W09",
+        "status": "PASS"
+      }
+    ],
+    "pathCheckOk": true,
+    "countersZero": true,
+    "unhandledRejections": 0,
+    "cleanupPassed": true,
+    "unitRegressionsPassed": true,
+    "finalError": null
+  },
+  "failures": [],
+  "unit_evidence": [
+    "pdd-main-admission.test.ts",
+    "pdd-inbound-observer.test.ts",
+    "bootstrap-pdd-ingress-wiring.test.ts",
+    "pdd-platform-service.test.ts",
+    "pdd-page-ipc-guard.test.ts"
+  ],
+  "unhandled_rejections": [],
+  "coverage_limitation": "Pre-admission frames are dropped and not collected. This smoke is controlled local loopback only and does not prove real PDD/Titan behavior or production activation.",
+  "error": null
+}

@@ -82,3 +82,25 @@ test("missing explicit navigation mode fails construction", () => {
     orchestrator: { onBuyerMessage: async () => undefined, onHumanTakeover: async () => undefined, onFocusShop: () => undefined } as never,
   } as never), /navigationMode is required/);
 });
+
+test("production-facing canonical ingress defaults to DISABLED", () => {
+  const service = new PddPlatformService({
+    navigationMode: "PRODUCTION_READ_ONLY",
+    orchestrator: { onBuyerMessage: async () => undefined, onHumanTakeover: async () => undefined, onFocusShop: () => undefined } as never,
+  });
+  assert.equal((service.inboundDiagnostics() as { mode: string }).mode, "DISABLED");
+});
+
+test("sender-bearing page events cannot mutate another shop or authorize legacy consumers", async () => {
+  const { service, inbound } = makeService({ canonicalIngressMode: "DISABLED" });
+  await service.activate("shop-a");
+  await service.activate("shop-b");
+  const senderA = service.webContentsFor("shop-a")!;
+  service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-b", shop_id: "shop-b" } as PddPageEvent, senderA);
+  assert.equal(service.status("shop-b")?.session_status, "LOADING", "forged cross-shop page event is dropped");
+  service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as PddPageEvent, senderA);
+  assert.equal(service.status("shop-a")?.session_status, "READY");
+  assert.equal(service.status("shop-b")?.session_status, "LOADING");
+  service.handlePageEvent({ event: "message_received", session_id: "pdd-session-shop-a", shop_id: "shop-a", conversation_id: "c1", content: "blocked" } as PddPageEvent, senderA);
+  assert.equal(inbound.length, 0, "DISABLED mode never falls back to legacy inbound");
+});

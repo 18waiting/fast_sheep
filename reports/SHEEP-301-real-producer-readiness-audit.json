@@ -1167,7 +1167,7 @@
     "next_unit_implementation_readiness": "READY_WITH_CONSTRAINTS",
     "production_pdd_ingress_readiness": "BLOCKED",
     "live_validation_authorization": "NOT_AUTHORIZED",
-    "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
+    "controller_review_status": "PASS",
     "prerequisite_acceptance": {
       "acceptance_unit": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
       "controller_decision": "PASS",
@@ -2030,7 +2030,8 @@
       "previous_repair_baseline": "a5d4bfd73502e3569142186c85335e9e947aca64",
       "repair_result": "COMPLETE",
       "scope": "PATH_EVIDENCE_REPAIR / R1_STARTUP_TIMING / R2_IDENTITY_HANDOVER / R3_LEGACY_ISOLATION / R4_CLASSIFICATION",
-      "controller_review_status": "AWAITING_CONTROLLER_REVIEW"
+      "controller_review_status": "PASS",
+      "reviewed_commit": "ef9fef6c84797c3f31684d999a58fd61b978a501"
     },
     "previous_repair_baseline_commit": "a5d4bfd73502e3569142186c85335e9e947aca64",
     "historical_startup_probe": {
@@ -2062,7 +2063,7 @@
       "old_run_used_as_new_evidence": false
     },
     "main_admission_contract": {
-      "status": "PROPOSED / NOT_IMPLEMENTED",
+      "status": "IMPLEMENTED / AWAITING_CONTROLLER_REVIEW",
       "ownership": "The admission provider is created and owned by Main composition (bootstrap.ts / worker-runtime.ts). Renderer, page events, payload, DOM READY, selected customer, and request IDs cannot create or refresh admission.",
       "default": "Production default is DENY_ALL. No admission provider means canonical output is denied.",
       "proposed_types": [
@@ -2070,7 +2071,7 @@
         "PddMainAdmissionDecision = { granted: true; admissionId: string } | { granted: false; reason: string }",
         "PddMainAdmissionProvider.evaluate(request: PddMainAdmissionRequest): PddMainAdmissionDecision"
       ],
-      "proposed_service_method": "handleAdmittedInboundIngress(sender: unknown, context: unknown, admissionId: string, input: unknown): PddInboundIngressResult",
+      "proposed_service_method": "handleAdmittedInboundIngress(sender, context, admissionId, input, request): PddInboundIngressResult",
       "validation": [
         "Validate trusted sender and opaque PddInboundIngressContext first.",
         "Call PddMainAdmissionProvider.evaluate with the actual WebContents, sessionId, shopId, documentGeneration, observer lifecycle, and immutable connection evidence.",
@@ -2087,7 +2088,59 @@
         "terminal lifecycle",
         "provider restart or revocation"
       ],
-      "page_event_rule": "page_ready and other page/renderer state events may update only the sender-owned session state; they cannot grant, refresh, or extend admission."
+      "page_event_rule": "page_ready and other page/renderer state events may update only the sender-owned session state; they cannot grant, refresh, or extend admission.",
+      "request_binding": "The fifth request parameter carries the frozen PddMainAdmissionRequest (actual WebContents, immutable connection evidence, and current document binding); it is not a substitute for the opaque PddInboundIngressContext."
+    },
+    "controller_decision": "PASS",
+    "reviewed_commit": "ef9fef6c84797c3f31684d999a58fd61b978a501",
+    "producer_wiring": {
+      "acceptance_unit": "TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING",
+      "authorization": "AUTHORIZED WITH CONSTRAINTS",
+      "authorization_scope": "TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_ONLY",
+      "source_implementation_performed": true,
+      "controlled_offline_validation_performed": true,
+      "production_activation_performed": false,
+      "live_validation_performed": false,
+      "result": "IMPLEMENTED / AWAITING_CONTROLLER_REVIEW",
+      "report": "reports/SHEEP-301-producer-wiring-report.json",
+      "runner": "scripts/run-sheep-301-producer-wiring-smoke.mjs",
+      "smoke_main": "scripts/fixtures/sheep-301-producer-wiring/main.mjs",
+      "fixture": "scripts/fixtures/sheep-301-producer-wiring/fixture.html",
+      "required_checks": [
+        "W01",
+        "W02",
+        "W03",
+        "W04",
+        "W05",
+        "W06",
+        "W07",
+        "W08",
+        "W09"
+      ],
+      "runtime": {
+        "electron": "43.6.0",
+        "chrome": "150.0.7871.250",
+        "node": "24.20.0"
+      },
+      "runtime_configuration": {
+        "sandbox": true,
+        "contextIsolation": true,
+        "nodeIntegration": false,
+        "webSecurity": true,
+        "noSandboxSwitchUsed": false,
+        "memorySessions": true
+      },
+      "counters": {
+        "legacyBridgeCalls": 0,
+        "aiCalls": 0,
+        "transportSendCalls": 0,
+        "businessPersistenceWrites": 0,
+        "syntheticWebSocketConnections": 2,
+        "syntheticWebSocketCommands": 4,
+        "syntheticWebSocketFramesSent": 4
+      },
+      "controller_review_status": "AWAITING_CONTROLLER_REVIEW",
+      "coverage_limitation": "Pre-admission frames are DROPped and not collected. This controlled local loopback smoke does not prove real PDD/Titan behavior or production activation."
     }
   },
   "historical_stage_readiness": {

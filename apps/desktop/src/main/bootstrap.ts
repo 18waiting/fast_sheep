@@ -23,6 +23,8 @@ import type { WorkerJobClientPort } from "@fastwork/background-jobs";
 import type { OptimizationWorkerClientPort, ProductRepositoryPort, ProductRow } from "@fastwork/product-optimization";
 import type { JobRepository, JobRecord, ProductRecord } from "@fastwork/persistence";
 import { PddPlatformService } from "./platforms/pdd/pdd-platform-service.js";
+import type { PddCanonicalIngressMode, PddMainAdmissionProvider } from "./platforms/pdd/pdd-main-admission.js";
+import type { PddInboundIngressInput } from "./platforms/pdd/pdd-inbound-ingress.js";
 import { PDD_PRODUCTION_CHAT_URL, PDD_TOP_LEVEL_HOST } from "./platforms/pdd/pdd-navigation-policy.js";
 import { createWorkspaceMerchantContext, type WorkspaceMerchantContext } from "./services/workspace-merchant-context.js";
 import { GenericPlatformService } from "./platforms/shared/generic-platform-service.js";
@@ -160,6 +162,14 @@ export interface BootstrapOptions {
   platformAccountRepository?: PlatformAccountRepository;
   /** Controlled production-only PDD shop selected by exact local Shop.id. */
   controlledProductionPddShop?: ShopRow | null;
+  /** Main-only controlled PDD ingress mode. Production default is DISABLED. */
+  canonicalIngressMode?: PddCanonicalIngressMode;
+  /** Main-owned admission provider. Default is DENY_ALL. */
+  mainAdmissionProvider?: PddMainAdmissionProvider;
+  /** Controlled loopback/fixture frame decoder. */
+  decodeInboundFrame?: (payloadData: string) => PddInboundIngressInput | null;
+  /** Local-only WebSocket allowlist for the controlled observer. */
+  allowedInboundWebSocketUrl?: (url: string) => boolean;
 }
 
 /** Minimal in-memory JobRepository for isolated test mode (M10). */
@@ -352,6 +362,10 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
     orchestrator,
     allowedProductionHosts: testMode ? [] : [PDD_TOP_LEVEL_HOST],
     productionEntryUrl: testMode ? undefined : PDD_PRODUCTION_CHAT_URL,
+    canonicalIngressMode: options.canonicalIngressMode ?? "DISABLED",
+    mainAdmissionProvider: options.mainAdmissionProvider,
+    decodeInboundFrame: options.decodeInboundFrame,
+    allowedInboundWebSocketUrl: options.allowedInboundWebSocketUrl,
     fixturePathFor: testMode
       ? (shopId) => join(PDD_FIXTURES, shopId === "shop-test-2" ? "conversation-switch.html" : "chat-basic.html")
       : undefined,

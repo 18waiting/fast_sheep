@@ -390,3 +390,20 @@ test("inbound ingress context cannot cross session instances and is invalid afte
   first.dispose();
   assert.equal(first.resolveInboundIngressBinding(context, firstView!.webContents), null);
 });
+
+test("session host exposes immutable document binding before READY and invalidates old generations", async () => {
+  let view;
+  const host = new PddSessionHost({ shopId: "shop-binding", makeView: () => { view = new FakeView(); return view as never; } });
+  await host.createAndLoad("/fixtures/chat-basic.html");
+  const beforeReady = host.getCurrentInboundDocumentBinding();
+  assert.deepEqual(beforeReady, { sessionId: host.state.sessionId, shopId: "shop-binding", documentGeneration: 1 });
+  assert.equal(host.matchesInboundDocumentBinding(beforeReady!), true);
+  await host.reload("/fixtures/chat-basic.html");
+  const afterReload = host.getCurrentInboundDocumentBinding();
+  assert.deepEqual(afterReload, { sessionId: host.state.sessionId, shopId: "shop-binding", documentGeneration: 2 });
+  assert.equal(host.matchesInboundDocumentBinding(beforeReady!), false);
+  assert.equal(host.matchesInboundDocumentBinding(afterReload!), true);
+  host.dispose();
+  assert.equal(host.getCurrentInboundDocumentBinding(), null);
+  void view;
+});

@@ -12,6 +12,8 @@ import { PddViewHost, type ViewBounds } from "./pdd-view-host.js";
 import { PddPreloadBridge } from "./pdd-preload-bridge.js";
 import { PddOrchestratorBridge, type PddInboundMessage } from "./pdd-orchestrator-bridge.js";
 import { processPddInboundIngress, type PddCanonicalEnvelopeValidator, type PddInboundIngressInput, type PddInboundIngressResult } from "./pdd-inbound-ingress.js";
+import { PddInboundObserver, type PddInboundObserverOptions, type PddInboundObserverStartHandle, type PddObservedFrame } from "./pdd-inbound-observer.js";
+import { DENY_ALL_MAIN_ADMISSION_PROVIDER, PddMainAdmissionRegistry, type PddCanonicalIngressMode, type PddConnectionEvidence, type PddMainAdmissionProvider, type PddMainAdmissionRequest } from "./pdd-main-admission.js";
 import { PDD_PRODUCTION_CHAT_URL, PDD_TOP_LEVEL_HOST, type PddNavigationMode } from "./pdd-navigation-policy.js";
 
 export interface PlatformStatusViewLike {
@@ -42,6 +44,15 @@ export interface PddPlatformServiceOptions {
   ) => PddCanonicalIdentityBinding | null;
   onCanonicalInbound?: (envelope: InboundEnvelope) => unknown;
   canonicalEnvelopeValidator?: PddCanonicalEnvelopeValidator | null;
+  /** Production default is DISABLED. CANONICAL_CONTROLLED is Main-composed only. */
+  canonicalIngressMode?: PddCanonicalIngressMode;
+  mainAdmissionProvider?: PddMainAdmissionProvider;
+  /** Controlled fixture/loopback frame decoder; production wiring must supply or fail closed. */
+  decodeInboundFrame?: (payloadData: string) => PddInboundIngressInput | null;
+  /** Local-only allowlist for the controlled observer; no historical Titan URL is enabled implicitly. */
+  allowedInboundWebSocketUrl?: (url: string) => boolean;
+  /** Test seam for observer lifecycle; controlled smoke must use the real default observer. */
+  createInboundObserver?: (options: PddInboundObserverOptions) => PddInboundObserver;
   revision?: () => number;
 }
 
@@ -54,6 +65,10 @@ function isThenable(value: unknown): value is { then(onFulfilled: () => void, on
     && typeof (value as { then?: unknown }).then === "function";
 }
 
+function stoppedIngress(reason: string, diagnostics: readonly string[]): PddInboundIngressResult {
+  return { status: "STOPPED", reason: reason as never, diagnostics };
+}
+
 export class PddPlatformService {
   private readonly sessions = new Map<string, PddSessionHost>();
   private readonly bridges = new Map<string, PddPreloadBridge>();
@@ -63,6 +78,14 @@ export class PddPlatformService {
   private readonly orchestratorBridge: PddOrchestratorBridge;
   private readonly options: PddPlatformServiceOptions;
   private readonly navigationMode: PddNavigationMode;
+  private readonly canonicalIngressMode: PddCanonicalIngressMode;
+  private readonly admissionRegistry: PddMainAdmissionRegistry;
+  private readonly inboundObservers = new Map<string, PddInboundObserver>();
+  private readonly observerStartups = new Map<string, PddInboundObserverStartHandle>();
+  private readonly connections = new Map<string, PddConnectionEvidence>();
+  private readonly connectionAdmissions = new Map<string, string>();
+  private readonly revokedConnectionKeys = new Set<string>();
+  private lastAdmissionId: string | null = null;
 
   constructor(options: PddPlatformServiceOptions) {
     if (options.navigationMode !== "FIXTURE" && options.navigationMode !== "PRODUCTION_READ_ONLY") {
@@ -70,45 +93,75 @@ export class PddPlatformService {
     }
     this.options = options;
     this.navigationMode = options.navigationMode;
+    const canonicalIngressMode = options.canonicalIngressMode ?? (options.navigationMode === "FIXTURE" ? "LEGACY" : "DISABLED");
+    if (canonicalIngressMode !== "DISABLED" && canonicalIngressMode !== "CANONICAL_CONTROLLED" && canonicalIngressMode !== "LEGACY") {
+      throw new Error("canonicalIngressMode is invalid");
+    }
+    this.canonicalIngressMode = canonicalIngressMode;
+    this.admissionRegistry = new PddMainAdmissionRegistry(options.mainAdmissionProvider ?? DENY_ALL_MAIN_ADMISSION_PROVIDER);
     this.orchestratorBridge = new PddOrchestratorBridge(options.orchestrator);
   }
 
-  /** PDD page event from the trusted page preload. */
-  handlePageEvent(payload: unknown): void {
+  /** PDD page event from the trusted page preload. Sender ownership is checked before state mutation. */
+  handlePageEvent(payload: unknown, sender?: unknown): void {
     let ev = payload as PddPageEvent;
-    const session = ev.session_id ? this.sessionBySessionId(ev.session_id) : undefined;
-    if (session?.viewHost?.currentRouteKind === "LOGIN" && ev.event === "page_ready") {
-      ev = { ...ev, event: "login_required" };
-    }
-    if (session) session.handleEvent(ev);
-    else {
-      // Locate by shop if session id mapping is unavailable.
-      for (const s of this.sessions.values()) {
-        if (s.state.shopId === ev.shop_id) { s.handleEvent(ev); break; }
+    const senderObject = asObject(sender);
+    let session = senderObject ? this.senderSessions.get(senderObject) : undefined;
+
+    // Legacy compatibility may locate by payload only. DISABLED and
+    // CANONICAL_CONTROLLED require the actual sender to be known.
+    if (!session && !senderObject && this.canonicalIngressMode === "LEGACY") {
+      session = ev.session_id ? this.sessionBySessionId(ev.session_id) : undefined;
+      if (!session && ev.shop_id) {
+        for (const candidate of this.sessions.values()) {
+          if (candidate.state.shopId === ev.shop_id) { session = candidate; break; }
+        }
       }
     }
+    if (!session) return;
+    if (ev.session_id !== session.state.sessionId) return;
+    if (ev.shop_id !== undefined && ev.shop_id !== session.state.shopId) return;
 
-    if (ev.event === "message_received" && ev.shop_id && ev.conversation_id && ev.content !== undefined) {
-      void this.handleInbound({
-        shop_id: ev.shop_id,
-        conversation_id: ev.conversation_id,
-        buyer_id: ev.buyer_id,
-        buyer: ev.buyer,
-        platform_message_id: ev.platform_message_id,
-        content: ev.content,
-        timestamp: ev.timestamp,
-      });
-    } else if (ev.event === "human_reply_detected" && ev.shop_id && ev.conversation_id) {
-      void this.handleHumanReply(ev.shop_id, ev.conversation_id);
-    } else if (ev.event === "conversation_changed" && ev.shop_id) {
-      this.handleConversationChange(ev.shop_id);
+    if (session.viewHost?.currentRouteKind === "LOGIN" && ev.event === "page_ready") {
+      ev = { ...ev, event: "login_required" };
     }
-    this.broadcastStatus(ev.shop_id);
+    if (ev.event === "auth_reauth_required") {
+      this.stopInboundObserver(session.state.shopId, "AUTH_REAUTH_REQUIRED");
+    }
+    session.handleEvent(ev);
+
+    if (this.canonicalIngressMode === "LEGACY") {
+      if (ev.event === "message_received" && ev.shop_id && ev.conversation_id && ev.content !== undefined) {
+        void this.handleInbound({
+          shop_id: ev.shop_id,
+          conversation_id: ev.conversation_id,
+          buyer_id: ev.buyer_id,
+          buyer: ev.buyer,
+          platform_message_id: ev.platform_message_id,
+          content: ev.content,
+          timestamp: ev.timestamp,
+        });
+      } else if (ev.event === "human_reply_detected" && ev.shop_id && ev.conversation_id) {
+        void this.handleHumanReply(ev.shop_id, ev.conversation_id);
+      } else if (ev.event === "conversation_changed" && ev.shop_id) {
+        this.handleConversationChange(ev.shop_id);
+      }
+    }
+    this.broadcastStatus(session.state.shopId);
   }
 
-  handleCommandResult(payload: unknown): void {
+  handleCommandResult(payload: unknown, sender?: unknown): void {
     const result = payload as PddPageCommandResult;
-    for (const bridge of this.bridges.values()) bridge.resolveResult(result);
+    const senderObject = asObject(sender);
+    if (senderObject) {
+      const session = this.senderSessions.get(senderObject);
+      if (!session) return;
+      this.bridges.get(session.state.shopId)?.resolveResult(result);
+      return;
+    }
+    if (this.canonicalIngressMode === "LEGACY") {
+      for (const bridge of this.bridges.values()) bridge.resolveResult(result);
+    }
   }
 
   private sessionBySessionId(sessionId: string): PddSessionHost | undefined {
@@ -134,6 +187,7 @@ export class PddPlatformService {
   /** Create/load/activate a PDD session for a shop (test mode loads local fixture). */
   async activate(shopId: string): Promise<void> {
     let session = this.sessions.get(shopId);
+    let startup: PddInboundObserverStartHandle | null = null;
     if (!session) {
       const fixturePath = this.navigationMode === "FIXTURE" ? this.options.fixturePathFor?.(shopId) : undefined;
       const makeView = this.options.makeView ?? ((sid: string, navigationMode: PddNavigationMode) => new PddViewHost({
@@ -170,22 +224,252 @@ export class PddPlatformService {
               }
             });
           }
+          if (self.canonicalIngressMode === "CANONICAL_CONTROLLED") {
+            const observer = self.createInboundObserverForSession(shopId, view, session!);
+            self.inboundObservers.set(shopId, observer);
+            startup = observer.start();
+            self.observerStartups.set(shopId, startup);
+          }
         },
       });
       this.sessions.set(shopId, session);
-      await session.createAndLoad(fixturePath);
-      if (this.navigationMode === "PRODUCTION_READ_ONLY") {
-        if (!session.viewHost) throw new Error("production PDD view was not created");
-        try {
-          await session.viewHost.loadProductionEntry(this.options.productionEntryUrl ?? PDD_PRODUCTION_CHAT_URL);
-        } catch (error) {
-          session.handleEvent({ event: "dom_unsupported", session_id: session.state.sessionId, shop_id: shopId, reason: "PRODUCTION_ENTRY_CONFIG_INVALID" } as PddPageEvent);
-          throw error;
+      try {
+        await session.createAndLoad(fixturePath);
+        if (this.navigationMode === "PRODUCTION_READ_ONLY") {
+          if (!session.viewHost) throw new Error("production PDD view was not created");
+          const loadPromise = session.viewHost.loadProductionEntry(this.options.productionEntryUrl ?? PDD_PRODUCTION_CHAT_URL);
+          await this.awaitObserverStartup(shopId, loadPromise, startup);
+        } else if (startup) {
+          await this.awaitObserverStartup(shopId, Promise.resolve(), startup);
         }
+      } catch (error) {
+        if (this.navigationMode === "PRODUCTION_READ_ONLY" && session) {
+          session.handleEvent({ event: "dom_unsupported", session_id: session.state.sessionId, shop_id: shopId, reason: "PRODUCTION_ENTRY_CONFIG_INVALID" } as PddPageEvent);
+        }
+        this.stopInboundObserver(shopId, "INITIALIZATION_FAILED");
+        session.dispose();
+        this.sessions.delete(shopId);
+        throw error;
       }
+    } else {
+      startup = this.observerStartups.get(shopId) ?? null;
     }
     session.activate();
     this.broadcastStatus(shopId);
+  }
+
+  private createInboundObserverForSession(shopId: string, view: PddViewHost, session: PddSessionHost): PddInboundObserver {
+    const options: PddInboundObserverOptions = {
+      webContents: view.webContents,
+      shopId,
+      allowedUrl: this.options.allowedInboundWebSocketUrl ?? ((url) => {
+        try {
+          const parsed = new URL(url);
+          return parsed.protocol === "ws:"
+            && (parsed.hostname === "127.0.0.1" || parsed.hostname === "localhost" || parsed.hostname === "::1");
+        } catch {
+          return false;
+        }
+      }),
+      allowedCdpSessionIds: [""],
+      getDocumentBinding: () => session.getCurrentInboundDocumentBinding(),
+      onConnection: (connection) => this.recordConnection(connection),
+      onFrame: (frame) => this.handleObservedFrame(frame),
+      onStopped: (reason) => this.handleObserverStopped(shopId, reason),
+    };
+    return this.options.createInboundObserver?.(options) ?? new PddInboundObserver(options);
+  }
+
+  private async awaitObserverStartup(shopId: string, loadPromise: Promise<unknown>, startup: PddInboundObserverStartHandle | null): Promise<void> {
+    if (!startup) {
+      await loadPromise;
+      return;
+    }
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeout = setTimeout(() => reject(new Error("INBOUND_OBSERVER_STARTUP_TIMEOUT")), 8000);
+    });
+    try {
+      const [loadResult, enableResult] = await Promise.allSettled([loadPromise, Promise.race([startup.enablePromise, timeoutPromise])]);
+      if (loadResult.status === "rejected") throw loadResult.reason;
+      if (enableResult.status === "rejected") throw enableResult.reason;
+      if (this.observerStartups.get(shopId) !== startup) throw new Error("inbound observer startup superseded");
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  private recordConnection(connection: PddConnectionEvidence): void {
+    const key = this.connectionKey(connection);
+    if (!this.connections.has(key)) this.connections.set(key, connection);
+  }
+
+  private connectionKey(connection: Pick<PddConnectionEvidence, "observerId" | "observerLifecycleId" | "cdpSessionId" | "requestId">): string {
+    return [connection.observerId, connection.observerLifecycleId, connection.cdpSessionId, connection.requestId].join("|");
+  }
+
+  private sameConnectionBinding(connection: PddConnectionEvidence, binding: PddInboundDocumentBinding): boolean {
+    return connection.sessionId === binding.sessionId
+      && connection.shopId === binding.shopId
+      && connection.documentGeneration === binding.documentGeneration;
+  }
+
+  private handleObservedFrame(frame: PddObservedFrame): void {
+    const connection = frame.connection;
+    if (this.canonicalIngressMode !== "CANONICAL_CONTROLLED") {
+      this.recordInboundDecision("CANONICAL_INGRESS_DISABLED");
+      return;
+    }
+    const observer = this.inboundObservers.get(connection.shopId);
+    if (!observer || observer.isTerminal || observer.activeLifecycleId !== connection.observerLifecycleId) {
+      this.recordInboundDecision("OBSERVER_STALE_OR_TERMINAL");
+      return;
+    }
+    if (!this.connections.has(this.connectionKey(connection))) {
+      this.recordInboundDecision("UNBOUND_CONNECTION");
+      return;
+    }
+    if (this.webContentsFor(connection.shopId) !== connection.webContents) {
+      this.recordInboundDecision("WEBCONTENTS_MISMATCH");
+      return;
+    }
+    const session = this.senderSessions.get(connection.webContents as object);
+    if (!session || session.state.getStatus() !== "READY") {
+      this.recordInboundDecision("SESSION_NOT_READY");
+      return;
+    }
+    const currentBinding = session.getCurrentInboundDocumentBinding();
+    if (!currentBinding || !this.sameConnectionBinding(connection, currentBinding)) {
+      this.recordInboundDecision("STALE_DOCUMENT_BINDING");
+      return;
+    }
+    const context = session.createInboundIngressContext(connection.webContents);
+    if (!context) {
+      this.recordInboundDecision("INVALID_DOCUMENT_CONTEXT");
+      return;
+    }
+    const request: PddMainAdmissionRequest = { webContents: connection.webContents, connection, binding: currentBinding };
+    const connectionKey = this.connectionKey(connection);
+    if (this.revokedConnectionKeys.has(connectionKey)) {
+      this.recordInboundDecision("MAIN_ADMISSION_REVOKED");
+      return;
+    }
+    let admissionId = this.connectionAdmissions.get(connectionKey);
+    if (!admissionId || !this.admissionRegistry.validate(admissionId, request)) {
+      const admission = this.admissionRegistry.evaluate(request);
+      if (!admission.granted) {
+        this.recordInboundDecision("MAIN_ADMISSION_DENIED:" + admission.reason);
+        return;
+      }
+      admissionId = admission.admissionId;
+      this.connectionAdmissions.set(connectionKey, admissionId);
+      this.lastAdmissionId = admissionId;
+    }
+    let input: PddInboundIngressInput | null;
+    try {
+      input = this.options.decodeInboundFrame?.(frame.payloadData) ?? null;
+    } catch {
+      this.recordInboundDecision("FRAME_DECODER_THREW");
+      return;
+    }
+    if (!input) {
+      this.recordInboundDecision("FRAME_DECODER_MISSING_OR_INVALID");
+      return;
+    }
+    const result = this.handleAdmittedInboundIngress(connection.webContents, context, admissionId, input, request);
+    this.recordInboundDecision(result.status === "MAPPED" ? "MAPPED" : result.status + ":" + result.reason);
+  }
+
+  revokeMainAdmissionsForShop(shopId: string): number {
+    let revoked = 0;
+    for (const [key, admissionId] of [...this.connectionAdmissions.entries()]) {
+      const connection = this.connections.get(key);
+      if (connection?.shopId !== shopId) continue;
+      this.admissionRegistry.revoke(admissionId);
+      this.connectionAdmissions.delete(key);
+      this.revokedConnectionKeys.add(key);
+      if (this.lastAdmissionId === admissionId) this.lastAdmissionId = null;
+      revoked += 1;
+    }
+    return revoked;
+  }
+
+  revokeMainAdmission(admissionId: string): boolean {
+    const target = [...this.connectionAdmissions.entries()].find(([, id]) => id === admissionId);
+    this.admissionRegistry.revoke(admissionId);
+    if (!target) return false;
+    this.connectionAdmissions.delete(target[0]);
+    this.revokedConnectionKeys.add(target[0]);
+    if (this.lastAdmissionId === admissionId) this.lastAdmissionId = null;
+    return true;
+  }
+
+  private handleObserverStopped(shopId: string, reason: string): void {
+    const observer = this.inboundObservers.get(shopId);
+    if (observer) this.admissionRegistry.revokeForWebContents(observer.targetWebContents);
+    for (const [key, connection] of this.connections) {
+      if (connection.shopId === shopId || (observer && connection.webContents === observer.targetWebContents)) {
+        this.connections.delete(key);
+        this.connectionAdmissions.delete(key);
+        this.revokedConnectionKeys.delete(key);
+      }
+    }
+    this.inboundObservers.delete(shopId);
+    this.observerStartups.delete(shopId);
+    this.recordInboundDecision("OBSERVER_STOPPED:" + reason);
+  }
+
+  private stopInboundObserver(shopId: string, reason: string): void {
+    const observer = this.inboundObservers.get(shopId);
+    if (observer && !observer.isTerminal) {
+      observer.stop(reason);
+    } else {
+      this.handleObserverStopped(shopId, reason);
+    }
+  }
+
+  handleAdmittedInboundIngress(
+    sender: unknown,
+    context: unknown,
+    admissionId: string,
+    input: unknown,
+    request: PddMainAdmissionRequest,
+  ): PddInboundIngressResult {
+    if (this.canonicalIngressMode !== "CANONICAL_CONTROLLED") {
+      return stoppedIngress("CANONICAL_INGRESS_DISABLED", Object.freeze([]));
+    }
+    const senderObject = asObject(sender);
+    if (!senderObject) return { status: "REJECTED", reason: "UNTRUSTED_SENDER", diagnostics: Object.freeze([]) };
+    const session = this.senderSessions.get(senderObject);
+    if (!session) return { status: "REJECTED", reason: "UNTRUSTED_SENDER", diagnostics: Object.freeze([]) };
+    const liveBinding = session.getCurrentInboundDocumentBinding();
+    if (!liveBinding) return stoppedIngress("DOCUMENT_BINDING_UNAVAILABLE", Object.freeze([]));
+    const liveRequest: PddMainAdmissionRequest = { webContents: senderObject as WebContents, connection: request.connection, binding: liveBinding };
+    if (!this.admissionRegistry.validate(admissionId, liveRequest)) {
+      return stoppedIngress("MAIN_ADMISSION_INVALIDATED", Object.freeze([]));
+    }
+    return this.handleTrustedInboundIngress(sender, context, input, () => {
+      const current = session.getCurrentInboundDocumentBinding();
+      return current !== null && this.admissionRegistry.validate(admissionId, { webContents: senderObject as WebContents, connection: request.connection, binding: current });
+    });
+  }
+
+  private readonly inboundDecisionCounts = new Map<string, number>();
+
+  private recordInboundDecision(reason: string): void {
+    this.inboundDecisionCounts.set(reason, (this.inboundDecisionCounts.get(reason) ?? 0) + 1);
+  }
+
+  inboundDiagnostics(): Record<string, unknown> {
+    return {
+      mode: this.canonicalIngressMode,
+      observers: [...this.inboundObservers.entries()].map(([shopId, observer]) => ({ shopId, ...observer.snapshot() })),
+      decisions: Object.fromEntries(this.inboundDecisionCounts),
+      connectionCount: this.connections.size,
+      admissionCount: this.connectionAdmissions.size,
+      revokedAdmissionCount: this.revokedConnectionKeys.size,
+      lastAdmissionId: this.lastAdmissionId,
+    };
   }
 
   private onSessionEvent(shopId: string, ev: PddPageEvent): void {
@@ -240,9 +524,10 @@ export class PddPlatformService {
     sender: unknown,
     context: unknown,
     input: unknown,
+    admissionGuard?: () => boolean,
   ): PddInboundIngressResult {
     try {
-      return this.handleTrustedInboundIngressInternal(sender, context, input);
+      return this.handleTrustedInboundIngressInternal(sender, context, input, admissionGuard);
     } catch {
       return { status: "FAILED", reason: "INGRESS_UNEXPECTED_THREW", diagnostics: Object.freeze([]) };
     }
@@ -252,6 +537,7 @@ export class PddPlatformService {
     sender: unknown,
     context: unknown,
     input: unknown,
+    admissionGuard?: () => boolean,
   ): PddInboundIngressResult {
     const senderObject = asObject(sender);
     if (!senderObject) {
@@ -262,6 +548,9 @@ export class PddPlatformService {
       return { status: "REJECTED", reason: "UNTRUSTED_SENDER", diagnostics: Object.freeze([]) };
     }
     const document = session.resolveInboundIngressBinding(context, senderObject);
+    if (admissionGuard && !admissionGuard()) {
+      return stoppedIngress("MAIN_ADMISSION_INVALIDATED", Object.freeze([]));
+    }
     if (!document) {
       return { status: "REJECTED", reason: "INVALID_DOCUMENT_CONTEXT", diagnostics: Object.freeze([]) };
     }
@@ -286,6 +575,9 @@ export class PddPlatformService {
     const currentDocument = session.resolveInboundIngressBinding(context, senderObject);
     if (!currentDocument) {
       return { status: "FAILED", reason: "DOCUMENT_CONTEXT_INVALIDATED", diagnostics: result.diagnostics };
+    }
+    if (admissionGuard && !admissionGuard()) {
+      return stoppedIngress("MAIN_ADMISSION_INVALIDATED", result.diagnostics);
     }
     const collector = this.options.onCanonicalInbound;
     if (!collector) {
@@ -356,6 +648,11 @@ export class PddPlatformService {
   }
 
   disposeAll(): void {
+    for (const shopId of this.inboundObservers.keys()) this.stopInboundObserver(shopId, "SERVICE_DISPOSED");
+    this.admissionRegistry.clear();
+    this.connectionAdmissions.clear();
+    this.revokedConnectionKeys.clear();
+    this.lastAdmissionId = null;
     for (const session of this.sessions.values()) session.dispose();
     this.sessions.clear();
     this.bridges.clear();

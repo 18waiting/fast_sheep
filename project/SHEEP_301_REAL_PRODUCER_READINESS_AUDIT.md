@@ -936,7 +936,7 @@ Source SHA-256: `a502d82e548fc5680cd8b1500dbd9f621e459ab204572c2d0748e4a36877e7d
 
 ### Main admission contract
 
-The next unit must use a Main-owned admission provider. Production default is DENY_ALL.
+The implemented unit uses a Main-owned admission provider. Production default is DENY_ALL. The implementation remains AWAITING_CONTROLLER_REVIEW.
 
 Proposed Main-only types:
 
@@ -955,9 +955,9 @@ Proposed Main-only types:
 
     PddMainAdmissionProvider.evaluate(request): PddMainAdmissionDecision
 
-Proposed service method:
+Implemented Main-only service method:
 
-    handleAdmittedInboundIngress(sender, context, admissionId, input): PddInboundIngressResult
+    handleAdmittedInboundIngress(sender, context, admissionId, input, request): PddInboundIngressResult
 
 Ownership and validation:
 
@@ -1066,5 +1066,95 @@ CONTROLLER_REVIEW_STATUS: AWAITING_CONTROLLER_REVIEW
 implementation_performed = false
 implementation_authorized = false
 live_validation_performed = false
+full_sheep_301_closed = false
+next_stage_not_executed = true
+
+---
+
+## 21. Trusted Main PDD Ingress Producer Wiring Result (ef9fef6)
+
+- Task: SHEEP-301.
+- Acceptance unit: TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING.
+- Mode: BOUNDED_IMPLEMENTATION_AND_OFFLINE_VALIDATION.
+- Readiness audit decision: PASS at reviewed commit ef9fef6c84797c3f31684d999a58fd61b978a501.
+- Authorization: AUTHORIZED WITH CONSTRAINTS for this unit only.
+- Source implementation: PERFORMED.
+- Controlled offline validation: PERFORMED.
+- Production activation: NOT PERFORMED.
+- Live validation: NOT PERFORMED / NOT AUTHORIZED.
+- Full SHEEP-301: PARTIAL / OPEN.
+- Controller review status for this unit: AWAITING_CONTROLLER_REVIEW.
+
+### Implemented boundary
+
+The implementation adds Main-owned canonical ingress mode, connection binding, observer lifecycle, Main admission, and sender-bearing legacy isolation without changing canonical schemas or dependencies.
+
+Implemented product files:
+
+- apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts
+- apps/desktop/src/main/platforms/pdd/pdd-session-host.ts
+- apps/desktop/src/main/platforms/pdd/pdd-page-ipc.ts
+- apps/desktop/src/main/platforms/pdd/pdd-inbound-observer.ts
+- apps/desktop/src/main/platforms/pdd/pdd-main-admission.ts
+- apps/desktop/src/main/bootstrap.ts
+- apps/desktop/src/main/worker-runtime.ts (existing composition pass-through preserved)
+- apps/desktop/src/main/index.ts
+
+### Controlled Electron loopback result
+
+New smoke command:
+
+node scripts/run-sheep-301-producer-wiring-smoke.mjs
+
+Report:
+
+reports/SHEEP-301-producer-wiring-report.json
+
+Result: COMPLETE.
+
+Required checks:
+
+- W01: production-facing service defaults to DISABLED and DENY_ALL.
+- W02: two real WebContents sessions activate under one PddPlatformService.
+- W03: a pre-admission frame is dropped with zero collector growth.
+- W04: the same bound connection maps after Main admission.
+- W05: two shops using the same opaque customer/message IDs remain scope-isolated.
+- W06: revoked admission blocks later frames on the same connection.
+- W07: admission cannot be reused across WebContents/scope/connection evidence.
+- W08: legacy bridge, AI, transport send, and business persistence counters are zero.
+- W09: required unit regressions pass.
+
+Runtime and isolation:
+
+- Electron 43.6.0.
+- Chromium 150.0.7871.250.
+- Node 24.20.0.
+- sandbox = true.
+- contextIsolation = true.
+- nodeIntegration = false.
+- webSecurity = true.
+- no sandbox-disabling switch.
+- two distinct non-persistent memory sessions.
+- two real local WebSocket connections.
+- two controlled collector envelopes.
+
+Counters:
+
+- legacyBridgeCalls = 0.
+- aiCalls = 0.
+- transportSendCalls = 0.
+- businessPersistenceWrites = 0.
+- syntheticWebSocketTraffic connections = 2, commandsReceived = 4, framesSent = 4.
+
+### Coverage limitation
+
+Pre-admission frames are DROPPed and recorded. They are not queued, replayed, retried, or collected. This unit therefore does not claim final production message completeness.
+
+Real PDD/Titan behavior, production activation, business persistence, AI, send, HUMAN_CONFIRM, AUTO, and platform mutation remain unverified and NOT AUTHORIZED.
+
+AUDIT_RESULT: COMPLETE
+NEXT_UNIT_IMPLEMENTATION_READINESS: IMPLEMENTED / AWAITING_CONTROLLER_REVIEW
+PRODUCTION_PDD_INGRESS_READINESS: BLOCKED
+LIVE_VALIDATION_AUTHORIZATION: NOT_AUTHORIZED
 full_sheep_301_closed = false
 next_stage_not_executed = true

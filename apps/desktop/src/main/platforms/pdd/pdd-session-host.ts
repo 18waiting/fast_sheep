@@ -164,6 +164,23 @@ export class PddSessionHost {
     this.onEventHook?.(ev);
   }
 
+  getCurrentInboundDocumentBinding(): PddInboundDocumentBinding | null {
+    if (!this.view || this.activeDocumentGeneration === null) return null;
+    return Object.freeze({
+      sessionId: this.state.sessionId,
+      shopId: this.state.shopId,
+      documentGeneration: this.activeDocumentGeneration,
+    });
+  }
+
+  matchesInboundDocumentBinding(binding: PddInboundDocumentBinding): boolean {
+    const current = this.getCurrentInboundDocumentBinding();
+    return current !== null
+      && current.sessionId === binding.sessionId
+      && current.shopId === binding.shopId
+      && current.documentGeneration === binding.documentGeneration;
+  }
+
   createInboundIngressContext(sender: unknown): PddInboundIngressContext | null {
     const senderObject = asObject(sender);
     if (!senderObject || !this.view || this.view.webContents !== senderObject) return null;

@@ -202,7 +202,7 @@ async function init(): Promise<void> {
 
   // Dedicated platform page IPC with its own trusted-webContents sender guard.
   const pageIpcStops: Array<() => void> = [];
-  const registerPageIpcFor = (platform: string, register: (deps: { isTrustedWebContents(wc: unknown): boolean; onPageEvent(p: unknown): void; onCommandResult(p: unknown): void }) => () => void): void => {
+  const registerPageIpcFor = (platform: string, register: (deps: { isTrustedWebContents(wc: unknown): boolean; onPageEvent(p: unknown, sender: unknown): void; onCommandResult(p: unknown, sender: unknown): void }) => () => void): void => {
     pageIpcStops.push(register({
       isTrustedWebContents: (wc) => context!.coordinator.isTrustedWebContents(platform as never, wc),
       onPageEvent: (payload) => context!.coordinator.handlePageEvent(platform as never, payload),
@@ -211,8 +211,8 @@ async function init(): Promise<void> {
   };
   stopPddPageIpc = registerPddPageIpc({
     isTrustedPddWebContents: (wc) => context!.platform.isTrustedPddWebContents(wc),
-    onPageEvent: (payload) => context!.platform.handlePageEvent(payload),
-    onCommandResult: (payload) => context!.platform.handleCommandResult(payload),
+    onPageEvent: (payload, sender) => context!.platform.handlePageEvent(payload, sender),
+    onCommandResult: (payload, sender) => context!.platform.handleCommandResult(payload, sender),
   });
   registerPageIpcFor("doudian", (d) => registerDoudianPageIpc(d));
   registerPageIpcFor("jd", (d) => registerJDPageIpc(d));

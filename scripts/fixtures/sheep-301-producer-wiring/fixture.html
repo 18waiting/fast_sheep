@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>producer wiring fixture</title></head>
+<body>
+  <div data-fw-pdd-chat-list>
+    <div data-fw-pdd-conversation data-conversation-id="c1" data-active="true" data-buyer-id="buyer-1" data-buyer="测试买家">测试买家</div>
+  </div>
+  <div data-fw-pdd-messages>
+    <div data-fw-pdd-message data-message-id="fixture-message" data-direction="inbound" data-ts="2026-09-18T00:00:00Z">
+      <span data-fw-pdd-buyer-name>测试买家</span>
+      <span data-fw-pdd-msg-content>fixture ready</span>
+    </div>
+  </div>
+  <textarea data-fw-pdd-composer-input></textarea>
+  <button data-fw-pdd-send-btn>发送</button>
+  <input data-fw-pdd-image-input type="file" />
+  <button data-fw-pdd-transfer-open>转接</button>
+  <div data-fw-pdd-transfer-targets><div data-fw-pdd-transfer-target data-target="售后">售后</div></div>
+  <button data-fw-pdd-transfer-confirm>确认转接</button>
+</body></html>

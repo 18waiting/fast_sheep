@@ -27,6 +27,9 @@ export interface PddPageIpcDeps {
   onCommandResult(payload: unknown, sender: WebContents): void;
   /** Test seam: inject a fake ipcMain; defaults to the lazy Electron ipcMain. */
   ipc?: IpcMainLike;
+  /** Test seam: override validator availability; undefined uses the schema validator. */
+  eventValidatorOverride?: ((value: unknown) => boolean) | null;
+  resultValidatorOverride?: ((value: unknown) => boolean) | null;
 }
 
 const eventValidator = (() => {
@@ -47,14 +50,16 @@ const resultValidator = (() => {
 
 export function registerPddPageIpc(deps: PddPageIpcDeps): () => void {
   const ipc: IpcMainLike = deps.ipc ?? ipcMain();
+  const eventValidation = deps.eventValidatorOverride === undefined ? eventValidator : deps.eventValidatorOverride;
+  const resultValidation = deps.resultValidatorOverride === undefined ? resultValidator : deps.resultValidatorOverride;
   const onPageEvent: IpcMainListener = (event: IpcMainEvent, payload: unknown): void => {
     if (!deps.isTrustedPddWebContents(event.sender)) return;
-    if (eventValidator && !eventValidator(payload)) return;
+    if (!eventValidation || !eventValidation(payload)) return;
     deps.onPageEvent(payload, event.sender);
   };
   const onCommandResult: IpcMainListener = (event: IpcMainEvent, payload: unknown): void => {
     if (!deps.isTrustedPddWebContents(event.sender)) return;
-    if (resultValidator && !resultValidator(payload)) return;
+    if (!resultValidation || !resultValidation(payload)) return;
     deps.onCommandResult(payload, event.sender);
   };
   ipc.on(PDD_PAGE_EVENT_CHANNEL, onPageEvent);
