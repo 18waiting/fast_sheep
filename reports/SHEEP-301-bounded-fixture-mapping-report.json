@@ -2,9 +2,10 @@
   "task": "SHEEP-301",
   "acceptance_unit": "MAIN_LOCAL_RAW_INGRESS_BOUND_CONTROLLED_FIXTURE_MAPPING",
   "baseline_commit": "d28424c2fdd4587b775c26f4e8dc314b5c1d220f",
+  "repair_baseline_commit": "7dd7d4f0b8a50bba3034e04a4b37a9a37f99967f",
   "result": "COMPLETE",
   "controller_decision": "AWAITING_CONTROLLER_REVIEW",
-  "objective": "Implement and verify a controlled Main-local raw PDD ingress that binds to live session/document evidence, handles incomplete identity explicitly, maps through the existing canonical contracts, validates against the real InboundEnvelope schema, collects or stops without fallback, and performs no AI, transport send, or persistence side effects.",
+  "objective": "Repair the bounded Main-local raw PDD ingress so canonical scope and per-message associations are verified, all declared input/extension failures stop explicitly, and successful mappings use the default real canonical validator without AI, transport send, persistence, or legacy bridge side effects.",
   "completed_requirements": 19,
   "total_requirements": 19,
   "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
@@ -12,135 +13,52 @@
   "implementation_performed": true,
   "full_sheep_301_closed": false,
   "next_stage_not_executed": true,
+  "reproductions_before_after": {
+    "R1_runtime_shop_conflict": {"before": "MAPPED with runtimeShop.shop-b while document context belonged to shop-a and collector received the envelope", "after": "REJECTED / RUNTIME_SHOP_MISMATCH; collector receives nothing"},
+    "R2_reused_per_message_association": {"before": "customer A then customer B both MAPPED while B reused A internalConversationId/localMessageId", "after": "A MAPPED, B REJECTED / CUSTOMER_ASSOCIATION_MISMATCH; only A is collected"},
+    "R3_malformed_binding_or_outer_input": {"before": "malformed binding threw TypeError and null outer input threw TypeError from handleTrustedInboundIngress", "after": "MALFORMED_IDENTITY_BINDING and MALFORMED_INGRESS_INPUT explicit results; no collector fallback"},
+    "R4_async_collector_rejection": {"before": "returned MAPPED while Promise rejection occurred asynchronously", "after": "FAILED / ASYNC_COLLECTOR_UNSUPPORTED; rejection is observed by a no-op handler; no MAPPED return and no unhandled rejection"}
+  },
   "acceptance_matrix": {
-    "A1_complete_mapping": ["apps/desktop/tests/pdd-inbound-ingress.test.ts", "scripts/run-sheep-301-bounded-fixture-smoke.mjs"],
-    "A2_missing_customer_uid": ["packages/platform-pdd/tests/inbound-to-canonical.test.ts", "apps/desktop/tests/pdd-inbound-ingress.test.ts"],
-    "A3_missing_msg_id": ["packages/platform-pdd/tests/inbound-to-canonical.test.ts", "apps/desktop/tests/pdd-inbound-ingress.test.ts"],
-    "A4_opaque_and_provenance": ["packages/platform-pdd/tests/inbound-to-canonical.test.ts"],
-    "A5_two_shop_isolation": ["apps/desktop/tests/pdd-inbound-ingress.test.ts", "scripts/run-sheep-301-bounded-fixture-smoke.mjs"],
-    "A6_reload_generation_rejection": ["apps/desktop/tests/pdd-session-host.test.ts", "apps/desktop/tests/pdd-inbound-ingress.test.ts", "scripts/run-sheep-301-bounded-fixture-smoke.mjs"],
-    "A7_dispose_recreate_rejection": ["apps/desktop/tests/pdd-session-host.test.ts", "apps/desktop/tests/pdd-inbound-ingress.test.ts"],
-    "A8_missing_forged_context_rejection": ["apps/desktop/tests/pdd-session-host.test.ts", "apps/desktop/tests/pdd-inbound-ingress.test.ts"],
-    "A9_wrong_roles_and_direction": ["packages/platform-pdd/tests/inbound-normalizer.test.ts"],
-    "A10_conflicting_identity_binding": ["apps/desktop/tests/pdd-inbound-ingress.test.ts"],
-    "A11_selected_observation_not_sender": ["packages/platform-pdd/tests/inbound-to-canonical.test.ts", "apps/desktop/tests/pdd-inbound-ingress.test.ts"],
-    "A12_same_message_id_across_conversations": ["apps/desktop/tests/pdd-inbound-ingress.test.ts", "scripts/run-sheep-301-bounded-fixture-smoke.mjs"],
-    "A13_content_whitespace": ["packages/platform-pdd/tests/inbound-to-canonical.test.ts", "apps/desktop/tests/pdd-inbound-ingress.test.ts"],
-    "A14_content_over_4000": ["packages/platform-pdd/tests/inbound-normalizer.test.ts", "packages/platform-pdd/tests/inbound-to-canonical.test.ts"],
-    "A15_valid_source_time": ["apps/desktop/tests/pdd-inbound-ingress.test.ts", "scripts/run-sheep-301-bounded-fixture-smoke.mjs"],
-    "A16_missing_source_time": ["apps/desktop/tests/pdd-inbound-ingress.test.ts"],
-    "A17_invalid_source_time": ["apps/desktop/tests/pdd-inbound-ingress.test.ts"],
-    "A18_validator_fail_closed": ["apps/desktop/tests/pdd-inbound-ingress.test.ts"],
-    "A19_zero_ai_send_persistence": ["scripts/run-sheep-301-bounded-fixture-smoke.mjs"]
+    "A1_complete_mapping": ["valid fixture ingress maps through real service, host, mapper, and default schema validator", "bounded fixture smoke normal output"],
+    "A2_missing_customer_uid": ["missing UID and msg_id remain explicit UNKNOWN and do not fabricate association", "missing customerUid and msg_id remain explicit UNKNOWN"],
+    "A3_missing_msg_id": ["missing UID and msg_id remain explicit UNKNOWN and do not fabricate association", "missing customerUid and msg_id remain explicit UNKNOWN"],
+    "A4_opaque_and_provenance": ["trusted opaque values are preserved without lexical guessing"],
+    "A5_two_shop_isolation": ["two shops with equal customer/message identifiers remain isolated", "bounded fixture smoke cross-shop rejection"],
+    "A6_reload_generation_rejection": ["inbound ingress context is document-bound, sender-bound, and invalidated by reload", "wrong shop/session/context and stale document context are rejected"],
+    "A7_dispose_recreate_rejection": ["dispose/recreate invalidates old context regardless of repeated labels", "inbound ingress context cannot cross session instances and is invalid after dispose"],
+    "A8_missing_forged_context_rejection": ["wrong shop/session/context and stale document context are rejected", "malformed outer input and malformed resolver binding return clear failures"],
+    "A9_wrong_roles_and_direction": ["canonical-ingress normalization rejects wrong roles and contradictory direction"],
+    "A10_full_conflicting_identity_objects": ["runtimeShop mismatch is rejected before collector", "canonical scope mismatch is rejected before collector", "reused per-message association for a different customer is rejected"],
+    "A11_selected_observation_not_sender": ["selected observation remains evidence and never fills sender identity", "selected customer observation remains evidence and does not fill message sender identity"],
+    "A12_same_message_id_across_conversations": ["same message ID in different correctly associated conversations reaches output twice", "bounded fixture smoke same message ID output twice"],
+    "A13_content_whitespace": ["source content remains exact for whitespace and long text"],
+    "A14_content_over_4000": ["source content remains exact for whitespace and long text", "source content preserves whitespace and long text"],
+    "A15_valid_source_time": ["source time valid/missing/invalid branches keep source and observed semantics separate", "bounded fixture smoke source time"],
+    "A16_missing_source_time": ["source time valid/missing/invalid branches keep source and observed semantics separate"],
+    "A17_invalid_source_time": ["source time valid/missing/invalid branches keep source and observed semantics separate", "source time rejects missing timezone and trailing garbage as invalid"],
+    "A18_validator_fail_closed": ["canonical validator unavailable, false, or throwing fails closed"],
+    "A19_zero_ai_send_persistence": ["collector missing, synchronous throw, and async return stop without MAPPED", "bounded fixture smoke zero-call evidence"]
   },
-  "source_dist_relationship": {
-    "build_order": ["@fastwork/domain", "@fastwork/platform-pdd", "@fastwork/desktop"],
-    "source_to_dist": "Fresh builds were run in this task before focused and suite tests; tests imported the resulting dist artifacts. No old dist result was used as substitute.",
-    "canonical_validation": "Main ingress uses the real canonical validatorFor('fastwork:domain:inbound-envelope') by default; tests also inject unavailable, false, and throwing validator branches."
-  },
+  "source_dist_relationship": {"build_order": ["@fastwork/domain", "@fastwork/platform-pdd", "@fastwork/desktop"], "source_to_dist": "Fresh builds were completed in this repair task before focused and suite tests; tests imported the resulting dist artifacts.", "canonical_validation": "Normal success and identity-conflict tests use the default real validatorFor('fastwork:domain:inbound-envelope'). Injected validators are used only for unavailable, false, and throwing failure branches."},
   "tests": [
-    { "cwd": "E:\\fast_sheep", "command": "pnpm --filter @fastwork/domain build; pnpm --filter @fastwork/platform-pdd build; pnpm --filter @fastwork/desktop build", "result": "PASS" },
-    { "cwd": "E:\\fast_sheep", "command": "pnpm --filter @fastwork/platform-pdd test", "result": "119 passed / 0 failed" },
-    { "cwd": "E:\\fast_sheep", "command": "pnpm --filter @fastwork/desktop test", "result": "374 passed / 0 failed" },
-    { "cwd": "E:\\fast_sheep", "command": "node --test packages/domain/tests/identity-inbound.test.mjs tests/contracts/contract-schemas.test.mjs tests/project-state-consistency.test.mjs", "result": "44 passed / 0 failed" },
-    { "cwd": "E:\\fast_sheep", "command": "node scripts/run-sheep-301-bounded-fixture-smoke.mjs", "result": "PASS" }
+    {"cwd": "E:\\fast_sheep", "command": "pnpm --filter @fastwork/domain build; pnpm --filter @fastwork/platform-pdd build; pnpm --filter @fastwork/desktop build", "result": "PASS"},
+    {"cwd": "E:\\fast_sheep", "command": "pnpm --filter @fastwork/platform-pdd test", "result": "119 passed / 0 failed"},
+    {"cwd": "E:\\fast_sheep", "command": "pnpm --filter @fastwork/desktop test", "result": "377 passed / 0 failed"},
+    {"cwd": "E:\\fast_sheep", "command": "node --test packages/domain/tests/identity-inbound.test.mjs tests/contracts/contract-schemas.test.mjs tests/project-state-consistency.test.mjs", "result": "44 passed / 0 failed"},
+    {"cwd": "E:\\fast_sheep", "command": "node scripts/run-sheep-301-bounded-fixture-smoke.mjs", "result": "PASS"}
   ],
-  "smokes": [
-    {
-      "file": "scripts/run-sheep-301-bounded-fixture-smoke.mjs",
-      "result": "PASS",
-      "normal_output": "MAPPED",
-      "cross_shop_reason": "INVALID_DOCUMENT_CONTEXT",
-      "reload_stale_reason": "INVALID_DOCUMENT_CONTEXT",
-      "same_message_id_output": ["MAPPED", "MAPPED"]
-    }
-  ],
-  "zero_side_effect_evidence": {
-    "ai_calls": 0,
-    "transport_send_calls": 0,
-    "persistence_writes": 0,
-    "legacy_bridge_calls": 0,
-    "evidence": "Smoke instruments the fixture transport adapter, legacy inbound callback, and orchestrator AI callback. The selected path does not call PddOrchestratorBridge, ConversationOrchestrator, AI, transport send, or persistence; the service has no persistence port in this unit."
-  },
-  "mock_boundaries": {
-    "fake_view": "The test/smoke FakeView supplies WebContents identity and liveness only.",
-    "real_components": "PddPlatformService, PddSessionHost, raw PDD normalization, canonical mapper, and real schema validator run as actual implementation.",
-    "not_claimed": "No Electron IPC, renderer preload, real PDD, Titan, WebSocket, database, or production bootstrap integration is claimed."
-  },
-  "modified_files": [
-    "packages/platform-pdd/src/inbound-normalizer.ts",
-    "packages/platform-pdd/src/inbound-to-canonical.ts",
-    "packages/platform-pdd/src/index.ts",
-    "apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts",
-    "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
-    "apps/desktop/src/main/platforms/pdd/pdd-inbound-ingress.ts",
-    "packages/platform-pdd/tests/inbound-normalizer.test.ts",
-    "packages/platform-pdd/tests/inbound-to-canonical.test.ts",
-    "apps/desktop/tests/pdd-inbound-ingress.test.ts",
-    "apps/desktop/tests/pdd-session-host.test.ts",
-    "scripts/run-sheep-301-bounded-fixture-smoke.mjs",
-    "reports/SHEEP-301-bounded-fixture-mapping-report.json",
-    "packages/platform-pdd/package.json",
-    "apps/desktop/package.json",
-    "pnpm-lock.yaml",
-    "project/SHEEP_301_READINESS_REVIEW.md"
-  ],
-  "workspace_dependency_changes": [
-    "@fastwork/platform-pdd -> @fastwork/domain (workspace type dependency)",
-    "@fastwork/desktop -> @fastwork/domain (type dependency for canonical envelope result)"
-  ],
-  "security_checks": {
-    "secret_material_accessed_or_persisted": false,
-    "credentials_cookies_tokens_sessions_accessed": false,
-    "platform_network_calls_added": 0,
-    "platform_mutation_calls_added": 0,
-    "real_shop_validation": "NOT_RUN / NOT_AUTHORIZED"
-  },
-  "tenant_isolation_checks": {
-    "cross_shop_context_rejected": true,
-    "cross_session_context_rejected": true,
-    "same_ids_across_shops_remain_isolated": true,
-    "same_message_id_across_conversations_reaches_output": true
-  },
-  "data_model_changes": {
-    "canonical_schema_modified": false,
-    "second_canonical_model_created": false,
-    "persistence_implemented": false,
-    "observed_at_implemented": false
-  },
-  "remaining_real_producer_gap": {
-    "status": "DEFERRED",
-    "description": "The bounded unit uses controlled Main-local raw PDD payload fixtures. A future real PDD/Titan/WebSocket producer must receive a separate integration review and must connect through the same trusted Main ingress rather than the legacy DOM message_received -> AI bridge."
-  },
-  "known_limitations": [
-    "Source time accepts a strict ISO-8601 UTC Z subset; offsets and unverified platform time semantics are treated as invalid/unknown.",
-    "No production IPC channel is registered for the new ingress.",
-    "No durable dedupe or persistence is implemented.",
-    "No real PDD or Electron IPC integration is claimed.",
-    "The legacy DOM dedup path remains unmodified and is not repaired by this unit."
-  ],
-  "evidence_classification": {
-    "confirmed": [
-      "canonical mapper uses existing IdentityLock / InboundEnvelope contracts",
-      "document context is sender-bound and invalidated on reload/dispose",
-      "missing identity fields can map to explicit UNKNOWN",
-      "present-but-invalid fields reject",
-      "selected observation cannot fill message sender identity",
-      "same message ID in different conversations reaches output",
-      "validator failure fails closed",
-      "no AI, transport send, or persistence side effects in selected path"
-    ],
-    "inferred": [
-      "Future real producer must reuse the same trusted ingress interface for the bounded contract to remain applicable."
-    ],
-    "not_run": [
-      "Electron IPC integration",
-      "real PDD / live shop validation",
-      "AI Worker integration",
-      "durable persistence and dedupe",
-      "transport send"
-    ]
-  },
+  "smokes": [{"file": "scripts/run-sheep-301-bounded-fixture-smoke.mjs", "result": "PASS", "normal_output": "MAPPED", "cross_shop_reason": "INVALID_DOCUMENT_CONTEXT", "reload_stale_reason": "INVALID_DOCUMENT_CONTEXT", "same_message_id_output": ["MAPPED", "MAPPED"]}],
+  "zero_side_effect_evidence": {"ai_calls": 0, "transport_send_calls": 0, "persistence_writes": 0, "legacy_bridge_calls": 0, "measurement_boundary": "AI and legacy bridge are dynamically counted by the orchestrator/onInboundMessage callbacks. Transport send is dynamically counted only when a fixture adapter sendText is invoked. Persistence writes are not dynamically counted because the selected service has no persistence port or write dependency; zero is established by code-boundary inspection plus absence of persistence calls in the selected path."},
+  "mock_boundaries": {"fake_view": "FakeView supplies WebContents identity and liveness only.", "real_components": "PddPlatformService, PddSessionHost, raw PDD normalization, identity/scope validation, canonical mapper, and default schema validator run as actual implementation.", "not_claimed": "No Electron IPC, real PDD, Titan, WebSocket, AI Worker, database, or production bootstrap integration is claimed."},
+  "modified_files": ["packages/platform-pdd/src/inbound-normalizer.ts", "packages/platform-pdd/src/inbound-to-canonical.ts", "packages/platform-pdd/src/index.ts", "apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts", "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts", "apps/desktop/src/main/platforms/pdd/pdd-inbound-ingress.ts", "packages/platform-pdd/tests/inbound-normalizer.test.ts", "packages/platform-pdd/tests/inbound-to-canonical.test.ts", "apps/desktop/tests/pdd-inbound-ingress.test.ts", "apps/desktop/tests/pdd-session-host.test.ts", "scripts/run-sheep-301-bounded-fixture-smoke.mjs", "reports/SHEEP-301-bounded-fixture-mapping-report.json", "packages/platform-pdd/package.json", "apps/desktop/package.json", "pnpm-lock.yaml", "project/SHEEP_301_READINESS_REVIEW.md"],
+  "workspace_dependency_changes": ["@fastwork/platform-pdd -> @fastwork/domain (workspace type dependency)", "@fastwork/desktop -> @fastwork/domain (type dependency for canonical envelope result)"],
+  "security_checks": {"secret_material_accessed_or_persisted": false, "credentials_cookies_tokens_sessions_accessed": false, "platform_network_calls_added": 0, "platform_mutation_calls_added": 0, "real_shop_validation": "NOT_RUN / NOT_AUTHORIZED"},
+  "tenant_isolation_checks": {"cross_shop_context_rejected": true, "cross_session_context_rejected": true, "same_ids_across_shops_remain_isolated": true, "cross_scope_canonical_binding_rejected": true, "same_message_id_across_correct_conversations_reaches_output": true},
+  "data_model_changes": {"canonical_schema_modified": false, "second_canonical_model_created": false, "persistence_implemented": false, "observed_at_implemented": false},
+  "remaining_real_producer_gap": {"status": "DEFERRED", "description": "The bounded unit still uses controlled Main-local raw PDD payload fixtures. A future real PDD/Titan/WebSocket producer requires separate integration review and must connect through the same trusted Main ingress rather than the legacy DOM message_received -> AI bridge."},
+  "known_limitations": ["Source time accepts a strict ISO-8601 UTC Z subset; offsets and unverified platform time semantics are treated as invalid/unknown.", "No production IPC channel is registered for the new ingress.", "No durable dedupe or persistence is implemented.", "No real PDD or Electron IPC integration is claimed.", "The legacy DOM dedup and AI bridge remain outside this bounded path and are not repaired here."],
+  "evidence_classification": {"confirmed": ["runtimeShop is checked against the document shop", "canonical merchant/store/account scope is compared with trusted Main scope", "internal conversation and local message bindings require per-message source association evidence", "source facts are frozen before resolver use", "malformed input, resolver, collector, and async return branches stop explicitly", "normal success and conflict tests use the default canonical validator", "no AI, transport send, persistence, or legacy bridge side effects in selected successful or failed paths"], "inferred": ["Future real producer must reuse the same trusted Main scope/association interfaces."], "not_run": ["Electron IPC integration", "real PDD / live shop validation", "AI Worker integration", "durable persistence and dedupe", "transport send"]},
   "implementation_authorized": true,
   "implementation_authorization_scope": "BOUNDED_FIXTURE_MAPPING_ONLY",
   "execution_authorized": false,

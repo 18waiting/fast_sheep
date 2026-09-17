@@ -4,11 +4,12 @@ import { PddPlatformService } from "../apps/desktop/dist/main/platforms/pdd/pdd-
 
 class FakeView {
   visible = false;
-  webContents = {
-    destroyed: false,
-    send: () => {},
-    isDestroyed: () => this.webContents.destroyed,
-  };
+  webContents;
+  constructor() {
+    const wc = { destroyed: false, send: () => {} };
+    wc.isDestroyed = () => wc.destroyed;
+    this.webContents = wc;
+  }
   async loadLocalFixture() {}
   show() { this.visible = true; }
   hide() { this.visible = false; }
@@ -21,22 +22,40 @@ function resolution(value) {
   return value === undefined ? { status: "UNKNOWN" } : { status: "RESOLVED", value };
 }
 
+const scope = () => ({
+  merchantId: resolution("merchant-1"),
+  storeId: resolution("store-1"),
+  platformAccountId: resolution("account-1"),
+});
+
+const associations = new Map([
+  ["1001|msg-1", { conversation: "conversation-1", localMessage: "local-1" }],
+  ["1001|same-id", { conversation: "conversation-1", localMessage: "local-a" }],
+  ["1002|same-id", { conversation: "conversation-2", localMessage: "local-b" }],
+]);
+
 function baseIdentity(document, message) {
-  const conversation = message.content === "second" ? "conversation-2" : "conversation-1";
+  const record = message.customerUid === undefined || message.platformMessageId === undefined
+    ? undefined
+    : associations.get(message.customerUid + "|" + message.platformMessageId);
   return {
     runtimeShop: resolution({ value: document.shopId }),
-    merchantId: resolution("merchant-1"),
-    storeId: resolution("store-1"),
-    platformAccountId: resolution("account-1"),
-    internalConversationId: resolution(conversation),
-    runtimeConversationReference: resolution({ value: "runtime-" + conversation }),
-    localMessageId: { status: "UNKNOWN" },
+    scope: scope(),
+    runtimeConversationReference: resolution({ value: "runtime-" + document.shopId }),
+    association: record === undefined
+      ? undefined
+      : {
+          platformCustomerId: message.customerUid,
+          platformMessageId: message.platformMessageId,
+          internalConversationId: resolution(record.conversation),
+          localMessageId: resolution(record.localMessage),
+        },
   };
 }
 
 function payload(overrides = {}) {
   return {
-    content: "  smoke content\\n",
+    content: "  smoke content\n",
     from: { role: "user", uid: "1001" },
     to: { role: "mall_cs", uid: "opaque-cs" },
     msg_id: "msg-1",
@@ -56,6 +75,7 @@ const service = new PddPlatformService({
   },
   fixturePathFor: () => "/fixture.html",
   makeView: () => new FakeView(),
+  resolveInboundScope: () => scope(),
   resolveInboundIdentity: (message, document) => baseIdentity(document, message),
   onInboundMessage: async () => { counters.legacyInbound += 1; },
   onCanonicalInbound: (envelope) => collected.push(envelope),
@@ -84,7 +104,7 @@ const normal = service.handleTrustedInboundIngress(a.sender, a.context, {
 });
 assert.equal(normal.status, "MAPPED");
 assert.equal(collected.length, 1);
-assert.equal(collected[0].sourceContent.text, "  smoke content\\n");
+assert.equal(collected[0].sourceContent.text, "  smoke content\n");
 assert.equal(collected[0].sourceOccurredAt, "2026-09-17T12:00:00Z");
 
 const b = await activateReady("shop-b");
@@ -99,8 +119,8 @@ assert.equal(stale.status, "REJECTED");
 
 const freshA = service.createInboundIngressContext(a.sender);
 assert.ok(freshA);
-const sameId1 = service.handleTrustedInboundIngress(a.sender, freshA, { payload: payload({ content: "first", msg_id: "same-id" }) });
-const sameId2 = service.handleTrustedInboundIngress(a.sender, freshA, { payload: payload({ content: "second", msg_id: "same-id" }) });
+const sameId1 = service.handleTrustedInboundIngress(a.sender, freshA, { payload: payload({ from: { role: "user", uid: "1001" }, msg_id: "same-id" }) });
+const sameId2 = service.handleTrustedInboundIngress(a.sender, freshA, { payload: payload({ from: { role: "user", uid: "1002" }, msg_id: "same-id" }) });
 assert.equal(sameId1.status, "MAPPED");
 assert.equal(sameId2.status, "MAPPED");
 assert.equal(collected.length, 3);

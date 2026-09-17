@@ -86,7 +86,7 @@ export interface PddCanonicalInboundMessage {
   customerUid?: string;
   platformMessageId?: string;
   content: string;
-  diagnostics: string[];
+  readonly diagnostics: readonly string[];
 }
 
 export type PddCanonicalInboundNormalizationResult =

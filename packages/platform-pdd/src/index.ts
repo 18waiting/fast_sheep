@@ -31,7 +31,7 @@ export {
 export { PDD_SELECTOR_PROFILE, selector, requiredSelectors, type SelectorProfile, type SelectorEntry, type SelectorProvenance } from "./selector-profile.js";
 export { normalizeMessage, normalizeScan, fallbackFingerprint, type NormalizeInput } from "./message-normalizer.js";
 export { normalizePddInbound, normalizePddInboundForCanonical, type PddInboundPayload, type PddInboundCandidate, type PddInboundNormalizationResult, type PddCanonicalInboundMessage, type PddCanonicalInboundNormalizationResult } from "./inbound-normalizer.js";
-export { mapPddInboundToCanonical, type PddCanonicalIdentityBinding, type PddCanonicalRuntimeBinding, type MapPddInboundToCanonicalInput, type PddCanonicalMappingResult } from "./inbound-to-canonical.js";
+export { mapPddInboundToCanonical, type PddCanonicalIdentityBinding, type PddCanonicalScopeBinding, type PddInboundMessageAssociation, type PddCanonicalRuntimeBinding, type MapPddInboundToCanonicalInput, type PddCanonicalMappingResult } from "./inbound-to-canonical.js";
 export {
   PDD_SEND_TARGET_KIND,
   validatePddSendIntent,

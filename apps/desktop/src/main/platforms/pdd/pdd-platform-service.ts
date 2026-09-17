@@ -3,7 +3,7 @@
 // routing to the orchestrator, status projection.
 import type { PlatformAdapter, ConversationOrchestrator, SendAttempt, TransferDecision } from "@fastwork/orchestrator";
 import type { InboundEnvelope } from "@fastwork/domain";
-import type { PddPageEvent, PddPageCommandResult, PddCanonicalIdentityBinding, PddCanonicalInboundMessage } from "@fastwork/platform-pdd";
+import type { PddPageEvent, PddPageCommandResult, PddCanonicalIdentityBinding, PddCanonicalInboundMessage, PddCanonicalScopeBinding } from "@fastwork/platform-pdd";
 import { PddPlatformAdapter } from "@fastwork/platform-pdd";
 import type { PlatformStatusChangedEvent } from "@fastwork/desktop-ipc";
 import type { WebContents } from "electron";
@@ -35,17 +35,23 @@ export interface PddPlatformServiceOptions {
   onInboundMessage?: (message: PddInboundMessage) => Promise<void>;
   onHumanReply?: (shopId: string, conversationId: string) => Promise<void>;
   onConversationChange?: (shopId: string) => void;
+  resolveInboundScope?: (document: PddInboundDocumentBinding) => PddCanonicalScopeBinding | null;
   resolveInboundIdentity?: (
     message: PddCanonicalInboundMessage,
     document: PddInboundDocumentBinding,
   ) => PddCanonicalIdentityBinding | null;
-  onCanonicalInbound?: (envelope: InboundEnvelope) => void;
+  onCanonicalInbound?: (envelope: InboundEnvelope) => unknown;
   canonicalEnvelopeValidator?: PddCanonicalEnvelopeValidator | null;
   revision?: () => number;
 }
 
 function asObject(value: unknown): object | null {
   return typeof value === "object" && value !== null ? value : null;
+}
+
+function isThenable(value: unknown): value is { then(onFulfilled: () => void, onRejected: () => void): unknown } {
+  return ((typeof value === "object" && value !== null) || typeof value === "function")
+    && typeof (value as { then?: unknown }).then === "function";
 }
 
 export class PddPlatformService {
@@ -233,7 +239,19 @@ export class PddPlatformService {
   handleTrustedInboundIngress(
     sender: unknown,
     context: unknown,
-    input: PddInboundIngressInput,
+    input: unknown,
+  ): PddInboundIngressResult {
+    try {
+      return this.handleTrustedInboundIngressInternal(sender, context, input);
+    } catch {
+      return { status: "FAILED", reason: "INGRESS_UNEXPECTED_THREW", diagnostics: Object.freeze([]) };
+    }
+  }
+
+  private handleTrustedInboundIngressInternal(
+    sender: unknown,
+    context: unknown,
+    input: unknown,
   ): PddInboundIngressResult {
     const senderObject = asObject(sender);
     if (!senderObject) {
@@ -247,6 +265,10 @@ export class PddPlatformService {
     if (!document) {
       return { status: "REJECTED", reason: "INVALID_DOCUMENT_CONTEXT", diagnostics: Object.freeze([]) };
     }
+    const resolveScope = this.options.resolveInboundScope;
+    if (!resolveScope) {
+      return { status: "FAILED", reason: "SCOPE_BINDING_RESOLVER_MISSING", diagnostics: Object.freeze([]) };
+    }
     const resolveIdentity = this.options.resolveInboundIdentity;
     if (!resolveIdentity) {
       return { status: "FAILED", reason: "IDENTITY_BINDING_RESOLVER_MISSING", diagnostics: Object.freeze([]) };
@@ -255,6 +277,7 @@ export class PddPlatformService {
     const result = processPddInboundIngress({
       document,
       input,
+      resolveScope,
       resolveIdentity,
       canonicalValidator: this.options.canonicalEnvelopeValidator,
     });
@@ -268,10 +291,19 @@ export class PddPlatformService {
     if (!collector) {
       return { status: "STOPPED", reason: "COLLECTOR_MISSING", diagnostics: result.diagnostics };
     }
+    let collectorResult: unknown;
     try {
-      collector(result.envelope);
+      collectorResult = collector(result.envelope);
     } catch {
       return { status: "FAILED", reason: "COLLECTOR_THREW", diagnostics: result.diagnostics };
+    }
+    if (isThenable(collectorResult)) {
+      try {
+        collectorResult.then(() => undefined, () => undefined);
+      } catch {
+        // The async return is unsupported and is rejected below.
+      }
+      return { status: "FAILED", reason: "ASYNC_COLLECTOR_UNSUPPORTED", diagnostics: result.diagnostics };
     }
     return result;
   }

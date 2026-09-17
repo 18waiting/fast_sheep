@@ -9,12 +9,18 @@ function resolution(value: unknown) {
 function identity(overrides: Record<string, unknown> = {}) {
   return {
     runtimeShop: resolution({ value: "shop-1" }),
-    merchantId: resolution("merchant-1"),
-    storeId: { status: "UNKNOWN" },
-    platformAccountId: resolution("account-1"),
-    internalConversationId: { status: "UNRESOLVED" },
+    scope: {
+      merchantId: resolution("merchant-1"),
+      storeId: resolution("store-1"),
+      platformAccountId: resolution("account-1"),
+    },
     runtimeConversationReference: resolution({ value: "runtime-conversation-1" }),
-    localMessageId: { status: "UNKNOWN" },
+    association: {
+      platformCustomerId: "6318084722818",
+      platformMessageId: "987654321098765432109876543210",
+      internalConversationId: { status: "UNRESOLVED" },
+      localMessageId: { status: "UNKNOWN" },
+    },
     ...overrides,
   } as never;
 }
@@ -47,6 +53,9 @@ test("complete trusted input maps to a fresh canonical envelope", () => {
   if (result.status !== "MAPPED") return;
   assert.equal(result.envelope.identityLock.platform, "pdd");
   assert.deepEqual(result.envelope.identityLock.runtimeShop, { status: "RESOLVED", value: { value: "shop-1" } });
+  assert.deepEqual(result.envelope.identityLock.merchantId, { status: "RESOLVED", value: "merchant-1" });
+  assert.deepEqual(result.envelope.identityLock.storeId, { status: "RESOLVED", value: "store-1" });
+  assert.deepEqual(result.envelope.identityLock.platformAccountId, { status: "RESOLVED", value: "account-1" });
   assert.deepEqual(result.envelope.identityLock.platformCustomerId, {
     status: "RESOLVED",
     value: { value: "6318084722818" },
@@ -72,7 +81,7 @@ test("missing customerUid and msg_id remain explicit UNKNOWN", () => {
   assert.deepEqual(normalized.diagnostics, ["CUSTOMER_UID_MISSING", "PLATFORM_MESSAGE_ID_MISSING"]);
   const result = mapPddInboundToCanonical({
     normalized,
-    identity: identity(),
+    identity: identity({ association: undefined }),
     runtime: { sessionId: "session-1", documentGeneration: 1 },
     sourceOccurredAt: null,
   });
@@ -80,6 +89,8 @@ test("missing customerUid and msg_id remain explicit UNKNOWN", () => {
   if (result.status !== "MAPPED") return;
   assert.deepEqual(result.envelope.identityLock.platformCustomerId, { status: "UNKNOWN" });
   assert.deepEqual(result.envelope.identityLock.triggerMessage.platformMessageIdentity, { provenance: "UNKNOWN" });
+  assert.deepEqual(result.envelope.identityLock.internalConversationId, { status: "UNKNOWN" });
+  assert.deepEqual(result.envelope.identityLock.triggerMessage.localMessageId, { status: "UNKNOWN" });
   assert.equal(result.envelope.sourceContent.text, "hello");
 });
 
@@ -100,9 +111,12 @@ test("trusted opaque values are preserved without lexical guessing", () => {
   const result = mapPddInboundToCanonical({
     normalized: normalize(payload({ from: { role: "user", uid: "0" }, msg_id: "unknown" })),
     identity: identity({
-      internalConversationId: resolution("unknown"),
-      localMessageId: resolution("placeholder"),
-      runtimeConversationReference: resolution({ value: "null" }),
+      association: {
+        platformCustomerId: "0",
+        platformMessageId: "unknown",
+        internalConversationId: resolution("unknown"),
+        localMessageId: resolution("placeholder"),
+      },
     }),
     runtime: { sessionId: "session-1", documentGeneration: 1 },
     sourceOccurredAt: null,
@@ -122,6 +136,7 @@ test("selected customer observation remains evidence and does not fill message s
   const result = mapPddInboundToCanonical({
     normalized: normalize({ content: "hello", from: { role: "user" }, to: { role: "mall_cs" }, msg_id: "m1" }),
     identity: identity({
+      association: undefined,
       selectedCustomerObservation: { status: "SELECTED", platformCustomerId: { value: "selected-buyer" } },
     }),
     runtime: { sessionId: "session-1", documentGeneration: 2 },
@@ -160,7 +175,7 @@ test("mapped envelope is an immutable identity snapshot", () => {
   assert.equal(result.status, "MAPPED");
   if (result.status !== "MAPPED") return;
   const before = JSON.stringify(result.envelope);
-  (mutableIdentity as { runtimeShop: unknown }).runtimeShop = { status: "UNKNOWN" };
+  (mutableIdentity as { scope: unknown }).scope = { merchantId: { status: "UNKNOWN" } };
   assert.equal(JSON.stringify(result.envelope), before);
   assert.throws(() => {
     (result.envelope.identityLock as { runtimeShop: unknown }).runtimeShop = { status: "UNKNOWN" };

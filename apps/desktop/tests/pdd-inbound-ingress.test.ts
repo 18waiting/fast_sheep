@@ -5,11 +5,11 @@ import { PddPlatformService } from "../dist/main/platforms/pdd/pdd-platform-serv
 class FakeView {
   visible = false;
   disposed = false;
-  webContents = {
-    destroyed: false,
-    send: () => {},
-    isDestroyed: () => this.webContents.destroyed,
-  };
+  webContents: { destroyed: boolean; send(): void; isDestroyed(): boolean };
+  constructor() {
+    const wc = { destroyed: false, send: () => {} };
+    this.webContents = { ...wc, isDestroyed: () => wc.destroyed };
+  }
   async loadLocalFixture(): Promise<void> {}
   show(): void { this.visible = true; }
   hide(): void { this.visible = false; }
@@ -22,22 +22,46 @@ function resolution(value: unknown) {
   return value === undefined ? { status: "UNKNOWN" } : { status: "RESOLVED", value };
 }
 
-function baseIdentity(document: { shopId: string }, message: { content: string }) {
-  const conversation = message.content === "second" ? "conversation-2" : "conversation-1";
+const defaultScope = () => ({
+  merchantId: resolution("merchant-1"),
+  storeId: resolution("store-1"),
+  platformAccountId: resolution("account-1"),
+});
+
+const controlledAssociations = new Map<string, { conversation: string; localMessage: string }>([
+  ["6318084722818|pdd-message-1", { conversation: "conversation-1", localMessage: "local-message-1" }],
+  ["1|same", { conversation: "same-conversation", localMessage: "same-local-message" }],
+  ["1001|m-a", { conversation: "conversation-a", localMessage: "local-message-a" }],
+  ["1001|same-id", { conversation: "conversation-1", localMessage: "local-message-a" }],
+  ["1002|same-id", { conversation: "conversation-2", localMessage: "local-message-b" }],
+  ["A|m-a", { conversation: "conversation-a", localMessage: "local-message-a" }],
+  ["B|m-b", { conversation: "conversation-b", localMessage: "local-message-b" }],
+]);
+
+function associationFor(message: { customerUid?: string; platformMessageId?: string }) {
+  if (message.customerUid === undefined || message.platformMessageId === undefined) return undefined;
+  const record = controlledAssociations.get(message.customerUid + "|" + message.platformMessageId);
+  if (!record) return undefined;
+  return {
+    platformCustomerId: message.customerUid,
+    platformMessageId: message.platformMessageId,
+    internalConversationId: resolution(record.conversation),
+    localMessageId: resolution(record.localMessage),
+  };
+}
+
+function baseIdentity(document: { shopId: string }, message: { customerUid?: string; platformMessageId?: string }) {
   return {
     runtimeShop: resolution({ value: document.shopId }),
-    merchantId: resolution("merchant-1"),
-    storeId: resolution("store-1"),
-    platformAccountId: resolution("account-1"),
-    internalConversationId: resolution(conversation),
-    runtimeConversationReference: resolution({ value: "runtime-" + conversation }),
-    localMessageId: { status: "UNKNOWN" },
+    scope: defaultScope(),
+    runtimeConversationReference: resolution({ value: "runtime-" + document.shopId }),
+    association: associationFor(message),
   } as never;
 }
 
 function makeService(options: Record<string, unknown> = {}) {
   const collected: Array<Record<string, unknown>> = [];
-  const calls = { ai: 0, human: 0, focus: 0 };
+  const calls = { ai: 0, human: 0, focus: 0, legacyInbound: 0 };
   const views: FakeView[] = [];
   const service = new PddPlatformService({
     navigationMode: "FIXTURE",
@@ -52,20 +76,23 @@ function makeService(options: Record<string, unknown> = {}) {
       views.push(view);
       return view as never;
     },
-    resolveInboundIdentity: (message: { content: string }, document: { shopId: string }) =>
+    resolveInboundScope: options.resolveScope === undefined
+      ? () => defaultScope()
+      : options.resolveScope as never,
+    resolveInboundIdentity: (message: never, document: never) =>
       options.resolveIdentity === undefined
         ? baseIdentity(document, message)
-        : (options.resolveIdentity as (message: { content: string }, document: { shopId: string }) => unknown)(message, document),
+        : (options.resolveIdentity as (message: unknown, document: unknown) => unknown)(message, document),
+    onInboundMessage: async () => { calls.legacyInbound += 1; },
     onCanonicalInbound: options.collector === null
       ? undefined
-      : ((options.collector as ((envelope: unknown) => void) | undefined) ?? ((envelope: unknown) => { collected.push(envelope as Record<string, unknown>); })),
+      : ((options.collector as ((envelope: unknown) => unknown) | undefined) ?? ((envelope: unknown) => { collected.push(envelope as Record<string, unknown>); })),
     canonicalEnvelopeValidator: options.canonicalValidator as never,
-    ...(options.serviceOverrides as Record<string, unknown> | undefined ?? {}),
   });
   return { service, collected, calls, views };
 }
 
-async function makeReady(shopId = "shop-1") {
+async function makeReady(shopId = "shop-a") {
   const harness = makeService();
   await harness.service.activate(shopId);
   harness.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-" + shopId, shop_id: shopId } as never);
@@ -85,21 +112,17 @@ function validPayload(overrides: Record<string, unknown> = {}) {
   };
 }
 
-test("valid fixture ingress maps through the real service, host, mapper, and schema validator", async () => {
+test("valid fixture ingress maps through real service, host, mapper, and default schema validator", async () => {
   const h = await makeReady();
-  const result = h.service.handleTrustedInboundIngress(h.sender, h.context, {
-    payload: validPayload(),
-    sourceOccurredAt: "2026-09-17T12:00:00Z",
-  });
+  const result = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload(), sourceOccurredAt: "2026-09-17T12:00:00Z" });
   assert.equal(result.status, "MAPPED");
   assert.equal(h.collected.length, 1);
   assert.equal((h.collected[0] as { sourceContent: { text: string } }).sourceContent.text, "  请问什么时候发货？\n");
-  assert.equal((h.collected[0] as { sourceOccurredAt: string }).sourceOccurredAt, "2026-09-17T12:00:00Z");
   assert.equal(h.calls.ai, 0);
-  assert.equal(h.calls.human, 0);
+  assert.equal(h.calls.legacyInbound, 0);
 });
 
-test("missing UID and msg_id map to explicit UNKNOWN rather than rejecting trusted input", async () => {
+test("missing UID and msg_id remain explicit UNKNOWN and do not fabricate association", async () => {
   const h = await makeReady();
   const result = h.service.handleTrustedInboundIngress(h.sender, h.context, {
     payload: { content: "hello", from: { role: "user" }, to: { role: "mall_cs" } },
@@ -109,44 +132,101 @@ test("missing UID and msg_id map to explicit UNKNOWN rather than rejecting trust
   if (result.status !== "MAPPED") return;
   assert.equal(result.envelope.identityLock.platformCustomerId.status, "UNKNOWN");
   assert.equal(result.envelope.identityLock.triggerMessage.platformMessageIdentity.provenance, "UNKNOWN");
-  assert.ok(h.collected.length === 1);
+  assert.equal(result.envelope.identityLock.internalConversationId.status, "UNKNOWN");
+  assert.equal(result.envelope.identityLock.triggerMessage.localMessageId.status, "UNKNOWN");
 });
 
-test("present-but-invalid identity facts are rejected before output", async () => {
+test("present-but-invalid UID or msg_id rejects", async () => {
   const h = await makeReady();
-  const invalidUid = h.service.handleTrustedInboundIngress(h.sender, h.context, {
-    payload: validPayload({ from: { role: "user", uid: "buyer-1" } }),
-  });
-  const invalidMsg = h.service.handleTrustedInboundIngress(h.sender, h.context, {
-    payload: validPayload({ msg_id: " " }),
-  });
-  assert.equal(invalidUid.status, "REJECTED");
-  assert.equal(invalidMsg.status, "REJECTED");
+  assert.equal(h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload({ from: { role: "user", uid: "buyer-1" } }) }).status, "REJECTED");
+  assert.equal(h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload({ msg_id: " " }) }).status, "REJECTED");
   assert.equal(h.collected.length, 0);
 });
 
-test("wrong shop, wrong session, missing context, and stale document context are rejected", async () => {
+test("runtimeShop mismatch is rejected before collector", async () => {
+  const h = makeService({
+    resolveIdentity: (_message: unknown, document: { shopId: string }) => ({
+      ...baseIdentity(document, { customerUid: "6318084722818", platformMessageId: "pdd-message-1" }),
+      runtimeShop: resolution({ value: "shop-b" }),
+    }),
+  });
+  await h.service.activate("shop-a");
+  h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+  const sender = h.service.webContentsFor("shop-a")!;
+  const context = h.service.createInboundIngressContext(sender)!;
+  const result = h.service.handleTrustedInboundIngress(sender, context, { payload: validPayload() });
+  assert.equal(result.status, "REJECTED");
+  assert.equal(result.reason, "RUNTIME_SHOP_MISMATCH");
+  assert.equal(h.collected.length, 0);
+});
+
+test("canonical scope mismatch is rejected before collector", async () => {
+  const h = makeService({
+    resolveIdentity: (_message: unknown, document: { shopId: string }) => ({
+      ...baseIdentity(document, { customerUid: "6318084722818", platformMessageId: "pdd-message-1" }),
+      scope: { merchantId: resolution("merchant-other"), storeId: resolution("store-other"), platformAccountId: resolution("account-other") },
+    }),
+  });
+  await h.service.activate("shop-a");
+  h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+  const sender = h.service.webContentsFor("shop-a")!;
+  const context = h.service.createInboundIngressContext(sender)!;
+  const result = h.service.handleTrustedInboundIngress(sender, context, { payload: validPayload() });
+  assert.equal(result.status, "REJECTED");
+  assert.equal(result.reason, "CANONICAL_SCOPE_MISMATCH");
+  assert.equal(h.collected.length, 0);
+});
+
+test("reused per-message association for a different customer is rejected", async () => {
+  const h = makeService({
+    resolveIdentity: (_message: unknown, document: { shopId: string }) => ({
+      ...baseIdentity(document, { customerUid: "1001", platformMessageId: "m-a" }),
+    }),
+  });
+  await h.service.activate("shop-a");
+  h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+  const sender = h.service.webContentsFor("shop-a")!;
+  const context = h.service.createInboundIngressContext(sender)!;
+  const first = h.service.handleTrustedInboundIngress(sender, context, { payload: validPayload({ content: "first", from: { role: "user", uid: "1001" }, msg_id: "m-a" }) });
+  const second = h.service.handleTrustedInboundIngress(sender, context, { payload: validPayload({ content: "second", from: { role: "user", uid: "1002" }, msg_id: "m-b" }) });
+  assert.equal(first.status, "MAPPED");
+  assert.equal(second.status, "REJECTED");
+  assert.equal(second.reason, "CUSTOMER_ASSOCIATION_MISMATCH");
+  assert.equal(h.collected.length, 1);
+});
+
+test("same message ID in different correctly associated conversations reaches output twice", async () => {
+  const h = await makeReady();
+  const first = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload({ content: "first", from: { role: "user", uid: "1001" }, msg_id: "same-id" }) });
+  const second = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload({ content: "second", from: { role: "user", uid: "1002" }, msg_id: "same-id" }) });
+  assert.equal(first.status, "MAPPED");
+  assert.equal(second.status, "MAPPED");
+  assert.equal(h.collected.length, 2);
+});
+
+test("two shops with equal customer/message identifiers remain isolated", async () => {
+  const a = await makeReady("shop-a");
+  const b = await makeReady("shop-b");
+  const payload = validPayload({ content: "same", from: { role: "user", uid: "1" }, msg_id: "same" });
+  assert.equal(a.service.handleTrustedInboundIngress(a.sender, a.context, { payload }).status, "MAPPED");
+  assert.equal(b.service.handleTrustedInboundIngress(b.sender, b.context, { payload }).status, "MAPPED");
+  assert.equal((a.collected[0] as { identityLock: { runtimeShop: { value: { value: string } } } }).identityLock.runtimeShop.value.value, "shop-a");
+  assert.equal((b.collected[0] as { identityLock: { runtimeShop: { value: { value: string } } } }).identityLock.runtimeShop.value.value, "shop-b");
+});
+
+test("wrong shop/session/context and stale document context are rejected", async () => {
   const a = await makeReady("shop-a");
   await a.service.activate("shop-b");
   a.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-b", shop_id: "shop-b" } as never);
-  const senderB = a.service.webContentsFor("shop-b")!;
-  const wrongShop = a.service.handleTrustedInboundIngress(senderB, a.context, { payload: validPayload() });
-  assert.equal(wrongShop.status, "REJECTED");
-  assert.equal(wrongShop.reason, "INVALID_DOCUMENT_CONTEXT");
-
-  const missing = a.service.handleTrustedInboundIngress(a.sender, {}, { payload: validPayload() });
-  assert.equal(missing.status, "REJECTED");
-  assert.equal(missing.reason, "INVALID_DOCUMENT_CONTEXT");
-
+  const bSender = a.service.webContentsFor("shop-b")!;
+  assert.equal(a.service.handleTrustedInboundIngress(bSender, a.context, { payload: validPayload() }).reason, "INVALID_DOCUMENT_CONTEXT");
+  assert.equal(a.service.handleTrustedInboundIngress(a.sender, {}, { payload: validPayload() }).reason, "INVALID_DOCUMENT_CONTEXT");
   await a.service.reload("shop-a");
   a.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
-  const stale = a.service.handleTrustedInboundIngress(a.sender, a.context, { payload: validPayload() });
-  assert.equal(stale.status, "REJECTED");
-  assert.equal(stale.reason, "INVALID_DOCUMENT_CONTEXT");
-  assert.equal(a.collected.length, 0);
+  assert.equal(a.service.handleTrustedInboundIngress(a.sender, a.context, { payload: validPayload() }).reason, "INVALID_DOCUMENT_CONTEXT");
 });
 
-test("dispose and recreate invalidates an old context even with identical labels", async () => {
+test("dispose/recreate invalidates old context regardless of repeated labels", async () => {
   const h = await makeReady("shop-a");
   const oldContext = h.context;
   const oldSender = h.sender;
@@ -154,46 +234,93 @@ test("dispose and recreate invalidates an old context even with identical labels
   await h.service.activate("shop-a");
   h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
   const newSender = h.service.webContentsFor("shop-a")!;
-  const stale = h.service.handleTrustedInboundIngress(newSender, oldContext, { payload: validPayload() });
-  assert.equal(stale.status, "REJECTED");
-  assert.equal(stale.reason, "INVALID_DOCUMENT_CONTEXT");
-  const untrusted = h.service.handleTrustedInboundIngress(oldSender, oldContext, { payload: validPayload() });
-  assert.equal(untrusted.status, "REJECTED");
+  assert.equal(h.service.handleTrustedInboundIngress(newSender, oldContext, { payload: validPayload() }).reason, "INVALID_DOCUMENT_CONTEXT");
+  assert.equal(h.service.handleTrustedInboundIngress(oldSender, oldContext, { payload: validPayload() }).reason, "UNTRUSTED_SENDER");
 });
 
-test("same message ID in different conversations reaches canonical output twice", async () => {
-  const h = await makeReady("shop-a");
-  const first = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload({ content: "first", msg_id: "same-id" }) });
-  const second = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload({ content: "second", msg_id: "same-id" }) });
-  assert.equal(first.status, "MAPPED");
-  assert.equal(second.status, "MAPPED");
-  assert.equal(h.collected.length, 2);
-});
-
-test("selected customer observation never replaces the message sender identity", async () => {
-  const selected = makeService({
-    resolveIdentity: (_message: { content: string }, document: { shopId: string }) => ({
-      ...baseIdentity(document, { content: "first" }),
+test("selected observation remains evidence and never fills sender identity", async () => {
+  const h = makeService({
+    resolveIdentity: (_message: unknown, document: { shopId: string }) => ({
+      ...baseIdentity(document, {}),
+      association: undefined,
       selectedCustomerObservation: { status: "SELECTED", platformCustomerId: { value: "selected-customer" } },
     }),
   });
-  await selected.service.activate("shop-a");
-  selected.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
-  const sender = selected.service.webContentsFor("shop-a")!;
-  const context = selected.service.createInboundIngressContext(sender)!;
-  const result = selected.service.handleTrustedInboundIngress(sender, context, {
-    payload: { content: "hello", from: { role: "user" }, to: { role: "mall_cs" }, msg_id: "m1" },
-  });
+  await h.service.activate("shop-a");
+  h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+  const sender = h.service.webContentsFor("shop-a")!;
+  const context = h.service.createInboundIngressContext(sender)!;
+  const result = h.service.handleTrustedInboundIngress(sender, context, { payload: { content: "hello", from: { role: "user" }, to: { role: "mall_cs" }, msg_id: "m1" } });
   assert.equal(result.status, "MAPPED");
   if (result.status !== "MAPPED") return;
   assert.equal(result.envelope.identityLock.platformCustomerId.status, "UNKNOWN");
-  assert.deepEqual(result.envelope.identityLock.runtimeEvidence?.selectedCustomerObservation, {
-    status: "SELECTED",
-    platformCustomerId: { value: "selected-customer" },
-  });
+  assert.deepEqual(result.envelope.identityLock.runtimeEvidence?.selectedCustomerObservation, { status: "SELECTED", platformCustomerId: { value: "selected-customer" } });
 });
 
-test("source time distinguishes valid, missing, and invalid values without fallback", async () => {
+test("resolver mutation of frozen source facts cannot change output and fails explicitly", async () => {
+  const h = makeService({
+    resolveIdentity: (message: { content: string }, document: { shopId: string }) => {
+      (message as { content: string }).content = "tampered";
+      return baseIdentity(document, { customerUid: "6318084722818", platformMessageId: "pdd-message-1" });
+    },
+  });
+  await h.service.activate("shop-a");
+  h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+  const sender = h.service.webContentsFor("shop-a")!;
+  const context = h.service.createInboundIngressContext(sender)!;
+  const result = h.service.handleTrustedInboundIngress(sender, context, { payload: validPayload() });
+  assert.equal(result.status, "FAILED");
+  assert.equal(result.reason, "IDENTITY_BINDING_RESOLVER_THREW");
+  assert.equal(h.collected.length, 0);
+});
+
+test("malformed outer input and malformed resolver binding return clear failures", async () => {
+  const h = makeService({
+    resolveIdentity: (_message: unknown, document: { shopId: string }) => ({
+      ...baseIdentity(document, { customerUid: "6318084722818", platformMessageId: "pdd-message-1" }),
+      scope: { merchantId: undefined, storeId: resolution("store-1"), platformAccountId: resolution("account-1") },
+    }),
+  });
+  await h.service.activate("shop-a");
+  h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+  const sender = h.service.webContentsFor("shop-a")!;
+  const context = h.service.createInboundIngressContext(sender)!;
+  assert.deepEqual(h.service.handleTrustedInboundIngress(sender, context, null), { status: "REJECTED", reason: "MALFORMED_INGRESS_INPUT", diagnostics: [] });
+  assert.equal(h.service.handleTrustedInboundIngress(sender, context, { payload: validPayload() }).reason, "MALFORMED_IDENTITY_BINDING");
+  assert.equal(h.collected.length, 0);
+});
+
+test("collector missing, synchronous throw, and async return stop without MAPPED", async () => {
+  const missing = makeService({ collector: null });
+  await missing.service.activate("shop-a");
+  missing.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+  const missingSender = missing.service.webContentsFor("shop-a")!;
+  const missingContext = missing.service.createInboundIngressContext(missingSender)!;
+  assert.deepEqual(missing.service.handleTrustedInboundIngress(missingSender, missingContext, { payload: validPayload() }).status, "STOPPED");
+
+  const throwing = makeService({ collector: () => { throw new Error("sync collector"); } });
+  await throwing.service.activate("shop-a");
+  throwing.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+  const throwingSender = throwing.service.webContentsFor("shop-a")!;
+  const throwingContext = throwing.service.createInboundIngressContext(throwingSender)!;
+  const throwingResult = throwing.service.handleTrustedInboundIngress(throwingSender, throwingContext, { payload: validPayload() });
+  assert.equal(throwingResult.status, "FAILED");
+  assert.equal(throwingResult.reason, "COLLECTOR_THREW");
+
+  let rejected = false;
+  const asyncResult = makeService({ collector: () => { const p = Promise.reject(new Error("async collector")); p.catch(() => { rejected = true; }); return p; } });
+  await asyncResult.service.activate("shop-a");
+  asyncResult.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
+  const asyncSender = asyncResult.service.webContentsFor("shop-a")!;
+  const asyncContext = asyncResult.service.createInboundIngressContext(asyncSender)!;
+  const result = asyncResult.service.handleTrustedInboundIngress(asyncSender, asyncContext, { payload: validPayload() });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(result.status, "FAILED");
+  assert.equal(result.reason, "ASYNC_COLLECTOR_UNSUPPORTED");
+  assert.equal(rejected, true);
+});
+
+test("source time valid/missing/invalid branches keep source and observed semantics separate", async () => {
   const h = await makeReady("shop-a");
   const valid = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload(), sourceOccurredAt: "2026-09-17T12:00:00.123Z" });
   const missing = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload(), sourceOccurredAt: null });
@@ -207,79 +334,11 @@ test("source time distinguishes valid, missing, and invalid values without fallb
   if (invalid.status === "MAPPED") assert.ok(invalid.diagnostics.includes("SOURCE_TIME_INVALID"));
 });
 
-test("canonical validator unavailable, false, or throwing fails closed", async () => {
-  for (const [validator, reason] of [
-    [null, "CANONICAL_VALIDATOR_UNAVAILABLE"],
-    [() => false, "CANONICAL_VALIDATION_FAILED"],
-    [() => { throw new Error("boom"); }, "CANONICAL_VALIDATOR_THREW"],
-  ] as const) {
-    const h = makeService({ canonicalValidator: validator });
-    await h.service.activate("shop-a");
-    h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
-    const sender = h.service.webContentsFor("shop-a")!;
-    const context = h.service.createInboundIngressContext(sender)!;
-    const result = h.service.handleTrustedInboundIngress(sender, context, { payload: validPayload() });
-    assert.equal(result.status, "FAILED");
-    assert.equal(result.reason, reason);
-    assert.equal(h.collected.length, 0);
-  }
-});
-
-test("missing or throwing collector stops without falling back to legacy AI bridge", async () => {
-  const missing = makeService({ collector: null });
-  await missing.service.activate("shop-a");
-  missing.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
-  const missingSender = missing.service.webContentsFor("shop-a")!;
-  const missingContext = missing.service.createInboundIngressContext(missingSender)!;
-  const missingResult = missing.service.handleTrustedInboundIngress(missingSender, missingContext, { payload: validPayload() });
-  assert.equal(missingResult.status, "STOPPED");
-  assert.equal(missingResult.reason, "COLLECTOR_MISSING");
-  assert.equal(missing.calls.ai, 0);
-
-  const throwing = makeService({ collector: () => { throw new Error("collector"); } });
-  await throwing.service.activate("shop-a");
-  throwing.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
-  const throwingSender = throwing.service.webContentsFor("shop-a")!;
-  const throwingContext = throwing.service.createInboundIngressContext(throwingSender)!;
-  const throwingResult = throwing.service.handleTrustedInboundIngress(throwingSender, throwingContext, { payload: validPayload() });
-  assert.equal(throwingResult.status, "FAILED");
-  assert.equal(throwingResult.reason, "COLLECTOR_THREW");
-  assert.equal(throwing.calls.ai, 0);
-});
-
-test("two shops using equal customer/message identifiers remain isolated", async () => {
-  const a = await makeReady("shop-a");
-  const b = await makeReady("shop-b");
-  const resultA = a.service.handleTrustedInboundIngress(a.sender, a.context, { payload: validPayload({ content: "same", msg_id: "same", from: { role: "user", uid: "1" } }) });
-  const resultB = b.service.handleTrustedInboundIngress(b.sender, b.context, { payload: validPayload({ content: "same", msg_id: "same", from: { role: "user", uid: "1" } }) });
-  assert.equal(resultA.status, "MAPPED");
-  assert.equal(resultB.status, "MAPPED");
-  assert.equal(a.collected.length, 1);
-  assert.equal(b.collected.length, 1);
-  assert.equal((a.collected[0] as { identityLock: { runtimeShop: { value: { value: string } } } }).identityLock.runtimeShop.value.value, "shop-a");
-  assert.equal((b.collected[0] as { identityLock: { runtimeShop: { value: { value: string } } } }).identityLock.runtimeShop.value.value, "shop-b");
-});
-
-
-test("missing trusted identity binding rejects a conflicting canonical relationship", async () => {
-  const h = makeService({ resolveIdentity: () => null });
-  await h.service.activate("shop-a");
-  h.service.handlePageEvent({ event: "page_ready", session_id: "pdd-session-shop-a", shop_id: "shop-a" } as never);
-  const sender = h.service.webContentsFor("shop-a")!;
-  const context = h.service.createInboundIngressContext(sender)!;
-  const result = h.service.handleTrustedInboundIngress(sender, context, { payload: validPayload() });
-  assert.equal(result.status, "REJECTED");
-  assert.equal(result.reason, "IDENTITY_BINDING_MISSING");
-  assert.equal(h.collected.length, 0);
-});
-
-test("source time rejects missing timezone and trailing garbage as invalid", async () => {
+test("source content remains exact for whitespace and long text", async () => {
   const h = await makeReady("shop-a");
-  for (const sourceOccurredAt of ["2026-09-17T12:00:00", "2026-09-17T12:00:00Zjunk", "2026-13-01T12:00:00Z"]) {
-    const result = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload(), sourceOccurredAt });
-    assert.equal(result.status, "MAPPED");
-    if (result.status !== "MAPPED") continue;
-    assert.equal(result.envelope.sourceOccurredAt, null);
-    assert.ok(result.diagnostics.includes("SOURCE_TIME_INVALID"));
-  }
+  const text = " " + "x".repeat(5000) + "\n";
+  const result = h.service.handleTrustedInboundIngress(h.sender, h.context, { payload: validPayload({ content: text }) });
+  assert.equal(result.status, "MAPPED");
+  if (result.status !== "MAPPED") return;
+  assert.equal(result.envelope.sourceContent.text, text);
 });

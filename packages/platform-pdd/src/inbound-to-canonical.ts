@@ -16,20 +16,33 @@ import type {
 } from "@fastwork/domain";
 import type { PddCanonicalInboundMessage } from "./inbound-normalizer.js";
 
-/**
- * Trusted binding supplied by Main for one controlled inbound observation.
- *
- * These values are not accepted from the raw PDD payload. They represent
- * already-scoped Main facts or explicit UNKNOWN/UNRESOLVED states.
- */
-export interface PddCanonicalIdentityBinding {
-  readonly runtimeShop: IdentityResolution<RuntimeShopRef>;
+/** Authoritative canonical scope supplied by Main for the active document. */
+export interface PddCanonicalScopeBinding {
   readonly merchantId: IdentityResolution<MerchantId>;
   readonly storeId: IdentityResolution<StoreId>;
   readonly platformAccountId: IdentityResolution<PlatformAccountId>;
+}
+
+/**
+ * Per-message association evidence. The source keys must match the normalized
+ * message before the internal conversation/local message bindings are trusted.
+ */
+export interface PddInboundMessageAssociation {
+  readonly platformCustomerId?: string;
+  readonly platformMessageId?: string;
   readonly internalConversationId: IdentityResolution<ConversationId>;
-  readonly runtimeConversationReference: IdentityResolution<ConversationExternalRef>;
   readonly localMessageId: IdentityResolution<MessageId>;
+}
+
+/**
+ * Trusted binding supplied by Main for one controlled inbound observation.
+ * Raw payload canonical IDs never establish this binding.
+ */
+export interface PddCanonicalIdentityBinding {
+  readonly runtimeShop: IdentityResolution<RuntimeShopRef>;
+  readonly scope: PddCanonicalScopeBinding;
+  readonly runtimeConversationReference: IdentityResolution<ConversationExternalRef>;
+  readonly association?: PddInboundMessageAssociation;
   readonly selectedCustomerObservation?: RuntimeSelectedCustomerObservation;
 }
 
@@ -106,8 +119,8 @@ function freezeDiagnostics(diagnostics: readonly string[]): readonly string[] {
 /**
  * Pure PDD-to-canonical mapper.
  *
- * It builds a fresh, immutable SHEEP-300 InboundEnvelope. It does not validate
- * schema, persist, call AI, select a platform target, or execute transport.
+ * It builds a fresh immutable InboundEnvelope and performs no schema validation,
+ * persistence, AI, target selection, or transport execution.
  */
 export function mapPddInboundToCanonical(input: MapPddInboundToCanonicalInput): PddCanonicalMappingResult {
   const diagnostics = [...input.normalized.diagnostics];
@@ -128,19 +141,24 @@ export function mapPddInboundToCanonical(input: MapPddInboundToCanonicalInput): 
     return { status: "REJECTED", reason: "source_time_invalid", diagnostics: freezeDiagnostics(diagnostics) };
   }
 
+  const association = input.identity.association;
   const triggerMessage = Object.freeze({
-    localMessageId: freezeResolution(input.identity.localMessageId),
+    localMessageId: association === undefined
+      ? Object.freeze({ status: "UNKNOWN" })
+      : freezeResolution(association.localMessageId),
     platformMessageIdentity: mapPlatformMessageIdentity(input.normalized.platformMessageId),
   });
 
   const identityLock = Object.freeze({
     platform: "pdd",
     runtimeShop: freezeResolution(input.identity.runtimeShop),
-    merchantId: freezeResolution(input.identity.merchantId),
-    storeId: freezeResolution(input.identity.storeId),
-    platformAccountId: freezeResolution(input.identity.platformAccountId),
+    merchantId: freezeResolution(input.identity.scope.merchantId),
+    storeId: freezeResolution(input.identity.scope.storeId),
+    platformAccountId: freezeResolution(input.identity.scope.platformAccountId),
     platformCustomerId: mapPlatformCustomerId(input.normalized.customerUid),
-    internalConversationId: freezeResolution(input.identity.internalConversationId),
+    internalConversationId: association === undefined
+      ? Object.freeze({ status: "UNKNOWN" })
+      : freezeResolution(association.internalConversationId),
     runtimeConversationReference: freezeResolution(input.identity.runtimeConversationReference),
     triggerMessage,
     runtimeEvidence: mapRuntimeEvidence(input.runtime, input.identity.selectedCustomerObservation),
