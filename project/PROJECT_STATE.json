@@ -31,7 +31,7 @@
     "reviewed_version": "V1.1_REVIEWED",
     "reviewed_path": "project\\FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md",
     "authority_status": "CURRENT_EXECUTION_AUTHORITY",
-    "execution_authorization": "NOT_AUTHORIZED_FOR_SHEEP_301",
+    "execution_authorization": "BOUNDED_FIXTURE_MAPPING_AUTHORIZED_FOR_SHEEP_301 / IMPLEMENTATION_PENDING_NEXT_CONTROLLER_TASK",
     "task_range": [
       "SHEEP-300",
       "SHEEP-301",
@@ -788,13 +788,13 @@
   "current_phase": "MVP_A_FOUNDATION",
   "current_milestone": "M-A.1 Identity and Inbound Foundation",
   "last_closed_task": "SHEEP-300",
-  "current_task": "SHEEP-301 (M-A.1 PDD Inbound Producer Mapping) — NOT_STARTED / NOT_AUTHORIZED",
-  "next_action": "SHEEP-301 remains NOT_STARTED / NOT_AUTHORIZED until Controller review and explicit execution authorization; no production, live, send, HUMAN_CONFIRM, or AUTO execution is granted",
+  "current_task": "SHEEP-301 (M-A.1 PDD Inbound Producer Mapping) — NOT_STARTED / BOUNDED_FIXTURE_MAPPING_ONLY_AUTHORIZED; implementation pending next Controller task prompt",
+  "next_action": "SHEEP-301 bounded fixture mapping authorization is recorded. Product implementation remains NOT_STARTED and the next Controller implementation task prompt is required before execution. No production IPC, Titan/WebSocket, live, send, HUMAN_CONFIRM, AUTO, persistence, or platform mutation is authorized.",
   "next_authoritative_roadmap_id": "SHEEP-301",
   "next_task_execution_authorized": false,
   "current_execution_authorization": false,
   "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
-  "current_authorization_pause_reason": "SHEEP_301_NOT_AUTHORIZED / LIVE_SEND_HUMAN_CONFIRM_AUTO_NOT_AUTHORIZED",
+  "current_authorization_pause_reason": "SHEEP_301_BOUNDED_FIXTURE_MAPPING_AUTHORIZED / IMPLEMENTATION_PENDING_NEXT_CONTROLLER_TASK / LIVE_SEND_HUMAN_CONFIRM_AUTO_PERSISTENCE_PLATFORM_MUTATION_NOT_AUTHORIZED",
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
   "next_sheep_task_after_governance": "SHEEP-301",
@@ -888,7 +888,8 @@
     "REVIEW_3_CODEX_TASK_TEMPLATE:PASS_CLOSED_V1.0_REVIEWED",
     "FINAL_GOVERNANCE_FREEZE:PASS_CLOSED",
     "PHASE_0_START:APPROVED_OWNER_GO",
-    "ROADMAP_V1_1_MIGRATION:SHEEP_300_CLOSED_SHEEP_301_NOT_AUTHORIZED"
+    "ROADMAP_V1_1_MIGRATION:SHEEP_300_CLOSED_SHEEP_301_NOT_AUTHORIZED",
+    "SHEEP_301_READINESS_REVIEW:PASS_BOUNDED_FIXTURE_MAPPING_AUTHORIZED"
   ],
   "next_stage_not_executed": true,
   "lifecycle_stage": "MVP_A_FOUNDATION",
@@ -981,7 +982,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-301 (M-A.1 PDD Inbound Producer Mapping; NOT_STARTED / NOT_AUTHORIZED)",
+  "next_task": "SHEEP-301 (M-A.1 PDD Inbound Producer Mapping; NOT_STARTED / BOUNDED_FIXTURE_MAPPING_ONLY_AUTHORIZED) — implementation pending next Controller task prompt",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -3586,11 +3587,75 @@
     "closed_date_candidate": "2026-09-17",
     "next_stage_not_executed": true
   },
+  "sheep_301": {
+    "roadmap_status": "NOT_STARTED / BOUNDED_FIXTURE_MAPPING_ONLY_AUTHORIZED",
+    "phase": "MVP_A_FOUNDATION",
+    "milestone": "M-A.1 Identity and Inbound Foundation",
+    "status": "NOT_STARTED",
+    "owner_scope": "MAIN_LOCAL_RAW_INGRESS_CONTROLLED_FIXTURE_MAPPING_ONLY / NO_PRODUCTION_IPC_TITAN_WEBSOCKET_AI_PERSISTENCE_OR_SEND",
+    "implementation_authorization": "AUTHORIZED WITH CONSTRAINTS",
+    "implementation_authorization_scope": "CONTROLLED_MAIN_LOCAL_FIXTURE_MAPPING_ACCEPTANCE_UNIT_ONLY",
+    "implementation_state": "NOT_STARTED",
+    "implementation_started": false,
+    "implementation_result": "NOT_STARTED",
+    "execution_authorized": false,
+    "current_execution_authorization": false,
+    "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
+    "current_authorization_pause_reason": "SHEEP_301_BOUNDED_FIXTURE_MAPPING_AUTHORIZED / IMPLEMENTATION_PENDING_NEXT_CONTROLLER_TASK / LIVE_SEND_HUMAN_CONFIRM_AUTO_PERSISTENCE_PLATFORM_MUTATION_NOT_AUTHORIZED",
+    "readiness_review": {
+      "codex_audit_result": "COMPLETE",
+      "controller_decision": "PASS",
+      "audit_baseline_head": "79faea827fb6100a2860757ff61e838dbf9ac70a",
+      "accepted_acceptance_unit": "MAIN_LOCAL_RAW_INGRESS_BOUND_CONTROLLED_FIXTURE_MAPPING",
+      "review_file": "project\\SHEEP_301_READINESS_REVIEW.md",
+      "review_date_candidate": "2026-09-17"
+    },
+    "approved_path": [
+      "controlled Main-local fixture",
+      "document-bound trusted Main binding",
+      "raw PDD payload semantic validation",
+      "explicit partial-identity handling",
+      "canonical IdentityLock / InboundEnvelope",
+      "canonical schema validation",
+      "controlled result or test collector",
+      "STOP"
+    ],
+    "active_scope_constraints": [
+      "controlled Main-local fixture mapping acceptance unit only",
+      "raw historical PDD payload semantics only",
+      "sender must bind to actual session instance, runtime shop, current live document generation, and live session/view ownership",
+      "old document observations and disposed/recreated session contexts must be rejected",
+      "missing customerUid and msg_id may map to explicit UNKNOWN only when the trusted inbound payload is otherwise valid",
+      "invalid field format and conflicting identity must not be silently converted into a valid identity",
+      "selected customer remains independent runtime evidence only and never fills platformCustomerId",
+      "canonical envelope validation is mandatory and must fail closed if the validator is unavailable",
+      "all success, failure, missing-collector, and exception paths stop without PddOrchestratorBridge",
+      "AI calls = 0, transport send calls = 0, persistence writes = 0"
+    ],
+    "forbidden_scope": [
+      "production IPC ingress",
+      "Titan or WebSocket receive integration",
+      "legacy DOM message_received to AI bridge",
+      "AI Worker invocation",
+      "persistence or observedAt implementation",
+      "transport send",
+      "HUMAN_CONFIRM or AUTO",
+      "platform mutation"
+    ],
+    "persistence_authorization": "NOT_AUTHORIZED",
+    "live_validation_authorization": "NOT_AUTHORIZED",
+    "platform_mutation_authorization": "NOT_AUTHORIZED",
+    "message_send_authorization": "NOT_AUTHORIZED",
+    "human_confirm_authorization": "NOT_AUTHORIZED",
+    "auto_authorization": "NOT_AUTHORIZED",
+    "later_tasks_authorized": false,
+    "next_stage_not_executed": true
+  },
   "mvp_a_foundation_entry": {
-    "status": "SHEEP_300_CLOSED / SHEEP_301_NOT_AUTHORIZED",
+    "status": "SHEEP_300_CLOSED / SHEEP_301_BOUNDED_FIXTURE_MAPPING_AUTHORIZED / IMPLEMENTATION_PENDING_NEXT_CONTROLLER_TASK",
     "current_milestone": "M-A.1 Identity and Inbound Foundation",
     "next_authoritative_roadmap_id": "SHEEP-301",
-    "execution_authorization": "NOT_AUTHORIZED_FOR_SHEEP_301"
+    "execution_authorization": "BOUNDED_FIXTURE_MAPPING_AUTHORIZED_FOR_SHEEP_301 / IMPLEMENTATION_PENDING_NEXT_CONTROLLER_TASK"
   },
   "phase_5_entry": {
     "status": "ACTIVE",
