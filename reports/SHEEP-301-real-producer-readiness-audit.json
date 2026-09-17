@@ -1209,8 +1209,8 @@
         "id": "GAP-R1",
         "current_state_source": "PddPlatformService.activate / PddSessionHost.createAndLoad / PddViewHost lifecycle",
         "impact_on_next_unit": "No Main-owned observer exists at the earliest view-created point.",
-        "required_change": "Add a test-shaped observer factory and lifecycle ownership at view creation before page load; keep it default-off.",
-        "offline_verification": "Node unit with fake WebContents; controlled Electron loopback harness.",
+        "required_change": "Add an observer lifecycle hook at onViewCreated that attaches Debugger and sends Network.enable, returns without awaiting enable resolution or first navigation, and exposes a startup promise. Activation starts first navigation and awaits the enable/navigation barrier concurrently.",
+        "offline_verification": "Startup ordering probe plus unit tests for attach/enable failure and cancellation.",
         "live_dependency": "No for mechanism; yes for real PDD event behavior.",
         "classification": "CONFIRMED / TODO_IMPLEMENTATION"
       },
@@ -1218,7 +1218,7 @@
         "id": "GAP-R2",
         "current_state_source": "PddViewHost starts observation after dom-ready; PddPageRuntime emits page_ready only after DOM health.",
         "impact_on_next_unit": "Connection-created events can occur before observer attach or before READY and are not replayed by Electron.",
-        "required_change": "Attach and Network.enable before document load; bind connection identity at creation; do not treat READY as a prerequisite for binding.",
+        "required_change": "Arm observer before load; bind requestId at Network.webSocketCreated with an immutable Main binding; bound frames before READY are held or dropped without identity inference.",
         "offline_verification": "Synthetic early-connection regression and real Electron event ordering.",
         "live_dependency": "Yes for actual PDD connection timing.",
         "classification": "CONFIRMED / TODO_IMPLEMENTATION"
@@ -1244,11 +1244,11 @@
       {
         "id": "GAP-R5",
         "current_state_source": "workspaceMerchant, StoreRepository, PlatformAccountRepository, and controlled Production PDD Shop are separate authorities.",
-        "impact_on_next_unit": "Runtime Shop cannot be assumed to equal canonical Store or PlatformAccount.",
-        "required_change": "Use explicit trusted mapping only; otherwise return UNKNOWN/UNRESOLVED or reject as required by the contract.",
+        "impact_on_next_unit": "Resolver may use explicit trusted mapping; absent mapping remains legal UNKNOWN/UNRESOLVED and does not require an Owner decision for this controlled unit.",
+        "required_change": "Implement controlled mapping policy now: explicit mapping when available, otherwise UNKNOWN/UNRESOLVED or rejection according to the contract; never auto-equate runtime Shop with Store or PlatformAccount.",
         "offline_verification": "Same-ID and missing-mapping isolation tests.",
         "live_dependency": "Potentially yes for real external identity facts.",
-        "classification": "CONFIRMED / PRODUCT_DECISION_REQUIRED"
+        "classification": "CONFIRMED / CONTROLLED_MAPPING_OR_LEGAL_UNKNOWN"
       },
       {
         "id": "GAP-R6",
@@ -1280,11 +1280,11 @@
       {
         "id": "GAP-R9",
         "current_state_source": "Diagnostic observer terminal WeakSet; PddPlatformService session reuse; no production recovery contract.",
-        "impact_on_next_unit": "Same-WebContents recovery is not approved and must not be copied as a production default.",
-        "required_change": "Specify new-WebContents lifecycle recreation or an explicit recovery contract; default to fail closed.",
+        "impact_on_next_unit": "Terminal STOP plus new WebContents is sufficient for the proposed controlled unit; same-WebContents recovery is not required now.",
+        "required_change": "Keep terminated WebContents STOPPED and require new WebContents for the next lifecycle. Defer any long-term same-WebContents recovery decision.",
         "offline_verification": "New-WebContents positive and same-WebContents negative lifecycle tests.",
         "live_dependency": "Yes for real reconnect/replay semantics later.",
-        "classification": "CONFIRMED / PRODUCT_DECISION_REQUIRED"
+        "classification": "CONFIRMED / DEFERRED_PRODUCTION_RECOVERY / NOT_BLOCKING_CURRENT_DESIGN"
       },
       {
         "id": "GAP-R10",
@@ -1322,25 +1322,29 @@
         "apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts",
         "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
         "apps/desktop/src/main/platforms/pdd/pdd-inbound-observer.ts (new)",
+        "apps/desktop/src/main/platforms/pdd/pdd-page-ipc.ts",
         "apps/desktop/src/main/bootstrap.ts",
         "apps/desktop/src/main/worker-runtime.ts",
         "apps/desktop/src/main/index.ts (only if a sender-bearing PDD path is selected)",
         "apps/desktop/tests/pdd-inbound-observer.test.ts (new)",
         "apps/desktop/tests/pdd-platform-service.test.ts",
-        "apps/desktop/tests/bootstrap-pdd-ingress-wiring.test.ts (new)"
+        "apps/desktop/tests/bootstrap-pdd-ingress-wiring.test.ts (new)",
+        "apps/desktop/tests/pdd-page-ipc-guard.test.ts"
       ],
-      "main_wiring": "PddPlatformService.activate should create the observer in onViewCreated, before session.createAndLoad/loadProductionEntry. The observer should be owned per WebContents/session/document generation, attach Debugger and Network.enable before load, bind requestId at connection creation, and hand only a Main-validated context and frozen inbound input to handleTrustedInboundIngress.",
-      "proposed_interface": "Add PddPlatformServiceOptions.createInboundObserver and explicit resolver/collector injection. The observer contract should receive the WebContents, shop/session/document-generation binding, and a Main-owned readiness predicate, and return a stop/dispose lifecycle. Do not copy the diagnostic observer into production.",
+      "main_wiring": "PddPlatformService.activate should create the observer in onViewCreated before first load. The hook attaches Debugger and sends Network.enable, returns a startup handle without awaiting enable, and activation starts first navigation and awaits the handle armed promise concurrently with load. Bind requestId at connection creation and hand only a Main-validated frozen binding plus frozen input to handleTrustedInboundIngress.",
+      "proposed_interface": "Add PddPlatformServiceOptions.createInboundObserver and canonicalIngressMode. The onViewCreated hook may be async for attach/setup, but must resolve after Debugger.attach and initiating Network.enable without awaiting enable resolution or first navigation. It returns a startup handle whose armed promise is awaited concurrently with first load. The observer receives WebContents, session/document-generation binding, and a readiness predicate, and hands only frozen Main binding plus frozen input to handleTrustedInboundIngress.",
       "minimum_positive_acceptance": [
+        "Startup regression proves attach and Network.enable are sent before first load, first load is not blocked on enable resolution, and Network.webSocketCreated is observed after enable.",
         "One controlled WebContents, one synthetic connection, and one text frame reach the real canonical mapper and default validator exactly once.",
         "A same-service second controlled session with equal opaque customer/message IDs remains isolated.",
         "Explicit resolver returns trusted scope or legal UNKNOWN; collector receives only the mapped envelope.",
         "Production composition defaults to DISABLED and enables only through an explicit controlled activation gate."
       ],
       "minimum_negative_acceptance": [
-        "Connection before observer attach, old connection after termination, same-WebContents restart, wrong CDP session/requestId, stale document generation, missing/forged context, and wrong sender all fail before canonical ingress.",
+        "Awaiting Network.enable before first navigation is forbidden by timeout/regression test.",
+        "Connection before observer attach, missing Network.webSocketCreated evidence, early frame without binding, old terminal WebContents, same-WebContents restart, wrong CDP session/requestId, stale generation, forged/missing context, and wrong sender stop before canonical ingress.",
         "Missing resolver, validator unavailable/false/throw, and missing collector stop before legacy fallback.",
-        "Collector throw and unsupported Promise return FAILED once with no retry and no legacy call."
+        "Collector throw and unsupported Promise return FAILED once with no retry, no AI/send/persistence, and no legacy call."
       ],
       "minimum_failure_acceptance": [
         "Observer attach/enable failure cleans up and remains terminal.",
@@ -1364,7 +1368,15 @@
         "production activation, persistence, AI, and send authorization decisions"
       ],
       "default_off_gate": "Add PddPlatformServiceOptions.canonicalIngressMode with DISABLED as the production default. Only an explicit controlled mode may create the observer and call handleTrustedInboundIngress.",
-      "legacy_isolation": "When the selected canonical path is active, PddPlatformService.handlePageEvent must not independently invoke the legacy message_received -> handleInbound -> PddOrchestratorBridge branch. Resolver, validator, mapper, or collector failure returns directly and never falls back."
+      "legacy_isolation": "When the selected canonical path is active, PddPlatformService.handlePageEvent must not independently invoke the legacy message_received -> handleInbound -> PddOrchestratorBridge branch. Resolver, validator, mapper, or collector failure returns directly and never falls back.",
+      "startup_barrier": {
+        "attach_and_enable_sent_before_load": true,
+        "first_load_started_without_awaiting_enable": true,
+        "did_start_navigation_establishes_first_document_generation": true,
+        "enable_resolution_after_navigation_start": true,
+        "webSocketCreated_after_enable_in_healthy_path": true,
+        "late_attach_after_dom_ready_must_fail_closed": true
+      }
     },
     "live_evidence_boundaries": [
       {
@@ -1404,6 +1416,89 @@
       "live_validation_performed": false,
       "full_sheep_301_closed": false,
       "next_stage_not_executed": true
+    },
+    "startup_probe": {
+      "performed": true,
+      "probe_root": "E:\\fast_sheep.tmp\\sheep-301-ingress-startup-readiness",
+      "result_artifact": "E:\\fast_sheep.tmp\\sheep-301-ingress-startup-readiness\\probe-result.json",
+      "precheck_artifact": "E:\\fast_sheep.tmp\\sheep-301-ingress-startup-readiness\\probe-precheck-timeout.json",
+      "runtime": {
+        "electron": "43.6.0",
+        "chrome": "150.0.7871.250",
+        "node": "24.20.0"
+      },
+      "sandbox": true,
+      "no_sandbox_switch_used": false,
+      "precheck": {
+        "attempted": "Await Debugger.attach and Network.enable before first loadURL.",
+        "observed": "TIMEOUT_AFTER_20S at A:enable-sent; Network.enable did not resolve before first navigation.",
+        "conclusion": "Awaiting Network.enable before first navigation creates a startup deadlock."
+      },
+      "correct_order_observed": [
+        "onViewCreated-start",
+        "attach-start",
+        "network-enable-sent",
+        "loadURL-start",
+        "did-start-navigation",
+        "network-enable-resolved",
+        "Network.webSocketCreated",
+        "dom-ready",
+        "did-finish-load"
+      ],
+      "findings": {
+        "onViewCreated_must_not_await_enable_before_load": true,
+        "network_enable_resolved_after_navigation_start": true,
+        "webSocketCreated_observed_after_enable_in_correct_order": true,
+        "late_attach_after_dom_ready_missed_webSocketCreated": true,
+        "late_attach_still_observed_later_handshake_and_frames": true
+      },
+      "implication": "The activation contract must start attach and Network.enable, start the first navigation without waiting for enable resolution, and await enable/navigation concurrently. The observer must not depend on did-finish-load or READY to arm Network observation."
+    },
+    "identity_handover": {
+      "phase_1_connection_observed_before_ready": {
+        "evidence": "At Network.webSocketCreated, freeze a Main-owned immutable binding record: actual WebContents object, sessionId, shopId, documentGeneration, observer lifecycle, allowed URL/origin, cdpSessionId, requestId, and creation observation time.",
+        "prohibited": "Do not call createInboundIngressContext, parse inbound payload, map canonical identity, or write owner/association data at this phase."
+      },
+      "phase_2_frame_before_ready": {
+        "policy": "A frame for an observed connection may be held only in a bounded Main queue keyed by the immutable connection binding. Do not map it until READY and context validation succeed.",
+        "unobserved_connection": "If no Network.webSocketCreated evidence exists for requestId, reject/drop the frame as UNBOUND_OR_STALE_SOURCE; never infer connection identity from the current state.",
+        "overflow_or_eviction": "Drop/STOP deterministically; no legacy fallback and no current-state rebinding."
+      },
+      "phase_3_ready_and_canonical_context": {
+        "policy": "After READY, create a canonical context for the exact WebContents and require PddSessionHost.resolveInboundIngressBinding to return the same sessionId, shopId, documentGeneration, and WebContents object as the frozen connection binding.",
+        "mismatch": "REJECT/DROP the connection and queued frames; do not refresh or repair identity from current state."
+      },
+      "phase_4_new_frame_after_permission": {
+        "policy": "Only a frame whose requestId was bound at connection creation under the same current lifecycle may be mapped. New frames on an unobserved requestId are dropped."
+      },
+      "phase_5_old_events": {
+        "policy": "Old-generation, old-lifecycle, detached, destroyed, or terminal WebContents events are discarded/STOPPED. The old connection is never assigned the current document generation."
+      }
+    },
+    "legacy_isolation_design": {
+      "mode": "Add an explicit PddPlatformServiceOptions.canonicalIngressMode with production default DISABLED and a separate LEGACY mode only for existing compatibility tests.",
+      "page_state_events": "page_ready/login/dom-unsupported may update PddSessionHost state, but they must never create an immutable connection binding or authorize canonical output by themselves.",
+      "legacy_business_events": "When canonicalIngressMode is CANONICAL_CONTROLLED or DISABLED, message_received, human_reply_detected, and conversation_changed must not invoke onInboundMessage, PddOrchestratorBridge, AI, persistence, or send.",
+      "initialization": "If observer attach or Network.enable has not successfully armed the selected path, canonical admission is false and legacy fallback remains disabled.",
+      "failure": "Attach/enable/resolver/validator/mapper/collector failure returns directly; no retry into legacy and no fallback.",
+      "detach_or_termination": "Detach/terminal stops the observer, clears bindings, and keeps canonical admission false; page state events cannot re-enable business consumers.",
+      "files": [
+        "apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts",
+        "apps/desktop/src/main/platforms/pdd/pdd-page-ipc.ts",
+        "apps/desktop/src/main/index.ts",
+        "apps/desktop/src/main/bootstrap.ts",
+        "apps/desktop/src/main/worker-runtime.ts"
+      ]
+    },
+    "original_audit_baseline_commit": "0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578",
+    "repair_baseline_commit": "a5d4bfd73502e3569142186c85335e9e947aca64",
+    "targeted_repair": {
+      "controller_decision": "REPAIR",
+      "repair_baseline": "a5d4bfd73502e3569142186c85335e9e947aca64",
+      "repair_result": "COMPLETE",
+      "scope": "R1_STARTUP_TIMING / R2_IDENTITY_HANDOVER / R3_LEGACY_ISOLATION / R4_CLASSIFICATION",
+      "startup_probe": "E:\\fast_sheep.tmp\\sheep-301-ingress-startup-readiness\\probe-result.json",
+      "controller_review_status": "AWAITING_CONTROLLER_REVIEW"
     }
   },
   "historical_stage_readiness": {

@@ -519,7 +519,10 @@ Same-WebContents recovery remains unproven and is deliberately NOT SUPPORTED for
 - Task: SHEEP-301.
 - Acceptance unit: TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT.
 - Mode: READ_ONLY_CODE_AUDIT / DOCUMENTATION_ONLY.
-- Baseline: 0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578.
+- Original audit baseline: 0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578.
+- Targeted readiness repair baseline: a5d4bfd73502e3569142186c85335e9e947aca64.
+- Targeted repair scope: R1_STARTUP_TIMING / R2_IDENTITY_HANDOVER / R3_LEGACY_ISOLATION / R4_CLASSIFICATION.
+- Targeted repair result: COMPLETE.
 - Prerequisite acceptance: LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF COMPLETE / CONTROLLER PASS.
 - Reviewed implementation commit: 0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578.
 - Diagnostic implementation authorization: COMPLETED / CONSUMED.
@@ -575,19 +578,65 @@ Lifecycle handling currently behaves as follows:
 - dispose/recreate: PddSessionHost.dispose nulls the view, clears selected-customer evidence, and sets DISPOSED. A production recovery unit must create a new WebContents/session rather than reuse a terminated one.
 - recovery choices for the next unit: new WebContents per lifecycle (preferred and offline-verifiable), no recovery/STOP (current diagnostic-safe behavior), or same-WebContents recovery only after a separate Main-owned binding design and future live validation (not approved).
 
+### Startup probe and onViewCreated contract
+
+A minimal local Electron probe was executed with the repository-locked runtime and no sandbox-disabling switch. Its artifacts are under:
+
+E:\fast_sheep.tmp\sheep-301-ingress-startup-readiness\
+
+Observed correct order:
+
+1. onViewCreated-start
+2. attach-start
+3. Network.enable sent
+4. first loadURL start
+5. did-start-navigation
+6. Network.enable resolved
+7. Network.webSocketCreated
+8. dom-ready
+9. did-finish-load
+
+The precheck observed a 20-second timeout at Network.enable when the probe awaited enable resolution before starting the first navigation. The successful probe therefore establishes this contract:
+
+- onViewCreated may create/attach the observer and send Network.enable before load.
+- onViewCreated must not wait for Network.enable to resolve before starting first navigation.
+- first navigation establishes the initial document generation for production through did-start-navigation.
+- attach/enable and first navigation must be awaited concurrently; enable resolution follows did-start-navigation but must precede Network.webSocketCreated.
+- a late attach after dom-ready missed Network.webSocketCreated while later handshake/frame events were still observed, so late attachment cannot reconstruct a trusted connection binding.
+- success leaves the observer armed; attach/enable failure or cancellation must stop the WebContents lifecycle, clear listeners, and never fall back to legacy.
+
+### Identity handover after pre-READY binding
+
+- Immutable binding evidence is captured at Network.webSocketCreated: actual WebContents object, sessionId, shopId, documentGeneration, observer lifecycle, allowed URL/origin, cdpSessionId, requestId, and creation observation time.
+- Pre-READY, the observer may only hold this binding and a bounded, immutable early-frame queue. It must not call createInboundIngressContext, map identity, canonicalize content, create associations, or write owner evidence.
+- If Network.webSocketCreated was not observed for a requestId, every frame with that requestId is rejected/dropped as UNBOUND_OR_STALE_SOURCE. Current WebContents/session/document state must never be used to infer a missing connection.
+- Early frames are processed only after READY. At that point createInboundIngressContext is called for the exact WebContents, and resolveInboundIngressBinding must return the same sessionId, shopId, documentGeneration, and WebContents object as the frozen connection binding.
+- A binding/context mismatch rejects the connection and queued frames. The old connection is never assigned the current document generation.
+- New frames after permission are accepted only against a pre-existing requestId binding from the same current lifecycle. Old-generation, detached, destroyed, or terminal events are dropped/STOPPED.
+
+### Legacy isolation design
+
+- Add PddPlatformServiceOptions.canonicalIngressMode with production default DISABLED and a separate LEGACY mode for existing compatibility behavior.
+- page_ready, login_required, dom_unsupported, and related state events may update PddSessionHost state, but cannot create a connection binding or authorize canonical output.
+- When mode is CANONICAL_CONTROLLED or DISABLED, message_received, human_reply_detected, and conversation_changed must not invoke onInboundMessage, PddOrchestratorBridge, AI, persistence, or send.
+- Initialization without a successfully armed observer keeps canonical admission false and legacy fallback disabled.
+- Attach/enable/resolver/validator/mapper/collector failure returns directly with no retry and no legacy fallback.
+- Detach, destruction, dispose, or terminal lifecycle clears bindings and keeps both canonical admission and legacy business consumers off.
+- Planned files for this isolation are pdd-platform-service.ts, pdd-page-ipc.ts, main/index.ts, bootstrap.ts, and worker-runtime.ts.
+
 ### Gap table
 
 | Gap | Current state and source | Impact on next unit | Required change | Offline verification | Live dependency | Classification |
 |---|---|---|---|---|---|---|
-| GAP-R1 | No Main-owned observer exists in PddPlatformService.activate / PddSessionHost.createAndLoad; view is created before load. | No attachment point before the first possible connection. | Create an observer factory at onViewCreated before load; own it per WebContents/session/document generation. | Fake-WebContents unit plus controlled Electron loopback. | No for mechanism; yes for real PDD events. | CONFIRMED / TODO_IMPLEMENTATION |
-| GAP-R2 | PddViewHost starts page observation after dom-ready; PddPageRuntime emits page_ready only after DOM health. | Connection-created events may occur before attach or READY and are not replayed. | Attach and Network.enable before load; bind connection identity at creation; do not require READY to bind. | Early synthetic connection ordering test. | Yes for real PDD timing. | CONFIRMED / TODO_IMPLEMENTATION |
+| GAP-R1 | No Main-owned observer exists in PddPlatformService.activate / PddSessionHost.createAndLoad; view is created before load. | No attachment point before the first possible connection. | Add an onViewCreated startup hook that attaches Debugger and sends Network.enable, then returns a startup handle without awaiting enable or navigation. Activation starts first navigation and awaits the enable/navigation barrier concurrently. | Startup ordering probe plus attach/enable failure and cancellation tests. | No for mechanism; yes for real PDD events. | CONFIRMED / TODO_IMPLEMENTATION |
+| GAP-R2 | PddViewHost starts page observation after dom-ready; PddPageRuntime emits page_ready only after DOM health. | Connection-created events may occur before attach or READY and are not replayed. | Arm observation before load; bind requestId at webSocketCreated; hold/drop early frames without identity inference; do not require READY to create the immutable connection binding. | Early connection/frame ordering test plus startup probe. | Yes for real PDD timing. | CONFIRMED / TODO_IMPLEMENTATION |
 | GAP-R3 | READY is produced by domHealth over PDD_SELECTOR_PROFILE; required selectors are DESIGN provenance. | READY is not proven production authentication/session-health truth. | Separate connection-bound from canonical-output-allowed; require a Main-owned readiness policy before output. | Controlled readiness stub; production default-off test. | Yes for real session-health evidence. | CONFIRMED / BLOCKED_FOR_PRODUCTION |
 | GAP-R4 | bootstrap.ts constructs PddPlatformService without resolver/collector; worker-runtime supplies repositories but no PDD ingress wiring. | Accepted canonical ingress cannot be composed in production. | Add explicit resolver/collector injection options and controlled composition wiring. | Composition tests with controlled resolver/collector. | No for wiring; yes for real facts. | CONFIRMED / TODO_IMPLEMENTATION |
-| GAP-R5 | workspaceMerchant, StoreRepository, and PlatformAccountRepository are separate authorities; no runtime Shop mapping exists. | Runtime Shop cannot automatically equal canonical Store or PlatformAccount. | Use explicit trusted mapping; otherwise UNKNOWN/UNRESOLVED or reject according to contract. | Same-ID and missing-mapping isolation tests. | Potentially yes for real external identity facts. | CONFIRMED / PRODUCT_DECISION_REQUIRED |
+| GAP-R5 | workspaceMerchant, StoreRepository, and PlatformAccountRepository are separate authorities; no runtime Shop mapping exists. | Runtime Shop cannot automatically equal canonical Store or PlatformAccount. A controlled mapping or legal UNKNOWN is sufficient for the next unit; no Owner decision is required now. | Use explicit trusted mapping when available; otherwise UNKNOWN/UNRESOLVED or reject according to contract. | Same-ID and missing-mapping isolation tests. | Potentially yes for real external identity facts. | CONFIRMED / CONTROLLED_MAPPING_OR_LEGAL_UNKNOWN |
 | GAP-R6 | pdd-page-ipc receives sender but main/index.ts drops it; handlePageEvent routes by payload session_id/shop_id. | Legacy path is not sender-bound and can cross-route within trusted PDD WebContents. | Pass sender into the selected path and bind it to the owning session; do not reuse payload-only routing. | Same-service forged sender/session/shop tests. | No. | CONFIRMED / TODO_IMPLEMENTATION |
 | GAP-R7 | Legacy message_received -> handleInbound -> onInboundMessage/PddOrchestratorBridge remains independent. | New and legacy consumers can both process inbound traffic or a failure can fall back to AI/send. | Add a default-off selected-path gate; make legacy bridge unreachable for canonical success and failure. | Legacy-call counter and collector-count negatives. | No. | CONFIRMED / TODO_IMPLEMENTATION |
 | GAP-R8 | pdd-page-ipc accepts payload when eventValidator is unavailable. | Malformed legacy page events can pass if that route is reused. | Fail closed when validator unavailable for a selected path; otherwise keep the legacy route isolated. | Validator-unavailable negative test. | No. | CONFIRMED / TODO_IF_REUSED |
-| GAP-R9 | Diagnostic observer terminates a WebContents permanently; production recovery policy is absent and PddPlatformService reuses the session map. | Same-WebContents recovery must not become an accidental production default. | Define new-WebContents recreation or an explicit recovery contract; default fail closed. | New-WebContents positive and same-WebContents negative tests. | Yes for real reconnect/replay later. | CONFIRMED / PRODUCT_DECISION_REQUIRED |
+| GAP-R9 | Diagnostic observer terminates a WebContents permanently; production recovery policy is absent and PddPlatformService reuses the session map. | Terminal STOP plus new WebContents is sufficient for the next controlled unit; same-WebContents recovery is not required now. | Keep terminated WebContents STOPPED; require a new WebContents for the next lifecycle. Defer long-term recovery policy. | New-WebContents positive and same-WebContents negative tests. | Yes for real reconnect/replay later. | CONFIRMED / DEFERRED_PRODUCTION_RECOVERY / NOT_BLOCKING_CURRENT_DESIGN |
 | GAP-R10 | PddCanonicalIdentityBinding.association is optional; no trusted production association resolver is wired. | Internal conversation/local message may remain UNKNOWN. | Keep UNKNOWN/UNRESOLVED; do not create or rewrite association ownership after receipt. | Existing controlled association tests; no persistence write. | No for minimal mapping. | LEGAL_UNKNOWN / DEFERRED |
 | GAP-R11 | normalizeSourceOccurredAt returns null plus diagnostics for missing/invalid values. | Source time is not a general blocker to minimal mapping. | Preserve valid business time or null; never use receipt time or CDP MonotonicTime. | Existing source-time regression set. | Yes for real source-time semantics. | DEFERRED_LIVE |
 | GAP-R12 | Only synthetic loopback proof exists; no real PDD/Titan evidence. | Actual URL/origin, framing, compression, fragmentation, reconnect/replay, and real time remain unverified. | Keep live separately authorized; do not infer platform behavior from loopback. | Not possible for real platform behavior. | Yes; future minimal live observation with STOP. | BLOCKED_FOR_PRODUCTION / LIVE_REQUIRED |
@@ -614,24 +663,27 @@ Proposed file scope for review:
 
 - apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts
 - apps/desktop/src/main/platforms/pdd/pdd-session-host.ts
+- apps/desktop/src/main/platforms/pdd/pdd-page-ipc.ts
 - apps/desktop/src/main/platforms/pdd/pdd-inbound-observer.ts (new)
 - apps/desktop/src/main/bootstrap.ts
 - apps/desktop/src/main/worker-runtime.ts
 - apps/desktop/src/main/index.ts only if a sender-bearing PDD path is selected
 - apps/desktop/tests/pdd-inbound-observer.test.ts (new)
 - apps/desktop/tests/pdd-platform-service.test.ts
+- apps/desktop/tests/pdd-page-ipc-guard.test.ts
 - apps/desktop/tests/bootstrap-pdd-ingress-wiring.test.ts (new)
 
-Main wiring: create the observer in PddPlatformService.activate on onViewCreated, before session.createAndLoad/loadProductionEntry. The observer must attach Debugger and Network.enable before load, bind requestId at connection creation, and pass only a Main-validated context plus frozen inbound input to handleTrustedInboundIngress. Do not copy the diagnostic observer into production.
+Main wiring: create the observer in PddPlatformService.activate on onViewCreated. The hook may be async for attach/setup, but it must resolve after Debugger.attach and initiating Network.enable without awaiting enable resolution or first navigation. It returns a startup handle. Activate starts first navigation, then awaits the handle armed promise concurrently with load. Bind requestId at Network.webSocketCreated using the current Main document generation; before READY, store only immutable connection evidence and bounded early frames. After READY, create the canonical context for the exact WebContents and require resolveInboundIngressBinding to match the frozen connection binding before mapping.
 
-Default-off gate: add PddPlatformServiceOptions.canonicalIngressMode with DISABLED as the production default. Only an explicit controlled mode may create the observer and call handleTrustedInboundIngress. When that selected path is active, handlePageEvent must not independently invoke the legacy message_received -> handleInbound branch. Resolver, validator, mapper, or collector failure returns directly and never falls back to PddOrchestratorBridge.
+Default-off gate: add PddPlatformServiceOptions.canonicalIngressMode with DISABLED as the production default. page_ready and other session-state events cannot authorize canonical output by themselves. Only an explicitly armed observer plus a valid immutable connection binding plus READY may open canonical admission. In CANONICAL_CONTROLLED or DISABLED mode, handlePageEvent must not invoke legacy message_received/human_reply_detected/conversation_changed business consumers. Resolver, validator, mapper, or collector failure returns directly and never falls back to PddOrchestratorBridge.
 
 Minimum acceptance:
 
 - Positive: one controlled WebContents/connection/text frame maps once through the real mapper/default validator; two same-service sessions remain isolated; explicit scope/identity resolver is used.
-- Negative: early connection, old terminal WebContents, same-WebContents restart, wrong CDP session/requestId, stale generation, forged/missing context, and wrong sender all stop before canonical ingress.
+- Startup: probe asserts attach and Network.enable are sent before load, did-start-navigation precedes enable resolution, and Network.webSocketCreated is observed after enable; awaiting enable before navigation is a regression.
+- Negative: missing Network.webSocketCreated evidence, early frame without binding, old terminal WebContents, same-WebContents restart, wrong CDP session/requestId, stale generation, forged/missing context, and wrong sender all stop before canonical ingress.
 - Failure: attach/enable failure cleans up; missing resolver/validator/collector and collector sync/async failure stop without legacy fallback, retry, AI, send, or persistence.
-- Composition: production default is DISABLED; controlled activation, resolver, and collector are explicit; legacy bridge counters remain zero.
+- Composition: production default is DISABLED; controlled activation, resolver, and collector are explicit; legacy bridge counters remain zero during initialization, failure, detach, and termination.
 
 STOP boundary: controlled Main composition and collector only. No live PDD/Titan, real seller session, production IPC observer channel, AI, persistence, send, HUMAN_CONFIRM, AUTO, or platform mutation. Do not approve same-WebContents recovery.
 
