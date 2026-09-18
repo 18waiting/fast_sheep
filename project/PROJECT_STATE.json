@@ -19,6 +19,35 @@
     "preserves_governance_gates": "Controller PASS/REPAIR review gate, COMPLETE/PARTIAL/FAIL/NOT_RUN Codex result set, Phase -> Milestone -> SHEEP Task -> Acceptance Gate"
   },
   "master_prompt": {
+  "owner_authorized_deliverable": {
+    "authorization_date": "2026-09-19",
+    "authorization_source": "Owner directive: align development rules, then continuously deliver offline inbound capture/persistence/dedup/view",
+    "acceptance_unit": "OFFLINE_INBOUND_CAPTURE_PERSIST_DEDUPE_AND_VIEW",
+    "phase": "MVP_A_FOUNDATION",
+    "milestone": "M-A.1 Identity and Inbound Foundation",
+    "goal": "A controlled message is captured with correct ownership, persisted, deduplicated, and viewable in a minimal entry point.",
+    "development_authorization": "AUTHORIZED_WITH_CONSTRAINTS",
+    "authorization_lanes": {
+      "development": "AUTHORIZED_WITH_CONSTRAINTS",
+      "real_platform_operation": "NOT_AUTHORIZED",
+      "production_enablement": "NOT_AUTHORIZED"
+    },
+    "scope": "Offline, synthetic-data implementation of controlled inbound capture, local persistence, minimal dedup, and a minimal view entry; reuses SHEEP-301 canonical contract/ingress/observer/admission/mapper/validator; advances SHEEP-302 local persistence work.",
+    "must_not": "Real PDD/Titan observation, real customer data, AI calls, real send, production activation, destructive or production data migration.",
+    "result_lanes": ["offline_implementation", "real_platform_validation", "production_enablement"],
+    "real_platform_validation_pending": "NOT_RUN / AWAITING_OWNER_SCOPED_AUTHORIZATION",
+    "production_enablement_pending": "NOT_RUN / NOT_AUTHORIZED",
+    "next_scoped_real_verification": {
+      "status": "NOT_RUN / AWAITING_OWNER_SCOPED_AUTHORIZATION",
+      "unit": "SINGLE_STORE_READ_ONLY_PDD_INBOUND_OBSERVATION",
+      "store": "ONE exclusively controlled synthetic/test PDD store designated by the Owner (no real customer accounts)",
+      "login_and_session": "Isolated non-persistent Electron session under REPO_ROOT/.tmp; no real seller profile, cookie, or credential reuse",
+      "observations": "Only inbound customer-role text messages in the currently selected conversation; platform timestamps when present; no outbound, no non-text, no historical backfill",
+      "content_storage": "Canonical InboundEnvelope persisted to local SQLite normalized_messages/normalized_conversations under REPO_ROOT/.tmp; raw platform payload not written",
+      "stop_and_success": "Stop = revoke Main admission + stop observer + dispose session. Success = one MAPPED envelope, one INGESTED row, replay yields DUPLICATE, and legacyBridgeCalls/aiCalls/transportSendCalls/businessPersistenceWrites stay 0",
+      "explicitly_not_authorized": ["real customer data", "real send", "AI", "production enablement", "platform business actions"]
+    }
+  },
     "path": "project\\FAST_SHEEP_MASTER_PROMPT.md",
     "version": "1.0",
     "status": "APPROVED",

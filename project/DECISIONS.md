@@ -689,6 +689,68 @@ scene and may be reconsidered only if the approved SHIPPING_TIME rule explicitly
 requires product-level exceptions.
 
 ---
+
+## DEC-048 — Authorization Lanes and Continuous Delivery Within an Approved Task
+**Status:** LOCKED
+**Decision package:** Owner development-flow alignment, 2026-09-19
+
+Three authorization lanes are distinct and must never be conflated:
+
+1. **Development authorization** — approval of a deliverable target and its
+   boundary. It covers, within that boundary: reading code, implementing,
+   refactoring relevant internal interfaces, writing migrations and persistence
+   code, running builds/tests/end-to-end checks against synthetic data, local
+   services, fixtures, and isolated test databases under `REPO_ROOT/.tmp`, and
+   committing/pushing per existing repository authorization. Local test-database
+   writes are development activity and do not require per-run "data write"
+   approval.
+2. **Real-platform operation authorization** — logging into or observing a real
+   account, collecting/storing real customer data, sending to a real customer,
+   or performing platform business actions. Separate, explicit, and scoped.
+3. **Production enablement authorization** — activating the controlled path in a
+   production build/release for real sellers. Separate, explicit, and scoped.
+
+Expanding lane 1 never grants lanes 2 or 3, and completing an offline deliverable
+never implies real-platform or production validation.
+
+### Delivery model
+
+A single approved deliverable is worked continuously end to end:
+necessary local investigation -> short implementation plan -> implementation ->
+testing -> fixing ordinary failures -> delivered demonstrable result. Ordinary
+test failures, known-scope defects, necessary file adjustments, and compatibility
+fixes are handled inside the same task and are not re-split into readiness,
+repair, or evidence audits, and do not require re-approval per fix.
+
+Targeted design review is still required **before** implementing changes to:
+identity/ownership rules (shop, customer, conversation, order); credentials,
+trust boundaries, and execution authorization; send, retry, send-result
+verification, and human takeover; destructive migrations or production data
+operations. The review states the concrete risk, chosen design, and verification
+method. Continuing an already-accepted design does not require a new review.
+
+The task ends by interrupting the Owner only when: the product behavior or
+acceptance target must change; permission/identity/safety/real-send boundaries
+must expand; a destructive or irreversible operation is required; or a required
+credential/environment/decision is genuinely missing. Codex may use
+`COMPLETE / PARTIAL / FAIL / NOT_RUN` per lane (offline implementation, real
+validation, production enablement) and must not let one `COMPLETE` cover all
+lanes.
+
+### Preserved invariants
+
+DEC-022 remains in force: `Phase -> Milestone -> SHEEP Task -> Acceptance Gate`;
+Codex results `COMPLETE / PARTIAL / FAIL / NOT_RUN`; Controller review
+`PASS / REPAIR`; only Controller PASS closes a SHEEP task. This decision changes
+the cadence and continuity of work inside an approved task, and the separation of
+authorization lanes. It does not remove Controller review at task boundaries, and
+it does not weaken any identity, fact, authorization, or send safety invariant.
+
+Supersedes: nothing. Complements DEC-022 (engineering governance) and the adopted
+`FAST_SHEEP_DEVELOPMENT_OPERATING_MODEL.md` (owner-provided proposal,
+2026-09-18). Impact: workflow/governance only; no product, data, or architecture
+change; no migration.
+
 # Operational Reference Sources
 
 These are not new product decisions; they define currently available evidence sources.

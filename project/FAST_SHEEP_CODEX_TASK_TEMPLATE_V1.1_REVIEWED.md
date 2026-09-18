@@ -778,6 +778,29 @@ NO
 
 ---
 
+# 25.1 Authorized Continuous-Delivery Amendment (2026-09-19)
+
+Owner directive (2026-09-19) and DEC-048 clarify section 25:
+
+- Do not start the next SHEEP task.
+- Wait for Controller PASS / REPAIR **at the task boundary**.
+- Within the scope of one approved deliverable, work continuously: local
+  investigation -> implementation -> tests -> fixing ordinary failures ->
+  delivered result. Do not re-split ordinary failures into new readiness,
+  repair, or evidence audits, and do not request re-approval per fix.
+- Interrupt the Owner only when the product/acceptance target must change, a
+  permission/safety/real-send boundary must expand, a destructive or
+  irreversible operation is required, or a required credential/environment/
+  decision is genuinely missing.
+- Report COMPLETE / PARTIAL / FAIL / NOT_RUN separately per lane: offline
+  implementation, real-platform validation, production enablement.
+
+The original section 25 text is preserved above as historical governance; this
+amendment narrows its cadence inside an approved task and does not remove the
+Controller PASS/REPAIR boundary.
+
+---
+
 # 26. V1.1 Authority Migration Record
 
 - Task Template V1.0 remains immutable historical governance.
