@@ -27,6 +27,8 @@ import type { PddCanonicalIngressMode, PddMainAdmissionProvider } from "./platfo
 import type { PddInboundIngressInput } from "./platforms/pdd/pdd-inbound-ingress.js";
 import { PDD_PRODUCTION_CHAT_URL, PDD_TOP_LEVEL_HOST } from "./platforms/pdd/pdd-navigation-policy.js";
 import { createWorkspaceMerchantContext, type WorkspaceMerchantContext } from "./services/workspace-merchant-context.js";
+import { createCanonicalInboundPersistence, type CanonicalInboundPersistenceResult } from "./services/canonical-inbound-persistence.js";
+import type { InboundEnvelope } from "@fastwork/domain";
 import { GenericPlatformService } from "./platforms/shared/generic-platform-service.js";
 import { PlatformSessionCoordinator } from "./platforms/platform-session-coordinator.js";
 import { createDoudianPlatformService } from "./platforms/doudian/doudian-platform-service.js";
@@ -91,6 +93,8 @@ export interface MainContext {
   conversations: NormalizedConversationRepository;
   /** SHEEP-063-PR2: Main-owned workspace merchant authorization anchor (production = bootstrapped; test mode = synthetic; null = not established). */
   workspaceMerchant: WorkspaceMerchantContext | null;
+  /** SHEEP-302 (bounded offline slice): canonical inbound receipt counters (ingested/duplicates/rejected). */
+  inboundReceipt: { ingested: number; duplicates: number; rejected: number; lastReason: string | null };
   /** SHEEP-063-PR1: Message normalized repository port (production = SQLite via worker-backed composition). */
   messages: MessageRepository;
   /** SHEEP-066-PR1: durable Text Delivery Attempt journal port (production = SQLite via worker-backed composition). */
@@ -357,6 +361,27 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   // fixtures; production entry URL is config-provided (CR-PDD-URL-001).
   const platformStatusSink: { current: ((ev: PlatformStatusChangedEvent) => void) | null } = { current: null };
   const feedbackService = options.feedbackService ?? null;
+  // SHEEP-302 (bounded offline slice): canonical inbound -> normalized persistence.
+  // Inert unless canonicalIngressMode === "CANONICAL_CONTROLLED" (production default
+  // is DISABLED), so production inbound behavior is unchanged by this wiring.
+  const canonicalInboundPersistence = createCanonicalInboundPersistence({
+    conversations: conversationRepository,
+    messages: messageRepository,
+  });
+  const inboundReceipt = { ingested: 0, duplicates: 0, rejected: 0, lastReason: null as string | null };
+  const onCanonicalInbound = (envelope: InboundEnvelope): CanonicalInboundPersistenceResult => {
+    try {
+      const outcome = canonicalInboundPersistence.ingest(envelope);
+      if (outcome.status === "INGESTED") inboundReceipt.ingested += 1;
+      else inboundReceipt.duplicates += 1;
+      return outcome;
+    } catch (error) {
+      inboundReceipt.rejected += 1;
+      inboundReceipt.lastReason = String((error as { reason?: unknown }).reason ?? "UNKNOWN");
+      throw error;
+    }
+  };
+
   const platform = new PddPlatformService({
     navigationMode: testMode ? "FIXTURE" : "PRODUCTION_READ_ONLY",
     orchestrator,
@@ -366,6 +391,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
     mainAdmissionProvider: options.mainAdmissionProvider,
     decodeInboundFrame: options.decodeInboundFrame,
     allowedInboundWebSocketUrl: options.allowedInboundWebSocketUrl,
+    onCanonicalInbound,
     fixturePathFor: testMode
       ? (shopId) => join(PDD_FIXTURES, shopId === "shop-test-2" ? "conversation-switch.html" : "chat-basic.html")
       : undefined,
@@ -531,7 +557,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   });
 
   void bumpRevision;
-  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, messages: messageRepository, deliveryAttempts: deliveryAttemptRepository, workspaceMerchant, stores: storeRepository, platformAccounts: platformAccountRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
+  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, messages: messageRepository, inboundReceipt, deliveryAttempts: deliveryAttemptRepository, workspaceMerchant, stores: storeRepository, platformAccounts: platformAccountRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
 }
 
 /** Minimal in-memory import session store (isolated test mode). */
