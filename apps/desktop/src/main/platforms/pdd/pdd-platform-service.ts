@@ -12,7 +12,7 @@ import { PddViewHost, type ViewBounds } from "./pdd-view-host.js";
 import { PddPreloadBridge } from "./pdd-preload-bridge.js";
 import { PddOrchestratorBridge, type PddInboundMessage } from "./pdd-orchestrator-bridge.js";
 import { processPddInboundIngress, type PddCanonicalEnvelopeValidator, type PddInboundIngressInput, type PddInboundIngressResult } from "./pdd-inbound-ingress.js";
-import { PddInboundObserver, type PddInboundObserverOptions, type PddInboundObserverStartHandle, type PddObservedFrame } from "./pdd-inbound-observer.js";
+import { PddInboundObserver, type PddInboundObserverOptions, type PddInboundObserverStartHandle, type PddObservedFrame, type PddHttpRequestBinding, type PddObservedHttpResponse } from "./pdd-inbound-observer.js";
 import { DENY_ALL_MAIN_ADMISSION_PROVIDER, PddMainAdmissionRegistry, type PddCanonicalIngressMode, type PddConnectionEvidence, type PddMainAdmissionProvider, type PddMainAdmissionRequest } from "./pdd-main-admission.js";
 import { PDD_PRODUCTION_CHAT_URL, PDD_TOP_LEVEL_HOST, type PddNavigationMode } from "./pdd-navigation-policy.js";
 
@@ -49,6 +49,18 @@ export interface PddPlatformServiceOptions {
   mainAdmissionProvider?: PddMainAdmissionProvider;
   /** Controlled fixture/loopback frame decoder; production wiring must supply or fail closed. */
   decodeInboundFrame?: (payloadData: string) => PddInboundIngressInput | null;
+  /**
+   * Trusted-request-start allowlist for HTTP inbound observation. Separate from the
+   * WebSocket allowlist on purpose: matching origin + path + method exactly, with no
+   * wildcard domain. Undefined disables the HTTP observation path entirely.
+   */
+  allowedInboundHttpRequest?: (method: string, url: string) => boolean;
+  /**
+   * Decodes a fully-read HTTP response body into per-message canonical ingress inputs.
+   * The returned inputs are still subject to admission and lifecycle re-checks before
+   * any collector call. Undefined disables the HTTP observation path entirely.
+   */
+  decodeInboundHttpBody?: (body: string, binding: PddHttpRequestBinding) => readonly PddInboundIngressInput[] | null;
   /** Local-only allowlist for the controlled observer; no historical Titan URL is enabled implicitly. */
   allowedInboundWebSocketUrl?: (url: string) => boolean;
   /** Test seam for observer lifecycle; controlled smoke must use the real default observer. */
@@ -86,6 +98,10 @@ export class PddPlatformService {
   private readonly connectionAdmissions = new Map<string, string>();
   private readonly revokedConnectionKeys = new Set<string>();
   private lastAdmissionId: string | null = null;
+  /** Trusted HTTP request-start evidence, keyed by observer lifecycle + cdpSessionId + requestId. */
+  private readonly httpRequestBindings = new Map<string, PddHttpRequestBinding>();
+  /** Shops whose current admission was revoked; blocks the HTTP path until re-granted. */
+  private readonly revokedShops = new Set<string>();
 
   constructor(options: PddPlatformServiceOptions) {
     if (options.navigationMode !== "FIXTURE" && options.navigationMode !== "PRODUCTION_READ_ONLY") {
@@ -275,6 +291,9 @@ export class PddPlatformService {
       getDocumentBinding: () => session.getCurrentInboundDocumentBinding(),
       onConnection: (connection) => this.recordConnection(connection),
       onFrame: (frame) => this.handleObservedFrame(frame),
+      onHttpResponse: (frame) => this.handleObservedHttpResponse(frame),
+      allowedHttpRequest: this.options.allowedInboundHttpRequest,
+      onHttpRequest: (binding) => { this.httpRequestBindings.set(this.httpBindingKey(binding.connection), binding); },
       onStopped: (reason) => this.handleObserverStopped(shopId, reason),
     };
     return this.options.createInboundObserver?.(options) ?? new PddInboundObserver(options);
@@ -380,7 +399,110 @@ export class PddPlatformService {
     this.recordInboundDecision(result.status === "MAPPED" ? "MAPPED" : result.status + ":" + result.reason);
   }
 
+  /**
+   * HTTP inbound observation: a response body is only usable when a trusted
+   * request-start binding exists for the same observer lifecycle, CDP sessionId and
+   * requestId, AND the live session/document still matches. The body is decoded only
+   * after those checks; admission is then granted/invalidated and re-checked before and
+   * after mapping, exactly like the WebSocket path. No legacy fallback, no retry.
+   */
+  private handleObservedHttpResponse(frame: PddObservedHttpResponse): void {
+    const binding = frame.binding;
+    const connection = binding.connection;
+    const key = this.httpBindingKey(connection);
+    const recorded = this.httpRequestBindings.get(key);
+    if (!recorded) {
+      this.recordInboundDecision("HTTP_UNBOUND_RESPONSE");
+      return;
+    }
+    this.httpRequestBindings.delete(key);
+    if (this.canonicalIngressMode !== "CANONICAL_CONTROLLED") {
+      this.recordInboundDecision("CANONICAL_INGRESS_DISABLED");
+      return;
+    }
+    const observer = this.inboundObservers.get(connection.shopId);
+    if (!observer || observer.isTerminal || observer.activeLifecycleId !== connection.observerLifecycleId) {
+      this.recordInboundDecision("HTTP_OBSERVER_STALE_OR_TERMINAL");
+      return;
+    }
+    if (this.webContentsFor(connection.shopId) !== connection.webContents) {
+      this.recordInboundDecision("HTTP_WEBCONTENTS_MISMATCH");
+      return;
+    }
+    const session = this.senderSessions.get(connection.webContents as object);
+    if (!session || session.state.getStatus() !== "READY") {
+      this.recordInboundDecision("HTTP_SESSION_NOT_READY");
+      return;
+    }
+    const currentBinding = session.getCurrentInboundDocumentBinding();
+    if (!currentBinding || !this.sameConnectionBinding(connection, currentBinding)) {
+      this.recordInboundDecision("HTTP_STALE_DOCUMENT_BINDING");
+      return;
+    }
+    if (frame.status < 200 || frame.status >= 300) {
+      this.recordInboundDecision("HTTP_STATUS_NOT_OK");
+      return;
+    }
+    const decoder = this.options.decodeInboundHttpBody;
+    if (!decoder) {
+      this.recordInboundDecision("HTTP_DECODER_MISSING");
+      return;
+    }
+    let inputs: readonly PddInboundIngressInput[] | null;
+    try {
+      inputs = decoder(frame.body, binding);
+    } catch {
+      this.recordInboundDecision("HTTP_DECODER_THREW");
+      return;
+    }
+    if (!inputs || inputs.length === 0) {
+      this.recordInboundDecision("HTTP_DECODER_NO_CANDIDATES");
+      return;
+    }
+    for (const input of inputs) {
+      const liveSession = this.senderSessions.get(connection.webContents as object);
+      if (!liveSession || liveSession.state.getStatus() !== "READY") {
+        this.recordInboundDecision("HTTP_SESSION_INVALIDATED");
+        return;
+      }
+      const liveBinding = liveSession.getCurrentInboundDocumentBinding();
+      if (!liveBinding || !this.sameConnectionBinding(connection, liveBinding)) {
+        this.recordInboundDecision("HTTP_BINDING_INVALIDATED");
+        return;
+      }
+      const context = liveSession.createInboundIngressContext(connection.webContents);
+      if (!context) {
+        this.recordInboundDecision("HTTP_INVALID_DOCUMENT_CONTEXT");
+        return;
+      }
+      const request: PddMainAdmissionRequest = { webContents: connection.webContents, connection, binding: liveBinding };
+      if (this.revokedConnectionKeys.has(key) || this.revokedShops.has(connection.shopId)) {
+        this.recordInboundDecision("MAIN_ADMISSION_REVOKED");
+        return;
+      }
+      let admissionId = this.connectionAdmissions.get(key);
+      if (!admissionId || !this.admissionRegistry.validate(admissionId, request)) {
+        const admission = this.admissionRegistry.evaluate(request);
+        if (!admission.granted) {
+          this.recordInboundDecision("MAIN_ADMISSION_DENIED:" + admission.reason);
+          return;
+        }
+        admissionId = admission.admissionId;
+        this.connectionAdmissions.set(key, admissionId);
+        this.lastAdmissionId = admissionId;
+        this.revokedShops.delete(connection.shopId);
+      }
+      const result = this.handleAdmittedInboundIngress(connection.webContents, context, admissionId, input, request);
+      this.recordInboundDecision(result.status === "MAPPED" ? "HTTP_MAPPED" : "HTTP_" + result.status + ":" + result.reason);
+      if (result.status !== "MAPPED") return;
+    }
+  }
+
+  private httpBindingKey(connection: Pick<PddConnectionEvidence, "observerId" | "observerLifecycleId" | "cdpSessionId" | "requestId">): string {
+    return [connection.observerId, connection.observerLifecycleId, connection.cdpSessionId, connection.requestId].join("|");
+  }
   revokeMainAdmissionsForShop(shopId: string): number {
+    this.revokedShops.add(shopId);
     let revoked = 0;
     for (const [key, admissionId] of [...this.connectionAdmissions.entries()]) {
       const connection = this.connections.get(key);
@@ -652,6 +774,8 @@ export class PddPlatformService {
     this.admissionRegistry.clear();
     this.connectionAdmissions.clear();
     this.revokedConnectionKeys.clear();
+    this.httpRequestBindings.clear();
+    this.revokedShops.clear();
     this.lastAdmissionId = null;
     for (const session of this.sessions.values()) session.dispose();
     this.sessions.clear();

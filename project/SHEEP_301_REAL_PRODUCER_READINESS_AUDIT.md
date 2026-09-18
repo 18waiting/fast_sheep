@@ -1255,3 +1255,56 @@ evidence; `mallName`, selected customer, and payload shop hints are never used f
   passing, and external Chrome is not proposed as the long-term runtime architecture.
 - It does not close SHEEP-301, and it grants no production activation, send, AI, or
   persistence of real customer data.
+
+---
+
+## Appendix B — HTTP inbound wiring unit (2026-09-19)
+
+Scope: local implementation + isolated tests only. No real account operation, no real
+customer data storage, no send, no AI. Existing read-only observation authorization
+was reused as-is; it was not expanded.
+
+### What was implemented
+
+- `pdd-inbound-observer.ts`: full HTTP request lifecycle observation —
+  `Network.requestWillBeSent` (trusted, immutable request-start binding captured under
+  the live document binding) -> `Network.responseReceived` (status/mime only; no body
+  assumption) -> `Network.loadingFinished` (body read) / `Network.loadingFailed`
+  (binding dropped). The body is read only after `loadingFinished`, and re-validated
+  before AND after the async read. Each request key includes observer lifecycle,
+  CDP `sessionId` and `requestId`, so CDP session semantics are never reduced to
+  `requestId` alone. A response with no trusted request start is never bound after
+  the fact; base64/binary bodies are refused; read failure stops without retry.
+- `pdd-platform-service.ts`: a separate HTTP allowlist (`allowedInboundHttpRequest`,
+  exact origin+path+method, no wildcard) and an HTTP body decoder seam
+  (`decodeInboundHttpBody`). The decoded per-message candidates pass the same
+  admission/lifecycle validation as the WebSocket path before any collector call.
+  Shop-level revocation now also blocks the HTTP path until a fresh admission.
+- `bootstrap.ts`: pass-through for the HTTP allowlist, HTTP decoder, observer/view test
+  seams, and the previously missing `resolveInboundScope` / `resolveInboundIdentity` /
+  `canonicalEnvelopeValidator` options.
+
+### Boundary status (reported separately, not merged)
+
+| Dimension | Status |
+| --- | --- |
+| Local Main HTTP wiring | IMPLEMENTED — response body -> request binding -> decode -> real mapper -> default validator -> collector; 432/432 desktop tests pass |
+| Real customer inbound | NOT VERIFIED — the captured record was agent-authored (`from.role = mall_cs`); no customer-originated record observed end to end |
+| Continuous-message completeness | NOT VERIFIED — unknown whether `latest_conversations` is a snapshot, whether consecutive messages can be missed, or how history/new/duplicate are distinguished |
+| Fast Sheep save + view | IMPLEMENTED for controlled/synthetic data only (normalized persistence + existing queue/timeline read-back); no real customer data stored |
+
+### Remaining real-verification questions
+
+A. Does one actually-new customer message travel this path into Fast Sheep?
+B. Does `latest_conversations` miss consecutive messages (snapshot vs stream), and how
+   are historical, new, and duplicate records distinguished?
+
+### Field semantics held
+
+- `mallName` is treated as a display hint only; ownership comes from trusted Main evidence.
+- `client_msg_id` is never used as a canonical conversation id, and it never splits a
+  conversation (tested: two distinct `client_msg_id` in one conversation stay one conversation).
+- Agent/self, notification and ack records never enter the customer-inbound path.
+- `from.role = user` fixtures are explicitly marked synthetic/inferred.
+- `ts` is carried raw; `sourceOccurredAt` remains null when its semantics are unproven.
+- The canonical contract was not modified.

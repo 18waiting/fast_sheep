@@ -174,6 +174,20 @@ export interface BootstrapOptions {
   decodeInboundFrame?: (payloadData: string) => PddInboundIngressInput | null;
   /** Local-only WebSocket allowlist for the controlled observer. */
   allowedInboundWebSocketUrl?: (url: string) => boolean;
+  /** Trusted-request-start allowlist for HTTP inbound observation (separate from WS). */
+  allowedInboundHttpRequest?: (method: string, url: string) => boolean;
+  /** Decoder for a fully-read HTTP response body; inputs still pass admission. */
+  decodeInboundHttpBody?: (body: string, binding: import("./platforms/pdd/pdd-inbound-observer.js").PddHttpRequestBinding) => readonly PddInboundIngressInput[] | null;
+  /** Trusted Main scope binding for the observed document (required by the controlled path). */
+  resolveInboundScope?: (document: import("./platforms/pdd/pdd-session-host.js").PddInboundDocumentBinding) => import("@fastwork/platform-pdd").PddCanonicalScopeBinding | null;
+  /** Trusted Main identity binding for an observed message (required by the controlled path). */
+  resolveInboundIdentity?: (message: import("@fastwork/platform-pdd").PddCanonicalInboundMessage, document: import("./platforms/pdd/pdd-session-host.js").PddInboundDocumentBinding) => import("@fastwork/platform-pdd").PddCanonicalIdentityBinding | null;
+  /** Canonical envelope validator override; null forces unavailable (fail closed). */
+  canonicalEnvelopeValidator?: ((value: unknown) => boolean) | null;
+  /** Test seam: supply the inbound observer (default is the real PddInboundObserver). */
+  createInboundObserver?: import("./platforms/pdd/pdd-inbound-observer.js").PddInboundObserverOptions extends never ? never : (options: import("./platforms/pdd/pdd-inbound-observer.js").PddInboundObserverOptions) => import("./platforms/pdd/pdd-inbound-observer.js").PddInboundObserver;
+  /** Test seam: supply the per-shop view host (default builds a real WebContentsView). */
+  makeView?: (shopId: string, navigationMode: "FIXTURE" | "PRODUCTION_READ_ONLY") => import("./platforms/pdd/pdd-view-host.js").PddViewHost;
 }
 
 /** Minimal in-memory JobRepository for isolated test mode (M10). */
@@ -391,6 +405,13 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
     mainAdmissionProvider: options.mainAdmissionProvider,
     decodeInboundFrame: options.decodeInboundFrame,
     allowedInboundWebSocketUrl: options.allowedInboundWebSocketUrl,
+    allowedInboundHttpRequest: options.allowedInboundHttpRequest,
+    decodeInboundHttpBody: options.decodeInboundHttpBody,
+    makeView: options.makeView,
+    createInboundObserver: options.createInboundObserver,
+    resolveInboundScope: options.resolveInboundScope,
+    resolveInboundIdentity: options.resolveInboundIdentity,
+    canonicalEnvelopeValidator: options.canonicalEnvelopeValidator,
     onCanonicalInbound,
     fixturePathFor: testMode
       ? (shopId) => join(PDD_FIXTURES, shopId === "shop-test-2" ? "conversation-switch.html" : "chat-basic.html")
