@@ -4,6 +4,20 @@
   "product_name": "快羊客服",
   "project_root": "E:\\fast_sheep",
   "governance_status": "GOVERNANCE_FROZEN",
+  "development_operating_model": {
+    "path": "project\\FAST_SHEEP_DEVELOPMENT_OPERATING_MODEL.md",
+    "version": "1.0",
+    "status": "ADOPTED",
+    "authority_status": "SUBORDINATE_DEVELOPMENT_OPERATING_GUIDANCE",
+    "owner_adoption_date": "2026-09-19",
+    "source_document": "Owner-provided development proposal (2026-09-18)",
+    "hard_invariants_owner": "project\\FAST_SHEEP_MASTER_PROMPT.md",
+    "workflow_change": "INVESTIGATE_IMPLEMENT_TEST_FIX_WITHIN_ONE_APPROVED_TASK",
+    "scope": "WORKFLOW_AND_SEQUENCING_ONLY",
+    "execution_authorization_change": false,
+    "live_authorization_change": false,
+    "preserves_governance_gates": "Controller PASS/REPAIR review gate, COMPLETE/PARTIAL/FAIL/NOT_RUN Codex result set, Phase -> Milestone -> SHEEP Task -> Acceptance Gate"
+  },
   "master_prompt": {
     "path": "project\\FAST_SHEEP_MASTER_PROMPT.md",
     "version": "1.0",
