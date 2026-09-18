@@ -94,6 +94,9 @@ export class PddInboundObserver {
   private readonly httpRequests = new Map<string, PddHttpRequestBinding>();
   /** requestKey -> response metadata seen at responseReceived (body not yet read). */
   private readonly httpResponses = new Map<string, { status: number; mimeType: string }>();
+  /** Sanitized counters: how many HTTP requests were offered to the allowlist, and how many were refused. No URLs are stored. */
+  private httpCandidateChecks = 0;
+  private httpCandidateRejected = 0;
 
   readonly observerId: string;
 
@@ -167,7 +170,11 @@ export class PddInboundObserver {
       const url = request && typeof request.url === "string" ? request.url : null;
       const httpMethod = request && typeof request.method === "string" ? request.method.toUpperCase() : null;
       if (!requestId || !url || !httpMethod) return;
-      if (!this.options.allowedHttpRequest || !this.options.allowedHttpRequest(httpMethod, url)) return;
+      this.httpCandidateChecks += 1;
+      if (!this.options.allowedHttpRequest || !this.options.allowedHttpRequest(httpMethod, url)) {
+        this.httpCandidateRejected += 1;
+        return;
+      }
       const binding = this.options.getDocumentBinding();
       if (!binding) return;
       const key = this.requestKey(lifecycleId, cdpSessionId, requestId);
@@ -349,6 +356,8 @@ export class PddInboundObserver {
       enabled: this.enabled,
       connectionCount: this.connections.size,
       httpRequestCount: this.httpRequests.size,
+      httpCandidateChecks: this.httpCandidateChecks,
+      httpCandidateRejected: this.httpCandidateRejected,
       messageListenerCount: typeof this.debugger.listenerCount === "function" ? this.debugger.listenerCount("message") : null,
       navigationListenerCount: typeof this.webContents.listenerCount === "function" ? this.webContents.listenerCount("did-start-navigation") : null,
     };
