@@ -18,7 +18,6 @@
     "live_authorization_change": false,
     "preserves_governance_gates": "Controller PASS/REPAIR review gate, COMPLETE/PARTIAL/FAIL/NOT_RUN Codex result set, Phase -> Milestone -> SHEEP Task -> Acceptance Gate"
   },
-  "master_prompt": {
   "owner_authorized_deliverable": {
     "authorization_date": "2026-09-19",
     "authorization_source": "Owner directive: align development rules, then continuously deliver offline inbound capture/persistence/dedup/view",
@@ -32,8 +31,6 @@
       "real_platform_operation": "NOT_AUTHORIZED",
       "production_enablement": "NOT_AUTHORIZED"
     },
-    "scope": "Offline, synthetic-data implementation of controlled inbound capture, local persistence, minimal dedup, and a minimal view entry; reuses SHEEP-301 canonical contract/ingress/observer/admission/mapper/validator; advances SHEEP-302 local persistence work.",
-    "must_not": "Real PDD/Titan observation, real customer data, AI calls, real send, production activation, destructive or production data migration.",
     "result_lanes": ["offline_implementation", "real_platform_validation", "production_enablement"],
     "real_platform_validation_pending": "NOT_RUN / AWAITING_OWNER_SCOPED_AUTHORIZATION",
     "production_enablement_pending": "NOT_RUN / NOT_AUTHORIZED",
@@ -48,6 +45,7 @@
       "explicitly_not_authorized": ["real customer data", "real send", "AI", "production enablement", "platform business actions"]
     }
   },
+  "master_prompt": {
     "path": "project\\FAST_SHEEP_MASTER_PROMPT.md",
     "version": "1.0",
     "status": "APPROVED",
