@@ -34,6 +34,24 @@ export interface PddTransportMessageRecord {
   readonly user_info?: { readonly nickname?: unknown; readonly uid?: unknown } | unknown;
 }
 
+/**
+ * Allowlist for HTTP inbound observation: exact origin + exact pathname + method.
+ *
+ * Query strings are ignored on purpose (PDD appends cache/request parameters), but the
+ * origin must match exactly - no wildcard or suffix domain matching - and the pathname
+ * must match exactly. Anything malformed is denied.
+ */
+export function createPddInboundHttpAllowlist(origin: string, pathname: string): (method: string, url: string) => boolean {
+  return (method, url) => {
+    if (method !== "POST") return false;
+    try {
+      const parsed = new URL(url);
+      return parsed.origin === origin && parsed.pathname === pathname;
+    } catch {
+      return false;
+    }
+  };
+}
 export type PddInboundTransportClassification =
   | "CUSTOMER_INBOUND"
   | "NOT_CUSTOMER_ORIGINATED"
