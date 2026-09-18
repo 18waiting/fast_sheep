@@ -68,6 +68,16 @@ export interface PddPlatformServiceOptions {
   revision?: () => number;
 }
 
+/**
+ * True when a navigation promise failed because another navigation superseded it
+ * (e.g. a login -> chat redirect). Such an interruption is not a load failure.
+ */
+function isNavigationInterruption(error: unknown): boolean {
+  const code = (error as { code?: unknown; errno?: unknown } | null)?.code ?? (error as { errno?: unknown } | null)?.errno;
+  if (code === -3 || code === "ERR_ABORTED") return true;
+  const message = String((error as { message?: unknown } | null)?.message ?? error ?? "");
+  return /ERR_ABORTED|net::ERR_ABORTED|-3\b/.test(message);
+}
 function asObject(value: unknown): object | null {
   return typeof value === "object" && value !== null ? value : null;
 }
@@ -299,23 +309,47 @@ export class PddPlatformService {
     return this.options.createInboundObserver?.(options) ?? new PddInboundObserver(options);
   }
 
+  /**
+   * Converts a navigation promise into a bounded, non-fatal observation.
+   *
+   * A real PDD entry can redirect (login -> chat) while loading. That redirect aborts
+   * the in-flight navigation promise, which is a normal navigation outcome and must not
+   * block readiness or be reported as a load failure. Genuine failures (DNS, TLS,
+   * refused, unreachable) still fail closed.
+   */
+  private async settleNavigationBounded(loadPromise: Promise<unknown>, timeoutMs: number): Promise<void> {
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const bounded = new Promise<"TIMEOUT">((res) => {
+      timeout = setTimeout(() => res("TIMEOUT"), timeoutMs);
+    });
+    try {
+      const outcome = await Promise.race([
+        loadPromise.then(() => ({ kind: "LOADED" as const }), (error: unknown) => ({ kind: "REJECTED" as const, error })),
+        bounded,
+      ]);
+      if (outcome === "TIMEOUT") return;
+      if (outcome.kind === "REJECTED" && !isNavigationInterruption(outcome.error)) throw outcome.error;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
   private async awaitObserverStartup(shopId: string, loadPromise: Promise<unknown>, startup: PddInboundObserverStartHandle | null): Promise<void> {
     if (!startup) {
       await loadPromise;
       return;
     }
-    let timeout: ReturnType<typeof setTimeout> | undefined;
-    const timeoutPromise = new Promise((_, reject) => {
-      timeout = setTimeout(() => reject(new Error("INBOUND_OBSERVER_STARTUP_TIMEOUT")), 8000);
-    });
-    try {
-      const [loadResult, enableResult] = await Promise.allSettled([loadPromise, Promise.race([startup.enablePromise, timeoutPromise])]);
-      if (loadResult.status === "rejected") throw loadResult.reason;
-      if (enableResult.status === "rejected") throw enableResult.reason;
-      if (this.observerStartups.get(shopId) !== startup) throw new Error("inbound observer startup superseded");
-    } finally {
-      clearTimeout(timeout);
-    }
+    // Observer readiness, not navigation settlement, decides session readiness. The
+    // entry navigation is observed as a bounded side condition so a login->chat redirect
+    // cannot wedge the session in CREATING.
+    const ownsStartup = () => this.observerStartups.get(shopId) === startup;
+    // Observer enablement is the readiness gate; attach / Network.enable failures fail closed.
+    await startup.enablePromise;
+    if (!ownsStartup()) throw new Error("inbound observer startup superseded");
+    // Then give the entry navigation a short bounded window so a genuine load failure is
+    // still surfaced, while a redirect-aborted navigation is treated as a normal outcome.
+    await this.settleNavigationBounded(loadPromise, 3000);
+    if (!ownsStartup()) throw new Error("inbound observer startup superseded");
   }
 
   private recordConnection(connection: PddConnectionEvidence): void {
