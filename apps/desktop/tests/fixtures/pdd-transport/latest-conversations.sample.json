@@ -1,7 +1,7 @@
 {
   "_source": "Captured from a real PDD seller page via CDP (dedicated debug Chrome, single controlled test store, read-only observation, 2026-09-19).",
   "_sanitization": "Store name, customer uid, agent uid, message ids, customer nickname and message text replaced with synthetic values. Field names, nesting, types and value shapes preserved exactly as observed.",
-  "_not_verified": "This capture contained only an agent-authored message. The customer-inbound variant (from.role=user / to.role=mall_cs) below is structurally identical but its arrival direction was NOT directly observed; it must be confirmed by a future authorized observation.",
+  "_not_verified": "Superseded for the customer-inbound direction: on 2026-09-19 a real customer-originated record (from.role=user) was observed arriving through POST /plateau/chat/latest_conversations. It is captured below as customer_inbound_observed / _enriched. Still NOT verified: whether consecutive messages can be missed, and how history/new/duplicate are distinguished.",
   "latest_conversations_agent_message": {
     "success": true,
     "result": {
@@ -10,20 +10,31 @@
       "has_more": false,
       "conversations": [
         {
-          "from": { "role": "mall_cs", "uid": "900000001", "mall_id": "900000001", "csid": "主账号", "cs_uid": "SYNTHETIC_CS_UID" },
+          "from": {
+            "role": "mall_cs",
+            "uid": "900000001",
+            "mall_id": "900000001",
+            "csid": "主账号",
+            "cs_uid": "SYNTHETIC_CS_UID"
+          },
           "content": "你好",
           "status": "read",
           "is_aut": 0,
           "ts": "1700000000",
           "type": 0,
-          "to": { "uid": "800000001", "role": "user" },
+          "to": {
+            "uid": "800000001",
+            "role": "user"
+          },
           "client_msg_id": "00000000-0000-0000-0000-000000000000",
           "is_read": 1,
           "version": 1,
           "msg_id": "1700000000001",
           "mallName": "示例店铺",
           "manual_reply": 1,
-          "mall_context": { "client_type": 2 },
+          "mall_context": {
+            "client_type": 2
+          },
           "cs_type": 2,
           "pre_msg_id": "1699999999999",
           "last_unreply_time": 0,
@@ -51,36 +62,54 @@
       "has_more": false,
       "conversations": [
         {
-          "from": { "role": "user", "uid": "800000001" },
+          "from": {
+            "role": "user",
+            "uid": "800000001"
+          },
           "content": "有货吗",
           "status": "unread",
           "is_aut": 0,
           "ts": "1700000005",
           "type": 0,
-          "to": { "role": "mall_cs", "uid": "900000001" },
+          "to": {
+            "role": "mall_cs",
+            "uid": "900000001"
+          },
           "client_msg_id": "11111111-1111-1111-1111-111111111111",
           "is_read": 0,
           "version": 1,
           "msg_id": "1700000000005",
           "mallName": "示例店铺",
           "manual_reply": 0,
-          "user_info": { "uid": 800000001, "nickname": "示***例" }
+          "user_info": {
+            "uid": 800000001,
+            "nickname": "示***例"
+          }
         },
         {
-          "from": { "role": "mall_cs", "uid": "900000001" },
+          "from": {
+            "role": "mall_cs",
+            "uid": "900000001"
+          },
           "content": "在的",
           "status": "sent",
           "is_aut": 0,
           "ts": "1700000006",
           "type": 0,
-          "to": { "uid": "800000001", "role": "user" },
+          "to": {
+            "uid": "800000001",
+            "role": "user"
+          },
           "client_msg_id": "22222222-2222-2222-2222-222222222222",
           "is_read": 1,
           "version": 1,
           "msg_id": "1700000000006",
           "mallName": "示例店铺",
           "manual_reply": 1,
-          "user_info": { "uid": 800000001, "nickname": "示***例" }
+          "user_info": {
+            "uid": 800000001,
+            "nickname": "示***例"
+          }
         }
       ]
     }
@@ -91,11 +120,167 @@
       "response": "latest_conversations",
       "result": "ok",
       "conversations": [
-        { "from": { "role": "user", "uid": "800000001" }, "content": "会话一的消息", "ts": "1700000010", "msg_id": "1700000000010", "to": { "role": "mall_cs", "uid": "900000001" } },
-        { "from": { "role": "user", "uid": "800000002" }, "content": "会话二的消息", "ts": "1700000011", "msg_id": "1700000000011", "to": { "role": "mall_cs", "uid": "900000001" } }
+        {
+          "from": {
+            "role": "user",
+            "uid": "800000001"
+          },
+          "content": "会话一的消息",
+          "ts": "1700000010",
+          "msg_id": "1700000000010",
+          "to": {
+            "role": "mall_cs",
+            "uid": "900000001"
+          }
+        },
+        {
+          "from": {
+            "role": "user",
+            "uid": "800000002"
+          },
+          "content": "会话二的消息",
+          "ts": "1700000011",
+          "msg_id": "1700000000011",
+          "to": {
+            "role": "mall_cs",
+            "uid": "900000001"
+          }
+        }
       ]
     }
   },
-  "unsupported_shape": { "success": false, "error_code": 40001 },
-  "binary_titan_frame_preview_hex": "000a0066000000680000000100000097"
+  "unsupported_shape": {
+    "success": false,
+    "error_code": 40001
+  },
+  "binary_titan_frame_preview_hex": "000a0066000000680000000100000097",
+  "_source_customer_inbound": "Captured 2026-09-19 from a real PDD seller page via CDP: POST /plateau/chat/latest_conversations returned one customer-originated record (from.role=user) for a newly arrived message. Values sanitized; names/types/shapes preserved.",
+  "customer_inbound_observed": {
+    "success": true,
+    "result": {
+      "response": "latest_conversations",
+      "result": "ok",
+      "has_more": false,
+      "conversations": [
+        {
+          "to": {
+            "uid": "900000001",
+            "role": "mall_cs"
+          },
+          "content": "在吗",
+          "ts": "1700001000",
+          "from": {
+            "uid": "800000001",
+            "role": "user"
+          },
+          "client_msg_id": "11111111-2222-3333-4444-555555555555",
+          "type": 0,
+          "version": 1,
+          "msg_id": "1700001000001",
+          "pre_msg_id": "1700000999000",
+          "status": "unread",
+          "is_aut": 0,
+          "last_unreply_time": 1700000999
+        }
+      ],
+      "start_time_req": false,
+      "page": 1,
+      "size": 50
+    }
+  },
+  "customer_inbound_observed_enriched": {
+    "success": true,
+    "result": {
+      "response": "latest_conversations",
+      "request_id": 1700001000999,
+      "result": "ok",
+      "has_more": false,
+      "conversations": [
+        {
+          "to": {
+            "uid": "900000001",
+            "role": "mall_cs"
+          },
+          "content": "在吗",
+          "ts": "1700001000",
+          "from": {
+            "uid": "800000001",
+            "role": "user"
+          },
+          "client_msg_id": "11111111-2222-3333-4444-555555555555",
+          "type": 0,
+          "version": 1,
+          "msg_id": "1700001000001",
+          "pre_msg_id": "1700000999000",
+          "status": "unread",
+          "is_aut": 0,
+          "user_info": {
+            "uid": 800000001,
+            "avatar": "https://example.invalid/avatar.png",
+            "gender": 1,
+            "is_shop_member": false,
+            "nickname": "示***例",
+            "regular_customer": false,
+            "group_number": 0
+          },
+          "last_unreply_time": 1700000999
+        }
+      ],
+      "start_time_req": false,
+      "page": 1,
+      "size": 100,
+      "end_time": 1700000000
+    }
+  },
+  "customer_inbound_consecutive": {
+    "success": true,
+    "result": {
+      "response": "latest_conversations",
+      "result": "ok",
+      "has_more": false,
+      "conversations": [
+        {
+          "to": {
+            "uid": "900000001",
+            "role": "mall_cs"
+          },
+          "content": "第二条",
+          "ts": "1700001010",
+          "from": {
+            "uid": "800000001",
+            "role": "user"
+          },
+          "client_msg_id": "aaaa",
+          "type": 0,
+          "version": 1,
+          "msg_id": "1700001010001",
+          "pre_msg_id": "1700001000001",
+          "status": "unread",
+          "is_aut": 0
+        },
+        {
+          "to": {
+            "uid": "900000001",
+            "role": "mall_cs"
+          },
+          "content": "第一条",
+          "ts": "1700001000",
+          "from": {
+            "uid": "800000001",
+            "role": "user"
+          },
+          "client_msg_id": "bbbb",
+          "type": 0,
+          "version": 1,
+          "msg_id": "1700001000001",
+          "pre_msg_id": "1700000999000",
+          "status": "read",
+          "is_aut": 0
+        }
+      ],
+      "start_time_req": false,
+      "page": 1,
+      "size": 50
+    }
+  }
 }

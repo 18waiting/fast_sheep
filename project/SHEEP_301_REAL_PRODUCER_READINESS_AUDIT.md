@@ -1308,3 +1308,65 @@ B. Does `latest_conversations` miss consecutive messages (snapshot vs stream), a
 - `from.role = user` fixtures are explicitly marked synthetic/inferred.
 - `ts` is carried raw; `sourceOccurredAt` remains null when its semantics are unproven.
 - The canonical contract was not modified.
+
+---
+
+## Appendix C — Real customer inbound observed (2026-09-19)
+
+Owner authorized this targeted read-only observation on the already-approved single
+controlled store. No send, no AI, no platform business action, no replay, no backfill.
+A dedicated debug Chrome profile under `REPO_ROOT/.tmp` was used with a loopback-only
+debugging port; the daily browser profile was neither modified nor exported.
+
+### Question A — CONFIRMED: a new customer message arrives over HTTP JSON
+
+A freshly arrived customer message was captured in transit through
+`POST /plateau/chat/latest_conversations`, observed twice within ~240 ms:
+
+    observed_at           2026-09-18T17:50:02.563Z   (unenriched, 455 bytes)
+                          2026-09-18T17:50:02.805Z   (enriched,   854 bytes)
+    direction             from.role = user  ->  to.role = mall_cs
+    content               "在吗"
+    msg_id                1700001000001        (authoritative platform message id)
+    pre_msg_id            1700000999000        (previous message in the same conversation)
+    client_msg_id         <redacted uuid>       (per-message client id, not a conversation id)
+    ts                    1700001000           (second-precision decimal string)
+    status                unread
+    from.uid              800000001        (customer)
+    to.uid                900000001            (agent / 主账号)
+    user_info.nickname    present only in the enriched response
+
+The same message was also returned by the sibling endpoint
+`/latitude/mall/orderCsGroupConvList`, so it is not the only carrier. The HTTP path
+already wired and tested (Appendix B) is the one this record was observed on.
+
+Transport context observed in the same session:
+
+- `wss://m-ws.pinduoduo.com/?access_token=...&role=mall_cs&...` — text frame, session auth reply only.
+- `wss://titan-ws.pinduoduo.com/` — binary (opcode 2) Titan notify/ack frames. During the
+  message arrival only small (~24 byte) binary heartbeat/ack frames were seen, carrying no
+  message body. The exact notification-to-fetch chain is NOT proven.
+
+### Question B — PARTIALLY answered, still limited
+
+Observed: the endpoint was re-queried repeatedly (three calls within ~240 ms) around the
+arrival, and each customer-inbound record carried a `pre_msg_id` linking it to the previous
+message in that conversation. That linkage is evidence of conversation continuity and was
+preserved untouched by the decoder.
+
+NOT proven: whether `latest_conversations` returns only the latest message per conversation,
+whether consecutive messages can be missed by this path, how history is distinguished from
+new arrivals, and how duplicate responses should be reconciled. The earlier message exchange
+was not present in this capture, so no conclusion is drawn from its absence.
+
+### Boundary status after this observation
+
+| Dimension | Status |
+| --- | --- |
+| Local Main HTTP wiring | IMPLEMENTED (Appendix B) |
+| Real customer inbound over this path | **CONFIRMED** — one real `from.role=user` record observed end to end in transit |
+| Continuous-message completeness | **STILL NOT VERIFIED** — snapshot vs stream, missed consecutive messages, history/new/duplicate distinction |
+| Fast Sheep save + view | IMPLEMENTED for controlled/synthetic data; this real record was observed in transit only and was **not** stored by Fast Sheep |
+
+The observation confirms the transport shape, not Fast Sheep's Electron integration.
+`full_sheep_301_closed` remains false.
