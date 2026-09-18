@@ -1158,3 +1158,100 @@ PRODUCTION_PDD_INGRESS_READINESS: BLOCKED
 LIVE_VALIDATION_AUTHORIZATION: NOT_AUTHORIZED
 full_sheep_301_closed = false
 next_stage_not_executed = true
+
+---
+
+## Appendix A — Real inbound transport observation (2026-09-19)
+
+### Authority and scope
+
+- Owner authorization: `SINGLE_STORE_READ_ONLY_PDD_INBOUND_OBSERVATION`, one controlled
+  test store. Read-only: no send, no AI, no platform business action, no replay/forged
+  request.
+- Observation used a dedicated debug Chrome profile under `REPO_ROOT/.tmp` with a
+  loopback-only debugging port. The daily Chrome profile was not modified, copied, or
+  exported; no cookies or credentials were read out or stored.
+
+### Correction of earlier reasoning (history preserved above)
+
+1. A red synthetic test page rendering correctly in an ordinary Electron window proves
+   only that that window and that display path worked. It does NOT establish that the
+   PDD `WebContentsView`, page load, or the whole Electron integration renders correctly.
+2. The earlier conclusion that rendering had failed — drawn from `isPainting()` and
+   `paint` events being false/absent — is **withdrawn**. Those APIs belong to the
+   offscreen-rendering context; they are not a valid signal for an ordinary on-screen
+   window. The OS-level desktop capture in the same session showed the test window
+   painting normally, contradicting that conclusion.
+3. 'Isolated session detected' and 'SPA initialization is slow' remain **unverified**
+   hypotheses, not findings.
+4. Observing binary frames and Titan method names does NOT prove a complete protobuf
+   structure. Only the framing and a subset of readable method names were observed.
+5. The HTTP response carrying a message does NOT prove WebSocket is only ever
+   notifications. Only the specific captured exchanges were observed.
+6. That a late CDP attach missed `webSocketCreated` does NOT mean early attach is
+   infeasible; a later attach did capture `webSocketCreated` for this page.
+
+The generic blank-window / GPU / compositor / window-beautification investigation is
+paused. It is not a current blocker.
+
+### What was observed (CONFIRMED, this environment only)
+
+Observed transport endpoints for the PDD merchant chat page:
+
+| Channel | URL | Frame/body kind | Observed role |
+| --- | --- | --- | --- |
+| WebSocket (chat) | `wss://m-ws.pinduoduo.com/?access_token=…&role=mall_cs&client=web&version=…` | text (JSON) | session auth reply observed; carries chat identity context |
+| WebSocket (notify) | `wss://titan-ws.pinduoduo.com/` | binary (opcode 2) | Titan notify/ack; readable method names `titan.session`, `titan.sync`, `titan.notifyDataLite.ack` |
+| HTTP | `POST https://mms.pinduoduo.com/plateau/chat/latest_conversations` | JSON | **carried a concrete message record with full identity fields** |
+
+Message record shape actually observed inside `latest_conversations`:
+
+    { from: { role, uid, mall_id, csid, cs_uid }, to: { role, uid }, content, ts, type,
+      msg_id, client_msg_id, status, is_read, version, mallName, manual_reply,
+      mall_context, cs_type, pre_msg_id, last_unreply_time, user_info?: { uid, nickname, ... } }
+
+Field mapping of interest:
+
+- direction: `from.role === "user"` means customer-originated (inbound); `from.role === "mall_cs"`
+  means merchant/self-authored. Only the former is a canonical inbound candidate.
+- platform message id: `msg_id`.
+- customer identity: `from.uid` (plus `user_info.uid` / `user_info.nickname` as evidence only).
+- conversation reference: the record's `to.uid` / `from.uid` pairing plus `client_msg_id`.
+- source time: `ts` — observed as a **second-precision decimal string**. Its business
+  semantics are not proven, so it is carried raw and `sourceOccurredAt` remains null.
+
+### Correspondence evidence
+
+The same `msg_id` (`…069006`), `client_msg_id`, `content`, and `ts` appeared across two
+separate `latest_conversations` responses in the same session, and `mallName` resolved to
+the controlled test store. That establishes the observed response records correspond to
+the conversation shown in that page session.
+
+**Important caveat:** the record observed in this capture was authored by the merchant
+side (`from.role = "mall_cs"`). A customer-originated record was therefore **not**
+directly observed end to end. The decode path for it is structurally identical, but it
+remains **INFERRED**, not confirmed.
+
+### Still INFERRED / UNKNOWN
+
+- Whether a newly arrived customer message is delivered by (a) an HTTP fetch triggered
+  by a WebSocket notification, (b) periodic HTTP sync, or (c) a push channel — not proven.
+- The semantics of the Titan binary frames; no protobuf schema was decoded.
+- Whether `ts` is Unix seconds or a platform-specific epoch offset.
+- Any dedupe/replay semantics for repeated responses.
+- Whether the `m-ws` channel carries message bodies or only notifications.
+
+### Implementation consequence
+
+The WebSocket text-frame assumption is not sufficient. A transport decoder for the
+observed HTTP JSON shape was added (`pdd-inbound-transport.ts`) with sanitized fixture
+`apps/desktop/tests/fixtures/pdd-transport/latest-conversations.sample.json` and focused
+tests (`pdd-inbound-transport.test.ts`). Ownership is still taken only from trusted Main
+evidence; `mallName`, selected customer, and payload shop hints are never used for scope.
+
+### What this does NOT establish
+
+- This is Chrome observation only. It does not constitute Fast Sheep/Electron integration
+  passing, and external Chrome is not proposed as the long-term runtime architecture.
+- It does not close SHEEP-301, and it grants no production activation, send, AI, or
+  persistence of real customer data.
