@@ -184,6 +184,8 @@ export interface BootstrapOptions {
   resolveInboundIdentity?: (message: import("@fastwork/platform-pdd").PddCanonicalInboundMessage, document: import("./platforms/pdd/pdd-session-host.js").PddInboundDocumentBinding) => import("@fastwork/platform-pdd").PddCanonicalIdentityBinding | null;
   /** Canonical envelope validator override; null forces unavailable (fail closed). */
   canonicalEnvelopeValidator?: ((value: unknown) => boolean) | null;
+  /** Diagnostic-only WebSocket frame sink; never affects canonical admission. */
+  onDiagnosticWsFrame?: (frame: { readonly origin: string; readonly requestId: string; readonly direction: "IN" | "OUT"; readonly opcode: number; readonly payloadData: string; readonly bound: boolean }) => void;
   /** Test seam: supply the inbound observer (default is the real PddInboundObserver). */
   createInboundObserver?: import("./platforms/pdd/pdd-inbound-observer.js").PddInboundObserverOptions extends never ? never : (options: import("./platforms/pdd/pdd-inbound-observer.js").PddInboundObserverOptions) => import("./platforms/pdd/pdd-inbound-observer.js").PddInboundObserver;
   /** Test seam: supply the per-shop view host (default builds a real WebContentsView). */
@@ -409,6 +411,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
     decodeInboundHttpBody: options.decodeInboundHttpBody,
     makeView: options.makeView,
     createInboundObserver: options.createInboundObserver,
+    onDiagnosticWsFrame: options.onDiagnosticWsFrame,
     resolveInboundScope: options.resolveInboundScope,
     resolveInboundIdentity: options.resolveInboundIdentity,
     canonicalEnvelopeValidator: options.canonicalEnvelopeValidator,

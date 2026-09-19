@@ -63,6 +63,8 @@ export interface PddPlatformServiceOptions {
   decodeInboundHttpBody?: (body: string, binding: PddHttpRequestBinding) => readonly PddInboundIngressInput[] | null;
   /** Local-only allowlist for the controlled observer; no historical Titan URL is enabled implicitly. */
   allowedInboundWebSocketUrl?: (url: string) => boolean;
+  /** Diagnostic-only WebSocket frame sink (does not affect canonical admission). */
+  onDiagnosticWsFrame?: PddInboundObserverOptions["onDiagnosticWsFrame"];
   /** Test seam for observer lifecycle; controlled smoke must use the real default observer. */
   createInboundObserver?: (options: PddInboundObserverOptions) => PddInboundObserver;
   revision?: () => number;
@@ -316,6 +318,7 @@ export class PddPlatformService {
       getDocumentBinding: () => session.getCurrentInboundDocumentBinding(),
       onConnection: (connection) => this.recordConnection(connection),
       onFrame: (frame) => this.handleObservedFrame(frame),
+      onDiagnosticWsFrame: this.options.onDiagnosticWsFrame,
       onHttpResponse: (frame) => this.handleObservedHttpResponse(frame),
       allowedHttpRequest: this.options.allowedInboundHttpRequest,
       onHttpRequest: (binding) => { this.httpRequestBindings.set(this.httpBindingKey(binding.connection), binding); },

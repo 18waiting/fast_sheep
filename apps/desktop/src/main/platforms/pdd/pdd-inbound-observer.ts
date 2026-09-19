@@ -41,6 +41,12 @@ export interface PddInboundObserverOptions {
   onHttpRequest?(binding: PddHttpRequestBinding): void;
   /** Called only after an allowed response body was fully read and re-validated. */
   onHttpResponse?(frame: PddObservedHttpResponse): void;
+  /**
+   * Diagnostic-only WebSocket observation sink. Frames are reported with their trusted
+   * connection origin/opcode for in-memory matching. This NEVER widens the canonical
+   * ingress allowlist and is not used to admit messages.
+   */
+  onDiagnosticWsFrame?(frame: { readonly origin: string; readonly requestId: string; readonly direction: "IN" | "OUT"; readonly opcode: number; readonly payloadData: string; readonly bound: boolean }): void;
   /** Explicit HTTP allowlist: exact origin + path + method. No wildcard domain match. */
   allowedHttpRequest?(method: string, url: string): boolean;
   onStopped?(reason: string): void;
@@ -114,6 +120,12 @@ export class PddInboundObserver {
   private httpAcceptedWithoutBinding = 0;
   /** Sanitized tally of allowlist rejections by pathname only (no origin, no query, no values). */
   private readonly httpRejectedPathnames = new Map<string, number>();
+  /** Diagnostic-only socket bindings by requestId (origin recorded, never the full URL). */
+  private readonly diagSockets = new Map<string, string>();
+  private diagWsOrigins: Record<string, number> = {};
+  private diagWsFramesIn: Record<string, number> = {};
+  private diagWsFramesOut: Record<string, number> = {};
+  private diagWsUnbound = 0;
 
   readonly observerId: string;
 
@@ -256,6 +268,13 @@ export class PddInboundObserver {
     if (method === "Network.webSocketCreated") {
       const requestId = typeof params.requestId === "string" ? params.requestId : null;
       const url = typeof params.url === "string" ? params.url : null;
+      if (requestId && url) {
+        try {
+          const origin = new URL(url).origin;
+          this.diagSockets.set(this.requestKey(lifecycleId, cdpSessionId, requestId), origin);
+          this.diagWsOrigins[origin] = (this.diagWsOrigins[origin] ?? 0) + 1;
+        } catch { /* malformed url: no diagnostic binding */ }
+      }
       if (!requestId || !url || !this.options.allowedUrl(url)) return;
       const binding = this.options.getDocumentBinding();
       if (!binding) return;
@@ -276,6 +295,23 @@ export class PddInboundObserver {
         this.options.onConnection(connection);
       }
       return;
+    }
+
+    if (method === "Network.webSocketFrameReceived" || method === "Network.webSocketFrameSent") {
+      const rid = typeof params.requestId === "string" ? params.requestId : null;
+      const p0 = params.response as { payloadData?: unknown; opcode?: unknown } | undefined;
+      if (rid && p0) {
+        const origin = this.diagSockets.get(this.requestKey(lifecycleId, cdpSessionId, rid));
+        const op = typeof p0.opcode === "number" ? p0.opcode : -1;
+        const key = "opcode:" + op;
+        if (origin === undefined) this.diagWsUnbound += 1;
+        else if (method === "Network.webSocketFrameReceived") this.diagWsFramesIn[key] = (this.diagWsFramesIn[key] ?? 0) + 1;
+        else this.diagWsFramesOut[key] = (this.diagWsFramesOut[key] ?? 0) + 1;
+        if (this.options.onDiagnosticWsFrame) {
+          this.options.onDiagnosticWsFrame({ origin: origin ?? "", requestId: rid, direction: method === "Network.webSocketFrameReceived" ? "IN" : "OUT", opcode: op, payloadData: typeof p0.payloadData === "string" ? p0.payloadData : "", bound: origin !== undefined });
+        }
+      }
+      if (method === "Network.webSocketFrameSent") return;
     }
 
     if (method === "Network.webSocketFrameReceived") {
@@ -401,6 +437,10 @@ export class PddInboundObserver {
       httpLoadingFinishedForAcceptedId: this.httpLoadingFinishedForAcceptedId,
       httpAcceptedWithoutBinding: this.httpAcceptedWithoutBinding,
       httpRejectedPathnames: Object.fromEntries(this.httpRejectedPathnames),
+      wsOrigins: { ...this.diagWsOrigins },
+      wsFramesIn: { ...this.diagWsFramesIn },
+      wsFramesOut: { ...this.diagWsFramesOut },
+      wsUnboundFrames: this.diagWsUnbound,
       messageListenerCount: typeof this.debugger.listenerCount === "function" ? this.debugger.listenerCount("message") : null,
       navigationListenerCount: typeof this.webContents.listenerCount === "function" ? this.webContents.listenerCount("did-start-navigation") : null,
     };
