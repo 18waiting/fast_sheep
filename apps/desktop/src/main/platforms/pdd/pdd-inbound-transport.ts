@@ -41,6 +41,48 @@ export interface PddTransportMessageRecord {
  * origin must match exactly - no wildcard or suffix domain matching - and the pathname
  * must match exactly. Anything malformed is denied.
  */
+/**
+ * Decode a `/latitude/mall/orderCsGroupConvList` response body into per-message candidates.
+ *
+ * Observed shape: { success, result: { total, data: [ { lastMessage: { from, to, content,
+ * ts, msg_id, type }, userInfo: { uid, nickname, ... } } ] } }. The same real message was
+ * observed on this endpoint as well as on latest_conversations, so both are supported.
+ * Agent-authored records are classified as non-inbound exactly as above.
+ */
+export function decodePddOrderCsGroupConvListPayload(raw: string | unknown): PddTransportDecodeResult {
+  let parsed: unknown = raw;
+  if (typeof raw === "string") {
+    try { parsed = JSON.parse(raw); } catch { return { status: "UNSUPPORTED", reason: "PAYLOAD_NOT_JSON" }; }
+  }
+  if (!isRecord(parsed)) return { status: "UNSUPPORTED", reason: "PAYLOAD_NOT_OBJECT" };
+  const result = parsed.result;
+  if (!isRecord(result)) return { status: "UNSUPPORTED", reason: "RESULT_MISSING" };
+  const rows = result.data;
+  if (!Array.isArray(rows)) return { status: "UNSUPPORTED", reason: "DATA_NOT_ARRAY" };
+  const messages: PddDecodedTransportMessage[] = [];
+  for (const row of rows) {
+    if (!isRecord(row)) continue;
+    const last = isRecord(row.lastMessage) ? row.lastMessage : null;
+    if (!last) continue;
+    const fromRole = roleOf(last.from);
+    const toRole = roleOf(last.to);
+    const userInfo = isRecord(row.userInfo) ? row.userInfo : null;
+    const customerNickname = userInfo && typeof userInfo.nickname === "string" ? userInfo.nickname : undefined;
+    if (fromRole === "user" && toRole === "mall_cs") {
+      const from = last.from as Record<string, unknown>;
+      const to = last.to as Record<string, unknown>;
+      messages.push({
+        classification: "CUSTOMER_INBOUND",
+        ingressInput: { payload: { from: { role: "user", uid: from.uid }, to: { role: "mall_cs", uid: to.uid }, content: last.content, msg_id: last.msg_id }, sourceOccurredAt: last.ts },
+        customerNickname,
+      });
+      continue;
+    }
+    if (fromRole === "mall_cs" || toRole === "user") { messages.push({ classification: "NOT_CUSTOMER_ORIGINATED", customerNickname }); continue; }
+    messages.push({ classification: "UNKNOWN_DIRECTION", customerNickname });
+  }
+  return { status: "DECODED", messages };
+}
 export function createPddInboundHttpAllowlist(origin: string, pathname: string): (method: string, url: string) => boolean {
   return (method, url) => {
     if (method !== "POST") return false;
