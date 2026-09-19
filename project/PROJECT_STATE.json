@@ -34,6 +34,13 @@
     "result_lanes": ["offline_implementation", "real_platform_validation", "production_enablement"],
     "real_platform_validation_pending": "NOT_RUN / AWAITING_OWNER_SCOPED_AUTHORIZATION",
     "production_enablement_pending": "NOT_RUN / NOT_AUTHORIZED",
+    "owner_granted_real_content_persistence": {
+      "granted_date": "2026-09-20",
+      "granted_by": "Owner directive: authorize real message persistence",
+      "scope": "Canonical InboundEnvelope for customer messages of the single controlled test store may be written to the ISOLATED SQLite database under REPO_ROOT/.tmp (normalized_conversations / normalized_messages), for receive/save/dedupe/view verification only.",
+      "constraints": ["isolated .tmp data root only; never the production database", "no raw platform payload, no credentials, no cookies, no tokens", "no production enablement, no send, no AI, no platform business action", "does not authorize real customer data outside the controlled test store"],
+      "status": "GRANTED / SCOPED"
+    },
     "next_scoped_real_verification": {
       "status": "NOT_RUN / AWAITING_OWNER_SCOPED_AUTHORIZATION",
       "unit": "SINGLE_STORE_READ_ONLY_PDD_INBOUND_OBSERVATION",
