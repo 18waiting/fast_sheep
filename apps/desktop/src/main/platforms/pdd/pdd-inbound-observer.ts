@@ -112,6 +112,8 @@ export class PddInboundObserver {
   private httpLoadingFinishedForAcceptedId = 0;
   /** Allowlisted requests that could not be bound because no document binding existed yet. */
   private httpAcceptedWithoutBinding = 0;
+  /** Sanitized tally of allowlist rejections by pathname only (no origin, no query, no values). */
+  private readonly httpRejectedPathnames = new Map<string, number>();
 
   readonly observerId: string;
 
@@ -188,6 +190,7 @@ export class PddInboundObserver {
       this.httpCandidateChecks += 1;
       if (!this.options.allowedHttpRequest || !this.options.allowedHttpRequest(httpMethod, url)) {
         this.httpCandidateRejected += 1;
+        try { const p = new URL(url).pathname; if (this.httpRejectedPathnames.size < 40 || this.httpRejectedPathnames.has(p)) this.httpRejectedPathnames.set(p, (this.httpRejectedPathnames.get(p) ?? 0) + 1); } catch { /* ignore malformed */ }
         return;
       }
       this.acceptedRequestIds.add(requestId);
@@ -397,6 +400,7 @@ export class PddInboundObserver {
       httpResponseForAcceptedId: this.httpResponseForAcceptedId,
       httpLoadingFinishedForAcceptedId: this.httpLoadingFinishedForAcceptedId,
       httpAcceptedWithoutBinding: this.httpAcceptedWithoutBinding,
+      httpRejectedPathnames: Object.fromEntries(this.httpRejectedPathnames),
       messageListenerCount: typeof this.debugger.listenerCount === "function" ? this.debugger.listenerCount("message") : null,
       navigationListenerCount: typeof this.webContents.listenerCount === "function" ? this.webContents.listenerCount("did-start-navigation") : null,
     };
