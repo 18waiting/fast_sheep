@@ -72,6 +72,21 @@ export interface PddPlatformServiceOptions {
  * True when a navigation promise failed because another navigation superseded it
  * (e.g. a login -> chat redirect). Such an interruption is not a load failure.
  */
+/**
+ * Session statuses that make canonical inbound capture ineligible. Note that LOADING is
+ * deliberately NOT in this list: canonical capture eligibility is independent of the
+ * legacy DOM/UI readiness signal. CREATING is handled separately (see the gate).
+ */
+const CANONICAL_INBOUND_BLOCKED_STATUSES = new Set([
+  "LOGIN_REQUIRED",
+  "AUTH_REAUTH_REQUIRED",
+  "DOM_UNSUPPORTED",
+  "ERROR",
+  "DISPOSED",
+  "STOPPED",
+]);
+
+type CanonicalInboundEligibility = { readonly ok: true } | { readonly ok: false; readonly reason: string };
 function isNavigationInterruption(error: unknown): boolean {
   const code = (error as { code?: unknown; errno?: unknown } | null)?.code ?? (error as { errno?: unknown } | null)?.errno;
   if (code === -3 || code === "ERR_ABORTED") return true;
@@ -440,6 +455,63 @@ export class PddPlatformService {
    * after those checks; admission is then granted/invalidated and re-checked before and
    * after mapping, exactly like the WebSocket path. No legacy fallback, no retry.
    */
+  /**
+   * Main-only canonical inbound capture eligibility.
+   *
+   * This gate proves the request is attributable to a trusted, current, still-valid
+   * Main-observed document for this shop. It deliberately does NOT change session UI
+   * state and never promotes LOADING to READY: the legacy page_ready signal keeps its
+   * own meaning, while canonical capture has its own eligibility.
+   *
+   * LOADING is acceptable here; CREATING (no trusted document generation yet), any
+   * login/reauth/unsupported/error/disposed state, a stale binding, a disallowed route
+   * and an invalid or missing admission are all rejected.
+   */
+  private canAcceptCanonicalInbound(
+    connection: PddConnectionEvidence,
+    binding: PddInboundDocumentBinding,
+    admission?: { readonly admissionId: string; readonly request: PddMainAdmissionRequest },
+  ): CanonicalInboundEligibility {
+    if (this.canonicalIngressMode !== "CANONICAL_CONTROLLED") return { ok: false, reason: "MODE_NOT_CONTROLLED" };
+    if (!this.trustedWebContents.has(connection.webContents)) return { ok: false, reason: "WEBCONTENTS_NOT_TRUSTED" };
+    if (this.webContentsFor(connection.shopId) !== connection.webContents) return { ok: false, reason: "WEBCONTENTS_MISMATCH" };
+    const observer = this.inboundObservers.get(connection.shopId);
+    if (
+      !observer ||
+      observer.isTerminal ||
+      !observer.isEnabled ||
+      observer.targetWebContents !== connection.webContents ||
+      observer.activeLifecycleId !== connection.observerLifecycleId
+    ) {
+      return { ok: false, reason: "OBSERVER_NOT_ELIGIBLE" };
+    }
+    const session = this.senderSessions.get(connection.webContents as object);
+    if (!session) return { ok: false, reason: "SESSION_NOT_FOUND" };
+    const status = session.state.getStatus();
+    if (CANONICAL_INBOUND_BLOCKED_STATUSES.has(status)) return { ok: false, reason: "SESSION_STATUS_" + status };
+    if (status === "CREATING") return { ok: false, reason: "SESSION_CREATING_NO_DOCUMENT" };
+    const current = session.getCurrentInboundDocumentBinding();
+    if (!current) return { ok: false, reason: "DOCUMENT_BINDING_ABSENT" };
+    if (!this.sameConnectionBinding(connection, current)) return { ok: false, reason: "DOCUMENT_BINDING_MISMATCH" };
+    if (
+      binding.sessionId !== current.sessionId ||
+      binding.shopId !== current.shopId ||
+      binding.documentGeneration !== current.documentGeneration
+    ) {
+      return { ok: false, reason: "SUPPLIED_BINDING_MISMATCH" };
+    }
+    const route = session.viewHost?.currentRouteKind;
+    if (route === "LOGIN" || route === "BLOCKED") return { ok: false, reason: "ROUTE_" + route };
+    if (admission) {
+      if (this.revokedConnectionKeys.has(this.httpBindingKey(connection)) || this.revokedShops.has(connection.shopId)) {
+        return { ok: false, reason: "ADMISSION_REVOKED" };
+      }
+      if (!this.admissionRegistry.validate(admission.admissionId, admission.request)) {
+        return { ok: false, reason: "ADMISSION_INVALID" };
+      }
+    }
+    return { ok: true };
+  }
   private handleObservedHttpResponse(frame: PddObservedHttpResponse): void {
     const binding = frame.binding;
     const connection = binding.connection;
@@ -464,13 +536,19 @@ export class PddPlatformService {
       return;
     }
     const session = this.senderSessions.get(connection.webContents as object);
-    if (!session || session.state.getStatus() !== "READY") {
+    if (!session) {
       this.recordInboundDecision("HTTP_SESSION_NOT_READY");
       return;
     }
     const currentBinding = session.getCurrentInboundDocumentBinding();
-    if (!currentBinding || !this.sameConnectionBinding(connection, currentBinding)) {
-      this.recordInboundDecision("HTTP_STALE_DOCUMENT_BINDING");
+    if (!currentBinding) {
+      this.recordInboundDecision("HTTP_DOCUMENT_BINDING_ABSENT");
+      return;
+    }
+    // Canonical capture eligibility is independent of the legacy DOM/UI READY signal.
+    const eligibility = this.canAcceptCanonicalInbound(connection, currentBinding);
+    if (!eligibility.ok) {
+      this.recordInboundDecision("HTTP_CANONICAL_NOT_ELIGIBLE:" + eligibility.reason);
       return;
     }
     if (frame.status < 200 || frame.status >= 300) {
@@ -495,16 +573,21 @@ export class PddPlatformService {
     }
     for (const input of inputs) {
       const liveSession = this.senderSessions.get(connection.webContents as object);
-      if (!liveSession || liveSession.state.getStatus() !== "READY") {
+      if (!liveSession) {
         this.recordInboundDecision("HTTP_SESSION_INVALIDATED");
         return;
       }
       const liveBinding = liveSession.getCurrentInboundDocumentBinding();
-      if (!liveBinding || !this.sameConnectionBinding(connection, liveBinding)) {
+      if (!liveBinding) {
         this.recordInboundDecision("HTTP_BINDING_INVALIDATED");
         return;
       }
-      const context = liveSession.createInboundIngressContext(connection.webContents);
+      const liveEligibility = this.canAcceptCanonicalInbound(connection, liveBinding);
+      if (!liveEligibility.ok) {
+        this.recordInboundDecision("HTTP_CANONICAL_NOT_ELIGIBLE:" + liveEligibility.reason);
+        return;
+      }
+      const context = liveSession.createCanonicalInboundIngressContext(connection.webContents);
       if (!context) {
         this.recordInboundDecision("HTTP_INVALID_DOCUMENT_CONTEXT");
         return;
@@ -526,7 +609,12 @@ export class PddPlatformService {
         this.lastAdmissionId = admissionId;
         this.revokedShops.delete(connection.shopId);
       }
-      const result = this.handleAdmittedInboundIngress(connection.webContents, context, admissionId, input, request);
+      const preCollector = this.canAcceptCanonicalInbound(connection, liveBinding, { admissionId, request });
+      if (!preCollector.ok) {
+        this.recordInboundDecision("HTTP_CANONICAL_NOT_ELIGIBLE:" + preCollector.reason);
+        return;
+      }
+      const result = this.handleAdmittedInboundIngress(connection.webContents, context, admissionId, input, request, { canonical: true });
       this.recordInboundDecision(result.status === "MAPPED" ? "HTTP_MAPPED" : "HTTP_" + result.status + ":" + result.reason);
       if (result.status !== "MAPPED") return;
     }
@@ -590,6 +678,7 @@ export class PddPlatformService {
     admissionId: string,
     input: unknown,
     request: PddMainAdmissionRequest,
+    options?: { readonly canonical?: boolean },
   ): PddInboundIngressResult {
     if (this.canonicalIngressMode !== "CANONICAL_CONTROLLED") {
       return stoppedIngress("CANONICAL_INGRESS_DISABLED", Object.freeze([]));
@@ -607,7 +696,7 @@ export class PddPlatformService {
     return this.handleTrustedInboundIngress(sender, context, input, () => {
       const current = session.getCurrentInboundDocumentBinding();
       return current !== null && this.admissionRegistry.validate(admissionId, { webContents: senderObject as WebContents, connection: request.connection, binding: current });
-    });
+    }, options);
   }
 
   private readonly inboundDecisionCounts = new Map<string, number>();
@@ -681,9 +770,10 @@ export class PddPlatformService {
     context: unknown,
     input: unknown,
     admissionGuard?: () => boolean,
+    options?: { readonly canonical?: boolean },
   ): PddInboundIngressResult {
     try {
-      return this.handleTrustedInboundIngressInternal(sender, context, input, admissionGuard);
+      return this.handleTrustedInboundIngressInternal(sender, context, input, admissionGuard, options);
     } catch {
       return { status: "FAILED", reason: "INGRESS_UNEXPECTED_THREW", diagnostics: Object.freeze([]) };
     }
@@ -694,6 +784,7 @@ export class PddPlatformService {
     context: unknown,
     input: unknown,
     admissionGuard?: () => boolean,
+    options?: { readonly canonical?: boolean },
   ): PddInboundIngressResult {
     const senderObject = asObject(sender);
     if (!senderObject) {
@@ -703,7 +794,9 @@ export class PddPlatformService {
     if (!session) {
       return { status: "REJECTED", reason: "UNTRUSTED_SENDER", diagnostics: Object.freeze([]) };
     }
-    const document = session.resolveInboundIngressBinding(context, senderObject);
+    const document = options?.canonical
+      ? session.resolveCanonicalInboundIngressBinding(context, senderObject)
+      : session.resolveInboundIngressBinding(context, senderObject);
     if (admissionGuard && !admissionGuard()) {
       return stoppedIngress("MAIN_ADMISSION_INVALIDATED", Object.freeze([]));
     }
@@ -728,7 +821,9 @@ export class PddPlatformService {
     });
     if (result.status !== "MAPPED") return result;
 
-    const currentDocument = session.resolveInboundIngressBinding(context, senderObject);
+    const currentDocument = options?.canonical
+      ? session.resolveCanonicalInboundIngressBinding(context, senderObject)
+      : session.resolveInboundIngressBinding(context, senderObject);
     if (!currentDocument) {
       return { status: "FAILED", reason: "DOCUMENT_CONTEXT_INVALIDATED", diagnostics: result.diagnostics };
     }

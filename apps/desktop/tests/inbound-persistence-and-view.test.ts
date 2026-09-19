@@ -218,6 +218,7 @@ function makeControlledHarness() {
         observerId: "fake-observer",
         activeLifecycleId: 1,
         isTerminal: false,
+        get isEnabled() { return true; },
         get targetWebContents() { return (options as { webContents: unknown }).webContents; },
         start: () => ({ lifecycleId: 1, enablePromise: Promise.resolve() }),
         stop: () => undefined,

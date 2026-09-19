@@ -65,6 +65,7 @@ test("Main composition: HTTP response body reaches persistence through the real 
         observerId: "fake-observer",
         activeLifecycleId: 1,
         isTerminal: false,
+        get isEnabled() { return true; },
         get targetWebContents() { return options.webContents; },
         start: () => ({ lifecycleId: 1, enablePromise: Promise.resolve() }),
         stop: () => undefined,

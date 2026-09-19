@@ -12,6 +12,15 @@ export interface PddSessionHostOptions {
   onViewCreated?: (view: PddViewHost) => void;
 }
 
+const CANONICAL_INBOUND_BLOCKED_SESSION_STATUSES: ReadonlySet<string> = new Set([
+  "LOGIN_REQUIRED",
+  "AUTH_REAUTH_REQUIRED",
+  "DOM_UNSUPPORTED",
+  "ERROR",
+  "DISPOSED",
+  "STOPPED",
+]);
+
 const SESSION_EVENTS: ReadonlySet<PddPageEvent["event"]> = new Set([
   "page_ready",
   "login_required",
@@ -195,6 +204,39 @@ export class PddSessionHost {
     return context;
   }
 
+  /**
+   * Canonical (Main-admitted) inbound context.
+   *
+   * Unlike createInboundIngressContext this does NOT require the legacy DOM/UI READY
+   * state, because canonical capture eligibility is decided by Main (see
+   * PddPlatformService.canAcceptCanonicalInbound). It still refuses states that can never
+   * be eligible - login/reauth/unsupported/error/disposed/stopped - and refuses CREATING
+   * or a missing/!live document generation. It never mutates session UI state.
+   */
+  createCanonicalInboundIngressContext(sender: unknown): PddInboundIngressContext | null {
+    const senderObject = asObject(sender);
+    if (!senderObject || !this.view || this.view.webContents !== senderObject) return null;
+    const status = this.state.getStatus();
+    if (CANONICAL_INBOUND_BLOCKED_SESSION_STATUSES.has(status)) return null;
+    if (status === "CREATING") return null;
+    if (this.activeDocumentGeneration === null || !this.isLiveView(this.view)) return null;
+    const context = new PddInboundIngressContext();
+    this.inboundIngressContexts.set(context, { view: this.view, sender: senderObject, documentGeneration: this.activeDocumentGeneration });
+    return context;
+  }
+
+  /** Canonical counterpart of resolveInboundIngressBinding (no legacy READY requirement). */
+  resolveCanonicalInboundIngressBinding(context: unknown, sender: unknown): PddInboundDocumentBinding | null {
+    const senderObject = asObject(sender);
+    if (!senderObject || !(context instanceof PddInboundIngressContext)) return null;
+    const record = this.inboundIngressContexts.get(context);
+    if (!record || record.sender !== senderObject || record.view !== this.view) return null;
+    if (!this.view || !this.isLiveView(this.view)) return null;
+    const status = this.state.getStatus();
+    if (CANONICAL_INBOUND_BLOCKED_SESSION_STATUSES.has(status) || status === "CREATING") return null;
+    if (record.documentGeneration !== this.activeDocumentGeneration) return null;
+    return Object.freeze({ sessionId: this.state.sessionId, shopId: this.state.shopId, documentGeneration: record.documentGeneration });
+  }
   resolveInboundIngressBinding(context: unknown, sender: unknown): PddInboundDocumentBinding | null {
     const senderObject = asObject(sender);
     if (!senderObject || !(context instanceof PddInboundIngressContext)) return null;
