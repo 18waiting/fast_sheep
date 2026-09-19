@@ -126,6 +126,8 @@ export class PddInboundObserver {
   private diagWsFramesIn: Record<string, number> = {};
   private diagWsFramesOut: Record<string, number> = {};
   private diagWsUnbound = 0;
+  /** CDP child sessions auto-attached by THIS observer's own debugger. */
+  private readonly childSessions = new Set<string>();
 
   readonly observerId: string;
 
@@ -176,6 +178,7 @@ export class PddInboundObserver {
     this.webContents.on("destroyed", this.destroyedHandler as never);
 
     const enablePromise = Promise.resolve()
+      .then(() => this.enableChildTargetObservation())
       .then(() => this.networkEnableCommand())
       .then(() => {
         if (this.terminal || lifecycleId !== this.lifecycleId) return;
@@ -189,8 +192,41 @@ export class PddInboundObserver {
     return { lifecycleId, enablePromise };
   }
 
+  /**
+   * Enable child-target observation (iframes / workers) on THIS webContents' debugger.
+   * Without setAutoAttach, child-target Network.* events are never delivered to the
+   * parent session at all. Sessions accepted here come only from this debugger's own
+   * attach flow, so they are attributable to this trusted WebContents - arbitrary
+   * session ids are never accepted.
+   */
+  private async enableChildTargetObservation(): Promise<void> {
+    try {
+      await this.debugger.sendCommand("Target.setDiscoverTargets", { discover: true });
+      await this.debugger.sendCommand("Target.setAutoAttach", { autoAttach: true, waitForDebuggerOnStart: false, flatten: true });
+    } catch {
+      // Non-fatal: main-frame observation still applies.
+    }
+  }
+
   private async handleDebuggerMessage(method: string, params: Record<string, unknown>, cdpSessionId: string, lifecycleId: number): Promise<void> {
+    if (method === "Target.attachedToTarget") {
+      const params0 = params as { sessionId?: unknown };
+      const child = typeof params0.sessionId === "string" ? params0.sessionId : null;
+      if (child) {
+        this.childSessions.add(child);
+        this.allowedCdpSessionIds.add(child);
+        void this.debugger.sendCommand("Network.enable", {}, child).catch(() => undefined);
+      }
+      return;
+    }
+    if (method === "Target.detachedFromTarget") {
+      const params0 = params as { sessionId?: unknown };
+      const child = typeof params0.sessionId === "string" ? params0.sessionId : null;
+      if (child) { this.childSessions.delete(child); this.allowedCdpSessionIds.delete(child); }
+      return;
+    }
     if (this.terminal || !this.enabled || lifecycleId !== this.lifecycleId) return;
+    // Root session ("") plus this observer's own auto-attached child sessions only.
     if (!this.allowedCdpSessionIds.has(cdpSessionId)) return;
 
     if (method === "Network.requestWillBeSent") {
@@ -407,6 +443,8 @@ export class PddInboundObserver {
     this.connections.clear();
     this.httpRequests.clear();
     this.httpResponses.clear();
+    for (const child of this.childSessions) this.allowedCdpSessionIds.delete(child);
+    this.childSessions.clear();
     if (this.messageHandler) this.debugger.removeListener("message", this.messageHandler as never);
     if (this.detachHandler) this.debugger.removeListener("detach", this.detachHandler as never);
     if (this.navigationHandler) this.webContents.removeListener("did-start-navigation", this.navigationHandler as never);
@@ -441,6 +479,7 @@ export class PddInboundObserver {
       wsFramesIn: { ...this.diagWsFramesIn },
       wsFramesOut: { ...this.diagWsFramesOut },
       wsUnboundFrames: this.diagWsUnbound,
+      childSessionCount: this.childSessions.size,
       messageListenerCount: typeof this.debugger.listenerCount === "function" ? this.debugger.listenerCount("message") : null,
       navigationListenerCount: typeof this.webContents.listenerCount === "function" ? this.webContents.listenerCount("did-start-navigation") : null,
     };
