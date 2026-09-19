@@ -49,7 +49,7 @@
       "observations": "Only inbound customer-role text messages in the currently selected conversation; platform timestamps when present; no outbound, no non-text, no historical backfill",
       "content_storage": "Canonical InboundEnvelope persisted to local SQLite normalized_messages/normalized_conversations under REPO_ROOT/.tmp; raw platform payload not written",
       "stop_and_success": "Stop = revoke Main admission + stop observer + dispose session. Success = one MAPPED envelope, one INGESTED row, replay yields DUPLICATE, and legacyBridgeCalls/aiCalls/transportSendCalls/businessPersistenceWrites stay 0",
-      "explicitly_not_authorized": ["real customer data", "real send", "AI", "production enablement", "platform business actions"]
+      "explicitly_not_authorized": ["real customer data outside the controlled test store", "real send", "AI", "production enablement", "platform business actions"]
     }
   },
   "master_prompt": {
