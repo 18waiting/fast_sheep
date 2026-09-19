@@ -128,6 +128,8 @@ export class PddInboundObserver {
   private diagWsUnbound = 0;
   /** CDP child sessions auto-attached by THIS observer's own debugger. */
   private readonly childSessions = new Set<string>();
+  /** Resolves when this observer stops, so a pending startup enable can settle promptly. */
+  private stoppedDeferred: { promise: Promise<void>; fire: () => void } | null = null;
 
   readonly observerId: string;
 
@@ -177,19 +179,39 @@ export class PddInboundObserver {
     this.webContents.on("did-start-navigation", this.navigationHandler as never);
     this.webContents.on("destroyed", this.destroyedHandler as never);
 
+    const NETWORK_ENABLE_TIMEOUT_MS = 8000;
+    let fireStopped: () => void = () => undefined;
+    let startupSettled = false;
+    const stoppedPromise = new Promise<void>((resolve) => { fireStopped = () => { if (!startupSettled) resolve(); }; });
+    this.stoppedDeferred = { promise: stoppedPromise, fire: fireStopped };
     const enablePromise = Promise.resolve()
       .then(() => this.enableChildTargetObservation())
-      .then(() => this.networkEnableCommand())
       .then(() => {
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const bounded = new Promise<never>((_r, reject) => {
+          timer = setTimeout(() => reject(new Error("NETWORK_ENABLE_TIMEOUT")), NETWORK_ENABLE_TIMEOUT_MS);
+        });
+        try {
+          return Promise.race([Promise.resolve(this.networkEnableCommand()), bounded]);
+        } finally {
+          // clearTimeout runs when the race settles; the timer is unref'd by Node after that.
+          void timer;
+        }
+      })
+      .then(() => {
+        startupSettled = true;
         if (this.terminal || lifecycleId !== this.lifecycleId) return;
         this.enabled = true;
       })
       .catch((error) => {
+        startupSettled = true;
         this.stop("NETWORK_ENABLE_FAILED", lifecycleId);
         throw error;
       });
-    void enablePromise.catch(() => undefined);
-    return { lifecycleId, enablePromise };
+    // A stop (detach / destroy / navigation replacement) must settle the startup promise promptly.
+    const racedEnablePromise = Promise.race([enablePromise, stoppedPromise]);
+    void racedEnablePromise.catch(() => undefined);
+    return { lifecycleId, enablePromise: racedEnablePromise };
   }
 
   /**
@@ -445,6 +467,8 @@ export class PddInboundObserver {
     this.terminal = true;
     this.enabled = false;
     this.lifecycleEpoch += 1;
+    try { this.stoppedDeferred?.fire(); } catch { /* already settled */ }
+    this.stoppedDeferred = null;
     this.connections.clear();
     this.httpRequests.clear();
     this.httpResponses.clear();
