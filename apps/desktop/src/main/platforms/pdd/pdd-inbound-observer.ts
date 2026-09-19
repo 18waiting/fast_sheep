@@ -200,12 +200,17 @@ export class PddInboundObserver {
    * session ids are never accepted.
    */
   private async enableChildTargetObservation(): Promise<void> {
-    try {
-      await this.debugger.sendCommand("Target.setDiscoverTargets", { discover: true });
-      await this.debugger.sendCommand("Target.setAutoAttach", { autoAttach: true, waitForDebuggerOnStart: false, flatten: true });
-    } catch {
-      // Non-fatal: main-frame observation still applies.
-    }
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const bounded = new Promise<void>((resolve) => { timer = setTimeout(() => resolve(), 2000); }); // CHILD_TARGET_ENABLE_TIMEOUT
+    const work = (async () => {
+      try {
+        await this.debugger.sendCommand("Target.setDiscoverTargets", { discover: true });
+        await this.debugger.sendCommand("Target.setAutoAttach", { autoAttach: true, waitForDebuggerOnStart: false, flatten: true });
+      } catch {
+        // Non-fatal: main-frame observation still applies.
+      }
+    })();
+    try { await Promise.race([work, bounded]); } finally { clearTimeout(timer); }
   }
 
   private async handleDebuggerMessage(method: string, params: Record<string, unknown>, cdpSessionId: string, lifecycleId: number): Promise<void> {
