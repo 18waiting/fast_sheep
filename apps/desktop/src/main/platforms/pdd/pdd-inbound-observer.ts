@@ -97,6 +97,21 @@ export class PddInboundObserver {
   /** Sanitized counters: how many HTTP requests were offered to the allowlist, and how many were refused. No URLs are stored. */
   private httpCandidateChecks = 0;
   private httpCandidateRejected = 0;
+  private httpResponseForBound = 0;
+  private httpLoadingFinishedForBound = 0;
+  private httpBodyReadAttempts = 0;
+  private httpBodyReadOk = 0;
+  private httpBodyReadStopped: Record<string, number> = {};
+  /** Accepted (allowlisted) requests whose load failed before any response arrived. */
+  private httpAcceptedLoadingFailed = 0;
+  /** Responses seen whose request key has no trusted request-start binding. */
+  private httpResponseUnmatched = 0;
+  /** requestIds of allowlisted requests only (opaque ids, no URLs) and their response tally. */
+  private readonly acceptedRequestIds = new Set<string>();
+  private httpResponseForAcceptedId = 0;
+  private httpLoadingFinishedForAcceptedId = 0;
+  /** Allowlisted requests that could not be bound because no document binding existed yet. */
+  private httpAcceptedWithoutBinding = 0;
 
   readonly observerId: string;
 
@@ -175,8 +190,9 @@ export class PddInboundObserver {
         this.httpCandidateRejected += 1;
         return;
       }
+      this.acceptedRequestIds.add(requestId);
       const binding = this.options.getDocumentBinding();
-      if (!binding) return;
+      if (!binding) { this.httpAcceptedWithoutBinding += 1; return; }
       const key = this.requestKey(lifecycleId, cdpSessionId, requestId);
       if (this.httpRequests.has(key)) return;
       const connection: PddConnectionEvidence = Object.freeze({
@@ -201,7 +217,9 @@ export class PddInboundObserver {
       const requestId = typeof params.requestId === "string" ? params.requestId : null;
       if (!requestId) return;
       const key = this.requestKey(lifecycleId, cdpSessionId, requestId);
-      if (!this.httpRequests.has(key)) return;
+      if (this.acceptedRequestIds.has(requestId)) this.httpResponseForAcceptedId += 1;
+      if (!this.httpRequests.has(key)) { this.httpResponseUnmatched += 1; return; }
+      this.httpResponseForBound += 1;
       const response = params.response as { status?: unknown; mimeType?: unknown } | undefined;
       const status = response && typeof response.status === "number" ? response.status : 0;
       const mimeType = response && typeof response.mimeType === "string" ? response.mimeType : "";
@@ -215,7 +233,9 @@ export class PddInboundObserver {
       const key = this.requestKey(lifecycleId, cdpSessionId, requestId);
       const evidence = this.httpRequests.get(key);
       const responseInfo = this.httpResponses.get(key);
+      if (this.acceptedRequestIds.has(requestId)) this.httpLoadingFinishedForAcceptedId += 1;
       if (!evidence || !responseInfo) return;
+      this.httpLoadingFinishedForBound += 1;
       // A request without a trusted start binding can never be reconstructed here.
       await this.readAndEmitHttpBody(key, evidence, responseInfo, lifecycleId);
       return;
@@ -225,6 +245,7 @@ export class PddInboundObserver {
       const requestId = typeof params.requestId === "string" ? params.requestId : null;
       if (!requestId) return;
       const key = this.requestKey(lifecycleId, cdpSessionId, requestId);
+      if (this.httpRequests.has(key)) this.httpAcceptedLoadingFailed += 1;
       this.httpRequests.delete(key);
       this.httpResponses.delete(key);
       return;
@@ -287,16 +308,19 @@ export class PddInboundObserver {
     responseInfo: { status: number; mimeType: string },
     lifecycleId: number,
   ): Promise<void> {
+    this.httpBodyReadAttempts += 1;
+    const stop = (reason: string) => { this.httpBodyReadStopped[reason] = (this.httpBodyReadStopped[reason] ?? 0) + 1; };
     try {
-      if (this.terminal || !this.enabled || lifecycleId !== this.lifecycleId) return;
+      if (this.terminal || !this.enabled || lifecycleId !== this.lifecycleId) { stop("LIFECYCLE_INVALID"); return; }
       const currentBinding = this.options.getDocumentBinding();
-      if (!currentBinding) return;
+      if (!currentBinding) { stop("BINDING_ABSENT"); return; }
       const requestBinding = evidence.connection;
       if (
         requestBinding.sessionId !== currentBinding.sessionId ||
         requestBinding.shopId !== currentBinding.shopId ||
         requestBinding.documentGeneration !== currentBinding.documentGeneration
       ) {
+        stop("BINDING_MISMATCH_BEFORE_READ");
         return;
       }
       const epochAtRead = this.lifecycleEpoch;
@@ -311,6 +335,7 @@ export class PddInboundObserver {
         this.lifecycleEpoch !== epochAtRead ||
         this.navigationEpoch !== navigationAtRead
       ) {
+        stop("INVALIDATED_DURING_READ");
         return;
       }
       const afterBinding = this.options.getDocumentBinding();
@@ -320,13 +345,16 @@ export class PddInboundObserver {
         requestBinding.shopId !== afterBinding.shopId ||
         requestBinding.documentGeneration !== afterBinding.documentGeneration
       ) {
+        stop("BINDING_MISMATCH_AFTER_READ");
         return;
       }
-      if (!result || typeof result.body !== "string") return;
-      if (result.base64Encoded === true) return;
+      if (!result || typeof result.body !== "string") { stop("BODY_UNAVAILABLE"); return; }
+      if (result.base64Encoded === true) { stop("BODY_BASE64"); return; }
+      this.httpBodyReadOk += 1;
       this.options.onHttpResponse?.({ binding: evidence, status: responseInfo.status, mimeType: responseInfo.mimeType, body: result.body });
     } catch {
       // Body read failure is an explicit stop for this request: no fallback, no retry.
+      this.httpBodyReadStopped["READ_FAILED"] = (this.httpBodyReadStopped["READ_FAILED"] ?? 0) + 1;
     } finally {
       this.httpRequests.delete(key);
       this.httpResponses.delete(key);
@@ -358,6 +386,17 @@ export class PddInboundObserver {
       httpRequestCount: this.httpRequests.size,
       httpCandidateChecks: this.httpCandidateChecks,
       httpCandidateRejected: this.httpCandidateRejected,
+      httpResponseForBound: this.httpResponseForBound,
+      httpLoadingFinishedForBound: this.httpLoadingFinishedForBound,
+      httpBodyReadAttempts: this.httpBodyReadAttempts,
+      httpBodyReadOk: this.httpBodyReadOk,
+      httpBodyReadStopped: { ...this.httpBodyReadStopped },
+      httpAcceptedLoadingFailed: this.httpAcceptedLoadingFailed,
+      httpResponseUnmatched: this.httpResponseUnmatched,
+      acceptedRequestIdCount: this.acceptedRequestIds.size,
+      httpResponseForAcceptedId: this.httpResponseForAcceptedId,
+      httpLoadingFinishedForAcceptedId: this.httpLoadingFinishedForAcceptedId,
+      httpAcceptedWithoutBinding: this.httpAcceptedWithoutBinding,
       messageListenerCount: typeof this.debugger.listenerCount === "function" ? this.debugger.listenerCount("message") : null,
       navigationListenerCount: typeof this.webContents.listenerCount === "function" ? this.webContents.listenerCount("did-start-navigation") : null,
     };
