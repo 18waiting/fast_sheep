@@ -110,6 +110,9 @@ export class PddInboundObserver {
   private httpBodyReadStopped: Record<string, number> = {};
   /** Accepted (allowlisted) requests whose load failed before any response arrived. */
   private httpAcceptedLoadingFailed = 0;
+  /** Requests seen but never finished (long-hanging / streaming candidates). */
+  private readonly httpInFlight = new Map<string, { at: number; pathname: string }>();
+  private httpInFlightPeak = 0;
   /** Responses seen whose request key has no trusted request-start binding. */
   private httpResponseUnmatched = 0;
   /** requestIds of allowlisted requests only (opaque ids, no URLs) and their response tally. */
@@ -311,6 +314,7 @@ export class PddInboundObserver {
       const key = this.requestKey(lifecycleId, cdpSessionId, requestId);
       const evidence = this.httpRequests.get(key);
       const responseInfo = this.httpResponses.get(key);
+      this.httpInFlight.delete(key);
       if (this.acceptedRequestIds.has(requestId)) this.httpLoadingFinishedForAcceptedId += 1;
       if (!evidence || !responseInfo) return;
       this.httpLoadingFinishedForBound += 1;
@@ -323,6 +327,7 @@ export class PddInboundObserver {
       const requestId = typeof params.requestId === "string" ? params.requestId : null;
       if (!requestId) return;
       const key = this.requestKey(lifecycleId, cdpSessionId, requestId);
+      this.httpInFlight.delete(key);
       if (this.httpRequests.has(key)) this.httpAcceptedLoadingFailed += 1;
       this.httpRequests.delete(key);
       this.httpResponses.delete(key);
@@ -509,6 +514,10 @@ export class PddInboundObserver {
       wsFramesOut: { ...this.diagWsFramesOut },
       wsUnboundFrames: this.diagWsUnbound,
       childSessionCount: this.childSessions.size,
+      httpInFlightCount: this.httpInFlight.size,
+      httpInFlightPeak: this.httpInFlightPeak,
+      httpInFlightOldestMs: this.httpInFlight.size ? Math.max(...[...this.httpInFlight.values()].map((v) => Date.now() - v.at)) : 0,
+      httpInFlightPathnames: [...this.httpInFlight.values()].reduce((acc, v) => { acc[v.pathname] = (acc[v.pathname] ?? 0) + 1; return acc; }, {} as Record<string, number>),
       messageListenerCount: typeof this.debugger.listenerCount === "function" ? this.debugger.listenerCount("message") : null,
       navigationListenerCount: typeof this.webContents.listenerCount === "function" ? this.webContents.listenerCount("did-start-navigation") : null,
     };
