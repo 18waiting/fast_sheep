@@ -87,5 +87,22 @@
     "production enablement",
     "platform mutation"
   ],
-  "full_sheep_304_closed": false
+  "full_sheep_304_closed": false,
+  "implementation_commit": "2b55dafa2ecec552dc81a5eb543a1df15d4c0b09",
+  "technical_post_audit": "PASS (Controller: SHEEP-304 POST-AUDIT PASS — READY TO SEAL)",
+  "stage_acceptance": "PENDING",
+  "execution_authorized": false,
+  "sealed_at": "2026-09-22",
+  "audit_findings": {
+    "P1": "none — no SHIPPING_TIME rule semantics, no second-scene mapping, no AI/send/provider path",
+    "P2": [
+      "the Controller-stated baseline HEAD (8f77d20) was stale; the 304 implementation baseline is b172b5f",
+      "the contract lives in a versioned Main-side module without a canonical JSON schema (frozen registry untouched); promotion is a later governed step"
+    ],
+    "P3": [
+      "application shutdown stop()/dispose() wiring for the SHEEP-303 turn builder (precondition for enabling the controlled switch)",
+      "in-process arrival ordering only; no cross-restart ordering guarantee",
+      "window/process-scoped dedupe; no cross-restart exactly-once"
+    ]
+  }
 }
