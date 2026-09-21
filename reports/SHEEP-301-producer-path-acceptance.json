@@ -1,0 +1,143 @@
+{
+  "unit": "SHEEP-301-PRODUCER-PATH-ACCEPTANCE",
+  "acceptance_unit": "CONTROLLED_PDD_DECODED_EVENT_PRODUCER_PATH",
+  "attempted_at": "2026-09-22",
+  "method": "existing materials only: code-path reading + already-recorded run evidence + one isolated snapshot check; no browser, no new real receive, no AI, no send, no production write",
+  "verdict": "PASS",
+  "blocked_items": [],
+  "item_results": [
+    {
+      "item": "page-decoded-event originates from the controlled receive entry",
+      "status": "SATISFIED",
+      "evidence": [
+        "apps/desktop/src/main/platforms/pdd/pdd-decoded-inbound-event-adapter.ts (versioned observer source + adapter contract)",
+        "apps/desktop/src/main/controlled/decoded-event-capture-entry.ts (single controlled entry owning start/drain/stop)",
+        "PddPlatformService.startDecodedEventCapture / drainDecodedEvents (real service path)"
+      ]
+    },
+    {
+      "item": "goes through Main trusted binding, identity resolution and the canonical mapper",
+      "status": "SATISFIED",
+      "evidence": [
+        "drainDecodedEvents evaluates Main admission before AND after the async drain, then the live document binding",
+        "resolveInboundScope / resolveInboundIdentity supplied by the composition (Main-resolved IdentityLock)",
+        "processPddInboundIngress -> mapPddInboundToCanonical + default canonical validator"
+      ]
+    },
+    {
+      "item": "the receipt is actually written to the isolated persistence DB",
+      "status": "SATISFIED",
+      "evidence": [
+        ".tmp/sheep-301-real-app/real-run-2/db/fast_sheep.sqlite3",
+        "independent out-of-process read: 1 conversation (merchant/store/account scoped), 4 rows, 3 target labels one row each, occurred_at null, observed_at present"
+      ]
+    },
+    {
+      "item": "the real controlled run used that path (not a direct mapper/persistence injection)",
+      "status": "SATISFIED",
+      "evidence": [
+        ".tmp/sheep-301-real-app/real-run-2/real-app-capture-result.json (23/23 checks incl. adapter_installed_in_page, drain_works, admission_evaluated_for_drain, query_chain_ready, ui_visible_*)",
+        "the composition was createMainContext (real bootstrap) + the controlled entry; the older .tmp/sheep-301-event-proof unit called processPddInboundIngress directly and is therefore NOT producer-path evidence"
+      ]
+    },
+    {
+      "item": "incomplete identity stays explicit",
+      "status": "SATISFIED",
+      "evidence": [
+        "IdentityResolution UNKNOWN/UNRESOLVED preserved; conversation external_ref null; no fabricated ids (apps/desktop/tests/canonical-inbound-attribution.test.ts)"
+      ]
+    },
+    {
+      "item": "no cross-shop mapping",
+      "status": "SATISFIED",
+      "evidence": [
+        "scope-qualified internal conversation id derivation",
+        "CONVERSATION_SCOPE_CONFLICT refusal before write",
+        "two-shop same-customer/same-message-id isolation test"
+      ]
+    },
+    {
+      "item": "no production send path invoked",
+      "status": "SATISFIED",
+      "evidence": [
+        "AI 0 / send 0 / production writes 0 in the service-level, offline and real runs"
+      ]
+    },
+    {
+      "item": "source time null handled per the approved semantics",
+      "status": "SATISFIED",
+      "evidence": [
+        "readiness review section 7: missing/unverified source time maps to null with explicit diagnostics; local time never substitutes it",
+        "stored occurred_at is null for every captured row"
+      ]
+    },
+    {
+      "item": "the evidence maps to a traceable code version",
+      "status": "SATISFIED",
+      "evidence": [
+        "commit 1ffc9ef seals the exact producer-path files the real run used; the runners, tests and fixtures are committed with them",
+        "the reports record baseline bcda787 + the same file contents that were sealed, so the evidence is reproducible from the commit",
+        "isolated snapshot of 1ffc9ef: producer adapter imports resolve inside the snapshot, 8 SHEEP-301 focused suites 70/70 pass, SHEEP-303 builder 25/25 and integration 5/5 (the earlier ERR_MODULE_NOT_FOUND is gone)"
+      ]
+    }
+  ],
+  "roadmap_exit_criteria": [
+    {
+      "criterion": "controlled fixture maps platform, shop binding, customerUid, message ID, conversation identity, content and source time",
+      "status": "SATISFIED (fixture + controlled + real runs; source time stays null by approved semantics)"
+    },
+    {
+      "criterion": "incomplete identity remains explicit",
+      "status": "SATISFIED"
+    },
+    {
+      "criterion": "no cross-shop mapping",
+      "status": "SATISFIED"
+    },
+    {
+      "criterion": "no production send path is invoked",
+      "status": "SATISFIED"
+    }
+  ],
+  "full_task_close_conditions": "MET — SHEEP-301 closed by Controller decision; the ledger closure is recorded in this round",
+  "minimal_next_action": "seal the SHEEP-301 producer-path code under Controller review (adapter, candidate gate, chat-list transport, identity derivation, pdd-platform-service / pdd-session-host / pdd-inbound-observer changes, main/controlled/*, scripts/run-sheep-301-*.mjs, and the SHEEP-301 test files) and record that commit in the unit record; the existing evidence paths then become reproducible and the producer acceptance can be recorded without any new real run",
+  "non_goals": [
+    "no browser or real page operation",
+    "no AI",
+    "no send",
+    "no production enablement",
+    "no SHEEP-304"
+  ],
+  "full_sheep_301_closed": true,
+  "ai_send_production": "OFF / NOT_AUTHORIZED",
+  "real_operations": "STOPPED",
+  "producer_commit": "1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
+  "producer_commit_parent": "8f77d206e5699626dbbe56f1eac784bd20800951",
+  "snapshot_verification": {
+    "method": "git archive 1ffc9ef into an isolated tree (no dirty source copied); workspace dependency resolutions pinned so the sealed module comes from the snapshot",
+    "focused_301_tests": "70/70 pass (adapter 10, candidate 7, chat-list transport 11, child coverage 6, service loop 10, canonical attribution 9, capture entry 6, http observation 11)",
+    "sheep_303_builder_unit": "25/25 pass",
+    "sheep_303_integration": "5/5 pass — no missing adapter or identity module",
+    "unresolved_local_imports": 0,
+    "platform_pdd_resolution": "resolves to the snapshot's own packages/platform-pdd/dist/index.js",
+    "constraints_respected": [
+      "no network",
+      "no real page",
+      "no AI",
+      "no send",
+      "no production write"
+    ]
+  },
+  "closure": {
+    "closed_by": "Controller decision (2026-09-22)",
+    "closure_commit_baseline": "1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
+    "ledger_effect": "PROJECT_STATE: sheep_301.status = PASS / CLOSED, roadmap_status = CLOSED, full_sheep_301_closed = true, last_closed_task = SHEEP-301, next_authoritative_roadmap_id = SHEEP-304 (NOT_STARTED / NOT_AUTHORIZED)",
+    "not_close_conditions": [
+      "production enablement",
+      "history pagination",
+      "reconnect recovery",
+      "multi-store expansion"
+    ],
+    "validator": "PROJECT_STATE_CONSISTENCY=PASS with the closure applied; the consistency script was not modified"
+  }
+}

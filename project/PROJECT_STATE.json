@@ -835,14 +835,14 @@
   },
   "current_phase": "MVP_A_FOUNDATION",
   "current_milestone": "M-A.1 Identity and Inbound Foundation",
-  "last_closed_task": "SHEEP-300",
-  "current_task": "SHEEP-301 (M-A.1 PDD Inbound Producer Mapping) — PARTIAL / OPEN / BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS (0412a7d) / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT PASS (ef9fef6) / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING IMPLEMENTED_AWAITING_CONTROLLER_REVIEW",
-  "next_action": "SHEEP-301 remains PARTIAL / OPEN. LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF is COMPLETE / CONTROLLER PASS at reviewed commit 0412a7d. TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT is COMPLETE / CONTROLLER PASS at reviewed commit ef9fef6. TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING is IMPLEMENTED and awaiting Controller review. No production activation, live, send, HUMAN_CONFIRM, AUTO, persistence, or platform mutation is authorized.",
-  "next_authoritative_roadmap_id": "SHEEP-301",
+  "last_closed_task": "SHEEP-301",
+  "current_task": "SHEEP-304 (M-A.2 Minimal Scene Contract) — NEXT AUTHORITATIVE CANDIDATE / NOT_STARTED / NOT_AUTHORIZED. SHEEP-301 is CLOSED by Controller decision 2026-09-22 (controlled producer path sealed in 1ffc9ef). SHEEP-302 remains covered-by-existing-evidence; SHEEP-303 is sealed in 8f77d20 with technical post-audit PASS and its stage acceptance recorded, not separately closed.",
+  "next_action": "SHEEP-304 (M-A.2 Minimal Scene Contract) — NOT_STARTED / NOT_AUTHORIZED. No implementation authorization is active; SHEEP-304 must not begin without a Controller task prompt (no scene work, no facts, no AI, no send). Production enablement, live validation, platform mutation, AI and send remain NOT_AUTHORIZED; real page operations stay STOPPED. The controlled turn-builder switch stays default OFF until the application-shutdown stop()/dispose() wiring exists.",
+  "next_authoritative_roadmap_id": "SHEEP-304",
   "next_task_execution_authorized": false,
   "current_execution_authorization": false,
   "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
-  "current_authorization_pause_reason": "SHEEP_301_BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS_REVIEWED_AT_0412A7D / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT_CONTROLLER_PASS_REVIEWED_AT_EF9FEF6 / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_IMPLEMENTED_AWAITING_CONTROLLER_REVIEW / PRODUCTION_LIVE_SEND_HUMAN_CONFIRM_AUTO_PERSISTENCE_PLATFORM_MUTATION_NOT_AUTHORIZED",
+  "current_authorization_pause_reason": "SHEEP_301_CLOSED_BY_CONTROLLER_DECISION / SHEEP_302_COVERED_BY_EXISTING_EVIDENCE / SHEEP_303_SEALED_IN_8F77D20_TECHNICAL_POST_AUDIT_PASS / NEXT_CANDIDATE_SHEEP_304_NOT_AUTHORIZED / PRODUCTION_LIVE_SEND_HUMAN_CONFIRM_AUTO_PERSISTENCE_PLATFORM_MUTATION_NOT_AUTHORIZED",
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
   "next_sheep_task_after_governance": "SHEEP-301",
@@ -1031,7 +1031,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-301 (M-A.1 PDD Inbound Producer Mapping; PARTIAL / OPEN / BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS) — LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF CONTROLLER_PASS; TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT PASS at ef9fef6; TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING IMPLEMENTED_AWAITING_CONTROLLER_REVIEW",
+  "next_task": "SHEEP-304 (M-A.2 Minimal Scene Contract) — NOT_STARTED / NOT_AUTHORIZED",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -3637,10 +3637,24 @@
     "next_stage_not_executed": true
   },
   "sheep_301": {
-  "roadmap_status": "PARTIAL / BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_IMPLEMENTED_AWAITING_CONTROLLER_REVIEW",
+  "roadmap_status": "CLOSED",
   "phase": "MVP_A_FOUNDATION",
   "milestone": "M-A.1 Identity and Inbound Foundation",
-  "status": "PARTIAL / OPEN",
+  "status": "PASS / CLOSED",
+  "codex_result": "COMPLETE",
+  "controller_decision": "PASS",
+  "implementation_result": "IMPLEMENTED",
+  "implementation_acceptance": "ACCEPTED",
+  "implementation_commit": "1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
+  "closed_date_candidate": "2026-09-22",
+  "closure": {
+    "closed_by": "Controller decision (2026-09-22)",
+    "previous_status": "PARTIAL / OPEN",
+    "previous_roadmap_status": "PARTIAL / BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_IMPLEMENTED_AWAITING_CONTROLLER_REVIEW",
+    "producer_commit": "1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
+    "evidence": "real-run-2 (23/23 checks; isolated DB, result JSON, screenshots) maps to the sealed producer path; all roadmap exit criteria satisfied; AI 0 / send 0 / production writes 0",
+    "not_close_conditions": ["production enablement", "history pagination", "reconnect recovery", "multi-store expansion"]
+  },
   "owner_scope": "BOUNDED_ACCEPTANCE_UNIT_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS_REVIEWED_AT_0412A7D / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT_CONTROLLER_PASS_REVIEWED_AT_EF9FEF6 / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_IMPLEMENTED_AWAITING_CONTROLLER_REVIEW / NO_PRODUCTION_IPC_TITAN_WEBSOCKET_AI_PERSISTENCE_OR_SEND",
   "implementation_authorization": "COMPLETED / CONSUMED",
   "implementation_authorization_scope": "CONTROLLED_MAIN_LOCAL_FIXTURE_MAPPING_ACCEPTANCE_UNIT_ONLY / COMPLETED / CONSUMED",
@@ -3769,8 +3783,60 @@
     "full_task_closed": false,
     "authorization_consumed": true
   },
-  "full_task_state": "PARTIAL / OPEN",
-  "full_sheep_301_closed": false,
+  "producer_path_acceptance": {
+    "acceptance_unit": "CONTROLLED_PDD_DECODED_EVENT_PRODUCER_PATH",
+    "attempted_at": "2026-09-22",
+    "verdict": "PASS — controlled PDD producer path accepted (8 of 8 confirmation items)",
+    "producer_commit": "1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
+    "producer_commit_parent": "8f77d206e5699626dbbe56f1eac784bd20800951",
+    "report": "reports\\SHEEP-301-producer-path-acceptance.json",
+    "traceable_code": {
+      "adapter": "apps/desktop/src/main/platforms/pdd/pdd-decoded-inbound-event-adapter.ts",
+      "candidate_gate": "apps/desktop/src/main/platforms/pdd/pdd-inbound-event-candidate.ts",
+      "chat_list_transport": "apps/desktop/src/main/platforms/pdd/pdd-chat-list-transport.ts",
+      "identity_derivation": "packages/platform-pdd/src/internal-conversation-id.ts (+ index export)",
+      "service": "apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts",
+      "session_binding": "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
+      "observer": "apps/desktop/src/main/platforms/pdd/pdd-inbound-observer.ts",
+      "persistence_scope_repair": "apps/desktop/src/main/services/canonical-inbound-persistence.ts",
+      "bootstrap_switch": "apps/desktop/src/main/bootstrap.ts (decodedEventCapture option + passthrough)",
+      "controlled_runners": ["apps/desktop/src/main/controlled/*", "scripts/run-sheep-301-offline-app-acceptance.mjs", "scripts/run-sheep-301-real-app-capture.mjs"],
+      "tests_and_fixtures": ["apps/desktop/tests/pdd-decoded-event-*.test.ts", "apps/desktop/tests/pdd-inbound-*.test.ts", "apps/desktop/tests/canonical-inbound-attribution.test.ts", "apps/desktop/tests/controlled-decoded-event-capture-entry.test.ts", "apps/desktop/tests/fixtures/pdd-transport/chat-list.synthetic.json", "apps/desktop/tests/fixtures/sheep-301-decoded-event-page.html"]
+    },
+    "item_results": {
+      "page_decoded_event_from_controlled_entry": "SATISFIED",
+      "main_binding_identity_mapper": "SATISFIED",
+      "receipt_written_to_isolated_db": "SATISFIED (out-of-process read: 1 conversation, 4 rows, 3 target labels one row each)",
+      "real_run_used_that_path": "SATISFIED (real-run-2 via createMainContext + the controlled entry; the older event-proof unit that called the mapper directly is excluded as evidence)",
+      "incomplete_identity_explicit": "SATISFIED",
+      "no_cross_shop_mapping": "SATISFIED",
+      "no_production_send": "SATISFIED (AI 0 / send 0 / production writes 0)",
+      "source_time_null_semantics": "SATISFIED",
+      "code_version_traceability": "SATISFIED — the sealed commit contains the exact producer-path files the run used (baseline bcda787 + the same file contents), and the runners are committed with them"
+    },
+    "evidence_to_commit_mapping": "real-run-2 (2026-09-20, 23/23 checks) ran against the same producer-path file contents that commit 1ffc9ef seals; the isolated DB, the result JSON and the screenshots are preserved under .tmp/sheep-301-real-app/real-run-2/. No new real run was performed for this acceptance.",
+    "snapshot_verification": "git archive 1ffc9ef into an isolated tree (no dirty source copied) with the workspace package pinned to the snapshot: 8 SHEEP-301 focused suites 70/70 pass, SHEEP-303 builder 25/25, SHEEP-303 integration 5/5 (previously ERR_MODULE_NOT_FOUND is gone), 0 unresolved relative imports, platform-pdd resolves inside the snapshot",
+    "roadmap_exit_criteria": {
+      "controlled_mapping_of_identity_content_source_time": "SATISFIED",
+      "incomplete_identity_remains_explicit": "SATISFIED",
+      "no_cross_shop_mapping": "SATISFIED",
+      "no_production_send_path_invoked": "SATISFIED"
+    },
+    "full_task_close_conditions": "appear MET on evidence (producer accepted + all roadmap exit criteria + no production send); flipping full_sheep_301_closed / next_stage_not_executed is a Controller stage decision and was NOT done by this round",
+    "completion_facts": [
+      "controlled producer path sealed in commit 1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
+      "adapter / candidate gate / chat-list transport / identity derivation / service / session binding / observer / persistence scope repair / bootstrap switch / controlled runners / tests / fixtures are all traceable in that commit",
+      "real-run-2 (2026-09-20, 23/23 checks) used the same producer-path file contents; isolated DB, result JSON and screenshots preserved under .tmp/sheep-301-real-app/real-run-2/",
+      "isolated snapshot of the commit: 8 SHEEP-301 focused suites 70/70 pass, 0 unresolved relative imports, SHEEP-303 builder 25/25 and integration 5/5",
+      "no new real run was performed for this acceptance"
+    ],
+    "carried_forward": [
+      "P2-1 application shutdown stop()/dispose() wiring for the SHEEP-303 turn builder (precondition for enabling the controlled switch)",
+      "P2-2 in-process ordering semantics and the absence of a cross-restart ordering guarantee"
+    ]
+  },
+  "full_task_state": "CLOSED",
+  "full_sheep_301_closed": true,
   "next_step": "SHEEP-301 — TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING (bounded implementation, awaiting review)",
       "next_step_status": "IMPLEMENTED / AWAITING_CONTROLLER_REVIEW",
     "diagnostic_authorization": {
@@ -3836,6 +3902,79 @@
       "report": "reports\\SHEEP-301-producer-wiring-report.json",
       "controller_review_status": "AWAITING_CONTROLLER_REVIEW"
     },
+    "controlled_real_receive_display": {
+      "acceptance_unit": "CONTROLLED_REAL_RECEIVE_PERSIST_AND_DISPLAY",
+      "status": "COMPLETE / CONTROLLER ACCEPTED (FUNCTIONAL 3/3) / WINDOW CLOSED / TEST PAGE CLOSED",
+      "authority": "Owner-scoped real verification: single controlled store + controlled test buyer",
+      "scope": "REAL_RECEIVE -> canonical mapping -> isolated SQLite -> dedupe -> existing query handlers -> Fast Sheep UI (no production enablement, no AI, no send, no platform interface call, no replay, no interception)",
+      "window": "real-run-2 / 2026-09-20T18:18:32Z window start (log-local) -> 2026-09-20T17:20:46Z UTC finish / finalized (capture STOPPED) / controlled page startups used: 1",
+      "functional_results": {
+        "expected_labels": 3,
+        "targets_captured": 3,
+        "rows_per_target": 1,
+        "ingested": 4,
+        "duplicates": 8,
+        "pre_existing_messages_counted_separately": 1,
+        "query_readback": "PASS",
+        "ui_display": "PASS",
+        "ai_calls": 0,
+        "send_calls": 0,
+        "production_writes": 0
+      },
+      "boundaries": {
+        "source_occurred_at": "null (unverified page time semantics)",
+        "newness": "NEWNESS_UNVERIFIED preserved",
+        "push_biz_context": "not an admission input",
+        "other_customers_persisted": 0
+      },
+      "observations": {
+        "mark_read_requests_observed": 0,
+        "mark_read_effect": "UNKNOWN",
+        "page_request_paths_counted_only": "/plateau/sync/message x3 among others; no body read, nothing intercepted or replayed",
+        "chat_list_observed": false,
+        "chat_list_vs_sync_message_dependency": "UNKNOWN"
+      },
+      "cross_process_same_target_rebind": {
+        "performed_in_this_unit": true,
+        "sequence": "real-run-1 created target 1061625819D16DA0C7E0986921E26ECA, failed readiness (session CREATING -> DOCUMENT_BINDING_UNAVAILABLE, zero writes) and was explicitly STOPPED (adapter uninstalled, transport closed); real-run-2 (new process) re-bound a NEW observer to the SAME external CDP target via --reuse-target",
+        "termination_constraint_object": "WebContents lifecycle (approved repair scope R3C_TERMINAL_WEBCONTENTS_LIFECYCLE_CONSTRAINT); the constraint is written against the observing object / Main-held WebContents identity (plus runtime shop and session document generation), never against an external CDP target id. A CDP target is not an Electron WebContents and is not interchangeable with one. A newly created wrapper object must not be treated as a new source: a future recovery design has to key the binding on the underlying page identity, not on a freshly constructed facade.",
+        "assessment": "FUNCTIONAL RESULT VALID / SAME-TARGET REBIND RECOVERY DESIGN NOT ACCEPTED",
+        "not_an_authorization": "A new process, a new Main composition and a new admission do not by themselves demonstrate that the rebind satisfies the existing termination constraint."
+      },
+      "local_runner_correction": {
+        "policy": "REUSE_TARGET_REFUSED_UNTIL_RECOVERY_DESIGN_ACCEPTED",
+        "launcher_refuses_reuse_target": "PASS (exit 4, no electron spawned)",
+        "harness_refuses_before_page_action": "PASS (result=REFUSED; page_actions=0, database_opened=false, window_created=false, adapter_installed=false)",
+        "transport_rejects_rebind": "CDP_TARGET_REBIND_NOT_SUPPORTED",
+        "new_target_entry_still_works": "PASS (dry-run end-to-end)",
+        "terminated_object_cannot_restart_same_entry": "PASS",
+        "desktop_suite": "527/527 PASS"
+      },
+      "controller_review": {
+        "lifecycle_boundary_correction": "PASS",
+        "functional_result": "PASS retained (3/3)",
+        "same_target_rebind_recovery_design": "STILL NOT ACCEPTED (runner keeps refusing --reuse-target)",
+        "real_observation_and_close_out": "ENDED (no further real samples requested)",
+        "reviewed_at": "2026-09-21",
+        "authorization_change": "none (no production enablement, no next-task execution authorization, project_state unchanged except this record)"
+      },
+      "roadmap_reconciliation": {
+        "report": "reports\\SHEEP-301-302-303-roadmap-reconciliation.json",
+        "sheep_301_remaining": "formal acceptance of the controlled receive entry as SHEEP-301 producer path (acceptance/recording gap, not a code gap; full task stays OPEN)",
+        "sheep_302": "exit criteria covered by implemented + verified behaviour; no roadmap-unit authorization/acceptance recorded (formalization gap only)",
+        "sheep_303": "next minimal development slice recommended (Inbound Aggregation / Turn Builder, in-memory; requires a new authorized task prompt)",
+        "not_close_conditions": "production enablement, history pagination, reconnect recovery, multi-store expansion are NOT added as SHEEP-301 close conditions"
+      },
+      "test_page_closure": {
+        "target_id": "1061625819D16DA0C7E0986921E26ECA",
+        "result": "CLOSED (Target.closeTarget success:true; absent afterwards)",
+        "other_pages_untouched": "7 pre-existing PDD pages still present; browser and login profile untouched"
+      },
+      "report": "reports\\SHEEP-301-controlled-real-receive-display-unit.json",
+      "unit_report": ".tmp\\SHEEP-301-REAL-APP-RECEIVE-DISPLAY-RESULT.md",
+      "full_sheep_301_closed": false,
+      "production_enablement": "NOT_AUTHORIZED / unchanged"
+    },
     "historical_probe_path": {
       "recorded_script": "E:\\fast_sheep.tmp\\sheep-301-real-producer-audit\\probe-main.cjs",
       "recorded_result": "E:\\fast_sheep.tmp\\sheep-301-real-producer-audit\\probe-result.json",
@@ -3847,10 +3986,53 @@
       "note": "The path was an actual prior diagnostic write outside the project root, not merely a documentation typo. It is preserved as historical evidence; this task does not authorize cleanup or further writes there."
     }
 },
+  "sheep_302": {
+    "acceptance_unit": "DURABLE_NORMALIZED_INBOUND_PERSISTENCE",
+    "roadmap_status": "covered-by-existing-evidence",
+    "status": "covered-by-existing-evidence",
+    "authority": "Controller authorization recorded 2026-09-21: SHEEP-302 covered-by-existing-evidence",
+    "dependency": "SHEEP-301",
+    "five_capabilities_with_evidence": [
+      {
+        "capability": "durable persistence",
+        "evidence": "createCanonicalInboundPersistence (Main mutation boundary) -> SQLite normalized_messages / normalized_conversations under REPO_ROOT/.tmp; out-of-process read of the isolated DB; restart then re-submit creates no new row (service-level loop); three real controlled messages stored one row each"
+      },
+      {
+        "capability": "explicit source/observed time semantics",
+        "evidence": "occurred_at stays null when the source time is unknown or unverified (no local-time substitution); observed_at is produced at the trusted Main ingestion boundary (DP-87) and is durable"
+      },
+      {
+        "capability": "dedupe/idempotency",
+        "evidence": "identity-scoped dedupe key (platform + canonical conversation + identity provenance + message identity) -> INGESTED / DUPLICATE; repeated submissions keep one row; across-run repeat returns DUPLICATE with zero new rows; duplicates never rewrite the stored row"
+      },
+      {
+        "capability": "unknown remains unknown",
+        "evidence": "UNKNOWN / UNRESOLVED identity resolutions are preserved; conversation external_ref stays null (object-to-string defect repaired); no fabricated ids, references or times; canonical-inbound-attribution tests"
+      },
+      {
+        "capability": "cross-store isolation",
+        "evidence": "scope-qualified internal conversation id derivation; CONVERSATION_SCOPE_CONFLICT refusal before write; two shops with the same customer and same platform message id stay isolated; two customers stay in two conversations"
+      }
+    ],
+    "report": "reports\\SHEEP-301-302-303-roadmap-reconciliation.json",
+    "unit_reports": [
+      ".tmp\\SHEEP-301-REAL-APP-RECEIVE-DISPLAY-RESULT.md",
+      ".tmp\\SHEEP-301-SERVICE-LOOP-COMPLETE.md"
+    ],
+    "not_added_as_close_conditions": ["production enablement", "history pagination", "reconnect recovery", "multi-store expansion"],
+    "gates": {
+      "ai": "OFF",
+      "sending": "OFF",
+      "production_enablement": "OFF / NOT_AUTHORIZED",
+      "real_operations": "STOPPED"
+    },
+    "lifecycle_note": "recorded while SHEEP-301 remains open; this registration neither executes nor closes a later lifecycle and does not close SHEEP-301",
+    "full_sheep_301_closed": false
+  },
   "sheep_303": {
     "acceptance_unit": "INBOUND_AGGREGATION_TURN_BUILDER",
     "roadmap_status": "NOT_STARTED / NOT_AUTHORIZED",
-    "status": "controller_authorized_to_implement / post_audit_pending",
+    "status": "sealed_in_8f77d20 / technical_post_audit_pass / stage_acceptance_recorded",
     "authorization": "AUTHORIZED TO IMPLEMENT (Controller, 2026-09-21)",
     "dependency": "SHEEP-302 (covered-by-existing-evidence)",
     "scope": "in-memory aggregation / turn building only: no AI, no send, no persistence write, no canonical schema change, no scene classification, no fact extraction, no platform action",
@@ -3880,7 +4062,24 @@
       "aggregation scope comes from the Main-resolved IdentityLock (not re-read from the durable conversation row)"
     ],
     "report": "reports\\SHEEP-301-302-303-roadmap-reconciliation.json",
-    "post_audit_pending": true,
+    "technical_post_audit": "PASS (Controller verdict: SHEEP-303 FIX POST-AUDIT PASS — READY TO SEAL)",
+    "stage_acceptance": "RECORDED — the stage (SHEEP-301) was closed by Controller decision 2026-09-22, so this unit is recorded as sealed_in_8f77d20 with technical post-audit PASS; no separate unit-level closure decision was issued, and no production enablement follows from it.",
+    "seal_commit": "8f77d206e5699626dbbe56f1eac784bd20800951 (feat: add controlled inbound turn aggregation; 6 files)",
+    "snapshot_verification": {
+      "method": "git archive 8f77d20 into an isolated temp tree (no dirty sources copied) + reused node_modules junctions",
+      "own_sources_build": "the sealed desktop main sources compile",
+      "unit_test_in_snapshot": "25/25 pass — the builder unit test is self-contained",
+      "integration_test_in_snapshot": "fails at import time — ERR_MODULE_NOT_FOUND for dist/main/platforms/pdd/pdd-decoded-inbound-event-adapter.js (a SHEEP-301 module that is not in the commit)",
+      "environment_limit": "cross-package imports resolve through the junctions to the real (dirty) worktree packages, so only the snapshot-internal failure is decisive"
+    },
+    "uncommitted_dependencies": [
+      "apps/desktop/src/main/platforms/pdd/pdd-decoded-inbound-event-adapter.ts (and transitively pdd-inbound-event-candidate.ts, pdd-chat-list-transport.ts)",
+      "packages/platform-pdd/src/internal-conversation-id.ts plus its index export",
+      "the decodedEventCapture option on BootstrapOptions (excluded from the seal commit on purpose)",
+      "the SHEEP-301 controlled/real runner set (main/controlled/*, scripts/run-sheep-301-*.mjs)"
+    ],
+    "shutdown_wiring": "NOT_WIRED — an app-level caller (index.ts before-quit or a MainContext dispose) must call context.inboundTurns.stop() before the controlled switch is enabled; precondition for enablement, not for the sealed feature",
+
     "gates": {
       "ai": "OFF",
       "sending": "OFF",
@@ -3891,9 +4090,9 @@
     "full_sheep_301_closed": false
   },
   "mvp_a_foundation_entry": {
-    "status": "SHEEP_300_CLOSED / SHEEP_301_PARTIAL_OPEN / BOUNDED_FIXTURE_MAPPING_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_IMPLEMENTED_AWAITING_CONTROLLER_REVIEW",
+    "status": "SHEEP_300_CLOSED / SHEEP_301_CLOSED_BY_CONTROLLER_DECISION / SHEEP_302_COVERED_BY_EXISTING_EVIDENCE / SHEEP_303_SEALED_IN_8F77D20_TECHNICAL_POST_AUDIT_PASS / NEXT_CANDIDATE_SHEEP_304_NOT_AUTHORIZED",
     "current_milestone": "M-A.1 Identity and Inbound Foundation",
-    "next_authoritative_roadmap_id": "SHEEP-301",
+    "next_authoritative_roadmap_id": "SHEEP-304",
     "execution_authorization": "BOUNDED_FIXTURE_MAPPING_AUTHORIZATION_COMPLETED_CONSUMED / REAL_PRODUCER_READINESS_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_IMPLEMENTED_AWAITING_CONTROLLER_REVIEW / NO_PRODUCTION_EXECUTION_AUTHORIZATION"
   },
   "phase_5_entry": {
@@ -3917,7 +4116,7 @@
       "SHEEP-089",
       "SHEEP-090"
     ],
-    "next_authoritative_roadmap_id": "SHEEP-301",
+    "next_authoritative_roadmap_id": "SHEEP-304",
     "sheep_080_approved": true,
     "sheep_081_closed": true,
     "sheep_082_execution_authorized": false,

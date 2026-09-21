@@ -26,84 +26,22 @@
     "current_gates": "AI OFF; send OFF; production enablement OFF / NOT_AUTHORIZED; real operations STOPPED (no real page, no navigation, no platform request, no samples)"
   },
   "sheep_301": {
-    "state": "PARTIAL / OPEN (unchanged)",
-    "exit_criteria_coverage": [
-      {
-        "criterion": "controlled fixture maps platform, shop binding, customerUid, message ID, conversation identity, content",
-        "evidence": "versioned adapter -> gate -> Main binding/resolvers -> mapper (MAPPED); service-level loop 10/10; offline app acceptance 44/44; real controlled run 23/23 with 3/3 targets",
-        "missing": "none",
-        "needed_now": "SATISFIED"
-      },
-      {
-        "criterion": "source time",
-        "evidence": "explicit null + diagnostics (SOURCE_TIME_UNVERIFIED/SOURCE_TIME_MISSING); no local-time substitution",
-        "missing": "platform time semantics still UNKNOWN (may remain null per readiness review section 7)",
-        "needed_now": "NOT_BLOCKING_BY_AUTHORITY"
-      },
-      {
-        "criterion": "incomplete identity remains explicit",
-        "evidence": "IdentityResolution UNKNOWN/UNRESOLVED end to end; conversation external_ref null (object-to-string defect repaired); canonical-inbound-attribution tests",
-        "missing": "none",
-        "needed_now": "SATISFIED"
-      },
-      {
-        "criterion": "no cross-shop mapping",
-        "evidence": "scope-qualified conversation id derivation; CONVERSATION_SCOPE_CONFLICT guard; two-shop same-customer/same-message-id isolation test",
-        "missing": "real multi-store run (not part of this criterion's controlled scope)",
-        "needed_now": "SATISFIED (controlled)"
-      },
-      {
-        "criterion": "no production send path invoked",
-        "evidence": "AI 0 / send 0 / production writes 0 across service-level, offline and real runs",
-        "missing": "none",
-        "needed_now": "SATISFIED"
-      }
+    "state": "CLOSED by Controller decision (2026-09-22)",
+    "closed_via": "controlled producer path sealed in 1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
+    "producer_acceptance": "PASS (8 of 8 confirmation items)",
+    "roadmap_exit_criteria": "all satisfied",
+    "evidence": "real-run-2 23/23 checks mapped to the sealed commit; isolated snapshot verification 70/70 focused + 303 builder 25/25 + 303 integration 5/5",
+    "not_close_conditions": [
+      "production enablement",
+      "history pagination",
+      "reconnect recovery",
+      "multi-store expansion"
     ],
-    "remaining_required_items": [
-      "Formal acceptance of the controlled receive entry (page-decoded-event + Main canonical chain) as SHEEP-301's producer path: readiness review section 12.4 records the full task as PARTIAL/OPEN because real producer integration has not been accepted. The engineering evidence now exists; the gap is acceptance/recording, not code."
-    ],
-    "explicitly_not_added_as_close_conditions": [
-      "production enablement (separate lane: production_pdd_ingress_readiness = BLOCKED, NOT_AUTHORIZED)",
-      "history pagination / has_more backfill (not an exit criterion in the roadmap)",
-      "reconnect recovery (not an exit criterion; same-WebContents recovery remains NOT_SUPPORTED_AFTER_TERMINATION)",
-      "multi-store expansion (roadmap scope is the single controlled store)"
-    ]
+    "full_sheep_301_closed": true
   },
   "sheep_302": {
-    "state": "exit criteria covered by implemented + verified behaviour; NO roadmap unit authorization/acceptance recorded (roadmap status NOT_STARTED/NOT_AUTHORIZED; PROJECT_STATE has no sheep_302 record)",
-    "exit_criteria_coverage": [
-      {
-        "criterion": "normalized inbound message is durable",
-        "evidence": "createCanonicalInboundPersistence -> SQLite normalized_messages/normalized_conversations under REPO_ROOT/.tmp; out-of-process read of the isolated DB; restart then re-submit yields no new row (service-level loop)",
-        "missing": "none",
-        "needed_now": "SATISFIED (engineering)"
-      },
-      {
-        "criterion": "source/observed time semantics remain explicit",
-        "evidence": "occurred_at null when the source time is unknown; observed_at = trusted Main ingestion time (durable column, DP-87)",
-        "missing": "none",
-        "needed_now": "SATISFIED"
-      },
-      {
-        "criterion": "dedupe/idempotency defined for the accepted producer boundary",
-        "evidence": "identity-scoped dedupe key (platform + conversation + identity provenance + message identity) -> INGESTED/DUPLICATE; repeated submissions -> one row; across-run repeat -> DUPLICATE, 0 new rows",
-        "missing": "none",
-        "needed_now": "SATISFIED"
-      },
-      {
-        "criterion": "unknown facts remain unknown",
-        "evidence": "null times, UNKNOWN resolutions, no fabricated ids or references",
-        "missing": "none",
-        "needed_now": "SATISFIED"
-      },
-      {
-        "criterion": "cross-shop leakage tests pass",
-        "evidence": "same customer/message id in two shops stays isolated; two customers -> two conversations; scope conflict refused before write",
-        "missing": "none",
-        "needed_now": "SATISFIED"
-      }
-    ],
-    "formalization_gap": "SHEEP-302 has never been authorized/accepted as a roadmap unit. The Controller can (a) record it as covered by the existing implemented + verified behaviour (evidence list above) with a zero-code acceptance, or (b) run a minimal SHEEP-302 acceptance unit that re-runs the existing tests and reads the existing isolated DBs. No new real experiment is required."
+    "state": "covered-by-existing-evidence",
+    "changed_this_round": false
   },
   "next_slice_readiness": {
     "recommended_unit": "SHEEP-303 Inbound Aggregation / Turn Builder",
@@ -139,7 +77,7 @@
   },
   "not_close_conditions": "production enablement, history pagination, reconnect recovery and multi-store expansion are NOT added as SHEEP-301 close conditions (they are not exit criteria in the current authority: roadmap SHEEP-301 / SHEEP-302 exit criteria, readiness review section 12.4)",
   "full_sheep_301_closed": false,
-  "real_operations": "STOPPED",
+  "real_operations": "STOPPED (unchanged)",
   "ai_send_production": "OFF / NOT_AUTHORIZED (unchanged)",
   "sheep_303_fix_round": {
     "round": "SHEEP-303 Fix Round - Runtime Expiry Driver and Evidence Integrity",
@@ -168,6 +106,32 @@
       "the app-shell disposal call site (index.ts before-quit) is outside this round allowed files, so stop() is not yet invoked by the shell; the default interval is unref-ed and the switch is default OFF",
       "aggregation scope comes from the Main-resolved IdentityLock rather than a re-read of the durable conversation row"
     ],
-    "post_audit_pending": true
+    "technical_post_audit": "PASS (Controller verdict: SHEEP-303 FIX POST-AUDIT PASS — READY TO SEAL)",
+    "seal_commit": "8f77d206e5699626dbbe56f1eac784bd20800951",
+    "snapshot_verification": "builder unit 25/25 and integration 5/5 pass in an isolated archive of 1ffc9ef (which contains the producer path the integration test needs)",
+    "stage_acceptance": "PENDING — blocked by the current stage (SHEEP-301) until the Controller records the stage decision",
+    "sealed_in": "8f77d206e5699626dbbe56f1eac784bd20800951"
+  },
+  "sheep_301_producer_acceptance": {
+    "report": "reports\\SHEEP-301-producer-path-acceptance.json",
+    "verdict": "PASS (8 of 8 confirmation items)",
+    "producer_commit": "1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
+    "parent_commit": "8f77d206e5699626dbbe56f1eac784bd20800951",
+    "evidence_mapping": "the real controlled run (23/23 checks) used the same producer-path file contents that the commit seals; no new real run was performed",
+    "full_task_close_conditions": "appear MET on evidence; closure remains a Controller stage decision",
+    "snapshot_verification": "301 focused 70/70; 303 builder 25/25; 303 integration 5/5 in an isolated archive of the commit"
+  },
+  "sheep_303": {
+    "state": "sealed_in_8f77d20 / technical_post_audit_pass / stage_acceptance_recorded",
+    "seal_commit": "8f77d206e5699626dbbe56f1eac784bd20800951",
+    "technical_post_audit": "PASS (Controller verdict: FIX POST-AUDIT PASS — READY TO SEAL)",
+    "stage_acceptance": "RECORDED after the stage (SHEEP-301) was closed; no separate unit-level closure decision was issued",
+    "snapshot_verification": "in the isolated archive of 1ffc9ef: builder unit 25/25 and integration 5/5 pass"
+  },
+  "production_enablement": "NOT_AUTHORIZED (unchanged)",
+  "next_candidate": {
+    "id": "SHEEP-304",
+    "state": "NOT_STARTED / NOT_AUTHORIZED",
+    "note": "no implementation authorization is active"
   }
 }
