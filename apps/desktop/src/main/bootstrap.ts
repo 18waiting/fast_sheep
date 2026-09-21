@@ -28,6 +28,7 @@ import type { PddInboundIngressInput } from "./platforms/pdd/pdd-inbound-ingress
 import { PDD_PRODUCTION_CHAT_URL, PDD_TOP_LEVEL_HOST } from "./platforms/pdd/pdd-navigation-policy.js";
 import { createWorkspaceMerchantContext, type WorkspaceMerchantContext } from "./services/workspace-merchant-context.js";
 import { createCanonicalInboundPersistence, type CanonicalInboundPersistenceResult } from "./services/canonical-inbound-persistence.js";
+import { createInboundTurnBuilder, type InboundTurn, type InboundTurnBuilder, type TurnExpiryScheduler } from "./services/inbound-turn-builder.js";
 import type { InboundEnvelope } from "@fastwork/domain";
 import { GenericPlatformService } from "./platforms/shared/generic-platform-service.js";
 import { PlatformSessionCoordinator } from "./platforms/platform-session-coordinator.js";
@@ -95,6 +96,13 @@ export interface MainContext {
   workspaceMerchant: WorkspaceMerchantContext | null;
   /** SHEEP-302 (bounded offline slice): canonical inbound receipt counters (ingested/duplicates/rejected). */
   inboundReceipt: { ingested: number; duplicates: number; rejected: number; lastReason: string | null };
+  /** SHEEP-303 in-memory turn aggregation (DEFAULT OFF; inert unless Main enabled it). */
+  inboundTurns: InboundTurnBuilder;
+  /**
+   * SHEEP-303 aggregation failures contained by Main: the aggregation step can never change the
+   * canonical receipt, so its failures are counted SEPARATELY from `inboundReceipt.rejected`.
+   */
+  inboundTurnFailures: { failures: number; lastReason: string | null };
   /** SHEEP-063-PR1: Message normalized repository port (production = SQLite via worker-backed composition). */
   messages: MessageRepository;
   /** SHEEP-066-PR1: durable Text Delivery Attempt journal port (production = SQLite via worker-backed composition). */
@@ -170,6 +178,19 @@ export interface BootstrapOptions {
   canonicalIngressMode?: PddCanonicalIngressMode;
   /** Main-owned admission provider. Default is DENY_ALL. */
   mainAdmissionProvider?: PddMainAdmissionProvider;
+  /**
+  /**
+   * SHEEP-303 controlled inbound turn aggregation (DEFAULT OFF). Main owns this switch; the page
+   * payload can never enable it. Aggregation is in-memory only: no AI, no send, no persistence.
+   */
+  inboundTurnAggregation?: {
+    readonly enabled: boolean;
+    readonly quietWindowMs?: number;
+    readonly clock?: { now(): number };
+    readonly onTurn?: (turn: InboundTurn) => void;
+    /** Main-owned expiry driver (default: bounded interval scheduler). Never started when disabled. */
+    readonly scheduler?: TurnExpiryScheduler;
+  };
   /** Controlled loopback/fixture frame decoder. */
   decodeInboundFrame?: (payloadData: string) => PddInboundIngressInput | null;
   /** Local-only WebSocket allowlist for the controlled observer. */
@@ -385,17 +406,63 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
     messages: messageRepository,
   });
   const inboundReceipt = { ingested: 0, duplicates: 0, rejected: 0, lastReason: null as string | null };
+  // SHEEP-303: in-memory turn aggregation, DEFAULT OFF. Only the canonical `INGESTED` receipt can
+  // feed it; the durable row supplies the Main ingestion time used for window timing and ordering.
+  const inboundTurns = createInboundTurnBuilder(
+    options.inboundTurnAggregation
+      ? {
+        enabled: options.inboundTurnAggregation.enabled === true,
+        ...(options.inboundTurnAggregation.quietWindowMs === undefined ? {} : { quietWindowMs: options.inboundTurnAggregation.quietWindowMs }),
+        ...(options.inboundTurnAggregation.clock === undefined ? {} : { clock: options.inboundTurnAggregation.clock }),
+        ...(options.inboundTurnAggregation.onTurn === undefined ? {} : { onTurn: options.inboundTurnAggregation.onTurn }),
+        ...(options.inboundTurnAggregation.scheduler === undefined ? {} : { scheduler: options.inboundTurnAggregation.scheduler }),
+      }
+      : { enabled: false },
+  );
+  const inboundTurnFailures = { failures: 0, lastReason: null as string | null };
   const onCanonicalInbound = (envelope: InboundEnvelope): CanonicalInboundPersistenceResult => {
+    let outcome: CanonicalInboundPersistenceResult;
     try {
-      const outcome = canonicalInboundPersistence.ingest(envelope);
-      if (outcome.status === "INGESTED") inboundReceipt.ingested += 1;
-      else inboundReceipt.duplicates += 1;
-      return outcome;
+      // 1. canonical persistence FIRST; its INGESTED/DUPLICATE result is the durable fact.
+      outcome = canonicalInboundPersistence.ingest(envelope);
     } catch (error) {
       inboundReceipt.rejected += 1;
       inboundReceipt.lastReason = String((error as { reason?: unknown }).reason ?? "UNKNOWN");
       throw error;
     }
+    if (outcome.status === "INGESTED") inboundReceipt.ingested += 1;
+    else inboundReceipt.duplicates += 1;
+    // 2. aggregation is a SEPARATE step: a failure here is counted on its own and never rewrites the
+    // canonical receipt (a stored message must never be reported as canonical-rejected).
+    if (inboundTurns.enabled) {
+      // The aggregation layer sees BOTH statuses: INGESTED aggregates, DUPLICATE is dropped and
+      // counted there (so "duplicates never create a turn" is provable end to end).
+      try {
+        const lock = envelope.identityLock;
+        const resolved = (resolution: { status: string; value?: unknown }): string | null =>
+          resolution.status === "RESOLVED" ? String(resolution.value) : null;
+        inboundTurns.ingest({
+          receipt: { status: outcome.status, conversationId: outcome.conversationId, messageId: outcome.messageId },
+          platform: lock.platform,
+          scope: {
+            merchantId: resolved(lock.merchantId),
+            storeId: resolved(lock.storeId),
+            platformAccountId: resolved(lock.platformAccountId),
+          },
+          customerId: lock.platformCustomerId.status === "RESOLVED"
+            ? String((lock.platformCustomerId.value as { value?: unknown }).value ?? "")
+            : null,
+          observedAt: messageRepository.findById(outcome.messageId)?.observedAt ?? null,
+          actor: "customer",
+          contentKind: envelope.sourceContent.kind,
+          contentText: envelope.sourceContent.text,
+        });
+      } catch (error) {
+        inboundTurnFailures.failures += 1;
+        inboundTurnFailures.lastReason = String((error as { message?: unknown })?.message ?? error ?? "UNKNOWN");
+      }
+    }
+    return outcome;
   };
 
   const platform = new PddPlatformService({
@@ -581,7 +648,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
   });
 
   void bumpRevision;
-  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, messages: messageRepository, inboundReceipt, deliveryAttempts: deliveryAttemptRepository, workspaceMerchant, stores: storeRepository, platformAccounts: platformAccountRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
+  return { orchestratorHost, shops, worker, projection, settings, revision: () => revision, eventBus, rawEvents, platform, coordinator, platformForShop, routingAdapter, platformFallback, platformStatusSink, clock, orchestrator, conversations: conversationRepository, messages: messageRepository, inboundReceipt, inboundTurns, inboundTurnFailures, deliveryAttempts: deliveryAttemptRepository, workspaceMerchant, stores: storeRepository, platformAccounts: platformAccountRepository, feedbackService, jobs, learning, review, audit, optimization, legacyImportSelection, legacyImport, legacyImportStatus };
 }
 
 /** Minimal in-memory import session store (isolated test mode). */

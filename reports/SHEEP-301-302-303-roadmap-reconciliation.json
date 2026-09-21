@@ -1,0 +1,173 @@
+{
+  "unit": "SHEEP-301/302 Roadmap Reconciliation - Documentation Only",
+  "documentation_only": true,
+  "code_changes": "none (no business code modified in this round)",
+  "runs_started": false,
+  "generated_at": "2026-09-21T15:00:59Z",
+  "authority": [
+    "project/FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md (SHEEP-301 lines 164-189, SHEEP-302 lines 191-215, SHEEP-303 lines 217-243)",
+    "docs/architecture/AI_CUSTOMER_SERVICE_CORE.md section 3 (aggregation scope) + section 4 (turn lifecycle)",
+    "docs/product/PDD_MVP_V1.md section 5 (inbound aggregation 3-5s; multiple questions)",
+    "project/SHEEP_301_READINESS_REVIEW.md section 7 (source time) + section 12.4 (remaining work)",
+    "project/PROJECT_STATE.json (sheep_301.*, execution authorization)"
+  ],
+  "required_statements": {
+    "sheep_301_remaining": "ONLY the producer-path registration gap: formal acceptance/recording of the controlled receive entry (page-decoded-event + Main canonical chain) as SHEEP-301 producer path. No code gap remains; full SHEEP-301 stays OPEN and is NOT closed by this round.",
+    "sheep_302_five_engineering_capabilities_have_evidence": [
+      "durable normalized inbound message (canonical boundary -> SQLite normalized_messages/normalized_conversations; out-of-process read of the isolated DB; restart + re-submit creates no new row)",
+      "source/observed time semantics explicit (occurred_at null when unknown; observed_at = trusted Main ingestion time, durable, DP-87)",
+      "dedupe/idempotency defined for the accepted producer boundary (identity-scoped dedupe key -> INGESTED/DUPLICATE; repeated submissions -> one row; across-run repeat -> DUPLICATE with 0 new rows)",
+      "unknown facts remain unknown (null times, UNKNOWN resolutions, no fabricated ids or references)",
+      "cross-shop leakage tests pass (two shops with the same customer/message id stay isolated; two customers -> two conversations; scope conflict refused before write)"
+    ],
+    "sheep_302_formal_authorization_record": "NOT COMPLETED: no SHEEP-302 roadmap-unit authorization/acceptance is recorded (roadmap status NOT_STARTED / NOT_AUTHORIZED; PROJECT_STATE has no sheep_302 record). Engineering coverage exists; only the formalization is outstanding.",
+    "sheep_303_readiness": "READY_WITH_CONSTRAINTS",
+    "sheep_303_status": "NOT_STARTED / NOT_AUTHORIZED (implementation NOT started by this round; a new authorized task prompt is required)",
+    "current_gates": "AI OFF; send OFF; production enablement OFF / NOT_AUTHORIZED; real operations STOPPED (no real page, no navigation, no platform request, no samples)"
+  },
+  "sheep_301": {
+    "state": "PARTIAL / OPEN (unchanged)",
+    "exit_criteria_coverage": [
+      {
+        "criterion": "controlled fixture maps platform, shop binding, customerUid, message ID, conversation identity, content",
+        "evidence": "versioned adapter -> gate -> Main binding/resolvers -> mapper (MAPPED); service-level loop 10/10; offline app acceptance 44/44; real controlled run 23/23 with 3/3 targets",
+        "missing": "none",
+        "needed_now": "SATISFIED"
+      },
+      {
+        "criterion": "source time",
+        "evidence": "explicit null + diagnostics (SOURCE_TIME_UNVERIFIED/SOURCE_TIME_MISSING); no local-time substitution",
+        "missing": "platform time semantics still UNKNOWN (may remain null per readiness review section 7)",
+        "needed_now": "NOT_BLOCKING_BY_AUTHORITY"
+      },
+      {
+        "criterion": "incomplete identity remains explicit",
+        "evidence": "IdentityResolution UNKNOWN/UNRESOLVED end to end; conversation external_ref null (object-to-string defect repaired); canonical-inbound-attribution tests",
+        "missing": "none",
+        "needed_now": "SATISFIED"
+      },
+      {
+        "criterion": "no cross-shop mapping",
+        "evidence": "scope-qualified conversation id derivation; CONVERSATION_SCOPE_CONFLICT guard; two-shop same-customer/same-message-id isolation test",
+        "missing": "real multi-store run (not part of this criterion's controlled scope)",
+        "needed_now": "SATISFIED (controlled)"
+      },
+      {
+        "criterion": "no production send path invoked",
+        "evidence": "AI 0 / send 0 / production writes 0 across service-level, offline and real runs",
+        "missing": "none",
+        "needed_now": "SATISFIED"
+      }
+    ],
+    "remaining_required_items": [
+      "Formal acceptance of the controlled receive entry (page-decoded-event + Main canonical chain) as SHEEP-301's producer path: readiness review section 12.4 records the full task as PARTIAL/OPEN because real producer integration has not been accepted. The engineering evidence now exists; the gap is acceptance/recording, not code."
+    ],
+    "explicitly_not_added_as_close_conditions": [
+      "production enablement (separate lane: production_pdd_ingress_readiness = BLOCKED, NOT_AUTHORIZED)",
+      "history pagination / has_more backfill (not an exit criterion in the roadmap)",
+      "reconnect recovery (not an exit criterion; same-WebContents recovery remains NOT_SUPPORTED_AFTER_TERMINATION)",
+      "multi-store expansion (roadmap scope is the single controlled store)"
+    ]
+  },
+  "sheep_302": {
+    "state": "exit criteria covered by implemented + verified behaviour; NO roadmap unit authorization/acceptance recorded (roadmap status NOT_STARTED/NOT_AUTHORIZED; PROJECT_STATE has no sheep_302 record)",
+    "exit_criteria_coverage": [
+      {
+        "criterion": "normalized inbound message is durable",
+        "evidence": "createCanonicalInboundPersistence -> SQLite normalized_messages/normalized_conversations under REPO_ROOT/.tmp; out-of-process read of the isolated DB; restart then re-submit yields no new row (service-level loop)",
+        "missing": "none",
+        "needed_now": "SATISFIED (engineering)"
+      },
+      {
+        "criterion": "source/observed time semantics remain explicit",
+        "evidence": "occurred_at null when the source time is unknown; observed_at = trusted Main ingestion time (durable column, DP-87)",
+        "missing": "none",
+        "needed_now": "SATISFIED"
+      },
+      {
+        "criterion": "dedupe/idempotency defined for the accepted producer boundary",
+        "evidence": "identity-scoped dedupe key (platform + conversation + identity provenance + message identity) -> INGESTED/DUPLICATE; repeated submissions -> one row; across-run repeat -> DUPLICATE, 0 new rows",
+        "missing": "none",
+        "needed_now": "SATISFIED"
+      },
+      {
+        "criterion": "unknown facts remain unknown",
+        "evidence": "null times, UNKNOWN resolutions, no fabricated ids or references",
+        "missing": "none",
+        "needed_now": "SATISFIED"
+      },
+      {
+        "criterion": "cross-shop leakage tests pass",
+        "evidence": "same customer/message id in two shops stays isolated; two customers -> two conversations; scope conflict refused before write",
+        "missing": "none",
+        "needed_now": "SATISFIED"
+      }
+    ],
+    "formalization_gap": "SHEEP-302 has never been authorized/accepted as a roadmap unit. The Controller can (a) record it as covered by the existing implemented + verified behaviour (evidence list above) with a zero-code acceptance, or (b) run a minimal SHEEP-302 acceptance unit that re-runs the existing tests and reads the existing isolated DBs. No new real experiment is required."
+  },
+  "next_slice_readiness": {
+    "recommended_unit": "SHEEP-303 Inbound Aggregation / Turn Builder",
+    "precondition": "SHEEP-302 recorded as covered (zero-code acceptance) or accepted by the Controller; no 302 code gap blocks 303",
+    "identity_and_scope_sufficiency": "SUFFICIENT: conversation rows carry merchant/store/platform account (FK-enforced); message rows reference the conversation as the single scope fact source; scope conflicts are refused before write",
+    "newness_and_source_limits_after_restart": "The ledger markers (PAYLOAD_SUPPLIED_UNVERIFIED / NEWNESS_UNVERIFIED / automaticProcessingEligible=false) are in-memory and are NOT durable; the next slice is the FIRST consumer, so it must take over those limits and trigger only on the durable acceptance outcome (INGESTED), never on 'first seen' / 'first stored' / 'missing is_history'",
+    "dedupe_reuse": "YES: the canonical persistence result is the authoritative 'first storage of this identity in this scope' signal; duplicates never create a new row and therefore must never create a new turn",
+    "aggregation_clock": "normalized_messages.observed_at (trusted Main ingestion time, durable) is the only available and approved basis for the quiet window and for ordering (with message id as deterministic tie-break); occurred_at may remain null and must never be replaced by receive time",
+    "blocking_decision_required_from_owner": "none - aggregation timing (3-5s), scope rules and 'accuracy over fewer replies' are already locked in PDD_MVP_V1 section 5 and AI_CUSTOMER_SERVICE_CORE section 3"
+  },
+  "reusability_split": {
+    "reusable_product_code_default_off": [
+      "packages/platform-pdd/src/internal-conversation-id.ts (scope-qualified conversation id derivation)",
+      "apps/desktop/src/main/services/canonical-inbound-persistence.ts (Main mutation boundary: scope guard + dedupe + observedAt)",
+      "apps/desktop/src/main/platforms/pdd/pdd-decoded-inbound-event-adapter.ts / pdd-inbound-event-candidate.ts / pdd-chat-list-transport.ts",
+      "apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts controlled entry (start/drain/stop + admission re-check)",
+      "apps/desktop/src/main/bootstrap.ts composition passthrough (decodedEventCapture, onCanonicalInbound, isolated repositories)",
+      "apps/desktop/src/main/ipc/query-handlers.ts + register-ipc.ts (message read-back)"
+    ],
+    "isolated_or_controlled_only": [
+      "apps/desktop/src/main/controlled/* (offline acceptance entry, real-run runner, read-side CDP transport) - test-support only",
+      "authorized real page environment (debug Chrome + controlled store login state)",
+      "Main-declared controlled canonical mapping rows (merchant/store/platform account) - not a production mapping",
+      "controlled shop registration in the app data root; isolated SQLite under .tmp",
+      "the 'no automatic consumer exists' boundary that currently enforces the source/newness limits"
+    ],
+    "unknowns_kept": [
+      "sourceOccurredAt semantics",
+      "push_biz_context provenance",
+      "mark_read trigger and effect",
+      "chat/list vs sync/message dependency"
+    ]
+  },
+  "not_close_conditions": "production enablement, history pagination, reconnect recovery and multi-store expansion are NOT added as SHEEP-301 close conditions (they are not exit criteria in the current authority: roadmap SHEEP-301 / SHEEP-302 exit criteria, readiness review section 12.4)",
+  "full_sheep_301_closed": false,
+  "real_operations": "STOPPED",
+  "ai_send_production": "OFF / NOT_AUTHORIZED (unchanged)",
+  "sheep_303_fix_round": {
+    "round": "SHEEP-303 Fix Round - Runtime Expiry Driver and Evidence Integrity",
+    "p1_runtime_expiry_driver": "Main-owned injectable scheduler started only when the switch is enabled; the tick drives poll(now); stop() cancels it and blocks further aggregation; default OFF starts no timer",
+    "p2_receipt_isolation": "canonical persistence runs first and its INGESTED/DUPLICATE fact is never rewritten; aggregation failures are counted in inboundTurnFailures, never in inboundReceipt.rejected",
+    "p2_enabled_path_integration_test": "apps/desktop/tests/inbound-turn-builder.integration.test.ts drives the real Main composition chain",
+    "p2_multi_question_evidence": "the vacuous assertion was removed; content is read back row-by-row from canonical persistence in the turn order",
+    "defects_found_and_fixed_in_this_round": [
+      "equal observedAt previously fell back to a derived id and could reorder a burst; the secondary ordering key is now the receipt arrival order",
+      "duplicates never reached the aggregation layer through the real wiring; both receipt statuses are now delivered so duplicates are dropped and counted there"
+    ],
+    "verification": {
+      "focused_tests": "25/25 pass",
+      "integration_tests": "5/5 pass",
+      "desktop_suite": "557/557 pass",
+      "typecheck": "clean",
+      "python_check": "ok",
+      "project_state_consistency": "PASS",
+      "git_diff_check": "clean (exit 0)",
+      "schema_changes": 0,
+      "production_switch_default": "OFF"
+    },
+    "ordering_contract": "source_message_ids are the CANONICAL row ids from the receipt (durable primary keys); ordering is observedAt (primary) then receipt arrival order (secondary), never a derived id",
+    "known_limits": [
+      "window/process-scoped dedupe only: no cross-restart exactly-once guarantee",
+      "the app-shell disposal call site (index.ts before-quit) is outside this round allowed files, so stop() is not yet invoked by the shell; the default interval is unref-ed and the switch is default OFF",
+      "aggregation scope comes from the Main-resolved IdentityLock rather than a re-read of the durable conversation row"
+    ],
+    "post_audit_pending": true
+  }
+}

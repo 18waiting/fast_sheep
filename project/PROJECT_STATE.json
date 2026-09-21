@@ -3847,6 +3847,49 @@
       "note": "The path was an actual prior diagnostic write outside the project root, not merely a documentation typo. It is preserved as historical evidence; this task does not authorize cleanup or further writes there."
     }
 },
+  "sheep_303": {
+    "acceptance_unit": "INBOUND_AGGREGATION_TURN_BUILDER",
+    "roadmap_status": "NOT_STARTED / NOT_AUTHORIZED",
+    "status": "controller_authorized_to_implement / post_audit_pending",
+    "authorization": "AUTHORIZED TO IMPLEMENT (Controller, 2026-09-21)",
+    "dependency": "SHEEP-302 (covered-by-existing-evidence)",
+    "scope": "in-memory aggregation / turn building only: no AI, no send, no persistence write, no canonical schema change, no scene classification, no fact extraction, no platform action",
+    "trigger": "canonical persistence receipt INGESTED only (first-seen, first-stored, a missing is_history marker or an in-memory restart marker are not newness evidence)",
+    "quiet_window": "3-5 seconds (clamped); VirtualClock-injected clock for deterministic tests",
+    "turn_contract": "turn_id, identity_lock (platform/merchant/store/platform account/conversation/customer), source_message_ids (ordered by observed_at then message_id), created_at, newness = NEWNESS_UNVERIFIED, automaticProcessingEligible = false",
+    "changed_files": [
+      "apps/desktop/src/main/services/inbound-turn-builder.ts (new)",
+      "apps/desktop/tests/inbound-turn-builder.test.ts (new)",
+      "apps/desktop/src/main/bootstrap.ts (controlled switch only; DEFAULT OFF)"
+    ],
+    "focused_tests": "25/25 pass (aggregation, isolation, dedupe, quiet window, expiry driver start/stop, sink containment, arrival-order preservation, fail-closed scope/identity)",
+    "integration_tests": "5/5 pass (real onCanonicalInbound chain: canonical INGESTED -> aggregation -> expiry driver -> onTurn; durable content read-back; two customers; DUPLICATE; default OFF; side-effect surface)",
+    "fix_round": {
+      "round": "SHEEP-303 Fix Round - Runtime Expiry Driver and Evidence Integrity",
+      "p1_runtime_expiry_driver": "Main-owned injectable scheduler; started only when the switch is enabled; tick drives poll(now); stop() cancels it and makes further aggregation impossible; default OFF starts no timer",
+      "p2_receipt_isolation": "canonical persistence runs first and its INGESTED/DUPLICATE fact is never rewritten; the aggregation step is a separate try/catch counted in inboundTurnFailures and never in inboundReceipt.rejected",
+      "p2_enabled_path_integration_test": "added apps/desktop/tests/inbound-turn-builder.integration.test.ts driving the real Main composition",
+      "p2_multi_question_evidence": "vacuous assertion removed; content is now read back row-by-row from canonical persistence in the turn's order",
+      "ordering_defect_found_and_fixed": "equal observedAt previously fell back to a derived id and could reorder a burst; the secondary ordering key is now the receipt ARRIVAL order (observedAt stays primary)",
+      "duplicate_visibility_fix": "the aggregation layer now receives BOTH receipt statuses so duplicates are dropped and counted inside the aggregation layer (provable end to end)",
+      "side_effect_evidence_labelled": "aiCalls/sendCalls/productionWrites are labelled STRUCTURAL_INVARIANT_NOT_A_RUNTIME_MEASUREMENT; aggregation counters and sinkFailures are measured"
+    },
+    "known_limits_recorded": [
+      "turn-level dedupe is window/process scoped only; it is NOT a cross-restart exactly-once guarantee",
+      "app-level disposal call site (index.ts before-quit) is outside this round's allowed files, so the builder's stop() is not yet invoked by the app shell; the default interval is unref'd and the switch is default OFF",
+      "aggregation scope comes from the Main-resolved IdentityLock (not re-read from the durable conversation row)"
+    ],
+    "report": "reports\\SHEEP-301-302-303-roadmap-reconciliation.json",
+    "post_audit_pending": true,
+    "gates": {
+      "ai": "OFF",
+      "sending": "OFF",
+      "production_enablement": "OFF / NOT_AUTHORIZED",
+      "real_operations": "STOPPED"
+    },
+    "lifecycle_note": "implementation authorization recorded; lifecycle stays not-executed pending Controller post-audit; SHEEP-301 remains open",
+    "full_sheep_301_closed": false
+  },
   "mvp_a_foundation_entry": {
     "status": "SHEEP_300_CLOSED / SHEEP_301_PARTIAL_OPEN / BOUNDED_FIXTURE_MAPPING_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_IMPLEMENTED_AWAITING_CONTROLLER_REVIEW",
     "current_milestone": "M-A.1 Identity and Inbound Foundation",
