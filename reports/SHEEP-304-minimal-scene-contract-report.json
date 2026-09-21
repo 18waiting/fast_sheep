@@ -1,0 +1,91 @@
+{
+  "unit": "SHEEP-304-MINIMAL-SCENE-CONTRACT",
+  "acceptance_unit": "MINIMAL_SCENE_CONTRACT",
+  "implemented_at": "2026-09-22",
+  "baseline_head": "b172b5ff1be5e7f1b12cd0426f96dca3c05abfd3",
+  "authority": [
+    "project/FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md — SHEEP-304 (goal, allowed scope, must-not, exit criteria)",
+    "docs/product/PDD_MVP_V1.md section 2 — confirmed first scene SHIPPING_TIME; second scene OPEN_DECISION; do not close it without explicit Owner approval",
+    "docs/architecture/AI_CUSTOMER_SERVICE_CORE.md — turn correlation carries scene; aggregation is identity-locked"
+  ],
+  "definition": {
+    "goal": "Create MINIMAL_V1 scene classification for SHIPPING_TIME, OTHER/UNSUPPORTED and UNKNOWN",
+    "allowed_scope": "scene contract + deterministic classifier boundary",
+    "must_not": [
+      "broad intent taxonomy",
+      "implement the second scene"
+    ],
+    "dependencies": [
+      "SHEEP-303 (sealed in 8f77d20)"
+    ]
+  },
+  "requirement_to_implementation_to_test": [
+    {
+      "requirement": "result vocabulary is bounded",
+      "implementation": "MinimalScene union + frozen MINIMAL_V1_SCENES + isMinimalScene runtime validator",
+      "test": "contract vocabulary test (values, frozen, invalid inputs rejected)"
+    },
+    {
+      "requirement": "unsupported and unknown remain safe paths",
+      "implementation": "UNKNOWN for incomplete identity / missing or blank content / no source messages; OTHER_UNSUPPORTED when the input is complete but no approved rule exists; every result keeps automaticProcessingEligible=false and newness=NEWNESS_UNVERIFIED",
+      "test": "unknown-stays-unknown suite, incomplete-identity suite, no-approved-rule suite, multi-question suite"
+    },
+    {
+      "requirement": "classifier cannot trigger send",
+      "implementation": "module exposes only classify/diagnostics; it owns no AI, send, persistence or platform port; output carries no execution/reply/prompt field",
+      "test": "structural boundary test (surface keys, output keys, diagnostics counters labelled as structural invariants)"
+    },
+    {
+      "requirement": "second scene remains OPEN_DECISION",
+      "implementation": "no second-scene value exists in the vocabulary; SECOND_SCENE_DECISION = OPEN_DECISION; rules claiming an out-of-vocabulary scene are refused and counted",
+      "test": "vocabulary test (LOGISTICS not classifiable) + rogue-rule refusal test"
+    },
+    {
+      "requirement": "content and identity integrity before classification",
+      "implementation": "identity lock must be complete or the result is UNKNOWN(IDENTITY_INCOMPLETE); content is resolved per source message id only, and text outside the turn is ignored",
+      "test": "cross-turn bleed test + identity fail-closed test"
+    },
+    {
+      "requirement": "deterministic boundary",
+      "implementation": "pure function of (turn, message facts, registered rules); no clock, no randomness, no IO; inputs are never mutated",
+      "test": "determinism test (identical output, no mutation, frozen result)"
+    },
+    {
+      "requirement": "dependency on SHEEP-303 turns",
+      "implementation": "consumes the sealed InboundTurn (identity lock, source ids, newness, eligibility) without re-deriving identity",
+      "test": "handoff test that produces a turn with the real builder and classifies it"
+    }
+  ],
+  "placement_decision": "The contract lives in the versioned Main-side module (types + runtime validator). No canonical JSON schema was added, so the frozen schema registry and its manifest are untouched; promoting the contract into packages/contracts/schemas is a separate governed step.",
+  "shipping_time_rule": "NOT implemented in this unit: SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED (SHEEP-305). With no approved rule registered the classifier never emits SHIPPING_TIME.",
+  "second_scene": "OPEN_DECISION (unchanged; Owner approval required to close it)",
+  "side_effects": {
+    "ai": "OFF",
+    "send": "OFF",
+    "production_writes": 0,
+    "schema_changes": 0,
+    "real_page_operations": 0
+  },
+  "verification": {
+    "focused_tests": "11/11 pass (apps/desktop/tests/minimal-scene-classifier.test.ts)",
+    "desktop_suite": "568/568 pass (557 baseline + 11 new)",
+    "typecheck": "clean (tsc --noEmit -p tsconfig.json && tsconfig.preload.json)",
+    "project_state_consistency": "PASS",
+    "governance_json": "valid (PROJECT_STATE + 301 producer acceptance + 301/302/303 reconciliation + 304 report)",
+    "git_diff_check": "exit 0",
+    "python_checks": "not run — no Python change in this unit"
+  },
+  "residual_limits_carried_forward": [
+    "P2-1 application shutdown stop()/dispose() wiring for the SHEEP-303 turn builder — required before the controlled switch is enabled",
+    "P2-2 in-process arrival ordering only; no cross-restart ordering guarantee",
+    "P3 window/process-scoped dedupe; no cross-restart exactly-once"
+  ],
+  "not_authorized": [
+    "SHEEP-305",
+    "AI",
+    "send",
+    "production enablement",
+    "platform mutation"
+  ],
+  "full_sheep_304_closed": false
+}
