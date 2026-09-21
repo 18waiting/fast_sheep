@@ -30,6 +30,37 @@ export interface PddObservedHttpResponse {
   readonly mimeType: string;
   readonly body: string;
 }
+
+/**
+ * Diagnostic-only description of a request whose body could not be admitted. It carries the
+ * reason code, a sanitized cause code and the pathname only: never the query string, headers,
+ * payload text or the full URL.
+ */
+export interface PddHttpReadDiagnostic {
+  readonly cdpSessionId: string;
+  readonly requestId: string;
+  readonly pathname: string;
+  readonly reason: string;
+  readonly cause: string;
+}
+
+/**
+ * Reduce an arbitrary thrown value to a sanitized diagnostic code. Error text can contain URLs
+ * or payload fragments, so only the error class name and a small set of known CDP patterns are
+ * ever recorded.
+ */
+export function sanitizeObservationCause(error: unknown): string {
+  const name = error instanceof Error ? error.name : typeof error;
+  const text = error instanceof Error ? error.message : String(error ?? "");
+  if (/no resource with given identifier/i.test(text)) return "NO_RESOURCE";
+  if (/can not find body|no data found|no body/i.test(text)) return "NO_BODY_DATA";
+  if (/not attached|detach/i.test(text)) return "DEBUGGER_DETACHED";
+  if (/timeout|timed out/i.test(text)) return "TIMEOUT";
+  if (/unknown request|invalid request ?id/i.test(text)) return "UNKNOWN_REQUEST_ID";
+  const tag = name.replace(/[^A-Za-z0-9_]/g, "").toUpperCase().slice(0, 24);
+  return "ERROR_" + (tag || "UNKNOWN");
+}
+
 export interface PddInboundObserverOptions {
   webContents: WebContents;
   shopId: string;
@@ -41,6 +72,11 @@ export interface PddInboundObserverOptions {
   onHttpRequest?(binding: PddHttpRequestBinding): void;
   /** Called only after an allowed response body was fully read and re-validated. */
   onHttpResponse?(frame: PddObservedHttpResponse): void;
+  /**
+   * Diagnostic-only sink for a request whose body read was refused or failed, so a failure is
+   * never silently swallowed. This is not an admission path and never widens the allowlist.
+   */
+  onHttpReadDiagnostic?(failure: PddHttpReadDiagnostic): void;
   /**
    * Diagnostic-only WebSocket observation sink. Frames are reported with their trusted
    * connection origin/opcode for in-memory matching. This NEVER widens the canonical
@@ -108,6 +144,10 @@ export class PddInboundObserver {
   private httpBodyReadAttempts = 0;
   private httpBodyReadOk = 0;
   private httpBodyReadStopped: Record<string, number> = {};
+  /** Sanitized causes behind a failed body read (error class or known CDP pattern only). */
+  private httpBodyReadFailureCauses: Record<string, number> = {};
+  /** Sanitized causes of observation-handler exceptions that must never be silently dropped. */
+  private httpObservationHandlerErrors: Record<string, number> = {};
   /** Accepted (allowlisted) requests whose load failed before any response arrived. */
   private httpAcceptedLoadingFailed = 0;
   /** Requests seen but never finished (long-hanging / streaming candidates). */
@@ -131,6 +171,28 @@ export class PddInboundObserver {
   private diagWsUnbound = 0;
   /** CDP child sessions auto-attached by THIS observer's own debugger. */
   private readonly childSessions = new Set<string>();
+  /**
+   * Per-child-target coverage evidence. "a target was discovered", "it was attached", "Network.enable
+   * succeeded" and "events actually arrived" are SEPARATE facts: attaching successfully never proves
+   * coverage, and few events never prove the session is not being listened to.
+   */
+  private readonly childCoverage = new Map<string, {
+    cdpSessionId: string;
+    targetId: string | null;
+    targetType: string | null;
+    pathname: string | null;
+    discoveredAt: string | null;
+    attachedAt: string;
+    detachedAt: string | null;
+    networkEnableState: "PENDING" | "ENABLED" | "FAILED";
+    networkEnableCause: string | null;
+    events: Record<string, number>;
+    eventTotal: number;
+  }>();
+  /** Targets announced by Target.targetCreated / targetInfoChanged / targetDestroyed. */
+  private readonly discoveredTargets = new Map<string, { targetType: string | null; pathname: string | null; discoveredAt: string; destroyedAt?: string; attached: boolean }>();
+  /** Events observed on the root session (diagnostic only). */
+  private readonly rootEventCounts: Record<string, number> = {};
   /** Resolves when this observer stops, so a pending startup enable can settle promptly. */
   private stoppedDeferred: { promise: Promise<void>; fire: () => void } | null = null;
 
@@ -157,7 +219,9 @@ export class PddInboundObserver {
     if (!this.debugger.isAttached()) this.debugger.attach("1.3");
 
     this.messageHandler = (_event, method, params, cdpSessionId) => {
-      void this.handleDebuggerMessage(method, params, cdpSessionId, lifecycleId).catch(() => undefined);
+      void this.handleDebuggerMessage(method, params, cdpSessionId, lifecycleId).catch((error) => {
+        this.recordHandlerError(error);
+      });
     };
     this.detachHandler = (_event, reason) => {
       this.stop("EXTERNAL_DEBUGGER_DETACH:" + reason, lifecycleId);
@@ -239,25 +303,81 @@ export class PddInboundObserver {
   }
 
   private async handleDebuggerMessage(method: string, params: Record<string, unknown>, cdpSessionId: string, lifecycleId: number): Promise<void> {
+    if (method === "Target.targetCreated" || method === "Target.targetInfoChanged" || method === "Target.targetDestroyed") {
+      const info = (params as { targetInfo?: { targetId?: unknown; type?: unknown; url?: unknown } }).targetInfo;
+      const destroyedId = typeof (params as { targetId?: unknown }).targetId === "string" ? (params as { targetId: string }).targetId : null;
+      const targetId = info && typeof info.targetId === "string" ? info.targetId : destroyedId;
+      if (!targetId) return;
+      if (method === "Target.targetDestroyed") {
+        const existing = this.discoveredTargets.get(targetId);
+        if (existing) existing.destroyedAt = new Date().toISOString();
+        return;
+      }
+      const previous = this.discoveredTargets.get(targetId);
+      let pathname: string | null = previous ? previous.pathname : null;
+      if (info && typeof info.url === "string" && info.url.length > 0) {
+        try { pathname = new URL(info.url).pathname; } catch { /* keep previous */ }
+      }
+      this.discoveredTargets.set(targetId, {
+        targetType: info && typeof info.type === "string" ? info.type : previous ? previous.targetType : null,
+        pathname,
+        discoveredAt: previous ? previous.discoveredAt : new Date().toISOString(),
+        ...(previous && previous.destroyedAt ? { destroyedAt: previous.destroyedAt } : {}),
+        attached: previous ? previous.attached : false,
+      });
+      return;
+    }
     if (method === "Target.attachedToTarget") {
-      const params0 = params as { sessionId?: unknown };
+      const params0 = params as { sessionId?: unknown; targetId?: unknown; targetInfo?: { type?: unknown; url?: unknown } };
       const child = typeof params0.sessionId === "string" ? params0.sessionId : null;
       if (child) {
         this.childSessions.add(child);
         this.allowedCdpSessionIds.add(child);
-        void this.debugger.sendCommand("Network.enable", {}, child).catch(() => undefined);
+        const targetId = typeof params0.targetId === "string" ? params0.targetId : null;
+        const info = params0.targetInfo;
+        let pathname: string | null = null;
+        if (info && typeof info.url === "string" && info.url.length > 0) {
+          try { pathname = new URL(info.url).pathname; } catch { pathname = null; }
+        }
+        const discovered = targetId === null ? undefined : this.discoveredTargets.get(targetId);
+        if (discovered) discovered.attached = true;
+        const record = {
+          cdpSessionId: child,
+          targetId,
+          targetType: info && typeof info.type === "string" ? info.type : discovered ? discovered.targetType : null,
+          pathname: pathname ?? (discovered ? discovered.pathname : null),
+          discoveredAt: discovered ? discovered.discoveredAt : null,
+          attachedAt: new Date().toISOString(),
+          detachedAt: null as string | null,
+          networkEnableState: "PENDING" as "PENDING" | "ENABLED" | "FAILED",
+          networkEnableCause: null as string | null,
+          events: {} as Record<string, number>,
+          eventTotal: 0,
+        };
+        this.childCoverage.set(child, record);
+        this.recordChildEvent(child, "Target.attachedToTarget");
+        void this.debugger.sendCommand("Network.enable", {}, child).then(
+          () => { record.networkEnableState = "ENABLED"; record.networkEnableCause = null; },
+          (error) => { record.networkEnableState = "FAILED"; record.networkEnableCause = sanitizeObservationCause(error); },
+        );
       }
       return;
     }
     if (method === "Target.detachedFromTarget") {
       const params0 = params as { sessionId?: unknown };
       const child = typeof params0.sessionId === "string" ? params0.sessionId : null;
-      if (child) { this.childSessions.delete(child); this.allowedCdpSessionIds.delete(child); }
+      if (child) {
+        this.childSessions.delete(child);
+        this.allowedCdpSessionIds.delete(child);
+        const record = this.childCoverage.get(child);
+        if (record) record.detachedAt = new Date().toISOString();
+      }
       return;
     }
     if (this.terminal || !this.enabled || lifecycleId !== this.lifecycleId) return;
     // Root session ("") plus this observer's own auto-attached child sessions only.
     if (!this.allowedCdpSessionIds.has(cdpSessionId)) return;
+    this.recordChildEvent(cdpSessionId, method);
 
     if (method === "Network.requestWillBeSent") {
       const requestId = typeof params.requestId === "string" ? params.requestId : null;
@@ -416,7 +536,11 @@ export class PddInboundObserver {
     lifecycleId: number,
   ): Promise<void> {
     this.httpBodyReadAttempts += 1;
-    const stop = (reason: string) => { this.httpBodyReadStopped[reason] = (this.httpBodyReadStopped[reason] ?? 0) + 1; };
+    const stop = (reason: string, cause = "NONE") => {
+      this.httpBodyReadStopped[reason] = (this.httpBodyReadStopped[reason] ?? 0) + 1;
+      if (cause !== "NONE") this.httpBodyReadFailureCauses[cause] = (this.httpBodyReadFailureCauses[cause] ?? 0) + 1;
+      this.notifyHttpReadDiagnostic(evidence, reason, cause);
+    };
     try {
       if (this.terminal || !this.enabled || lifecycleId !== this.lifecycleId) { stop("LIFECYCLE_INVALID"); return; }
       const currentBinding = this.options.getDocumentBinding();
@@ -432,7 +556,14 @@ export class PddInboundObserver {
       }
       const epochAtRead = this.lifecycleEpoch;
       const navigationAtRead = this.navigationEpoch;
-      const result = await this.debugger.sendCommand("Network.getResponseBody", { requestId: requestBinding.requestId }) as
+      // Body reads must be issued on the session that OWNS the request: a child-session (worker /
+      // iframe) request is unknown to the root session, so reading it without the session id fails
+      // even though the request/response/loadingFinished stages were observed correctly.
+      const result = await this.debugger.sendCommand(
+        "Network.getResponseBody",
+        { requestId: requestBinding.requestId },
+        ...(requestBinding.cdpSessionId === "" ? [] : [requestBinding.cdpSessionId]),
+      ) as
         | { body?: unknown; base64Encoded?: unknown }
         | undefined;
       if (
@@ -458,14 +589,45 @@ export class PddInboundObserver {
       if (!result || typeof result.body !== "string") { stop("BODY_UNAVAILABLE"); return; }
       if (result.base64Encoded === true) { stop("BODY_BASE64"); return; }
       this.httpBodyReadOk += 1;
-      this.options.onHttpResponse?.({ binding: evidence, status: responseInfo.status, mimeType: responseInfo.mimeType, body: result.body });
-    } catch {
+      // A consumer-sink exception is a handler error, never a mislabelled body-read failure.
+      try {
+        this.options.onHttpResponse?.({ binding: evidence, status: responseInfo.status, mimeType: responseInfo.mimeType, body: result.body });
+      } catch (error) {
+        this.recordHandlerError(error);
+      }
+    } catch (error) {
       // Body read failure is an explicit stop for this request: no fallback, no retry.
-      this.httpBodyReadStopped["READ_FAILED"] = (this.httpBodyReadStopped["READ_FAILED"] ?? 0) + 1;
+      // The thrown value is reduced to a sanitized cause code so it is never silently swallowed.
+      stop("READ_FAILED", sanitizeObservationCause(error));
     } finally {
       this.httpRequests.delete(key);
       this.httpResponses.delete(key);
     }
+  }
+
+  /** Report a refused/failed body read to the optional diagnostic sink; never a control path. */
+  private notifyHttpReadDiagnostic(evidence: PddHttpRequestBinding, reason: string, cause: string): void {
+    const sink = this.options.onHttpReadDiagnostic;
+    if (!sink) return;
+    let pathname = "";
+    try { pathname = new URL(evidence.url).pathname; } catch { pathname = ""; }
+    try {
+      sink({
+        cdpSessionId: evidence.connection.cdpSessionId,
+        requestId: evidence.connection.requestId,
+        pathname,
+        reason,
+        cause,
+      });
+    } catch (error) {
+      this.recordHandlerError(error);
+    }
+  }
+
+  /** Sanitized tally of observation-handler exceptions that must never disappear silently. */
+  private recordHandlerError(error: unknown): void {
+    const cause = sanitizeObservationCause(error);
+    this.httpObservationHandlerErrors[cause] = (this.httpObservationHandlerErrors[cause] ?? 0) + 1;
   }
   stop(reason: string, lifecycleId = this.lifecycleId): void {
     if (this.terminal || lifecycleId !== this.lifecycleId) return;
@@ -502,6 +664,8 @@ export class PddInboundObserver {
       httpBodyReadAttempts: this.httpBodyReadAttempts,
       httpBodyReadOk: this.httpBodyReadOk,
       httpBodyReadStopped: { ...this.httpBodyReadStopped },
+      httpBodyReadFailureCauses: { ...this.httpBodyReadFailureCauses },
+      httpObservationHandlerErrors: { ...this.httpObservationHandlerErrors },
       httpAcceptedLoadingFailed: this.httpAcceptedLoadingFailed,
       httpResponseUnmatched: this.httpResponseUnmatched,
       acceptedRequestIdCount: this.acceptedRequestIds.size,
@@ -514,6 +678,17 @@ export class PddInboundObserver {
       wsFramesOut: { ...this.diagWsFramesOut },
       wsUnboundFrames: this.diagWsUnbound,
       childSessionCount: this.childSessions.size,
+      childCoverage: [...this.childCoverage.values()].map((record) => ({ ...record, events: { ...record.events } })),
+      childCoverageTotals: {
+        discoveredTargets: this.discoveredTargets.size,
+        attachedSessions: this.childCoverage.size,
+        networkEnabled: [...this.childCoverage.values()].filter((record) => record.networkEnableState === "ENABLED").length,
+        networkEnableFailed: [...this.childCoverage.values()].filter((record) => record.networkEnableState === "FAILED").length,
+        networkEnablePending: [...this.childCoverage.values()].filter((record) => record.networkEnableState === "PENDING").length,
+        childEventsReceived: [...this.childCoverage.values()].reduce((total, record) => total + record.eventTotal, 0),
+      },
+      discoveredTargets: [...this.discoveredTargets.entries()].slice(0, 40).map(([targetId, entry]) => ({ targetId, ...entry })),
+      rootEventCounts: { ...this.rootEventCounts },
       httpInFlightCount: this.httpInFlight.size,
       httpInFlightPeak: this.httpInFlightPeak,
       httpInFlightOldestMs: this.httpInFlight.size ? Math.max(...[...this.httpInFlight.values()].map((v) => Date.now() - v.at)) : 0,
@@ -525,5 +700,17 @@ export class PddInboundObserver {
 
   private connectionKey(connection: { requestId: string; cdpSessionId: string; observerLifecycleId: number }): string {
     return [this.observerId, connection.observerLifecycleId, connection.cdpSessionId, connection.requestId].join("|");
+  }
+
+  /** Count an observed CDP event per session (root or auto-attached child). Diagnostic only. */
+  private recordChildEvent(cdpSessionId: string, method: string): void {
+    if (cdpSessionId === "") {
+      this.rootEventCounts[method] = (this.rootEventCounts[method] ?? 0) + 1;
+      return;
+    }
+    const record = this.childCoverage.get(cdpSessionId);
+    if (!record) return;
+    record.events[method] = (record.events[method] ?? 0) + 1;
+    record.eventTotal += 1;
   }
 }

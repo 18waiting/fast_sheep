@@ -2,6 +2,7 @@
 // vertical slice: per-shop sessions/views, routing PlatformAdapter, page-event
 // routing to the orchestrator, status projection.
 import type { PlatformAdapter, ConversationOrchestrator, SendAttempt, TransferDecision } from "@fastwork/orchestrator";
+import { createHash } from "node:crypto";
 import type { InboundEnvelope } from "@fastwork/domain";
 import type { PddPageEvent, PddPageCommandResult, PddCanonicalIdentityBinding, PddCanonicalInboundMessage, PddCanonicalScopeBinding } from "@fastwork/platform-pdd";
 import { PddPlatformAdapter } from "@fastwork/platform-pdd";
@@ -13,6 +14,8 @@ import { PddPreloadBridge } from "./pdd-preload-bridge.js";
 import { PddOrchestratorBridge, type PddInboundMessage } from "./pdd-orchestrator-bridge.js";
 import { processPddInboundIngress, type PddCanonicalEnvelopeValidator, type PddInboundIngressInput, type PddInboundIngressResult } from "./pdd-inbound-ingress.js";
 import { PddInboundObserver, type PddInboundObserverOptions, type PddInboundObserverStartHandle, type PddObservedFrame, type PddHttpRequestBinding, type PddObservedHttpResponse } from "./pdd-inbound-observer.js";
+import { createPddDecodedEventAdapter, type PddDecodedEventAdapter, type PddPageEvaluator } from "./pdd-decoded-inbound-event-adapter.js";
+import { toInboundEventCandidate } from "./pdd-inbound-event-candidate.js";
 import { DENY_ALL_MAIN_ADMISSION_PROVIDER, PddMainAdmissionRegistry, type PddCanonicalIngressMode, type PddConnectionEvidence, type PddMainAdmissionProvider, type PddMainAdmissionRequest } from "./pdd-main-admission.js";
 import { PDD_PRODUCTION_CHAT_URL, PDD_TOP_LEVEL_HOST, type PddNavigationMode } from "./pdd-navigation-policy.js";
 
@@ -43,6 +46,15 @@ export interface PddPlatformServiceOptions {
     document: PddInboundDocumentBinding,
   ) => PddCanonicalIdentityBinding | null;
   onCanonicalInbound?: (envelope: InboundEnvelope) => unknown;
+  /**
+   * CONTROLLED decoded-page-event capture. Default OFF: Main owns the switch and the page payload can
+   * never enable it. `evaluate` is the Main-side page evaluator (WebContentsView executeJavaScript).
+   */
+  decodedEventCapture?: {
+    readonly enabled: boolean;
+    readonly evaluate: PddPageEvaluator;
+    readonly maxMessagesPerDrain?: number;
+  };
   canonicalEnvelopeValidator?: PddCanonicalEnvelopeValidator | null;
   /** Production default is DISABLED. CANONICAL_CONTROLLED is Main-composed only. */
   canonicalIngressMode?: PddCanonicalIngressMode;
@@ -110,6 +122,15 @@ function stoppedIngress(reason: string, diagnostics: readonly string[]): PddInbo
 
 export class PddPlatformService {
   private readonly sessions = new Map<string, PddSessionHost>();
+  /**
+   * Controlled decoded-event state per shop. The ledger keeps the SOURCE limitations next to the
+   * stored message so that "saved successfully" can never be read as "eligible for automatic reply".
+   */
+  private readonly decodedEventStates = new Map<string, {
+    adapter: PddDecodedEventAdapter;
+    ledger: Map<string, { source: "PAGE_DECODED_EVENT"; identityAuthority: "PAYLOAD_SUPPLIED_UNVERIFIED"; newness: "NEWNESS_UNVERIFIED" | "HISTORY_MARKED"; automaticProcessingEligible: false; at: string }>;
+    counters: { drained: number; rejectedByGate: number; rejectedByMain: number; ingested: number; duplicates: number; collectorMissing: number; batchLimited: number; dropped: number; gateReasons: Record<string, number> };
+  }>();
   private readonly bridges = new Map<string, PddPreloadBridge>();
   private readonly adapters = new Map<string, PddPlatformAdapter>();
   private readonly trustedWebContents = new Set<WebContents>();
@@ -856,6 +877,155 @@ export class PddPlatformService {
 
   adapterFor(shopId: string): PddPlatformAdapter | null {
     return this.adapters.get(shopId) ?? null;
+  }
+
+  /** Main owns the decoded-event capture switch; the page can never enable it. */
+  /**
+   * Main admission for the page-decoded-event path. It uses the SAME registry and the SAME request
+   * contract as the observer path (webContents + connection evidence + document binding) and has its
+   * own revocation set. Document identity is checked separately and cannot stand in for admission.
+   */
+  private evaluateDecodedEventAdmission(shopId: string, session: PddSessionHost | undefined): { granted: boolean; reason: string } {
+    if (!this.options.mainAdmissionProvider) return { granted: false, reason: "MAIN_ADMISSION_PROVIDER_MISSING" };
+    const binding = session ? session.resolveActiveCanonicalDocumentBinding() : null;
+    if (!binding) return { granted: false, reason: "DOCUMENT_BINDING_UNAVAILABLE" };
+    if (this.revokedShops.has(shopId)) return { granted: false, reason: "MAIN_ADMISSION_REVOKED" };
+    const webContents = this.webContentsFor(shopId);
+    if (!webContents) return { granted: false, reason: "MAIN_ADMISSION_PAGE_MISSING" };
+    const connection: PddConnectionEvidence = Object.freeze({
+      webContents,
+      observerId: "page-decoded-event",
+      observerLifecycleId: 0,
+      sessionId: binding.sessionId,
+      shopId: binding.shopId,
+      documentGeneration: binding.documentGeneration,
+      cdpSessionId: "",
+      requestId: "page-decoded-event",
+      url: PDD_PRODUCTION_CHAT_URL,
+    });
+    try {
+      const decision = this.admissionRegistry.evaluate({ webContents, connection, binding });
+      if (!decision || decision.granted !== true) return { granted: false, reason: "MAIN_ADMISSION_DENIED:" + String((decision as { reason?: unknown })?.reason ?? "UNKNOWN") };
+      return { granted: true, reason: "GRANTED" };
+    } catch {
+      return { granted: false, reason: "MAIN_ADMISSION_THREW" };
+    }
+  }
+
+  async startDecodedEventCapture(shopId: string): Promise<{ ok: boolean; reason?: string }> {
+    const config = this.options.decodedEventCapture;
+    if (!config || config.enabled !== true) return { ok: false, reason: "DECODED_EVENT_CAPTURE_DISABLED" };
+    if (!this.options.onCanonicalInbound) return { ok: false, reason: "COLLECTOR_MISSING" };
+    if (this.decodedEventStates.has(shopId)) return { ok: true };
+    const adapter = createPddDecodedEventAdapter({
+      enabled: true,
+      evaluate: config.evaluate,
+      document: () => this.sessions.get(shopId)?.resolveActiveCanonicalDocumentBinding() ?? { sessionId: "", shopId, documentGeneration: -1 },
+      ...(config.maxMessagesPerDrain === undefined ? {} : { maxMessagesPerDrain: config.maxMessagesPerDrain }),
+    });
+    const installed = await adapter.install();
+    if (!installed.ok) return { ok: false, reason: installed.reason ?? "INSTALL_FAILED" };
+    this.decodedEventStates.set(shopId, {
+      adapter,
+      ledger: new Map(),
+      counters: { drained: 0, rejectedByGate: 0, rejectedByMain: 0, ingested: 0, duplicates: 0, collectorMissing: 0, batchLimited: 0, dropped: 0, gateReasons: {} },
+    });
+    return { ok: true };
+  }
+
+  async drainDecodedEvents(shopId: string): Promise<{ ok: boolean; reason?: string; drained: number; ingested: number; duplicates: number; remaining: number; dropped: number; gap: boolean; diagnostics: readonly string[] }> {
+    const empty = { drained: 0, ingested: 0, duplicates: 0, remaining: 0, dropped: 0, gap: false, diagnostics: [] as string[] };
+    const state = this.decodedEventStates.get(shopId);
+    if (!state) return { ok: false, reason: "DECODED_EVENT_CAPTURE_NOT_STARTED", ...empty };
+    const session = this.sessions.get(shopId);
+    // ALL release/identity checks happen BEFORE the collector: (1) Main admission (when this path has
+    // one), (2) the live document binding. Nothing is drained, mapped, collected or written otherwise.
+    // Admission is REQUIRED for this path: a missing provider refuses, it is not "check only if set".
+    const admissionBefore = this.evaluateDecodedEventAdmission(shopId, session);
+    if (!admissionBefore.granted) return { ok: false, reason: admissionBefore.reason, ...empty };
+    if (!session || !session.resolveActiveCanonicalDocumentBinding()) {
+      return { ok: false, reason: "DOCUMENT_BINDING_UNAVAILABLE", ...empty };
+    }
+    const drained = await state.adapter.drain();
+    if (!drained.ok) return { ok: false, reason: drained.reason ?? "DRAIN_FAILED", ...empty };
+    // Admission is re-evaluated AFTER the async drain and BEFORE any collector call: a revocation that
+    // happened while draining must stop everything (the document binding alone cannot authorise it).
+    const admissionAfter = this.evaluateDecodedEventAdmission(shopId, session);
+    if (!admissionAfter.granted) {
+      return { ok: false, reason: admissionAfter.reason, ...empty, drained: drained.messages.length, diagnostics: [...drained.diagnostics, "ADMISSION_REVOKED_DURING_DRAIN"] };
+    }
+
+    const diagnostics: string[] = [...drained.diagnostics];
+    const resolveScope = this.options.resolveInboundScope;
+    const resolveIdentity = this.options.resolveInboundIdentity;
+    let ingested = 0;
+    let duplicates = 0;
+    for (const entry of drained.messages) {
+      state.counters.drained += 1;
+      const message = (entry as { message?: unknown }).message;
+      const candidate = toInboundEventCandidate(message);
+      if (candidate.status !== "CANDIDATE") {
+        state.counters.rejectedByGate += 1;
+        state.counters.gateReasons[candidate.reason] = (state.counters.gateReasons[candidate.reason] ?? 0) + 1;
+        continue;
+      }
+      // Identity comes from Main only: live view + non-blocked status + CURRENT document generation.
+      const binding = session ? session.resolveActiveCanonicalDocumentBinding() : null;
+      if (!binding) { state.counters.rejectedByMain += 1; diagnostics.push("DOCUMENT_BINDING_UNAVAILABLE"); continue; }
+      if (!resolveScope || !resolveIdentity) { state.counters.rejectedByMain += 1; diagnostics.push("BINDING_RESOLVER_MISSING"); continue; }
+      const result = processPddInboundIngress({
+        document: binding,
+        input: candidate.ingressInput,
+        resolveScope,
+        resolveIdentity,
+        canonicalValidator: this.options.canonicalEnvelopeValidator,
+      });
+      if (result.status !== "MAPPED") { state.counters.rejectedByMain += 1; diagnostics.push("INGRESS_" + result.status + (result.reason ? "_" + result.reason : "")); continue; }
+      // A document replacement between mapping and collection must refuse the event (late callback).
+      const after = session ? session.resolveActiveCanonicalDocumentBinding() : null;
+      if (!after || after.sessionId !== binding.sessionId || after.shopId !== binding.shopId || after.documentGeneration !== binding.documentGeneration) {
+        state.counters.rejectedByMain += 1;
+        diagnostics.push("DOCUMENT_CONTEXT_INVALIDATED");
+        continue;
+      }
+      const collector = this.options.onCanonicalInbound;
+      if (!collector) { state.counters.collectorMissing += 1; diagnostics.push("COLLECTOR_MISSING"); continue; }
+      let collected: unknown;
+      try { collected = collector(result.envelope); } catch { state.counters.rejectedByMain += 1; diagnostics.push("COLLECTOR_THREW"); continue; }
+      const identity = result.envelope.identityLock.triggerMessage.platformMessageIdentity;
+      const messageId = identity.provenance === "UNKNOWN" ? "unknown" : String(identity.value);
+      state.ledger.set(messageId, {
+        source: "PAGE_DECODED_EVENT",
+        identityAuthority: "PAYLOAD_SUPPLIED_UNVERIFIED",
+        newness: (message as { is_history?: unknown })?.is_history === true ? "HISTORY_MARKED" : "NEWNESS_UNVERIFIED",
+        automaticProcessingEligible: false,
+        at: new Date().toISOString(),
+      });
+      const status = collected && typeof collected === "object" && "status" in (collected as object) ? String((collected as { status?: unknown }).status) : "UNKNOWN";
+      if (status === "INGESTED") { state.counters.ingested += 1; ingested += 1; }
+      else if (status === "DUPLICATE") { state.counters.duplicates += 1; duplicates += 1; }
+    }
+    const remainingEntry = diagnostics.find((entry) => entry.startsWith("BATCH_LIMIT_REACHED_REMAINING_"));
+    const remaining = remainingEntry ? Number(remainingEntry.split("_").pop()) : 0;
+    if (remaining > 0) state.counters.batchLimited += 1;
+    if (drained.dropped > 0) state.counters.dropped += drained.dropped;
+    return { ok: true, drained: drained.messages.length, ingested, duplicates, remaining, dropped: drained.dropped, gap: drained.dropped > 0, diagnostics };
+  }
+
+  async stopDecodedEventCapture(shopId: string): Promise<{ ok: boolean; reason?: string }> {
+    const state = this.decodedEventStates.get(shopId);
+    if (!state) return { ok: false, reason: "DECODED_EVENT_CAPTURE_NOT_STARTED" };
+    const result = await state.adapter.unload();
+    this.decodedEventStates.delete(shopId);
+    return result;
+  }
+
+  /** Source limitations preserved next to each stored page-event message (never auto-processing). */
+  decodedEventDiagnostics(shopId: string): { installed: boolean; counters: unknown; ledgerSize: number; ledger: ReadonlyArray<{ messageIdSha8: string; entry: unknown }> } | null {
+    const state = this.decodedEventStates.get(shopId);
+    if (!state) return null;
+    const ledger = [...state.ledger.entries()].slice(0, 200).map(([messageId, entry]) => ({ messageIdSha8: createHash("sha256").update(messageId).digest("hex").slice(0, 12), entry }));
+    return { installed: state.adapter.state() === "INSTALLED", counters: { ...state.counters, gateReasons: { ...state.counters.gateReasons } }, ledgerSize: state.ledger.size, ledger };
   }
 
   /** Main-side diagnostic accessor: the view webContents for a shop (smoke/telemetry). */

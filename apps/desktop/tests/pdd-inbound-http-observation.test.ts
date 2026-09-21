@@ -39,6 +39,7 @@ function makeObserver(opts = {}) {
   const wc = new FakeWebContents();
   const requests = [];
   const responses = [];
+  const readDiagnostics = [];
   const binding = { sessionId: "pdd-session-shop-1", shopId: "shop-1", documentGeneration: 1 };
   const observer = new PddInboundObserver({
     webContents: wc as never,
@@ -50,9 +51,10 @@ function makeObserver(opts = {}) {
     onFrame: () => {},
     onHttpRequest: (b) => requests.push(b),
     onHttpResponse: (f) => responses.push(f),
+    onHttpReadDiagnostic: (f) => readDiagnostics.push(f),
     ...opts.extra,
   });
-  return { observer, wc, requests, responses, binding };
+  return { observer, wc, requests, responses, binding, readDiagnostics };
 }
 
 function httpRequestParams(requestId, url = "https://example.invalid/plateau/chat/latest_conversations", method = "POST") {
@@ -154,6 +156,42 @@ test("HTTP: body read failure exits without emitting and without retry", async (
   await new Promise((res) => setTimeout(res, 20));
   assert.equal(h.responses.length, 0);
   assert.equal(h.wc.debugger.bodyCalls, 1, "read is attempted once; no retry");
+  const snap = h.observer.snapshot();
+  assert.equal(snap.httpBodyReadStopped.READ_FAILED, 1, "the failed read is counted under an explicit reason");
+  assert.equal(snap.httpBodyReadFailureCauses.NO_RESOURCE, 1, "the CDP cause is recorded, not swallowed");
+  assert.equal(h.readDiagnostics.length, 1, "the failure reaches the diagnostic sink");
+  assert.equal(h.readDiagnostics[0].reason, "READ_FAILED");
+  assert.equal(h.readDiagnostics[0].cause, "NO_RESOURCE");
+  assert.equal(h.readDiagnostics[0].requestId, "req-fail");
+  assert.equal(h.readDiagnostics[0].pathname, "/plateau/chat/latest_conversations");
+  const serialized = JSON.stringify(h.readDiagnostics[0]);
+  assert.equal(serialized.includes("?"), false, "the query string never reaches the diagnostic sink");
+  assert.equal(serialized.includes("example.invalid"), false, "the origin never reaches the diagnostic sink");
+});
+
+test("HTTP: refused body reads report an explicit reason and a sanitized cause", async () => {
+  const h = makeObserver();
+  const handle = h.observer.start();
+  await handle.enablePromise;
+  h.wc.debugger.bodies.set("req-bin", { body: "AAoAZgAAAGgAAAA=", base64Encoded: true });
+  h.wc.debugger.emit("message", {}, "Network.requestWillBeSent", httpRequestParams("req-bin"), "");
+  h.wc.debugger.emit("message", {}, "Network.responseReceived", httpResponseParams("req-bin"), "");
+  h.wc.debugger.emit("message", {}, "Network.loadingFinished", { requestId: "req-bin" }, "");
+  await new Promise((res) => setTimeout(res, 20));
+  assert.deepEqual(h.observer.snapshot().httpBodyReadStopped, { BODY_BASE64: 1 });
+  assert.deepEqual(h.readDiagnostics.map((d) => [d.reason, d.cause]), [["BODY_BASE64", "NONE"]]);
+});
+
+test("HTTP: an observation-handler exception is counted instead of disappearing", async () => {
+  const h = makeObserver({ extra: { onHttpResponse: () => { throw new Error("sink exploded"); } } });
+  h.wc.debugger.bodies.set("req-sink", { body: BODY, base64Encoded: false });
+  const handle = h.observer.start();
+  await handle.enablePromise;
+  h.wc.debugger.emit("message", {}, "Network.requestWillBeSent", httpRequestParams("req-sink"), "");
+  h.wc.debugger.emit("message", {}, "Network.responseReceived", httpResponseParams("req-sink"), "");
+  h.wc.debugger.emit("message", {}, "Network.loadingFinished", { requestId: "req-sink" }, "");
+  await new Promise((res) => setTimeout(res, 20));
+  assert.equal(h.observer.snapshot().httpObservationHandlerErrors.ERROR_ERROR, 1);
 });
 
 test("HTTP: base64/binary bodies are refused instead of guessed", async () => {

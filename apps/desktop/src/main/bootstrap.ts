@@ -179,6 +179,15 @@ export interface BootstrapOptions {
   /** Main-owned admission provider. Default is DENY_ALL. */
   mainAdmissionProvider?: PddMainAdmissionProvider;
   /**
+   * CONTROLLED decoded-page-event capture (default OFF). Main owns this switch and the page payload
+   * can never enable it. The app-level controller starts/stops it through the returned `platform`
+   * service (`startDecodedEventCapture` / `drainDecodedEvents` / `stopDecodedEventCapture`).
+   */
+  decodedEventCapture?: {
+    readonly enabled: boolean;
+    readonly evaluate: import("./platforms/pdd/pdd-decoded-inbound-event-adapter.js").PddPageEvaluator;
+    readonly maxMessagesPerDrain?: number;
+  };
   /**
    * SHEEP-303 controlled inbound turn aggregation (DEFAULT OFF). Main owns this switch; the page
    * payload can never enable it. Aggregation is in-memory only: no AI, no send, no persistence.
@@ -482,6 +491,7 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
     resolveInboundScope: options.resolveInboundScope,
     resolveInboundIdentity: options.resolveInboundIdentity,
     canonicalEnvelopeValidator: options.canonicalEnvelopeValidator,
+    ...(options.decodedEventCapture ? { decodedEventCapture: options.decodedEventCapture } : {}),
     onCanonicalInbound,
     fixturePathFor: testMode
       ? (shopId) => join(PDD_FIXTURES, shopId === "shop-test-2" ? "conversation-switch.html" : "chat-basic.html")

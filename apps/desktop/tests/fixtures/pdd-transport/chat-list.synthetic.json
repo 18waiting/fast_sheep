@@ -1,0 +1,88 @@
+{
+  "_fixture": "SYNTHETIC - SHEEP-301 /plateau/chat/list history windows. Field names, nesting and types mirror the real observed shape (single controlled test store, read-only, 2026-09-20). Every value below is INVENTED: ids, uids, nicknames, contents, timestamps. This file contains no real store, buyer, message, credential or session data.",
+  "synthetic": true,
+  "window_a": {
+    "success": true,
+    "result": {
+      "response": "succ",
+      "request_id": 1,
+      "result": "ok",
+      "has_more": true,
+      "read_mark": { "user_last_read": "SYN-A-003", "min_supported_msg_id": "SYN-A-011" },
+      "messages": [
+        { "from": { "role": "mall_cs", "uid": "1000000000003", "cs_uid": "1000000000003" }, "to": { "role": "user", "uid": "900000001" }, "content": "SYNTHETIC-AGENT-1", "status": "normal", "is_aut": 0, "ts": "1700000001", "type": 0, "client_msg_id": "syn-client-a-0001", "is_read": 1, "version": 1, "msg_id": "SYN-A-001", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-000" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-B-1", "status": "normal", "is_aut": 0, "ts": "1700000002", "type": 0, "client_msg_id": "syn-client-a-0002", "is_read": 1, "version": 1, "msg_id": "SYN-A-002", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-001" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-B-2", "status": "normal", "is_aut": 0, "ts": "1700000003", "type": 0, "client_msg_id": "syn-client-a-0003", "is_read": 1, "version": 1, "msg_id": "SYN-A-003", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-002" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-B-3", "status": "normal", "is_aut": 0, "ts": "1700000004", "type": 0, "client_msg_id": "syn-client-a-0004", "is_read": 1, "version": 1, "msg_id": "SYN-A-004", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-003" },
+        { "from": { "role": "mall_cs", "uid": "1000000000003", "cs_uid": "1000000000003" }, "to": { "role": "user", "uid": "900000001" }, "content": "SYNTHETIC-AGENT-2", "status": "normal", "is_aut": 0, "ts": "1700000005", "type": 0, "client_msg_id": "syn-client-a-0005", "is_read": 0, "version": 1, "msg_id": "SYN-A-005", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-004" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-B-4", "status": "normal", "is_aut": 0, "ts": "1700000006", "type": 0, "client_msg_id": "syn-client-a-0006", "is_read": 0, "version": 1, "msg_id": "SYN-A-006", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-005" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-B-5", "status": "normal", "is_aut": 0, "ts": "1700000007", "type": 0, "client_msg_id": "syn-client-a-0007", "is_read": 0, "version": 1, "msg_id": "SYN-A-007", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-006" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-C-1", "status": "normal", "is_aut": 0, "ts": "1700000008", "type": 0, "client_msg_id": "syn-client-a-0008", "is_read": 0, "version": 1, "msg_id": "SYN-A-008", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-007" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-C-2", "status": "normal", "is_aut": 0, "ts": "1700000009", "type": 0, "client_msg_id": "syn-client-a-0009", "is_read": 0, "version": 1, "msg_id": "SYN-A-009", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-008" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-C-3", "status": "normal", "is_aut": 0, "ts": "1700000010", "type": 0, "client_msg_id": "syn-client-a-0010", "is_read": 0, "version": 1, "msg_id": "SYN-A-010", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-009" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-C-4", "status": "normal", "is_aut": 0, "ts": "1700000011", "type": 0, "client_msg_id": "syn-client-a-0011", "is_read": 0, "version": 1, "msg_id": "SYN-A-011", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-010" }
+      ],
+      "cs_infos": []
+    }
+  },
+  "window_b": {
+    "success": true,
+    "result": {
+      "response": "succ",
+      "request_id": 2,
+      "result": "ok",
+      "has_more": false,
+      "read_mark": { "user_last_read": "SYN-NOT-IN-WINDOW", "min_supported_msg_id": "SYN-A-004" },
+      "messages": [
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-B-1", "status": "normal", "is_aut": 0, "ts": "1700000002", "type": 0, "client_msg_id": "syn-client-a-0002", "is_read": 1, "version": 1, "msg_id": "SYN-A-002", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-001" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-B-2", "status": "normal", "is_aut": 0, "ts": "1700000003", "type": 0, "client_msg_id": "syn-client-a-0003", "is_read": 1, "version": 1, "msg_id": "SYN-A-003", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-002" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-B-3", "status": "normal", "is_aut": 0, "ts": "1700000004", "type": 0, "client_msg_id": "syn-client-a-0004", "is_read": 1, "version": 1, "msg_id": "SYN-A-004", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-003" },
+        { "from": { "role": "mall_cs", "uid": "1000000000003", "cs_uid": "1000000000003" }, "to": { "role": "user", "uid": "900000001" }, "content": "SYNTHETIC-AGENT-2", "status": "normal", "is_aut": 0, "ts": "1700000005", "type": 0, "client_msg_id": "syn-client-a-0005", "is_read": 1, "version": 1, "msg_id": "SYN-A-005", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-004" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-B-4", "status": "normal", "is_aut": 0, "ts": "1700000006", "type": 0, "client_msg_id": "syn-client-a-0006", "is_read": 1, "version": 1, "msg_id": "SYN-A-006", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-005" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-B-5", "status": "normal", "is_aut": 0, "ts": "1700000007", "type": 0, "client_msg_id": "syn-client-a-0007", "is_read": 1, "version": 1, "msg_id": "SYN-A-007", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-006" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-C-1", "status": "normal", "is_aut": 0, "ts": "1700000008", "type": 0, "client_msg_id": "syn-client-a-0008", "is_read": 1, "version": 1, "msg_id": "SYN-A-008", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-007" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-C-2", "status": "normal", "is_aut": 0, "ts": "1700000009", "type": 0, "client_msg_id": "syn-client-a-0009", "is_read": 1, "version": 1, "msg_id": "SYN-A-009", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-008" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-C-3", "status": "normal", "is_aut": 0, "ts": "1700000010", "type": 0, "client_msg_id": "syn-client-a-0010", "is_read": 1, "version": 1, "msg_id": "SYN-A-010", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-009" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-NEW-12", "status": "normal", "is_aut": 0, "ts": "1700000012", "type": 0, "client_msg_id": "syn-client-a-0012", "is_read": 0, "version": 1, "msg_id": "SYN-A-012", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-011" }
+      ],
+      "cs_infos": []
+    }
+  },
+  "window_iso_time": {
+    "success": true,
+    "result": {
+      "response": "succ",
+      "request_id": 3,
+      "result": "ok",
+      "has_more": false,
+      "messages": [
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-ISO-1", "status": "normal", "is_aut": 0, "ts": "2026-09-20T12:48:08Z", "type": 0, "client_msg_id": "syn-client-iso-1", "is_read": 0, "version": 1, "msg_id": "SYN-ISO-001", "mallName": "SYNTHETIC-MALL", "manual_reply": 0, "mall_context": {}, "cs_type": 0, "pre_msg_id": "SYN-A-011" }
+      ],
+      "cs_infos": []
+    }
+  },
+  "window_edge_cases": {
+    "success": true,
+    "result": {
+      "response": "succ",
+      "request_id": 4,
+      "result": "ok",
+      "has_more": false,
+      "messages": [
+        "SYNTHETIC-NOT-AN-OBJECT",
+        { "from": { "role": "system" }, "to": { "role": "system" }, "content": "SYNTHETIC-SYSTEM-1", "type": 8, "msg_id": "SYN-EDGE-1", "ts": "1700000020" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-NOID-1", "type": 0, "ts": "1700000021" },
+        { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "", "type": 0, "msg_id": "SYN-EDGE-2", "ts": "1700000022" }, { "from": { "role": "user", "uid": "900000001" }, "to": { "role": "mall_cs", "uid": "1000000000003" }, "content": "SYNTHETIC-UNKNOWNTYPE-1", "type": 7, "msg_id": "SYN-EDGE-3", "ts": "1700000023" }
+      ],
+      "cs_infos": []
+    }
+  },
+  "window_missing_read_mark": {
+    "success": true,
+    "result": { "response": "succ", "request_id": 5, "result": "ok", "has_more": null, "messages": [], "cs_infos": [] }
+  },
+  "window_unsupported_not_json": "not-json {{{",
+  "window_unsupported_not_successful": { "success": false, "result": { "messages": [] } },
+  "window_unsupported_missing_result": { "success": true },
+  "window_unsupported_messages_not_array": { "success": true, "result": { "messages": { "0": {} } } }
+}

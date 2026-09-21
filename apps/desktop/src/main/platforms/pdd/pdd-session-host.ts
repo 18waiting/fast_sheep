@@ -251,6 +251,26 @@ export class PddSessionHost {
     });
   }
 
+  /**
+   * Main-side active canonical document binding for observation paths that originate in Main itself
+   * (for example the decoded-page-event adapter). No IPC sender is involved, so this does NOT weaken
+   * the IPC path: it applies the same fail-closed rules - the view must be live, the session status
+   * must not be blocked, and the binding is the CURRENT document generation only, which is what makes
+   * a stale document or a late callback unusable as identity.
+   */
+  resolveActiveCanonicalDocumentBinding(): PddInboundDocumentBinding | null {
+    if (!this.view || !this.isLiveView(this.view)) return null;
+    const status = this.state.getStatus();
+    if (CANONICAL_INBOUND_BLOCKED_SESSION_STATUSES.has(status) || status === "CREATING") return null;
+    const generation = this.activeDocumentGeneration;
+    if (generation === null) return null;
+    return Object.freeze({
+      sessionId: this.state.sessionId,
+      shopId: this.state.shopId,
+      documentGeneration: generation,
+    });
+  }
+
   private isLiveView(view: PddViewHost): boolean {
     try {
       return !view.webContents.isDestroyed();

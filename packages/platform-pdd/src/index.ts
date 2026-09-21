@@ -52,6 +52,7 @@ export {
   type PddUnknownOutcomeDirective,
 } from "./send-text-semantics.js";
 export { MessageDeduplicator, type DedupStats } from "./message-deduplicator.js";
+export { deriveInternalConversationId, type PddConversationScopeFact } from "./internal-conversation-id.js";
 export {
   PddSessionState,
   SESSION_STATES,

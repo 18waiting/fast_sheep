@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SHEEP-301 offline decoded-event fixture page</title>
+  </head>
+  <body>
+    <!--
+      SHEEP-301 controlled OFFLINE acceptance fixture page (local, offline, no platform code).
+
+      It emulates the single page-side fact the controlled decoded-event observer needs: a
+      Vuex-style store reachable from a page root whose `subscribe(listener)` receives
+      `{ type, payload }` mutations. `window.__fs301Fixture.emit(type, payload)` lets the acceptance
+      harness dispatch local synthetic mutations; nothing here talks to a network or a platform
+      endpoint, and no platform bundle is loaded.
+    -->
+    <div id="fixture-root">SHEEP-301 offline decoded-event fixture page (no platform code)</div>
+    <script>
+      (function () {
+        var listeners = [];
+        var mutations = [];
+        window.__fs301Fixture = {
+          emit: function (type, payload) {
+            mutations.push({ type: type });
+            for (var i = 0; i < listeners.length; i += 1) {
+              listeners[i]({ type: type, payload: payload }, {});
+            }
+            return { emitted: type, total: mutations.length, listeners: listeners.length };
+          },
+          listenerCount: function () { return listeners.length; },
+          mutationCount: function () { return mutations.length; },
+          snapshot: function () { return { listeners: listeners.length, mutations: mutations.slice() }; }
+        };
+        document.body.__vue__ = {
+          $store: {
+            subscribe: function (listener) {
+              listeners.push(listener);
+              return function () {
+                var index = listeners.indexOf(listener);
+                if (index >= 0) listeners.splice(index, 1);
+              };
+            }
+          }
+        };
+      })();
+    </script>
+  </body>
+</html>

@@ -38,6 +38,7 @@ export class CanonicalInboundPersistenceError extends Error {
     | "IDENTITY_NOT_RESOLVED"
     | "SCOPE_NOT_RESOLVED"
     | "CONTENT_NOT_TEXT"
+    | "CONVERSATION_SCOPE_CONFLICT"
     | "STORAGE_FAILED";
   constructor(reason: CanonicalInboundPersistenceError["reason"], message: string) {
     super(message);
@@ -60,6 +61,27 @@ export interface CanonicalInboundPersistence {
 function hashId(parts: readonly string[]): string {
   // Null separator keeps parts distinct so concatenation cannot alias two keys.
   return createHash("sha256").update(parts.join("\u0000"), "utf8").digest("hex").slice(0, 40);
+}
+
+/**
+ * Read the conversation external reference through its CONTRACT shape
+ * (`ConversationExternalRef` = `{ value: string }`).
+ *
+ * Defect history: this used to be `String(lock.runtimeConversationReference.value)`, which turned a
+ * valid contract-shaped reference into the literal "[object Object]" and stored that fabricated
+ * string as the conversation's external reference - an implicit object-to-string conversion taking
+ * the place of an identifier. Anything that is not the contract shape is now explicitly UNKNOWN
+ * (null): an absent reference is never invented.
+ */
+function conversationExternalRef(reference: InboundEnvelope["identityLock"]["runtimeConversationReference"]): string | null {
+  if (reference.status !== "RESOLVED") return null;
+  const value: unknown = reference.value;
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
+  const keys = Object.keys(value as Record<string, unknown>);
+  if (keys.length !== 1 || keys[0] !== "value") return null;
+  const inner = (value as { value?: unknown }).value;
+  if (typeof inner !== "string" || inner.length === 0) return null;
+  return inner;
 }
 
 function messageIdentityKey(envelope: InboundEnvelope): string | null {
@@ -139,21 +161,34 @@ export function createCanonicalInboundPersistence(
     const messageId = "msg-inbound-" + dedupeKey;
 
     try {
+      // Scope check FIRST: conversation identity is the bare conversation id, so a caller that
+      // derives an unscoped id (for example only from a platform customer id) would make two
+      // shops share one conversation - and the dedupe key below would then silently treat the
+      // other shop's message as a duplicate. Attaching a message to a conversation owned by a
+      // different merchant/store/platform account fails closed instead.
+      const existingConversation = conversations.findById(conversationId);
+      if (existingConversation
+        && (existingConversation.merchantId !== merchantId
+          || existingConversation.storeId !== storeId
+          || existingConversation.platformAccountId !== platformAccountId)) {
+        throw new CanonicalInboundPersistenceError(
+          "CONVERSATION_SCOPE_CONFLICT",
+          "conversation id already belongs to a different canonical scope; refusing to mix shops"
+        );
+      }
+
       const existing = messages.findById(messageId);
       if (existing) {
         return { status: "DUPLICATE", conversationId, messageId, dedupeKey };
       }
 
-      const existingConversation = conversations.findById(conversationId);
       if (!existingConversation) {
         const record: NormalizedConversationRecord = {
           id: conversationId,
           merchantId,
           storeId,
           platformAccountId,
-          externalRef: lock.runtimeConversationReference.status === "RESOLVED"
-            ? String(lock.runtimeConversationReference.value)
-            : null,
+          externalRef: conversationExternalRef(lock.runtimeConversationReference),
         };
         conversations.save(record);
       }
