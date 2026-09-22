@@ -408,8 +408,8 @@
     "status": "SEALED",
     "implementation_commit": "c37c32b8d78fa993c27de733f6a59e5fd70c9a22",
     "technical_post_audit": "PASS (Controller: SHEEP-305 LANE A POST-AUDIT PASS — READY TO SEAL)",
-    "stage_acceptance": "PENDING",
-    "full_lane_a_closed": false,
+    "stage_acceptance": "RECORDED (Controller decision 2026-09-23: Lane A stage accepted)",
+    "full_lane_a_closed": true,
     "sealed_at": "2026-09-23",
     "contract_id": "SHIPPING_POLICY_V1",
     "contract_module": "apps/desktop/src/main/services/shipping-policy-contract.ts",
@@ -432,6 +432,7 @@
     ],
     "lane_b": "CLOSED / NOT AUTHORIZED",
     "product_gate": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED",
-    "not_an_activation": "sealing Lane A does not activate a real policy, does not close SHEEP-305, and does not lift the product gate"
+    "not_an_activation": "Lane A stage acceptance PASS is NOT Lane B activation, NOT real policy activation, NOT SHEEP-305 closure and NOT production enablement",
+    "controller_decision": "PASS"
   }
 }

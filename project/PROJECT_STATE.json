@@ -4148,16 +4148,17 @@
     "product_gate": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED",
     "lane_a": {
       "status": "SEALED",
+      "controller_decision": "PASS",
       "implementation_commit": "c37c32b8d78fa993c27de733f6a59e5fd70c9a22",
-      "technical_post_audit": "PASS",
-      "stage_acceptance": "PENDING",
-      "full_lane_a_closed": false,
+      "technical_post_audit": "PASS (Controller: SHEEP-305 LANE A POST-AUDIT PASS — READY TO SEAL)",
+      "stage_acceptance": "RECORDED (Controller decision 2026-09-23: Lane A stage accepted)",
+      "full_lane_a_closed": true,
       "sealed_at": "2026-09-23",
       "scope": "offline shipping policy contract + pure validation/matching (declared-only); no real policy, no order/carrier facts, no AI/send/persistence/provider/network port, no canonical schema change",
       "changed_files": ["apps/desktop/src/main/services/shipping-policy-contract.ts", "apps/desktop/tests/shipping-policy-contract.test.ts"],
       "verification": "27/27 focused; desktop 595/595; typecheck PASS; PROJECT_STATE consistency PASS; canonical schema diff 0; AI 0 / sending 0 / production writes 0 / real operations STOPPED",
       "p3_carried_forward": ["matrix 19 uses a conditional assertion (if policy_fact) - should assert fact presence unconditionally before the value checks","the 木易先生 draft test uses an OR assertion (SCOPE_UNBOUND || NAME_NOT_IDENTITY_EVIDENCE) while both reasons hold - assert both separately","matrix rows 10 and 20 describe the same scenario in the authoritative matrix - an intentional duplicate, both kept and asserted","the 木易先生 draft cannot trigger the bound-DRAFT path (its identifiers are null by contract) - that path is covered by the bound synthetic DRAFT fixture in matrix 13; reaching it on the draft itself needs Lane B identity binding"],
-      "not_an_activation": "the sealed contract does not activate any real shop policy and does not make SHEEP-305 implementation-authorized"
+      "not_an_activation": "Lane A stage acceptance PASS is NOT Lane B activation, NOT real policy activation, NOT SHEEP-305 closure and NOT production enablement"
     },
     "candidate_policy": {
       "report": "reports\\SHEEP-305-candidate-policy-muyi-draft.json",
