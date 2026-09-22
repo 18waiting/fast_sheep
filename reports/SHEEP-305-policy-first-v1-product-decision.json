@@ -394,10 +394,12 @@
   "candidate_policy": {
     "report": "reports\\SHEEP-305-candidate-policy-muyi-draft.json",
     "shop_name_owner_supplied": "木易先生",
-    "lifecycle": "DRAFT / NOT_EFFECTIVE",
+    "lifecycle": "DRAFT / NOT_EFFECTIVE (content confirmed is not runtime activation)",
     "identity_binding": "UNBOUND (no merchant/store/platform-account id assigned; a name is never identity evidence)",
     "acceptance_matrix": "12 rows here + 9 supplement rows in the candidate draft = 21 rows total (the supplement is not duplicated here)",
-    "lane_A_authorizable_separately": "YES (contract-only offline capability; requires a separate Controller authorization)"
+    "lane_A_authorizable_separately": "YES (contract-only offline capability; requires a separate Controller authorization)",
+    "owner_confirmation": "OWNER_CONFIRMED (content only, 2026-09-23) — verbatim text preserved in reports/SHEEP-305-candidate-policy-muyi-draft.json",
+    "identity": "OWNER_DECLARED identifier 木易先生 on platform pdd; platform binding UNVERIFIED; no numeric id; merchant_id/store_id/platform_account_id remain null"
   },
   "acceptance_matrix_reference": {
     "base_rows": "1-12 (this report)",
@@ -434,5 +436,164 @@
     "product_gate": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED",
     "not_an_activation": "Lane A stage acceptance PASS is NOT Lane B activation, NOT real policy activation, NOT SHEEP-305 closure and NOT production enablement",
     "controller_decision": "PASS"
+  },
+  "lane_b_registration_design": {
+    "status": "DESIGN_ONLY (no implementation, no real binding written, no activation)",
+    "goal": "a minimal, governed way to register Owner-declared identity material and a content-confirmed policy version, without activating it and without touching canonical schema",
+    "steps": [
+      {
+        "id": 1,
+        "question": "如何登记 Owner 声明的身份材料",
+        "design": "register a DECLARATION record: { platform, owner_declared_identifier (raw string), identifier_source: OWNER_DECLARED, platform_binding: UNVERIFIED, declared_at, basis_ref }. The raw string is stored verbatim and never rewritten, hashed into an id, or promoted to a platform reference. No numeric requirement is imposed on external_ref, but also no uniqueness/stability claim is made."
+      },
+      {
+        "id": 2,
+        "question": "如何验证外部引用与目标店铺的关系",
+        "design": "verification is a separate state transition (UNVERIFIED -> VERIFIED/REJECTED), performed by a trusted Main-side check against the controlled session's own identity evidence (e.g. the shop id/account the authenticated session reports), never by name matching and never by another merchant's data. Until that transition, the declaration can only be listed, never used for policy matching."
+      },
+      {
+        "id": 3,
+        "question": "如何创建内部实体并防止跨店误绑定",
+        "design": "mint an application-generated internal id (e.g. store-<internal-uuid>) that is stored separately from the platform external reference; bind it to the app-owned workspace merchant only; enforce the existing scope rules (merchant+store, optional account) and fail closed on any mismatch; forbid reusing controlled test shop ids and forbid auto-linking an existing shops slot."
+      },
+      {
+        "id": 4,
+        "question": "如何保存已确认但尚未生效的政策版本",
+        "design": "store the content-confirmed version as lifecycle DRAFT/NOT_EFFECTIVE with owner_approval={basis_ref, verbatim_text_ref} and effective{from:null,to:null}; it is listable and auditable but unreachable by evaluation (the Lane A contract already refuses DRAFT/NOT_EFFECTIVE)."
+      },
+      {
+        "id": 5,
+        "question": "激活时检查哪些身份、批准、有效期和适用范围条件",
+        "design": "activation requires ALL of: (a) store/platform account VERIFIED against the controlled session, (b) Owner approval record present, (c) explicit effective window (from set, to null or a date), (d) declared applicability/product scope resolved, (e) declared nature/time_value/clock_start/ship_complete complete and consistent with the confirmed text, (f) required timezone/calendar present for the declared time-value type. Any missing item keeps the policy NOT_EFFECTIVE with an explicit reason code."
+      },
+      {
+        "id": 6,
+        "question": "如何处理撤销、替代以及同范围冲突",
+        "design": "lifecycle transitions are explicit (ACTIVE -> SUPERSEDED with replaces=<old id>, or -> REVOKED); same-scope conflicts without an approved replacement relation resolve to UNKNOWN (already implemented in the Lane A contract); historical commitments keep their original policy version and are never silently rewritten."
+      },
+      {
+        "id": 7,
+        "question": "如何确保一般政策查询不升级为订单级时间结论",
+        "design": "the registration and query path returns policy facts plus restriction reasons only; the output contract has no order-date/ETA field (pinned null), requires a trusted order-start fact before any order-level statement could exist, and the Lane A invariants (newness=NEWNESS_UNVERIFIED, automaticProcessingEligible=false) are asserted for every result."
+      }
+    ],
+    "capability_split": {
+      "owner_declaration_can_support": [
+        "listing/auditing the declared identity material",
+        "registering a content-confirmed policy version as NOT_EFFECTIVE",
+        "preparing the confirmation sheet and evidence references"
+      ],
+      "platform_verification_is_required_for": [
+        "binding the declaration to a store/platform account",
+        "activating the policy (ACTIVE)",
+        "any policy matching in evaluation"
+      ]
+    },
+    "offline_registration_requires_no_login_session": true,
+    "minimal_online_verification_actions_if_binding_to_the_running_session_is_desired": [
+      "read (read-only) the authenticated controlled session's own shop/account identity evidence and compare it with the declared string",
+      "confirm the session belongs to the same controlled test shop already used for SHEEP-301/305 observations",
+      "record the verification evidence reference (no credentials, no cookies, no raw payloads)"
+    ],
+    "not_prerequisites_for_general_policy_registration": [
+      "order payment-time reading",
+      "carrier pickup reading"
+    ],
+    "no_order_fact_claims": "this design must never claim that any order's payment time or shipping status is known",
+    "expected_files_if_authorized": [
+      "apps/desktop/src/main/services/shipping-policy-registry.ts (registration + lifecycle store; default empty; no activation without the step-5 conditions)",
+      "apps/desktop/src/main/services/shipping-policy-registration.ts (Owner declaration intake + verification-state transitions)",
+      "apps/desktop/tests/shipping-policy-registry.test.ts",
+      "apps/desktop/tests/shipping-policy-registration.test.ts"
+    ],
+    "deferred_and_out_of_scope": [
+      "durable policy persistence in SQLite would require a governed canonical schema change (packages/contracts/schemas registry + frozen manifest update) — NOT authorized and NOT designed here",
+      "real binding writes to stores/platform_accounts",
+      "policy activation, order-level derivation, AI, send, production enablement"
+    ]
+  },
+  "lane_b_offline_implementation": {
+    "status": "SEALED",
+    "implementation_commit": "517087018add576d8a9a476ba46a06a172df044b",
+    "technical_post_audit": "PASS (targeted review: scope-isolation encoding + replacement-history fix)",
+    "stage_acceptance": "PENDING",
+    "full_lane_b_offline_closed": true,
+    "sealed_scope_note": "the commit carries the complete Lane B offline implementation plus both fix rounds",
+    "persistence_and_identity_limits": "in-memory only (rebuilt instance is empty); no durable registration, no cross-restart idempotency, no platform identity verification; scope equality is an isolation check by a trusted Main-side caller, not ownership proof",
+    "implementation_authorization": "AUTHORIZED (offline registration only, 2026-09-23)",
+    "modules": [
+      "apps/desktop/src/main/services/shipping-policy-registry.ts",
+      "apps/desktop/src/main/services/shipping-policy-registration.ts"
+    ],
+    "tests": [
+      "apps/desktop/tests/shipping-policy-registry.test.ts (33)",
+      "apps/desktop/tests/shipping-policy-registration.test.ts (11)"
+    ],
+    "design_corrections_applied": [
+      "the Owner chat text is stored as CONTENT approval evidence with its source reference; no approver name, date or signature is invented",
+      "48 continuous hours needs no business calendar and is never extended by weekends/holidays; the unapproved cut-off does not change the clock start",
+      "a replacement version points at the older registration while the older version keeps its lifecycle until an explicit supersede step"
+    ],
+    "boundaries": {
+      "no_promotion_path": "no VERIFIED/ACTIVE entry point and no force parameter",
+      "in_memory_only": "rebuilt instance is empty; no persistence claim",
+      "no_real_binding_write": true,
+      "no_bootstrap_wiring": true,
+      "lane_a_unaffected": "a registered draft still yields policy_fact=null in Lane A evaluation (DRAFT_NOT_EFFECTIVE / POLICY_NOT_ACTIVE)"
+    },
+    "real_binding_and_activation": "NOT_AUTHORIZED",
+    "verification": {
+      "focused": "44/44 (33 registry + 11 registration)",
+      "desktop": "639/639",
+      "lane_a_regression": "27/27",
+      "typecheck": "clean"
+    },
+    "fix_round": {
+      "status": "FIX COMPLETE / AWAITING_POST_AUDIT",
+      "at": "2026-09-23",
+      "scope": "replacement integrity + semantic idempotency (offline registration only; no activation, no real binding)",
+      "defects_fixed": [
+        "P2-1 replacement lifecycle gap: linkReplacement validated only partially before writing; it now completes every check first (both records exist, both are POLICY_VERSION, same scope, same policy_id, no self-reference, no cycle, neither endpoint REVOKED, both in the offline lifecycle) and writes only on success - a rejection leaves no partial write and no changed relation",
+        "P2-2 cross-family replacement: a link across different policy_id values was accepted; it is now refused with REPLACEMENT_POLICY_MISMATCH",
+        "P2-3 order-sensitive equality: content equality used JSON.stringify, so object-key order and structured_items order could report CONTENT_CONFLICT; comparison is now canonical (unordered item field set sorted by item name, values compared verbatim)",
+        "P3-1 replay after revoke read as an active draft: RegistrationResult now reports the current lifecycle, so an IDEMPOTENT replay of a REVOKED registration reports REVOKED",
+        "P3-2 duplicate structured_items keys: refused at intake and re-validated in the Lane A bridge (no silent first-value pickup) through one shared validator",
+        "P3-3 caller premise: module headers now state that the caller is trusted Main-side, that scope equality is an isolation check and not ownership/platform identity verification, and that the registry is in-memory"
+      ],
+      "reason_codes_added": [
+        "REPLACEMENT_SOURCE_REVOKED",
+        "REPLACEMENT_TARGET_REVOKED",
+        "REPLACEMENT_POLICY_MISMATCH"
+      ],
+      "relation_semantics": "the stored replaces_registration_id is historical audit data; validity is derived on read (replaces_relation.valid / invalid_reason) so revoking an endpoint makes the relation non-effective without rewriting history, resurrecting a record or superseding anything automatically",
+      "equality_semantics": {
+        "unordered": "structured_items (a field set keyed by item name; canonical form sorted by item name, so array order and object-key order never affect equality)",
+        "ordered": "the values themselves are compared verbatim - no trim, no re-case, no type coercion, no rewriting of the approved text",
+        "absent_null": "absent/null follows the contract and is never silently merged into a default"
+      },
+      "verification": {
+        "registry": "22/22",
+        "registration": "11/11",
+        "lane_a_regression": "27/27",
+        "desktop": "628/628",
+        "typecheck": "clean"
+      },
+      "real_binding_and_activation": "NOT_AUTHORIZED"
+    },
+    "scope_isolation_fix_2026-09-23": {
+      "verdict_correction": "the Lane B fix seal conclusion was corrected by the Controller to BLOCKED - SCOPE ISOLATION FIX REQUIRED",
+      "defect": "scopeKey joined the three scope fields with a NUL delimiter and substituted \"<none>\" for a null account; two crafted scopes could then collide and get/list returned the other scope's record (reproduced with public API calls only)",
+      "fix": "unambiguous structured encoding JSON.stringify([merchantId, storeId, account]); null distinct from the empty string; missing/invalid merchant/store still refused; one scopeKey for get, list, revoke and linkReplacement",
+      "replacement_history_fix": "append-once links: same target = idempotent replay, different target = REPLACEMENT_TARGET_ALREADY_SET, revoked/scope/lifecycle checks precede the idempotent path",
+      "exposure_scope": "no runtime wiring is a limit on exposure, not proof of isolation correctness",
+      "verification": {
+        "registry": "33/33",
+        "registration": "11/11",
+        "lane_a_regression": "27/27",
+        "desktop": "639/639",
+        "typecheck": "clean"
+      },
+      "real_binding_and_activation": "NOT_AUTHORIZED"
+    }
   }
 }
