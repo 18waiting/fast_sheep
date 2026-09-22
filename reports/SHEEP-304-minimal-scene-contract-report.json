@@ -87,10 +87,10 @@
     "production enablement",
     "platform mutation"
   ],
-  "full_sheep_304_closed": false,
+  "full_sheep_304_closed": true,
   "implementation_commit": "2b55dafa2ecec552dc81a5eb543a1df15d4c0b09",
   "technical_post_audit": "PASS (Controller: SHEEP-304 POST-AUDIT PASS — READY TO SEAL)",
-  "stage_acceptance": "PENDING",
+  "stage_acceptance": "RECORDED (Controller decision 2026-09-22)",
   "execution_authorized": false,
   "sealed_at": "2026-09-22",
   "audit_findings": {
@@ -104,5 +104,26 @@
       "in-process arrival ordering only; no cross-restart ordering guarantee",
       "window/process-scoped dedupe; no cross-restart exactly-once"
     ]
+  },
+  "status": "PASS / CLOSED",
+  "closure": {
+    "closed_by": "Controller decision (2026-09-22)",
+    "closed_date": "2026-09-22",
+    "implementation_commit": "2b55dafa2ecec552dc81a5eb543a1df15d4c0b09",
+    "governance_commit": "6d9e0298b79007787e18b0f52384fe897d35d0df",
+    "closure_basis": [
+      "bounded MINIMAL_V1 vocabulary (SHIPPING_TIME / OTHER_UNSUPPORTED / UNKNOWN; frozen + runtime validator)",
+      "unsupported and unknown fail closed (no approved rule -> OTHER_UNSUPPORTED; incomplete identity/content -> UNKNOWN)",
+      "the classifier owns no AI, send or persistence port (structural boundary asserted in tests)",
+      "the SHIPPING_TIME rule semantics are NOT implemented (SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED)",
+      "the second scene remains OPEN_DECISION",
+      "production enablement and real operations were never opened"
+    ],
+    "evidence": "11/11 focused tests; desktop suite 568/568; PROJECT_STATE consistency PASS; no canonical schema change"
+  },
+  "next_unit": {
+    "id": "SHEEP-305",
+    "state": "NOT_STARTED / NOT_AUTHORIZED / PRODUCT_DECISION_REQUIRED",
+    "gate": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED"
   }
 }
