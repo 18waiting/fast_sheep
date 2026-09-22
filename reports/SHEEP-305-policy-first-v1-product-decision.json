@@ -1,0 +1,437 @@
+{
+  "unit": "SHEEP-305-POLICY-FIRST-V1-PRODUCT-DECISION",
+  "acceptance_unit": "SHIPPING_TIME_POLICY_FIRST_V1_DECISION_RECORD",
+  "baseline_head": "874b55be9f817069ec63436b199bfbb5b913949e",
+  "recorded_at": "2026-09-22",
+  "recorded_by": "Codex task round on Owner approval relayed by the Controller",
+  "no_code_changes": true,
+  "no_runtime_started": true,
+  "decision_status_vocabulary": {
+    "approved": "policy-first V1 direction (Owner-approved; source class selected)",
+    "pending": "the specific shop policy text and the field-level rule semantics",
+    "not_authorized": "SHEEP-305 business implementation and any real-run/live validation"
+  },
+  "registration_placement": {
+    "recorded_here": "reports/SHEEP-305-policy-first-v1-product-decision.json (version-managed decision record)",
+    "ledger_pointer": "project/PROJECT_STATE.json — sheep_305.product_decision",
+    "not_written_to": "project/DECISIONS.md",
+    "reason": "DECISIONS.md is the Owner/Controller-governed locked decision set (its rule: any change requires a new decision that explicitly supersedes the old one, with reason/impact/migration). Its history contains only governance commits, and earlier task prompts explicitly forbade Codex from modifying DECISIONS.md. A formal DEC-0xx entry therefore remains an Owner/Controller governance step.",
+    "proposed_de_decision_entry": {
+      "id": "DEC-0xx (proposed, not adopted)",
+      "title": "V1 shipping-time facts are policy-first",
+      "status": "LOCKED (if adopted)",
+      "text": "V1 provides Owner-approved, versioned shop/product shipping policy facts. V1 does not derive per-order expected or committed shipping dates. Policy facts must carry trusted merchant/store/(applicable account) scope, declared nature (expected vs committed per approved semantics), evidence and approval records. Buyer text, AI output, page free text and message observedAt can never become a shipping-time fact."
+    }
+  },
+  "approved_principles": [
+    {
+      "id": 1,
+      "text": "V1 的事实来源是 Owner 明确批准的版本化发货政策。"
+    },
+    {
+      "id": 2,
+      "text": "政策必须绑定可信的商家、店铺及适用账号关系。"
+    },
+    {
+      "id": 3,
+      "text": "政策适用范围与声明性质分别表达：范围=店铺/商品政策（本轮不生成订单级时间事实）；性质=预计或承诺，必须来自已批准语义，不能根据措辞自行猜测。"
+    },
+    {
+      "id": 4,
+      "text": "通用政策不自动证明某商品或某订单适用。"
+    },
+    {
+      "id": 5,
+      "text": "无可信订单起算时间、商品适用性和批准算法时，不计算订单日期。"
+    },
+    {
+      "id": 6,
+      "text": "不从发货政策推导预计送达时间。"
+    },
+    {
+      "id": 7,
+      "text": "政策事实可用与订单时间未知可以同时成立。"
+    },
+    {
+      "id": 8,
+      "text": "AI 输出、买家自述、页面自由文本、消息 observedAt 均不能自行成为发货时间事实。"
+    },
+    {
+      "id": 9,
+      "text": "本轮不建设完整订单读取、SKU 管理或 RAG 系统；原始任务如要求相关能力，列为依赖缺口。"
+    }
+  ],
+  "roadmap_consistency": {
+    "roadmap_reference": "project/FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md — SHEEP-305 SHIPPING_TIME Rule and Fact Provider",
+    "verdict": "CONSISTENT — no original exit criterion is reduced or dropped by the policy-first direction",
+    "mapping": [
+      {
+        "criterion": "authoritative rule is recorded",
+        "effect": "the recorded rule IS the Owner-approved versioned shop/product policy; the policy text itself is still pending Owner input"
+      },
+      {
+        "criterion": "every fact used by the rule has a named producer and provenance",
+        "effect": "the policy fact producer is the approved policy registry (Owner-supplied); provenance = policy_id + version + approval record"
+      },
+      {
+        "criterion": "unknown facts remain unknown",
+        "effect": "preserved: missing policy, undetermined product applicability, missing calendar/timezone and unknown order start time all resolve to restricted/UNKNOWN, never to an inferred value"
+      },
+      {
+        "criterion": "Product/SKU work is included only if explicitly required by the rule",
+        "effect": "policy-first declares product scope, so a product/SKU SCOPE REFERENCE is required; full SKU management is NOT (recorded as a dependency gap, not implemented)"
+      },
+      {
+        "criterion": "no send is possible",
+        "effect": "preserved: the output carries no reply/prompt/send field and never upgrades automatic processing"
+      },
+      {
+        "criterion": "must not invent dispatch SLA / payment-time rule / product exception / region exception / order-state semantics",
+        "effect": "preserved: the contract can only carry DECLARED values (clock start event, cut-off, exceptions); an undeclared value is UNKNOWN, and no default (48h, payment start, printed waybill) is assumed"
+      }
+    ],
+    "flagged_nuance": "The direction approval selects the SOURCE CLASS (policy facts) but does not decide the field-level semantics (continuous hours vs business days, the clock-start event, cut-off, calendar, timezone, effective/expiry handling). Those remain PRODUCT_DECISION_REQUIRED, so the gate is NOT lifted by this round.",
+    "product_authority_alignment": "docs/product/PDD_MVP_V1.md section 6 already lists 'owner-supplied official shop rules' and 'shop data / product data' as authoritative V1 knowledge — the policy-first direction is the shipping-time instantiation of that same authority."
+  },
+  "minimal_policy_contract_draft": {
+    "placement": "DRAFT ONLY — no TypeScript module and no canonical schema are created in this round. Proposed home: a versioned Main-side service module (like apps/desktop/src/main/services/*) with a governed promotion into packages/contracts/schemas as a LATER step (frozen registry + manifest must be updated by that governed step).",
+    "fields": [
+      {
+        "name": "policy_id",
+        "required": true,
+        "semantics": "stable identity of the policy record"
+      },
+      {
+        "name": "policy_version",
+        "required": true,
+        "semantics": "monotonic version of the approved text; a new version never silently replaces an older one without an explicit replacement relation"
+      },
+      {
+        "name": "policy_text_ref",
+        "required": true,
+        "semantics": "reference to the Owner-supplied policy text and its evidence (document id/location), never the raw platform payload"
+      },
+      {
+        "name": "owner_approval",
+        "required": true,
+        "semantics": "{ approved_by, approved_at, approval_evidence_ref } — without it the policy is not usable"
+      },
+      {
+        "name": "merchant_id",
+        "required": true,
+        "semantics": "trusted merchant scope (Main-owned)"
+      },
+      {
+        "name": "store_id",
+        "required": true,
+        "semantics": "trusted store scope; a policy without a store binding is not usable"
+      },
+      {
+        "name": "platform_account_id",
+        "required": false,
+        "semantics": "applicable account relation when the policy is account-specific"
+      },
+      {
+        "name": "applicability",
+        "required": true,
+        "semantics": "STORE_WIDE | PRODUCT_SCOPED | UNDETERMINED; a store-wide policy never proves product-level applicability by itself"
+      },
+      {
+        "name": "product_scope",
+        "required": false,
+        "semantics": "{ include[]/exclude[], resolution: CONFIRMED | NOT_APPLICABLE | UNDETERMINED } — product/exception scope is DECLARED data, never inferred"
+      },
+      {
+        "name": "clock_start",
+        "required": true,
+        "semantics": "the declared event that starts the countdown; MUST be declared by the approved policy (no default payment-time rule)"
+      },
+      {
+        "name": "ship_complete_definition",
+        "required": true,
+        "semantics": "what 'shipped' means for this policy (declared); a printed waybill is NOT assumed to mean shipped"
+      },
+      {
+        "name": "time_value",
+        "required": true,
+        "semantics": "{ type: CONTINUOUS_HOURS | BUSINESS_DAYS | DATE | INTERVAL, value/interval }"
+      },
+      {
+        "name": "nature",
+        "required": true,
+        "semantics": "EXPECTED | COMMITTED — must come from the approved semantics; it is never derived from wording"
+      },
+      {
+        "name": "timezone",
+        "required": "conditional",
+        "semantics": "required when the value uses local dates/business days; missing timezone makes such values unusable"
+      },
+      {
+        "name": "business_calendar",
+        "required": "conditional",
+        "semantics": "required for BUSINESS_DAYS; not required for CONTINUOUS_HOURS"
+      },
+      {
+        "name": "cut_off",
+        "required": false,
+        "semantics": "declared order cut-off rule when the policy defines one"
+      },
+      {
+        "name": "effective",
+        "required": true,
+        "semantics": "{ from, to|null }"
+      },
+      {
+        "name": "lifecycle",
+        "required": true,
+        "semantics": "ACTIVE | SUPERSEDED | REVOKED + optional replaces/revoked_by relation"
+      }
+    ],
+    "explicit_distinctions": {
+      "不适用 (NOT_APPLICABLE)": "the policy exists and the declared scope excludes this product/store situation — a decided outcome",
+      "明确不存在 (ABSENT)": "the Owner has declared that no policy exists for this scope — a decided outcome",
+      "未知 (UNKNOWN)": "the policy may exist but cannot be identified, scoped, versioned or validated — never filled with an inferred value"
+    },
+    "prohibitions": [
+      "CONTINUOUS_HOURS values must NOT be forced to carry a business calendar",
+      "pure policy durations must NOT be converted into absolute timestamps by the fact layer",
+      "business-day and local-date rules REQUIRE sufficient calendar/timezone semantics",
+      "no default 48 hours",
+      "no default payment-time clock start",
+      "no assumption that a printed waybill equals shipped",
+      "no delivery-ETA derivation from the shipping policy"
+    ]
+  },
+  "minimal_output_draft": {
+    "shape": {
+      "policy_fact_id": "string",
+      "contract_version": "string",
+      "scope": "{ merchant_id, store_id, platform_account_id | null }",
+      "applicability": "STORE_WIDE | PRODUCT_SCOPED | PRODUCT_APPLICABILITY_CONFIRMED | PRODUCT_APPLICABILITY_UNDETERMINED | NOT_APPLICABLE | POLICY_MISSING",
+      "kind": "EXPECTED | COMMITTED | NOT_DECLARED",
+      "time_value": "{ type, value | interval } | null",
+      "calendar": "{ timezone, business_calendar_ref } | null",
+      "clock_start": "{ event } | null",
+      "ship_complete_definition": "string | null",
+      "evidence": "{ policy_id, policy_version, owner_approval_ref, source_ref }",
+      "validity": "{ effective_from, effective_to | null, lifecycle }",
+      "restriction_reasons": [
+        "POLICY_MISSING",
+        "SCOPE_MISMATCH",
+        "PRODUCT_APPLICABILITY_UNDETERMINED",
+        "CONFLICTING_POLICIES",
+        "SUPERSEDED",
+        "REVOKED",
+        "CALENDAR_MISSING",
+        "TIMEZONE_MISSING",
+        "ORDER_TIME_UNKNOWN",
+        "SEMANTICS_UNDECIDED"
+      ],
+      "newness": "NEWNESS_UNVERIFIED",
+      "automaticProcessingEligible": false
+    },
+    "never_contains": [
+      "buyer-facing reply",
+      "prompt",
+      "send action",
+      "automatic processing eligibility",
+      "delivery ETA",
+      "per-order shipping date"
+    ]
+  },
+  "acceptance_matrix": [
+    {
+      "id": 1,
+      "scenario": "有效且明确适用的政策",
+      "expected": "政策事实可用；适用性=已确认；来源/作用域/版本/有效性证据齐备"
+    },
+    {
+      "id": 2,
+      "scenario": "政策缺失",
+      "expected": "不产出任何时间值；restriction=POLICY_MISSING（或由 Owner 声明 ABSENT）"
+    },
+    {
+      "id": 3,
+      "scenario": "店铺/账号不匹配",
+      "expected": "拒绝使用；restriction=SCOPE_MISMATCH；不得跨店/跨账号替换"
+    },
+    {
+      "id": 4,
+      "scenario": "商品例外存在但无法判断适用性",
+      "expected": "restriction=PRODUCT_APPLICABILITY_UNDETERMINED；时间值不可用（不默认通用政策适用）"
+    },
+    {
+      "id": 5,
+      "scenario": "同范围政策冲突且无批准的覆盖关系",
+      "expected": "restriction=CONFLICTING_POLICIES；UNKNOWN，不发明优先级"
+    },
+    {
+      "id": 6,
+      "scenario": "已批准且适用的替代版本",
+      "expected": "使用新版本，并保留 replaces 关系；历史承诺不被静默改写"
+    },
+    {
+      "id": 7,
+      "scenario": "政策过期或撤销",
+      "expected": "restriction=SUPERSEDED|REVOKED；不产出时间值"
+    },
+    {
+      "id": 8,
+      "scenario": "工作日规则缺少必要日历",
+      "expected": "restriction=CALENDAR_MISSING；不产出时间值"
+    },
+    {
+      "id": 9,
+      "scenario": "日期规则缺少必要时区",
+      "expected": "restriction=TIMEZONE_MISSING；不产出时间值"
+    },
+    {
+      "id": 10,
+      "scenario": "一般政策可用但订单时间未知",
+      "expected": "政策事实可用 + 订单时间未知（两者同时成立）；不计算订单日期"
+    },
+    {
+      "id": 11,
+      "scenario": "新政策不能自动覆盖历史订单承诺",
+      "expected": "历史承诺保留其原始政策版本与有效期；新版本仅对其生效范围起作用"
+    },
+    {
+      "id": 12,
+      "scenario": "买家自述已付款不能用于计算截止时间",
+      "expected": "买家文本不构成 clock_start 证据；restriction=ORDER_TIME_UNKNOWN（除非可信订单事实另有来源）"
+    }
+  ],
+  "acceptance_matrix_invariants": [
+    "no reply / prompt / send is ever produced",
+    "newness stays NEWNESS_UNVERIFIED",
+    "automaticProcessingEligible stays false",
+    "no order-level shipping date is derived",
+    "no delivery ETA is derived"
+  ],
+  "owner_policy_collection_form": {
+    "status": "PENDING_OWNER_INPUT — no approved shop shipping policy exists in the repository (search across packages/apps/docs/fixtures found none; the only matching document is this round-s pre-audit report)",
+    "fields": [
+      {
+        "field": "店铺（merchant/store）",
+        "value": "待 Owner 提供"
+      },
+      {
+        "field": "政策原文",
+        "value": "待 Owner 提供"
+      },
+      {
+        "field": "适用商品与例外",
+        "value": "待 Owner 提供"
+      },
+      {
+        "field": "从什么事件开始计时（clock start）",
+        "value": "待 Owner 提供（不得默认付款）"
+      },
+      {
+        "field": "时长类型：连续小时 / 自然日 / 工作日",
+        "value": "待 Owner 提供"
+      },
+      {
+        "field": "“发货完成”具体指什么",
+        "value": "待 Owner 提供（不得默认打印单号=发货）"
+      },
+      {
+        "field": "截单时间（如适用）",
+        "value": "待 Owner 提供"
+      },
+      {
+        "field": "时区（如适用）",
+        "value": "待 Owner 提供"
+      },
+      {
+        "field": "工作日历（如适用）",
+        "value": "待 Owner 提供"
+      },
+      {
+        "field": "生效日期",
+        "value": "待 Owner 提供"
+      },
+      {
+        "field": "性质：预计 / 承诺",
+        "value": "待 Owner 提供（必须来自已批准语义）"
+      },
+      {
+        "field": "批准人及批准记录",
+        "value": "待 Owner 提供"
+      }
+    ],
+    "rules": [
+      "example values must be labelled as test assumptions and never presented as this shop-s real policy",
+      "another merchant-s online policy must never be used as this shop-s policy"
+    ]
+  },
+  "status_after_this_round": {
+    "approved": "policy-first V1 direction",
+    "pending": [
+      "the specific shop/product shipping policy text",
+      "field-level rule semantics (hours vs business days, clock start, cut-off, calendar, timezone, effective/expiry)"
+    ],
+    "not_authorized": [
+      "SHEEP-305 business implementation",
+      "fact provider",
+      "ContextEnvelope/ReplyPlan",
+      "AI wiring",
+      "policy gate",
+      "send",
+      "production enablement",
+      "real operations"
+    ]
+  },
+  "gates": {
+    "ai": "OFF",
+    "sending": "OFF",
+    "production_enablement": "OFF / NOT_AUTHORIZED",
+    "real_operations": "STOPPED"
+  },
+  "product_gate_unchanged": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED (field-level semantics still undecided)",
+  "sheep_305_lifecycle": "NOT_STARTED / NOT_AUTHORIZED (direction recorded only)",
+  "next_step": "Owner supplies the shop/product policy facts (see the collection form) and decides the field-level semantics; implementation stays blocked until then",
+  "candidate_policy": {
+    "report": "reports\\SHEEP-305-candidate-policy-muyi-draft.json",
+    "shop_name_owner_supplied": "木易先生",
+    "lifecycle": "DRAFT / NOT_EFFECTIVE",
+    "identity_binding": "UNBOUND (no merchant/store/platform-account id assigned; a name is never identity evidence)",
+    "acceptance_matrix": "12 rows here + 9 supplement rows in the candidate draft = 21 rows total (the supplement is not duplicated here)",
+    "lane_A_authorizable_separately": "YES (contract-only offline capability; requires a separate Controller authorization)"
+  },
+  "acceptance_matrix_reference": {
+    "base_rows": "1-12 (this report)",
+    "supplement_rows": "13-21 (reports/SHEEP-305-candidate-policy-muyi-draft.json)",
+    "total": 21
+  },
+  "lane_a": {
+    "status": "SEALED",
+    "implementation_commit": "c37c32b8d78fa993c27de733f6a59e5fd70c9a22",
+    "technical_post_audit": "PASS (Controller: SHEEP-305 LANE A POST-AUDIT PASS — READY TO SEAL)",
+    "stage_acceptance": "PENDING",
+    "full_lane_a_closed": false,
+    "sealed_at": "2026-09-23",
+    "contract_id": "SHIPPING_POLICY_V1",
+    "contract_module": "apps/desktop/src/main/services/shipping-policy-contract.ts",
+    "test_module": "apps/desktop/tests/shipping-policy-contract.test.ts",
+    "acceptance_matrix": "21/21 rows asserted (12 base rows + 9 supplement rows), each with the 8 invariants",
+    "verification": {
+      "focused_tests": "27/27 pass",
+      "desktop_suite": "595/595 pass",
+      "typecheck": "clean",
+      "project_state_consistency": "PASS",
+      "canonical_schema_diff": 0,
+      "side_effects": "AI 0 / sending 0 / production writes 0 / real operations STOPPED",
+      "structural_boundary": "zero imports in the contract module; no AI/send/persistence/provider/network port; counters labelled as structural invariants"
+    },
+    "p3_carried_forward": [
+      "matrix 19 uses a conditional assertion (if policy_fact) - should assert fact presence unconditionally before the value checks",
+      "the 木易先生 draft test uses an OR assertion (SCOPE_UNBOUND || NAME_NOT_IDENTITY_EVIDENCE) while both reasons hold - assert both separately",
+      "matrix rows 10 and 20 describe the same scenario in the authoritative matrix - an intentional duplicate, both kept and asserted",
+      "the 木易先生 draft cannot trigger the bound-DRAFT path (its identifiers are null by contract) - that path is covered by the bound synthetic DRAFT fixture in matrix 13; reaching it on the draft itself needs Lane B identity binding"
+    ],
+    "lane_b": "CLOSED / NOT AUTHORIZED",
+    "product_gate": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED",
+    "not_an_activation": "sealing Lane A does not activate a real policy, does not close SHEEP-305, and does not lift the product gate"
+  }
+}
