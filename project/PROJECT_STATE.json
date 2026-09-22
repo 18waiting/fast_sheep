@@ -4247,6 +4247,25 @@
         "real_binding_and_activation": "NOT_AUTHORIZED"
       }
     },
+    "identity_source_verification": {
+      "report": "reports\\SHEEP-305-controlled-identity-source-verification.json",
+      "controller_authorization": "AUTHORIZED (read-only identity observation of the controlled single-store session, 2026-09-23)",
+      "execution_result": "NOT_EXECUTED_NO_LIVE_SESSION",
+      "execution_reason": "the canonical live-evidence state is PAUSED / NOT_AUTHORIZED and no controlled session was attached (no CDP listener on the controlled debug port), so the target session could not be observed",
+      "blocker": "NO_LIVE_SESSION",
+      "authorization_scope_registered": "limited read-only authorization only: the designated controlled slot, the session's own visible/loaded identity area, and the minimum sanitized evidence; nothing else is authorized by it",
+      "blocker_detail": "the read-only observation authorization is in place; the missing piece is an attached, logged-in controlled session. The approved controlled entry attaches to an already-running debug browser (nothing version-controlled launches it), the previously used debug profile exists but its seller session state is unknown and was not probed, and no debug endpoint is currently listening",
+      "owner_action_needed": "start the debug browser with the recorded arguments (--remote-debugging-port=9222 --user-data-dir=<repo>/.tmp/chrome-debug-profile), open the authorized controlled shop's merchant chat page as a fresh startup, complete the login if the session expired, then confirm the session is up",
+      "next_action_after_session": "build, run the existing approved launcher in real mode, discover the identity area from the observed page, then write the minimal default-OFF read-only identity reader with offline tests before reading any field value",
+      "not_widened": ["no new debug entry", "no debug port widening", "no scanning of other ports or browser sessions", "no real binding write", "no policy activation", "no AI", "no send", "no production write"],
+      "round_history": ["round 1: NOT_EXECUTED_NO_LIVE_SESSION (target slot uniquely determined locally; identity domain empty)", "round 2: same blocker confirmed operational (startup requires Owner browser action, not a new approval)"],
+      "conclusion": "INSUFFICIENT_EVIDENCE__CANDIDATE_SOURCES_ONLY - no session-self platform identity source was observed and no local identifier was substituted for it",
+      "target": "the single locally designated controlled PDD shop slot; an application-local id, never a platform identity",
+      "real_binding_write": "NOT_AUTHORIZED",
+      "policy_activation": "NOT_AUTHORIZED",
+      "code_changes": 0,
+      "recorded_at": "2026-09-23"
+    },
     "real_binding_design": {
       "report": "reports\\SHEEP-305-real-binding-minimal-design.json",
       "status": "DESIGN_ONLY / NOT_AUTHORIZED",

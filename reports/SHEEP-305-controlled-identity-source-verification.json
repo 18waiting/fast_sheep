@@ -1,0 +1,313 @@
+{
+  "unit": "SHEEP-305-CONTROLLED-IDENTITY-SOURCE-VERIFICATION",
+  "acceptance_unit": "CONTROLLED_SINGLE_STORE_IDENTITY_SOURCE_VERIFICATION",
+  "baseline_head": "32a8d6f787c423933212d91385e39bd9e5b799fd",
+  "recorded_at": "2026-09-23",
+  "controller_authorization": {
+    "granted": "read-only verification of the identity source of the Owner-designated controlled single-store session",
+    "constraints": [
+      "observe only what the target session itself normally displays or normally loads",
+      "no protocol guessing, account enumeration or store enumeration",
+      "no request modification, no credential replay, no access-control bypass",
+      "no extraction, output or storage of cookies, tokens, passwords, full headers or full bodies",
+      "no chat content, customer data or order data",
+      "no store/account switching and no platform setting changes",
+      "no promotion of observed payload fields into canonical ownership facts"
+    ],
+    "still_not_authorized": {
+      "real_platform_binding_write": "NOT_AUTHORIZED",
+      "policy_activation": "NOT_AUTHORIZED",
+      "durable_persistence": "NOT_AUTHORIZED",
+      "ai_send_production": "OFF / STOPPED",
+      "shep_305_overall": "NOT_CLOSED"
+    }
+  },
+  "target_determination": {
+    "requested_target": "the Owner-designated controlled single-store session for 木易先生",
+    "resolved_target": "the single controlled PDD store slot present in the local application data",
+    "how_resolved": [
+      "the local data root holds exactly one shop row: shop-1789408699210-9826 (type pdd, name 'Controlled PDD Runtime (local only)', enabled)",
+      "PlatformConfig.controlled_shop_id = shop-1789408699210-9826, i.e. the controlled designation points at that same single row",
+      "the SHEEP-301 controlled harness default (FASTWORK_SHEEP301_REAL_SHOP_ID) is the same value, so there is no ambiguity between competing slots"
+    ],
+    "recorded_limits": [
+      "this is an APPLICATION-LOCAL identifier, not a platform identity; it says which local slot is the controlled one, not which platform shop/account it is",
+      "no evidence in the repository or in the local data connects the Owner-declared name 木易先生 to that slot",
+      "no browser tab, account or historical test slot was selected by name; no synthetic identity was reused"
+    ],
+    "question_for_owner": "none for target selection (the controlled slot is unique). The missing input is an active controlled session, not a target choice."
+  },
+  "execution_summary": {
+    "result": "NOT_EXECUTED_NO_LIVE_SESSION",
+    "reason": "the canonical ledger keeps live evidence PAUSED / NOT_AUTHORIZED and no controlled session is attached in this environment: no CDP endpoint is listening on the controlled debug port (127.0.0.1:9222), no controlled harness environment variables are set, so the target session could not be observed this round",
+    "consequence": "no session-self platform identity source was observed; no local identifier was substituted for it",
+    "code_changes": 0,
+    "runtime_started": false,
+    "platform_requests_made": 0,
+    "binding_writes": 0
+  },
+  "actions_performed_read_only": [
+    "read PROJECT_STATE authorization fields and the binding design report",
+    "read the controlled-shop resolution path (bootstrap, PlatformConfig schema, legacy shops schema) and the controlled shop creation utility",
+    "read the identity domain schema and repositories (stores / platform_accounts), the PDD secret-reference service, session/document binding and main admission, the transport ownership contract and the page decoder",
+    "read a read-only COPY of the local application database (row counts, shops, PlatformConfig, merchants); the original database was never opened for writing",
+    "probed the local controlled debug port for an attached session (nothing listening)",
+    "re-read previously authorized observation artifacts to characterise candidate sources by name and structure only"
+  ],
+  "actions_not_performed": [
+    "no page was opened, no navigation, no DOM or store inspection of a live page",
+    "no request to any platform host, no request replay, no request modification",
+    "no cookie/token/header/body extraction, output or storage",
+    "no chat, customer or order data was read",
+    "no store or account switch, no platform setting change",
+    "no binding write, no policy activation, no AI call, no send, no production write",
+    "no supplementary observation code was written (the missing capability is recorded as a gap instead)"
+  ],
+  "observed_local_facts": {
+    "shop_rows": 1,
+    "shop_row": {
+      "id": "shop-1789408699210-9826",
+      "type": "pdd",
+      "name": "Controlled PDD Runtime (local only)",
+      "enabled": true
+    },
+    "platform_config_controlled_shop_id": "shop-1789408699210-9826",
+    "identity_domain_rows": {
+      "merchants": 1,
+      "stores": 0,
+      "platform_accounts": 0,
+      "members": 0,
+      "memberships": 0,
+      "seats": 0
+    },
+    "merchant_row": {
+      "id": "merchant-3bd4d798-…(app-local UUID, truncated here)",
+      "name": null
+    },
+    "content_rows": {
+      "normalized_conversations": 0,
+      "normalized_messages": 0,
+      "ownership_records": 0,
+      "customers": 0,
+      "domain_products": 0,
+      "skus": 0,
+      "orders": 0,
+      "logistics": 0
+    },
+    "interpretation": "the canonical identity domain is empty apart from one name-less local merchant scope; there is no store row, no platform_account row and therefore no place where a verified platform identity exists today"
+  },
+  "candidate_sources": [
+    {
+      "source_id": "page_visible_account_area",
+      "source_class": "VISIBLE_PAGE_UI",
+      "status": "CANDIDATE_ONLY - NOT OBSERVED THIS ROUND",
+      "basis": "the controlled page is the merchant workbench at /chat-merchant/index.html; a previously authorized capture recorded only the tab/page title ('主账号', i.e. a UI label for the main account view), which is a view label, not an identity value",
+      "field_semantics": "UNKNOWN - no account/shop identity field was read from the visible area",
+      "session_attribution": "UNKNOWN - a page label does not prove which shop or account the session belongs to",
+      "external_reference": "NOT OBSERVED",
+      "stability_and_uniqueness": "UNVERIFIED"
+    },
+    {
+      "source_id": "page_identity_responses",
+      "source_class": "NORMAL_PAGE_LOAD_TRAFFIC",
+      "status": "CANDIDATE_ONLY - NOT OBSERVED THIS ROUND",
+      "basis": "a previously authorized capture of this session's normal page load listed endpoint pathnames that are plausibly identity-bearing by name (e.g. /earth/api/mallInfo/commonMallInfo, /janus/api/new/userinfo); their response bodies were never captured and their field semantics are therefore unverified",
+      "field_semantics": "UNKNOWN - no body was captured, no field name or value was read",
+      "session_attribution": "UNKNOWN - these are page-load requests, not a verified session-identity statement",
+      "external_reference": "NOT OBSERVED",
+      "stability_and_uniqueness": "UNVERIFIED",
+      "do_not_guess": "the endpoint names above are recorded only as candidate locations; no endpoint may be called, parsed or inferred without an explicit authorization"
+    },
+    {
+      "source_id": "session_role_marker",
+      "source_class": "APPLICATION_URL_PARAMETER",
+      "status": "OBSERVED_IN_PRIOR_EVIDENCE (not an identity source)",
+      "basis": "a previously captured session-level websocket URL carried a role marker indicating a merchant-side customer-service role",
+      "field_semantics": "a ROLE marker, not a shop/account identity",
+      "external_reference": "NOT OBSERVED",
+      "handling": "the same prior artifact also carried credential-bearing material in the URL, which is exactly why such raw captures stay outside version control and are not reproducible from any commit"
+    },
+    {
+      "source_id": "application_local_identifiers",
+      "source_class": "APPLICATION_GENERATED",
+      "status": "OBSERVED (local only)",
+      "basis": "local shop id, PlatformConfig.controlled_shop_id, runtime sessionId/documentGeneration, connection-evidence hash",
+      "field_semantics": "identifies a local slot or runtime object, never a platform shop/account",
+      "external_reference": "NONE",
+      "stability_and_uniqueness": "stable only inside this local installation; proves nothing about the platform side"
+    },
+    {
+      "source_id": "payload_identity_fields",
+      "source_class": "PLATFORM_PAYLOAD",
+      "status": "EXCLUDED BY CONTRACT",
+      "basis": "the transport/chat-list contracts state that ownership must never come from payload fields, the selected customer or the page URL",
+      "field_semantics": "message content and message-level identifiers only",
+      "external_reference": "NOT APPLICABLE - not admissible as binding evidence"
+    }
+  ],
+  "per_item_findings": [
+    {
+      "item": 1,
+      "question": "Is the source a visible account area, a platform response, or an application-local value?",
+      "finding": "NOT OBSERVED for the target session this round. Statically, the only identity-bearing surfaces that exist as candidate locations are the page's visible account area and its normal page-load identity responses; every value the runtime actually uses today is application-local."
+    },
+    {
+      "item": 2,
+      "question": "Does the field denote a shop, a login account, a sub-account, or only a display name?",
+      "finding": "UNKNOWN - no field was observed. The only prior-observed label ('主账号') denotes a view of the main account, not a data field, and a display name is in any case never an identity."
+    },
+    {
+      "item": 3,
+      "question": "What shows it belongs to the current logged-in session rather than a customer or another object?",
+      "finding": "UNKNOWN / NOT ESTABLISHED. The only session-attribution mechanism implemented today compares application-generated values (sessionId, local shopId, documentGeneration); nothing ties a platform identity value to the session."
+    },
+    {
+      "item": 4,
+      "question": "How is it tied to this session, target and document generation?",
+      "finding": "Implemented for runtime evidence only: the document binding (sessionId, local shopId, documentGeneration) plus the admission connection evidence hash. Any future identity evidence must be recorded against that same binding and must expire with the session/document generation."
+    },
+    {
+      "item": 5,
+      "question": "Does an external reference actually exist?",
+      "finding": "NOT OBSERVED. The Owner states no separate numeric identifier string exists; the local data has no platform_accounts row at all, so no external reference is stored anywhere today. If one is supplied it is an opaque string (no numeric-format requirement) and must never be treated as platform-verified by itself."
+    },
+    {
+      "item": 6,
+      "question": "Is there evidence of uniqueness or cross-session stability?",
+      "finding": "NO. A single observation could not establish this in any case; uniqueness and cross-session stability remain explicitly UNVERIFIED and require repeated, independently authorized observations."
+    }
+  ],
+  "evidence_classification": {
+    "what_was_observed": [
+      "one application-local controlled shop slot and its PlatformConfig designation",
+      "an identity domain that is empty (1 name-less merchant, 0 stores, 0 platform accounts)",
+      "the absence of any attached controlled session in this environment"
+    ],
+    "what_is_supported_about_sources_and_semantics": [
+      "all identifiers in operational use are application-generated",
+      "payload identity fields are contractually inadmissible as ownership evidence",
+      "candidate identity surfaces exist only as named locations (visible account area, page-load identity responses), with no captured semantics"
+    ],
+    "is_it_enough_to_propose_a_binding_candidate": false,
+    "still_needs_owner_or_further_verification": [
+      "an active controlled session (Owner completes login in the existing controlled flow if it has expired) under an authorized live-evidence state",
+      "an authorized read-only observation of the page's visible account area and/or its identity response, captured through the existing controlled evidence mechanism",
+      "Owner confirmation that the observed reference denotes the intended shop and not a sub-account or a different role",
+      "repeat observations to test uniqueness and cross-session stability"
+    ]
+  },
+  "sanitization_and_storage": {
+    "rule_followed": "only minimal sanitized evidence is recorded; no credential, token, header or raw body is stored in this version-managed report",
+    "index_rule": "candidate endpoints are recorded by pathname only (no query strings), and no value from any capture is reproduced",
+    "prior_mechanism_noted": "earlier controlled captures stored derived facts and replaced digest identifiers with run-local ordinals while explicitly not persisting raw bodies; prior raw capture files in .tmp do contain credential-bearing material and therefore remain outside version control",
+    "no_masked_value_as_id": "no masked value or fingerprint recorded here is presented as, or may be promoted to, a platform identity"
+  },
+  "conclusion": {
+    "verdict": "INSUFFICIENT_EVIDENCE__CANDIDATE_SOURCES_ONLY",
+    "statement": "no session-self platform identity source was observed for the target session; only candidate source locations were identified by name. No binding candidate can be proposed, and the application-local identifier must not be used to fill the gap.",
+    "valid_outcome_note": "observing no reliable identity source is itself a valid result of this unit"
+  },
+  "impact_on_binding_storage_design": {
+    "updated_findings": [
+      "the client-side binding-provenance gap stands: no store<->platform_account relation and no verification-state/provenance storage exists",
+      "this round adds a concrete reason to store binding evidence as sanitized derived facts (evidence kind, provenance, observed_at, controlled reference) rather than as retained raw capture material, since raw transport material can carry credentials"
+    ],
+    "design_statement_not_required": "this does not by itself require a new field or table; the same outcome may be reached by extending an approved identity contract or by a governed decision record, and the choice remains a governed decision",
+    "unchanged": [
+      "binding does not imply content approval, effectiveness or runtime activation",
+      "order payment and carrier-acceptance reads remain non-prerequisites for general policy binding"
+    ]
+  },
+  "gap_if_supplementary_code_is_needed": {
+    "gap": "no implemented code path reads a visible account/shop identity area or an identity response; the controlled page decoder reads only Vuex message mutations",
+    "minimal_scope_if_authorized": [
+      "one controlled, default-OFF read-only identity observation helper reusing the existing admission and document-binding constraints",
+      "offline tests with synthetic data covering target restriction, redaction and fail-closed stop behaviour"
+    ],
+    "not_done_because": "writing it while the live-evidence gate is PAUSED / NOT_AUTHORIZED would create a capability that cannot legally run; the gap is recorded instead of implemented"
+  },
+  "stop_and_cleanup": {
+    "stop_trigger": "no authorized live session available (canonical live evidence PAUSED / NOT_AUTHORIZED; no attached debug session)",
+    "expiry_rule_acknowledged": "if a target/document-generation change or an admission loss is ever detected during a future observation, the observation stops and the binding is re-verified; prior evidence is never carried over",
+    "resources_created": [
+      "one read-only copy of the local application database under .tmp (deleted after reading)"
+    ],
+    "resources_released": true,
+    "owner_browser_session_touched": false,
+    "owner_session_modified": false
+  },
+  "next_minimal_action": {
+    "action": "restore the canonical live-evidence authorization for a single read-only identity observation, attach the controlled session (Owner completes login if expired), then re-run this verification",
+    "requires_authorization": [
+      "live-evidence authorization for the controlled session",
+      "if new observation code is required: an implementation authorization limited to the minimal read-only helper"
+    ],
+    "still_not_authorized_by_this_step": [
+      "real binding write",
+      "policy activation",
+      "durable persistence",
+      "AI",
+      "send",
+      "production writes"
+    ]
+  },
+  "gates": {
+    "ai": "OFF",
+    "sending": "OFF",
+    "production_enablement": "OFF / NOT_AUTHORIZED",
+    "real_operations": "STOPPED"
+  },
+  "product_gate_unchanged": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED",
+  "round_2_startup_feasibility": {
+    "checked_at": "2026-09-23",
+    "question": "can this round start the target session through an existing approved flow, or does it need Owner interaction?",
+    "findings": [
+      "an approved, version-controlled controlled entry exists: scripts/run-sheep-301-real-app-capture.mjs (with scripts/run-sheep-301-offline-app-acceptance.mjs); it spawns Electron with the env-gated Main entry and requires three labels in real mode",
+      "that entry ATTACHES to an already-running debug browser via FASTWORK_SHEEP301_REAL_CDP_URL (default http://127.0.0.1:9222); nothing version-controlled launches the browser (no remote-debugging-port launcher exists in scripts/, docs/, project/ or apps/desktop/src)",
+      "the previously used debug profile directory and the recorded launch arguments exist under .tmp (.tmp/chrome-debug-profile, last written 2026-09-21); whether it still holds a valid seller session is UNKNOWN and was not probed, because reading cookies is prohibited",
+      "no debug endpoint is listening on the controlled port right now, so no session can be attached at this moment",
+      "the approved entry's purpose is inbound-message capture; it does not read the page's visible account/shop identity area, so the identity observation still needs a dedicated minimal reader",
+      "the launcher itself refuses to reuse an existing CDP target (REUSE_TARGET_REFUSED_UNTIL_RECOVERY_DESIGN_ACCEPTED), so the observed page must be a fresh controlled startup"
+    ],
+    "why_no_identity_reader_was_written_this_round": "the page's identity region (DOM or store path, field shape) has never been observed and must be discovered from the authorized page itself; hardcoding selectors or paths now would be guessing, which this unit forbids, and building a generic DOM/response extractor would exceed 'minimal sanitized evidence'. The reader is therefore authored immediately after the session is attached, using the observed structure, with offline tests running first.",
+    "blocker_corrected": "NO_LIVE_SESSION",
+    "blocker_statement": "the limited read-only authorization is already in place; what is missing is an attached, logged-in controlled session. The blocker is operational, not an approval gap.",
+    "authorization_reused": "the read-only identity observation authorization granted by the Owner in the previous round is reused and is NOT listed as a pending approval item",
+    "not_widened": [
+      "no new debug entry was created and no debug port exposure was widened",
+      "no other port or browser session was scanned",
+      "no real binding write, no policy activation, no AI, no send, no production write"
+    ],
+    "owner_action_required": {
+      "where": "start the debug browser that the approved controlled entry attaches to. The Fast Sheep application itself is spawned afterwards by the existing version-controlled launcher - no new entry is required.",
+      "steps": [
+        "launch the debug browser from the repository root with the previously recorded arguments: --remote-debugging-port=9222 --user-data-dir=E:\\fast_sheep\\.tmp\\chrome-debug-profile --no-first-run --no-default-browser-check",
+        "in that browser open the authorized controlled shop's merchant chat page as a fresh startup (the launcher refuses to reuse an existing CDP target)",
+        "if the seller session has expired, complete the login there yourself (QR or credentials) - the tooling never reads, fills or stores credentials",
+        "when the page is open and logged in, tell the Controller/Codex that the session is up"
+      ],
+      "how_to_confirm_ready": [
+        "the controlled debug endpoint answers on 127.0.0.1:9222 (metadata only, no page content)",
+        "the browser shows the controlled shop's merchant chat view and the seller is logged in (visible to you)",
+        "the debug browser was started fresh for this run and no other session was switched or reused"
+      ],
+      "then_what_happens": [
+        "Codex builds the desktop package, runs the existing approved launcher in real mode with the required labels, and observes only the identity area of that page",
+        "the minimal default-OFF identity reader is written against the structure actually observed, with offline synthetic tests for target restriction, redaction and fail-closed stops, before any field value is read",
+        "only sanitized evidence is recorded; no cookie, token, header, full body, chat or order data is read or stored"
+      ]
+    }
+  },
+  "execution_rounds": [
+    {
+      "round": 1,
+      "result": "NOT_EXECUTED_NO_LIVE_SESSION",
+      "note": "target slot uniquely determined locally; identity domain empty; no session attached"
+    },
+    {
+      "round": 2,
+      "result": "NOT_EXECUTED_NO_LIVE_SESSION_CONFIRMED_OPERATIONAL",
+      "note": "startup feasibility checked; the remaining blocker needs Owner/operator browser action, not a new approval"
+    }
+  ]
+}
