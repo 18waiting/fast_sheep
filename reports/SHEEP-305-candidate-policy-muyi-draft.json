@@ -1,0 +1,345 @@
+{
+  "unit": "SHEEP-305-CANDIDATE-POLICY-MUYI-DRAFT",
+  "acceptance_unit": "SHIPPING_TIME_CANDIDATE_POLICY_DRAFT",
+  "baseline_head": "874b55be9f817069ec63436b199bfbb5b913949e",
+  "recorded_at": "2026-09-23",
+  "no_code_changes": true,
+  "no_runtime_started": true,
+  "policy_identity": {
+    "platform": "pdd",
+    "platform_label_owner_supplied": "拼多多",
+    "owner_declared_identifier": "木易先生",
+    "identifier_source": "OWNER_DECLARED",
+    "platform_binding": "UNVERIFIED",
+    "numeric_identifier": {
+      "required": false,
+      "provided": false,
+      "owner_note": "Owner states no separate numeric identifier string exists"
+    },
+    "merchant_id": null,
+    "store_id": null,
+    "platform_account_id": null,
+    "identity_note": "Only the shop name is Owner-supplied. A name (or its hash) is never a platform-verified id; storing it as an Owner-declared external reference does not prove uniqueness, stability or session ownership.",
+    "warnings": [
+      "never present the shop name or a hash of it as a platform-verified ID",
+      "never reuse a controlled test shop identifier",
+      "never auto-link the existing shops slot",
+      "never auto-write real stores/platform_accounts rows"
+    ],
+    "internal_id_rule": "a future registration may mint an application-generated internal id, but it must stay separate from the platform external reference and keep its verification source and state"
+  },
+  "policy_status": {
+    "lifecycle": "DRAFT / NOT_EFFECTIVE",
+    "decision_vocabulary": "PENDING (repository vocabulary: LOCKED / SUPERSEDED / PENDING / DEFERRED)",
+    "effective_from": null,
+    "effective_to": null,
+    "approval_record": null,
+    "approval_note": "未经确认的生效日期与批准记录一律留空；本草案不代表任何具体政策已获批准。",
+    "in_runtime_active_set": false,
+    "runtime_active_set_note": "运行时不存在任何有效政策集合（政策注册/事实提供方尚未实现），因此本草案不可能被任何消费者取用。",
+    "permanence_note": "生效期未知 ≠ 永久有效；在生效期与失效条件被确认前，该政策不得视为长期有效。",
+    "owner_confirmation_state": "OWNER_CONFIRMED (content)",
+    "runtime_activation": "NOT_AUTHORIZED"
+  },
+  "confirmed_facts": [
+    {
+      "fact": "店铺名称（Owner 提供）",
+      "value": "木易先生",
+      "source": "Owner (relayed by the Controller, 2026-09-23)"
+    }
+  ],
+  "candidate_values_not_verified": [
+    {
+      "field": "nature",
+      "candidate": "EXPECTED（预计性政策）"
+    },
+    {
+      "field": "applicability",
+      "candidate": "已确认的常规现货商品，且不存在适用的特殊政策"
+    },
+    {
+      "field": "clock_start",
+      "candidate": "订单支付成功"
+    },
+    {
+      "field": "time_value",
+      "candidate": "48 个连续小时（CONTINUOUS_HOURS=48）"
+    },
+    {
+      "field": "ship_complete_definition",
+      "candidate": "承运商首次有效揽收记录；打印或上传单号不等于完成发货"
+    },
+    {
+      "field": "weekend_holiday_handling",
+      "candidate": "周末与节假日计入连续时长，不自动顺延"
+    },
+    {
+      "field": "cut_off",
+      "candidate": "不设置每日截单时间"
+    },
+    {
+      "field": "timezone",
+      "candidate": "Asia/Shanghai（本地日期语义候选时区）"
+    },
+    {
+      "field": "order_level_derivation",
+      "candidate": "不推导订单级日期；不推导送达时间"
+    }
+  ],
+  "candidate_exceptions_not_approved": [
+    {
+      "id": 1,
+      "candidate": "预售、定制或有明确特殊周期的商品，仅适用经批准且范围匹配的专属政策",
+      "proof_note": "不证明店铺实际经营该类商品"
+    },
+    {
+      "id": 2,
+      "candidate": "缺货、买家要求暂缓、资料待核实、履约异常等情况，不自动延长截止时间或生成替代日期",
+      "proof_note": "不证明任何订单实际发生异常"
+    },
+    {
+      "id": 3,
+      "candidate": "商品适用性未知时，不把普通现货时限套用于该商品或订单",
+      "proof_note": "与 policy-first 决策第 4 条一致"
+    },
+    {
+      "id": 4,
+      "candidate": "同范围政策冲突且无明确批准的覆盖关系时，保留冲突，不自行择一",
+      "proof_note": "与决策报告矩阵第 5 行一致"
+    }
+  ],
+  "no_fabrication_rules_applied": [
+    "未根据店铺名称生成 merchant_id / store_id / platform_account_id",
+    "未填写生效日期或批准记录",
+    "“允许整理草案” 不等同于 “政策已激活”",
+    "未默认店铺能在 48 小时内完成首次揽收（揽收是外部承运商事实，不是店铺能力假设）",
+    "未知生效期未被当作永久有效",
+    "候选政策未进入任何运行时有效政策集合（该集合尚不存在）",
+    "即使未来存在 ACTIVE 政策，也不得升级 turn 的 newness，也不得把 automaticProcessingEligible 变为 true"
+  ],
+  "acceptance_matrix_supplement": [
+    {
+      "id": 13,
+      "scenario": "只有 DRAFT 政策（尚未生效/未批准）",
+      "expected": "不提供有效政策事实；restriction=DRAFT_NOT_EFFECTIVE；政策草案可被列举但不可被消费"
+    },
+    {
+      "id": 14,
+      "scenario": "店铺名称相同但内部作用域未绑定（merchant/store/account 未解析）",
+      "expected": "不匹配；restriction=SCOPE_UNBOUND；名称命中不是身份证据"
+    },
+    {
+      "id": 15,
+      "scenario": "ACTIVE 政策下，商品适用性仍未知",
+      "expected": "不产生“该订单适用”的结论；applicability=PRODUCT_APPLICABILITY_UNDETERMINED；时间值不可用"
+    },
+    {
+      "id": 16,
+      "scenario": "仅上传单号，无揽收事实",
+      "expected": "不得宣称已完成发货；restriction=SHIP_COMPLETE_NOT_EVIDENCED"
+    },
+    {
+      "id": 17,
+      "scenario": "买家自称已付款",
+      "expected": "不作为可信订单起算事实；restriction=ORDER_TIME_UNKNOWN（买家文本不是 clock_start 证据）"
+    },
+    {
+      "id": 18,
+      "scenario": "48 小时跨周末",
+      "expected": "连续时长不自动增加；预期值仍为 48 连续小时（周末不计为额外顺延）"
+    },
+    {
+      "id": 19,
+      "scenario": "缺货或履约异常",
+      "expected": "不自动延期、不生成替代日期；restriction=FULFILMENT_EXCEPTION_NOT_MODELLED"
+    },
+    {
+      "id": 20,
+      "scenario": "一般政策可用、订单时间未知",
+      "expected": "两者分别表达：政策事实可用（scope/version/evidence 齐备）+ 订单时间未知；不计算订单日期"
+    },
+    {
+      "id": 21,
+      "scenario": "候选例外尚未批准",
+      "expected": "不注册为实际商品覆盖规则；exceptions 仅作为待批准候选呈现"
+    }
+  ],
+  "acceptance_matrix_total": "21 rows = the 12 rows recorded in reports/SHEEP-305-policy-first-v1-product-decision.json + the 9 rows above (added here, not duplicated there)",
+  "acceptance_matrix_invariants": [
+    "no reply / prompt / send is ever produced",
+    "newness stays NEWNESS_UNVERIFIED even when an ACTIVE policy exists",
+    "automaticProcessingEligible stays false in every row",
+    "no order-level shipping date and no delivery ETA is derived",
+    "synthetic test assumptions must be labelled as such and never registered as real business evidence"
+  ],
+  "synthetic_examples_rule": "任何涉及 ACTIVE 政策、具体订单或承运商揽收数据的示例，都必须显式标记为合成测试假设（SYNTHETIC_TEST_ASSUMPTION），不得登记为真实业务证据，也不得据此推断店铺实际能力。",
+  "minimal_offline_implementation_plan": {
+    "scope_note": "本方案不改动 SHEEP-305 原始验收条件，也不拆分或降低它们；下面把可离线验证的契约能力与实际政策激活条件分开呈现。",
+    "lane_A_verifiable_without_real_policy": {
+      "capabilities": [
+        "政策类型与性质（EXPECTED/COMMITTED 的声明式表达，不猜测措辞）",
+        "版本与生命周期（DRAFT/NOT_EFFECTIVE/ACTIVE/SUPERSEDED/REVOKED + replaces 关系）",
+        "作用域匹配（merchant/store/account 绑定与不匹配拒绝；名称不作证据）",
+        "冲突处理（同范围冲突 → UNKNOWN，无批准覆盖关系时不择一）",
+        "UNKNOWN / 受限原因码（POLICY_MISSING/SCOPE_MISMATCH/PRODUCT_APPLICABILITY_UNDETERMINED/CONFLICTING_POLICIES/SUPERSEDED/REVOKED/CALENDAR_MISSING/TIMEZONE_MISSING/ORDER_TIME_UNKNOWN/DRAFT_NOT_EFFECTIVE/SCOPE_UNBOUND/SHIP_COMPLETE_NOT_EVIDENCED）",
+        "来源追溯（policy_id + version + owner_approval_ref + source_ref 证据链）",
+        "不变量（newness=NEWNESS_UNVERIFIED、automaticProcessingEligible=false、无回复/prompt/send 字段）"
+      ],
+      "fixture_policy": "全部使用标记为 SYNTHETIC_TEST_ASSUMPTION 的合成政策；木易先生草案仅可作为未绑定/未生效的负例输入，绝不可作为期望值来源。",
+      "expected_files_if_authorized": [
+        "apps/desktop/src/main/services/shipping-policy-contract.ts（契约 + 纯校验/匹配函数）",
+        "apps/desktop/tests/shipping-policy-contract.test.ts（离线定向测试）",
+        "（可选）apps/desktop/src/main/services/shipping-policy-registry.ts（内存注册表，默认空、默认不激活）"
+      ],
+      "input_output": {
+        "input": "{ policy records (declared fields only), evaluation request { merchant_id, store_id, platform_account_id|null, product_ref|null, order_start_evidence|null } }",
+        "output": "{ policy_fact | null, applicability, restriction_reasons[], evidence {policy_id, version, owner_approval_ref, source_ref}, validity {effective_from, effective_to, lifecycle}, newness: NEWNESS_UNVERIFIED, automaticProcessingEligible: false } — never a reply/prompt/send field"
+      },
+      "offline_tests": "21 行验收矩阵逐行定点测试 + 不可变性/确定性测试 + 结构边界测试（无 AI/send/persistence 端口）+ 合成 fixture 与草案负例测试",
+      "completion_criteria": [
+        "21/21 矩阵行有对应测试并通过",
+        "无任何回复/prompt/send 字段、无自动处理资格升级",
+        "canonical schema 无变更、生产路径默认关闭",
+        "草案（木易先生）在任何行都不会被当作有效政策事实"
+      ],
+      "can_be_authorized_separately": "YES — lane A 只依赖本报告 + 决策报告中的契约草案，不依赖真实政策、不接触订单/揽收数据、不改 canonical schema；按既有治理流程，它需要 Controller 单独授权（SHEEP-305 当前 implementation_authorization = NOT_AUTHORIZED）。",
+      "still_needed_field_level_product_decisions": [
+        "D-time: 是否区分 COMMITTED（本草案为 EXPECTED，但是否需要 COMMITTED 类别仍待决）",
+        "D-calendar: 工作日/日历表达（本草案为连续小时，日历规则是否需要仍在契约中保留待决）",
+        "D-tz: 时区是否强制、缺失处理（本草案候选 Asia/Shanghai 未经确认）",
+        "D-cutoff: 截单规则字段是否保留（本草案为不设置）",
+        "D-nature-source: 性质（预计/承诺）由谁在何处声明",
+        "D-order-start: 起算事件如何获得可信来源（本草案为支付成功；可信订单时间来源当前 UNKNOWN）",
+        "D-expiry: 失效/撤销表达与历史承诺保护"
+      ]
+    },
+    "lane_B_required_before_real_activation": [
+      "可信店铺绑定（真实 merchant/store/account 解析，禁止名称推导）",
+      "最终政策批准（Owner 批准记录 + 生效日期）",
+      "履约时限确认（48 连续小时的最终确认）",
+      "适用商品与例外确认（经营品类与例外清单）",
+      "发货完成判定确认（承运商首次有效揽收作为完成事件）",
+      "生效安排（生效日、失效/替代关系、历史订单承诺保护）"
+    ],
+    "no_activation_defaults": [
+      "所有真实政策默认不激活",
+      "不接 AI / send",
+      "不改 canonical schema（除非原始契约明确要求且已获授权）",
+      "真实运行保持 STOPPED"
+    ]
+  },
+  "gates": {
+    "ai": "OFF",
+    "sending": "OFF",
+    "production_enablement": "OFF / NOT_AUTHORIZED",
+    "real_operations": "STOPPED"
+  },
+  "product_gate_unchanged": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED",
+  "implementation_authorization_unchanged": "NOT_AUTHORIZED",
+  "next_step": "Owner confirms the real shop policy facts (identity binding, approval, effective date, class scope, exceptions) and decides the remaining field-level semantics; lane A contract implementation requires a separate Controller authorization.",
+  "owner_confirmation": {
+    "status": "OWNER_CONFIRMED",
+    "confirmed_at": "2026-09-23",
+    "basis": "Owner message in this round (verbatim text preserved)",
+    "verbatim_text": "木易先生的常规现货，预计支付成功后 48 个连续小时内出现承运商首次有效揽收记录，周末及节假日计入。",
+    "scope_of_confirmation": "policy CONTENT only",
+    "content_confirmed_is_not_runtime_activation": "content confirmation and runtime activatability are different states; the policy is NOT written ACTIVE",
+    "not_approved_by_this_confirmation": [
+      "that all goods are regular stock (常规现货)",
+      "that pre-sale / custom / special-cycle exceptions actually exist",
+      "all previously listed candidate exceptions",
+      "any effective date or retroactive application",
+      "real policy activation, order-level derivation or automatic sending"
+    ]
+  },
+  "confirmed_items": [
+    {
+      "item": "nature",
+      "status": "OWNER_CONFIRMED",
+      "value": "EXPECTED（预计性）",
+      "basis": "verbatim text: 预计"
+    },
+    {
+      "item": "applicability",
+      "status": "OWNER_CONFIRMED",
+      "value": "常规现货（declared scope）",
+      "basis": "verbatim text: 木易先生的常规现货"
+    },
+    {
+      "item": "clock_start",
+      "status": "OWNER_CONFIRMED",
+      "value": "支付成功",
+      "basis": "verbatim text: 支付成功后",
+      "note": "no trusted order-time source exists yet; this declares the policy, not a fact about any order"
+    },
+    {
+      "item": "time_value",
+      "status": "OWNER_CONFIRMED",
+      "value": "48 个连续小时（CONTINUOUS_HOURS=48）",
+      "basis": "verbatim text: 48 个连续小时"
+    },
+    {
+      "item": "ship_complete_definition",
+      "status": "OWNER_CONFIRMED",
+      "value": "承运商首次有效揽收记录",
+      "basis": "verbatim text: 出现承运商首次有效揽收记录",
+      "note": "a printed/uploaded waybill is still not completion"
+    },
+    {
+      "item": "weekend_holiday_handling",
+      "status": "OWNER_CONFIRMED",
+      "value": "周末及节假日计入连续时长（不自动顺延）",
+      "basis": "verbatim text: 周末及节假日计入"
+    }
+  ],
+  "previous_candidate_history": {
+    "preserved": true,
+    "previous_status": "DRAFT / NOT_EFFECTIVE (candidate values only)",
+    "previous_report_note": "the earlier draft flagged these values as 经同意继续整理的候选，不是已验证的现行店铺政策; that history is kept unchanged",
+    "values_moved_from_candidate_to_owner_confirmed": [
+      "nature=EXPECTED",
+      "applicability=常规现货(declared)",
+      "clock_start=支付成功",
+      "time_value=48 continuous hours",
+      "ship_complete=first valid carrier acceptance",
+      "weekend/holiday counted"
+    ]
+  },
+  "still_candidate_or_missing_after_this_round": [
+    {
+      "item": "timezone",
+      "status": "CANDIDATE",
+      "value": "Asia/Shanghai (owner text does not mention timezone)",
+      "note": "still unconfirmed; the confirmed text contains no timezone statement"
+    },
+    {
+      "item": "cut_off",
+      "status": "CANDIDATE",
+      "value": "不设置每日截单时间 (not present in the owner text)",
+      "note": "not covered by this confirmation"
+    },
+    {
+      "item": "exceptions",
+      "status": "CANDIDATE_NOT_APPROVED",
+      "value": "the 4 previously listed candidate exceptions",
+      "note": "still unapproved; not registered as product coverage rules"
+    },
+    {
+      "item": "effective",
+      "status": "MISSING",
+      "value": "no effective date, no revocation/replacement plan",
+      "note": "effective window stays absent"
+    },
+    {
+      "item": "approval_record",
+      "status": "PARTIAL",
+      "value": "Owner message content confirmation only",
+      "note": "no approver name, no historical approval date, no platform credential is invented"
+    }
+  ],
+  "evidence_tracking": {
+    "version_managed": true,
+    "note": "tracked in this repository as of the SHEEP-305 offline stage-acceptance commit; historical .tmp run products remain outside version control and are not evidenced by this report",
+    "history_preserved": "the pre-confirmation framing above (candidate_values_not_verified, previous_candidate_history) is kept as the historical record; the six content items are OWNER_CONFIRMED as listed in confirmed_items"
+  }
+}

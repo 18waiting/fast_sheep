@@ -1,0 +1,315 @@
+{
+  "unit": "SHEEP-305-STEP-1-SHIPPING-TIME-FACT-SOURCE-PRE-AUDIT",
+  "acceptance_unit": "SHIPPING_TIME_FACT_SOURCE_PRE_AUDIT",
+  "baseline_head": "874b55be9f817069ec63436b199bfbb5b913949e",
+  "generated_at": "2026-09-22",
+  "no_code_changes": true,
+  "no_runtime_started": true,
+  "roadmap_reference": {
+    "roadmap": "project/FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md — SHEEP-305 (goal: resolve the rule semantically, then wire only the authoritative facts the approved rule requires; must not invent dispatch SLA / payment-time rule / product exception / region exception / order-state semantics; exit criteria: authoritative rule recorded, every fact has a named producer and provenance, unknown facts remain unknown, Product/SKU only if the rule requires it, no send possible)",
+    "product_gate": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED",
+    "product_authority": "docs/product/PDD_MVP_V1.md section 6 — authoritative V1 knowledge = owner-supplied official shop rules, shop data, product data, order/logistics facts, other explicit authoritative data; historical conversations are NOT authoritative",
+    "architecture": "docs/architecture/AI_CUSTOMER_SERVICE_CORE.md — ContextEnvelope consumes authoritative facts; docs/architecture/PLATFORM_ADAPTER_CONTRACT.md lines 152/172-173 (order/logistics context) and project/DECISIONS.md line 83 (read-only T0 tools)",
+    "path_note": "the task prompt referenced project/PDD_MVP_V1.md and project/AI_CUSTOMER_SERVICE_CORE.md; the actual authoritative paths are docs/product/PDD_MVP_V1.md and docs/architecture/AI_CUSTOMER_SERVICE_CORE.md"
+  },
+  "candidate_sources": [
+    {
+      "source_id": "S1_CANONICAL_ORDER_IDENTITY",
+      "owner": "@fastwork/persistence (SHEEP-017 / SHEEP-019-C commerce domain)",
+      "module_file": "packages/persistence/migrations/0007_commerce_domain.sql + packages/persistence/src/repositories/commerce-repositories.ts (OrderRecord)",
+      "field_names": [
+        "id",
+        "merchant_id",
+        "platform_account_id",
+        "external_ref"
+      ],
+      "field_types": "opaque TEXT identity only",
+      "scope": {
+        "merchant": true,
+        "store": false,
+        "platform_account": true,
+        "conversation_or_order": "order identity (self)"
+      },
+      "authority_level": "AUTHORITATIVE for order identity/ownership; UNAVAILABLE for shipping time",
+      "source_event": "none — no runtime producer exists (only the persistence test writes orders)",
+      "observed_at_semantics": "not present",
+      "occurred_at_semantics": "not present",
+      "timezone": "n/a",
+      "precision": "n/a",
+      "freshness_signal": "none",
+      "expiration_signal": "none",
+      "identity_binding": "merchant_id + platform_account_id foreign keys; store scope explicitly DEFERRED; external_ref opaque with no dedup/identity semantics",
+      "implemented": "schema + repository yes; producer no",
+      "persisted": true,
+      "replayable": "no events to replay"
+    },
+    {
+      "source_id": "S2_CANONICAL_LOGISTICS_IDENTITY",
+      "owner": "@fastwork/persistence (SHEEP-017 / SHEEP-019-C)",
+      "module_file": "packages/persistence/migrations/0007_commerce_domain.sql (logistics) + LogisticsRecord",
+      "field_names": [
+        "id",
+        "order_id",
+        "external_ref"
+      ],
+      "field_types": "opaque TEXT identity only",
+      "scope": {
+        "merchant": "via order",
+        "store": false,
+        "platform_account": "via order",
+        "conversation_or_order": "order_id"
+      },
+      "authority_level": "AUTHORITATIVE for logistics identity; UNAVAILABLE for shipping time",
+      "source_event": "none — no producer",
+      "observed_at_semantics": "not present",
+      "occurred_at_semantics": "not present",
+      "timezone": "n/a",
+      "precision": "n/a",
+      "freshness_signal": "none",
+      "expiration_signal": "none",
+      "identity_binding": "logistics -> order foreign key; T3 decision explicitly forbids carrier/trackingNumber/status/events fields",
+      "implemented": "schema + repository yes; producer no",
+      "persisted": true,
+      "replayable": "no events to replay"
+    },
+    {
+      "source_id": "S3_DELIVERY_ATTEMPT_JOURNAL",
+      "owner": "@fastwork/persistence (SHEEP-066-PR1)",
+      "module_file": "packages/persistence/migrations/0010_delivery_attempts.sql",
+      "field_names": [
+        "status",
+        "created_at",
+        "dispatched_at",
+        "resolved_at",
+        "ack_source_ref",
+        "ack_occurred_at",
+        "delivered_message_id"
+      ],
+      "field_types": "ISO timestamps + typed enums",
+      "scope": {
+        "merchant": "via conversation",
+        "store": true,
+        "platform_account": true,
+        "conversation_or_order": "conversation_id"
+      },
+      "authority_level": "AUTHORITATIVE for OUR outbound send-attempt lifecycle; UNTRUSTED as a shipping-time fact (it records when we sent a message, not when the platform will ship)",
+      "source_event": "delivery attempt lifecycle (local)",
+      "observed_at_semantics": "local lifecycle times; never masquerade as Message.occurred_at (documented in the migration)",
+      "occurred_at_semantics": "n/a for shipping",
+      "timezone": "UTC ISO",
+      "precision": "millisecond",
+      "freshness_signal": "status transitions",
+      "expiration_signal": "none",
+      "identity_binding": "conversation/store/platform account foreign keys",
+      "implemented": "schema + repository yes; NO delivery port bound (production send stays disabled)",
+      "persisted": true,
+      "replayable": "rows only, no events"
+    },
+    {
+      "source_id": "S4_PLATFORM_ORDER_LOGISTICS_READ_CAPABILITY",
+      "owner": "platform adapter layer (Master section 8; DEC-006 T0 read-only tools)",
+      "module_file": "docs/architecture/PLATFORM_ADAPTER_CONTRACT.md (order/logistics context, lines 152/172-173); packages/platform-pdd/src/capabilities.ts exposes only receive_text/send_text/send_image/manual_takeover_detection/conversation_selection/transfer/product_context/order_context/desktop_helper",
+      "field_names": "not defined yet",
+      "field_types": "not defined",
+      "scope": "not defined",
+      "authority_level": "UNAVAILABLE today (planned read-only capability); CONDITIONALLY_AUTHORITATIVE only if a future contract returns structured, scoped, versioned, time-stamped order facts",
+      "source_event": "none",
+      "observed_at_semantics": "to be defined by the capability contract",
+      "occurred_at_semantics": "to be defined",
+      "timezone": "unknown (the platform response contract is unknown)",
+      "precision": "unknown",
+      "freshness_signal": "unknown",
+      "expiration_signal": "unknown",
+      "identity_binding": "unknown — must be bound to merchant/store/platform account/order before use",
+      "implemented": false,
+      "persisted": false,
+      "replayable": "n/a"
+    },
+    {
+      "source_id": "S5_PLATFORM_PAGE_ORDER_BLOCK",
+      "owner": "platform DOM layer (PDD page runtime / message normalizer; product_context / order_context capability flags)",
+      "module_file": "packages/platform-pdd/src/dom/message-reader.ts, packages/platform-pdd/src/message-normalizer.ts, packages/platform-web-common/src/normalize.ts",
+      "field_names": "page/chat-rendered order or logistics blocks (free text and page-local fields)",
+      "field_types": "unstructured / page-local text",
+      "scope": {
+        "merchant": "unknown",
+        "store": "unknown",
+        "platform_account": "unknown",
+        "conversation_or_order": "unknown (the page block does not carry an order binding)"
+      },
+      "authority_level": "UNTRUSTED",
+      "source_event": "page DOM observation",
+      "observed_at_semantics": "page-local only (never a business time)",
+      "occurred_at_semantics": "not established",
+      "timezone": "n/a",
+      "precision": "n/a",
+      "freshness_signal": "none (page render state)",
+      "expiration_signal": "none",
+      "identity_binding": "none — cannot prove which store/account/order the text belongs to",
+      "implemented": "partially (message normalizer only)",
+      "persisted": false,
+      "replayable": false
+    },
+    {
+      "source_id": "S6_OWNER_SHOP_SHIPPING_POLICY_KNOWLEDGE",
+      "owner": "Owner-supplied official shop rules (knowledge / RAG path)",
+      "module_file": "MVP section 6 (authoritative V1 knowledge); knowledge ingestion lives in the AI worker RAG path (services/ai-worker) and is not exposed to Main as a scoped shipping-time fact today",
+      "field_names": "natural-language shop rule text (no structured shipping-time field)",
+      "field_types": "text",
+      "scope": {
+        "merchant": "yes (owner/merchant)",
+        "store": "requires an explicit store binding",
+        "platform_account": "unclear",
+        "conversation_or_order": "not applicable (policy, not an order fact)"
+      },
+      "authority_level": "CONDITIONALLY_AUTHORITATIVE as POLICY (authoritative only after the product decision names the rule and a scoped, versioned, dated fact DTO exists); never authoritative as an order-specific promise",
+      "source_event": "owner rule ingestion",
+      "observed_at_semantics": "ingestion time of the rule (local)",
+      "occurred_at_semantics": "rule effective date is not modeled",
+      "timezone": "n/a (policy text)",
+      "precision": "n/a",
+      "freshness_signal": "none",
+      "expiration_signal": "none",
+      "identity_binding": "owner/merchant identity exists; store binding and version are missing",
+      "implemented": "RAG ingestion exists in the worker; no Main-side scoped fact contract",
+      "persisted": true,
+      "replayable": "no rule-version history"
+    },
+    {
+      "source_id": "S7_MESSAGE_TIMES_CANONICAL",
+      "owner": "@fastwork/persistence + Main canonical inbound path",
+      "module_file": "packages/persistence/src/repositories/* (normalized_messages occurred_at/observed_at), apps/desktop/src/main/services/canonical-inbound-persistence.ts",
+      "field_names": [
+        "occurred_at (source time, null when unknown)",
+        "observed_at (Main ingestion time)"
+      ],
+      "field_types": "ISO timestamps",
+      "scope": {
+        "merchant": true,
+        "store": true,
+        "platform_account": true,
+        "conversation_or_order": "conversation"
+      },
+      "authority_level": "AUTHORITATIVE for MESSAGE timing/observation only; UNTRUSTED and explicitly forbidden as a shipping-time source (mistaking observation time for the platform business promise)",
+      "source_event": "canonical inbound message ingestion",
+      "observed_at_semantics": "trusted Main ingestion time (DP-87) — usable as observation metadata, never as the promise time",
+      "occurred_at_semantics": "source time when verified, otherwise null",
+      "timezone": "UTC ISO",
+      "precision": "millisecond",
+      "freshness_signal": "n/a",
+      "expiration_signal": "n/a",
+      "identity_binding": "conversation scope (merchant/store/platform account via the conversation row)",
+      "implemented": true,
+      "persisted": true,
+      "replayable": true
+    }
+  ],
+  "authority_matrix": {
+    "AUTHORITATIVE_today": [
+      "S1/S2 canonical order & logistics IDENTITY (scoped, persisted) — but they carry NO shipping-time field",
+      "S3 delivery-attempt lifecycle times for OUR outbound messages (not a platform shipping promise)",
+      "S7 canonical message occurred_at/observed_at (message timing only; must never become a shipping time)"
+    ],
+    "CONDITIONALLY_AUTHORITATIVE": [
+      "S4 a future platform order/logistics read capability — only with a structured, scoped, versioned, time-stamped contract",
+      "S6 owner shop shipping policy — only as POLICY, after the product decision and with store binding + version + effective date"
+    ],
+    "UNTRUSTED": [
+      "S5 platform page free text and DOM order blocks",
+      "buyer text and any shipping time the buyer claims",
+      "reply text, LLM output, ToolResult.summary",
+      "unverified keyword matching"
+    ],
+    "UNAVAILABLE": [
+      "any structured order/logistics FACT with shipping time (no producer, no field, no capability)",
+      "product/SKU shipping attributes",
+      "shop-level shipping SLA with scope+version",
+      "platform order state machine"
+    ]
+  },
+  "currently_usable_sources": "NONE for shipping time. Every shipping-time-capable source is either UNAVAILABLE (S4, no capability/field) or CONDITIONALLY_AUTHORITATIVE-with-missing-fields (S6 policy without store binding/version). Identity foundations (S1/S2) exist but contain no time facts, and there is no producer writing them at runtime.",
+  "missing_source_capabilities": [
+    "no runtime producer for orders/logistics (only the persistence test writes them)",
+    "no shipping-time / delivery-promise field on any persisted fact",
+    "no platform read_order / read_logistics capability and no contract for its scope, version or time fields",
+    "no store scope on orders (explicitly deferred) and no order<->conversation binding",
+    "no policy source with store binding, versioning and effective date",
+    "no timezone/precision contract for any candidate field",
+    "no freshness/expiration signal for any candidate field"
+  ],
+  "proposed_source_policy": {
+    "status": "DRAFT_PENDING_PRODUCT_DECISION (not approved; the safety defaults below are proposals)",
+    "q1_committed_allowed_sources": "PROPOSAL: only a structured, scoped, versioned, time-stamped platform order/logistics fact (S4-class) may produce COMMITTED. Nothing available today qualifies.",
+    "q2_expected_allowed_sources": "PROPOSAL: an owner-approved shop policy (S6-class) with store binding + version + effective date may produce EXPECTED; alternatively a structured platform estimate (S4-class) if the platform exposes one. Requires the product decision to name the basis.",
+    "q3_never_allowed": [
+      "buyer text",
+      "reply text",
+      "LLM output",
+      "ToolResult.summary",
+      "platform page free text",
+      "unverified keywords",
+      "local/observation time as the promise"
+    ],
+    "q4_conflict_handling": "PROPOSAL: conflicting sources inside one scope resolve to UNKNOWN (no precedence invention); a decided precedence order must come from the product decision.",
+    "q5_missing_or_unverifiable_identity": "PROPOSAL: fail closed to UNKNOWN; no cross-store/account/order substitution, no default.",
+    "q6_expired_sources": "PROPOSAL: a source without a freshness signal is treated as NOT usable for COMMITTED; expiry must be explicit per source (field + semantics).",
+    "q7_observed_vs_business_time": "PROPOSAL: observed_at (Main ingestion) is observation metadata only and never presented as the business occurrence time; business time must come from the source field itself.",
+    "q8_precision": "PROPOSAL: minute-level precision required for COMMITTED; date-level accepted for EXPECTED only if the product decision allows it and the output states the granularity.",
+    "q9_timezone": "PROPOSAL: the source must carry an explicit IANA timezone or an offset; if missing, the fact is UNKNOWN (no local-timezone assumption).",
+    "q10_fact_dto_fields": "PROPOSAL: { merchant_id, store_id, platform_account_id, order_ref, kind: COMMITTED|EXPECTED, business_time (ISO + tz), precision: DATE|MINUTE, source_id, source_version, observed_at, freshness (valid_until), provenance } — and the rule/provenance must name the producer."
+  },
+  "open_product_decisions": [
+    "D1: which source class is allowed to produce COMMITTED (none exists today — decide whether COMMITTED is required for V1 at all)",
+    "D2: which source class is allowed to produce EXPECTED (platform estimate vs owner shop policy)",
+    "D3: is a COMMITTED/EXPECTED distinction part of V1, or is one kind enough",
+    "D4: conflict precedence inside one scope (or always UNKNOWN)",
+    "D5: is a store-scoped owner policy authoritative for EXPECTED, and who signs it off",
+    "D6: required freshness/expiration window per source",
+    "D7: allowed precision (date vs minute) and the exact wording implications",
+    "D8: timezone contract (must the source carry it; what happens when missing)",
+    "D9: does answering require Product/SKU data (which would pull SHEEP-305 product work in)",
+    "D10: which facts must appear in the ContextEnvelope/fact DTO for auditability"
+  ],
+  "non_authoritative_inputs": [
+    "buyer-claimed shipping times and any buyer text",
+    "reply drafts / LLM output / ToolResult.summary",
+    "platform page free text and DOM order blocks",
+    "unverified keyword matches (e.g. matching a shipping word)",
+    "local current time / message observed_at as a promise substitute"
+  ],
+  "known_unavailable_sources": [
+    "platform order/logistics read capability (not implemented)",
+    "structured shipping-time field on any persisted fact",
+    "order/logistics runtime producer",
+    "store-scoped shipping policy fact with version and effective date",
+    "platform order state and dispatch SLA semantics (explicitly forbidden to invent)"
+  ],
+  "gates": {
+    "ai": "OFF",
+    "sending": "OFF",
+    "production_enablement": "OFF / NOT_AUTHORIZED",
+    "real_operations": "STOPPED"
+  },
+  "product_gate_unchanged": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED",
+  "next_step": "Controller/Owner product decision on the source policy (D1-D10); implementation stays blocked until then",
+  "later_status_note": {
+    "as_of_head": "74eeb5d910bf0ce2c55427dfc9fe7184936adcd1",
+    "historical_finding_preserved": "the finding recorded by this pre-audit - no usable structured shipping-time source existed at that time - is the historical result of this document and is NOT rewritten into a current audit",
+    "subsequent_governance": [
+      "policy-first V1 direction approved (policy facts are the authoritative shipping-time source class)",
+      "Lane A offline policy contract sealed in c37c32b8d78fa993c27de733f6a59e5fd70c9a22",
+      "Lane B offline registration implemented and sealed in 517087018add576d8a9a476ba46a06a172df044b"
+    ],
+    "still_true": [
+      "no platform order/logistics runtime producer exists",
+      "no persisted structured shipping-time fact exists",
+      "authentic sources remain AUTHORITATIVE-shipping-time-unavailable today",
+      "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED"
+    ],
+    "note": "the sealed work is a declarative policy contract plus an offline registration registry; it is not a shipping-time fact source"
+  },
+  "evidence_tracking": {
+    "version_managed": true,
+    "note": "tracked in this repository as of the SHEEP-305 offline stage-acceptance commit; historical .tmp run products remain outside version control and are not evidenced by this report"
+  }
+}

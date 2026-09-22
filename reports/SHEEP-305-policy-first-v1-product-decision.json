@@ -399,7 +399,8 @@
     "acceptance_matrix": "12 rows here + 9 supplement rows in the candidate draft = 21 rows total (the supplement is not duplicated here)",
     "lane_A_authorizable_separately": "YES (contract-only offline capability; requires a separate Controller authorization)",
     "owner_confirmation": "OWNER_CONFIRMED (content only, 2026-09-23) — verbatim text preserved in reports/SHEEP-305-candidate-policy-muyi-draft.json",
-    "identity": "OWNER_DECLARED identifier 木易先生 on platform pdd; platform binding UNVERIFIED; no numeric id; merchant_id/store_id/platform_account_id remain null"
+    "identity": "OWNER_DECLARED identifier 木易先生 on platform pdd; platform binding UNVERIFIED; no numeric id; merchant_id/store_id/platform_account_id remain null",
+    "version_management": "tracked in this repository as of the SHEEP-305 offline stage-acceptance commit"
   },
   "acceptance_matrix_reference": {
     "base_rows": "1-12 (this report)",
@@ -516,7 +517,7 @@
     "status": "SEALED",
     "implementation_commit": "517087018add576d8a9a476ba46a06a172df044b",
     "technical_post_audit": "PASS (targeted review: scope-isolation encoding + replacement-history fix)",
-    "stage_acceptance": "PENDING",
+    "stage_acceptance": "RECORDED (offline registration unit only, 2026-09-23)",
     "full_lane_b_offline_closed": true,
     "sealed_scope_note": "the commit carries the complete Lane B offline implementation plus both fix rounds",
     "persistence_and_identity_limits": "in-memory only (rebuilt instance is empty); no durable registration, no cross-restart idempotency, no platform identity verification; scope equality is an isolation check by a trusted Main-side caller, not ownership proof",
@@ -594,6 +595,28 @@
         "typecheck": "clean"
       },
       "real_binding_and_activation": "NOT_AUTHORIZED"
-    }
+    },
+    "controller_decision": "PASS",
+    "close_scope_note": "this closes the Lane B offline registration unit only: no real platform binding, no durable persistence, no policy activation and no runtime activation is granted; SHEEP-305 remains open"
+  },
+  "real_binding_design": {
+    "report": "reports/SHEEP-305-real-binding-minimal-design.json",
+    "status": "DESIGN_ONLY / NOT_AUTHORIZED",
+    "summary": "no session-self platform identity evidence is obtainable today; the Owner declaration stays OWNER_DECLARED / UNVERIFIED; binding needs one authorized read-only identity observation plus a governed decision on binding-provenance storage"
+  },
+  "evidence_reports": {
+    "candidate_policy": {
+      "path": "reports/SHEEP-305-candidate-policy-muyi-draft.json",
+      "version_managed": true
+    },
+    "fact_source_preaudit": {
+      "path": "reports/SHEEP-305-shipping-time-fact-source-preaudit.json",
+      "version_managed": true
+    },
+    "real_binding_design": {
+      "path": "reports/SHEEP-305-real-binding-minimal-design.json",
+      "version_managed": true
+    },
+    "note": "historical .tmp run products referenced by earlier rounds are NOT part of this commit and are not reproducible from it"
   }
 }

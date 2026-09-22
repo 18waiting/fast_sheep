@@ -4144,7 +4144,7 @@
     "roadmap_status": "NOT_STARTED / NOT_AUTHORIZED",
     "phase": "MVP_A_FOUNDATION",
     "milestone": "M-A.2 Scene and Context Foundation",
-    "status": "NOT_STARTED / NOT_AUTHORIZED / PRODUCT_DECISION_REQUIRED (remaining scope only: real platform binding, policy activation and the undecided SHIPPING_TIME rule semantics - Lane A is SEALED/stage-accepted and the Lane B offline registration is implemented; see lane_a / lane_b_offline_implementation)",
+    "status": "NOT_STARTED / NOT_AUTHORIZED / PRODUCT_DECISION_REQUIRED (remaining scope only: real platform binding, policy activation and the undecided SHIPPING_TIME rule semantics - Lane A and the Lane B offline registration are SEALED with stage acceptance recorded; see lane_a / lane_b_offline_implementation)",
     "product_gate": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED",
     "lane_a": {
       "status": "SEALED",
@@ -4162,6 +4162,7 @@
     },
     "candidate_policy": {
       "report": "reports\\SHEEP-305-candidate-policy-muyi-draft.json",
+      "version_management": "tracked in this repository as of the SHEEP-305 offline stage-acceptance commit",
       "shop_name_owner_supplied": "木易先生",
       "lifecycle": "DRAFT / NOT_EFFECTIVE",
       "identity_binding": "UNBOUND — no merchant/store/platform-account row exists; the Owner-declared identifier (木易先生, platform pdd, source OWNER_DECLARED) has an UNVERIFIED platform binding and no numeric id",
@@ -4198,7 +4199,9 @@
       "implementation_commit": "517087018add576d8a9a476ba46a06a172df044b",
       "status": "SEALED",
       "technical_post_audit": "PASS (targeted review: scope-isolation encoding + replacement-history fix)",
-      "stage_acceptance": "PENDING (separate Controller governance step)",
+      "stage_acceptance": "RECORDED (offline registration unit only, 2026-09-23)",
+      "controller_decision": "PASS",
+      "close_scope_note": "this closes the Lane B offline registration unit only: no real platform binding, no durable persistence, no policy activation and no runtime activation is granted; SHEEP-305 remains open",
       "full_lane_b_offline_closed": true,
       "sealed_at": "2026-09-23",
       "sealed_scope_note": "this commit contains the complete Lane B offline implementation plus both fix rounds (replacement integrity + semantic idempotency, then scope isolation + replacement history)",
@@ -4244,6 +4247,15 @@
         "real_binding_and_activation": "NOT_AUTHORIZED"
       }
     },
+    "real_binding_design": {
+      "report": "reports\\SHEEP-305-real-binding-minimal-design.json",
+      "status": "DESIGN_ONLY / NOT_AUTHORIZED",
+      "recorded_at": "2026-09-23",
+      "finding": "no session-self platform identity evidence is obtainable from the current code; every identifier in use is application-generated (local shop id, PlatformConfig.controlled_shop_id documented as never a platform identity, runtime session/document ids)",
+      "gap": "platform_accounts has no store linkage and no verification-provenance columns, so an Owner-declared vs platform-verified binding cannot be recorded without a governed schema decision",
+      "blocked_on": ["an authorized read-only identity observation for the controlled shop", "the governed decision on binding-provenance storage"],
+      "real_binding_and_activation": "NOT_AUTHORIZED"
+    },
     "product_decision": {
       "record": "reports\\SHEEP-305-policy-first-v1-product-decision.json",
       "approved_direction": "POLICY_FIRST_V1 — V1 provides Owner-approved, versioned shop/product shipping policy facts; no per-order expected/committed shipping date derivation",
@@ -4255,6 +4267,7 @@
     },
     "pre_audit": {
       "report": "reports\\SHEEP-305-shipping-time-fact-source-preaudit.json",
+      "version_management": "tracked in this repository as of the SHEEP-305 offline stage-acceptance commit; the historical .tmp run products stay outside version control",
       "status": "COMPLETE / AWAITING_PRODUCT_DECISION",
       "at": "2026-09-22",
       "candidate_sources": 7,
