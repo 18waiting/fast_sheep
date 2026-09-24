@@ -1,0 +1,189 @@
+{
+  "task": "PDD-INBOUND-ANALYSIS-2026-09-20",
+  "task_kind": "USER_REQUESTED_DIAGNOSTIC_NOT_A_SHEEP_TASK",
+  "result": "PARTIAL",
+  "date": "2026-09-20",
+  "phase": "MVP_A_FOUNDATION",
+  "milestone": "M-A.1 Identity and Inbound Foundation",
+  "objective": "Analyze reported PDD inbound loss and establish an evidence-backed solution without unauthorized production or live execution",
+  "baseline_commit": "79faea827fb6100a2860757ff61e838dbf9ac70a",
+  "baseline_branch": "main",
+  "attachment_path": "PRIVATE_ATTACHMENT_NOT_INCLUDED",
+  "attachment_sha256": "PRIVATE_ATTACHMENT_HASH_NOT_PUBLISHED",
+  "completed_requirements": 4,
+  "total_requirements": 6,
+  "requirements": [
+    {
+      "name": "Read canonical authorities and enforce authorization",
+      "status": "COMPLETE"
+    },
+    {
+      "name": "Trace available source and identify attachment/workspace mismatch",
+      "status": "COMPLETE"
+    },
+    {
+      "name": "Verify snapshot-loss counterexamples and existing pure functions offline",
+      "status": "COMPLETE"
+    },
+    {
+      "name": "Deliver corrected solution and evidence report",
+      "status": "COMPLETE"
+    },
+    {
+      "name": "Repair actual production observer",
+      "status": "BLOCKED"
+    },
+    {
+      "name": "Validate complete real PDD reception and recovery",
+      "status": "BLOCKED"
+    }
+  ],
+  "blockers": [
+    {
+      "classification": "BLOCKED",
+      "id": "OBSERVER_SOURCE_MISSING",
+      "detail": "No matching CDP/latest-conversation observer implementation or replay fixture in this checkout"
+    },
+    {
+      "classification": "BLOCKED",
+      "id": "EXECUTION_NOT_AUTHORIZED",
+      "detail": "SHEEP-301 and live are NOT_AUTHORIZED in current state"
+    },
+    {
+      "classification": "BLOCKED",
+      "id": "PDD_SOURCE_CONTRACT_UNCONFIRMED",
+      "detail": "No verified per-message stream/history/replay contract or side-effect specification"
+    },
+    {
+      "classification": "BLOCKED",
+      "id": "FULL_RUNTIME_VALIDATION_UNAVAILABLE",
+      "detail": "No project node_modules/dist in checkout; no TS/DOM/Electron/live suite run"
+    }
+  ],
+  "evidence": {
+    "confirmed": [
+      "Current state prohibits SHEEP-301/live execution",
+      "Current page path uses explicitly synthetic selectors",
+      "normalizePddInbound is exported and tested but has no production caller",
+      "Latest-only loss is reproduced by synthetic counterexamples",
+      "Legacy missing-ID/missing-time fingerprint merges identical text",
+      "13 existing tests and 10 diagnostic cases pass",
+      "CDP official schema specifies binary payloadData as base64"
+    ],
+    "inferred": [
+      "Attachment live observations were not independently reproduced",
+      "Attachment observer may be in another version/workspace",
+      "Titan is a candidate real-time channel, not proven per-message body transport",
+      "Current Mac workspace is treated as the supplied project-root counterpart",
+      "Proposed replay/overlap/checkpoint design requires approval and actual source semantics"
+    ]
+  },
+  "decisions_required": [
+    {
+      "classification": "PRODUCT_DECISION_REQUIRED",
+      "item": "Controller-scoped source/live diagnostic authorization remains separate"
+    },
+    {
+      "classification": "PRODUCT_DECISION_REQUIRED",
+      "item": "Official platform approval, read/history side effects, and supported source contract must be confirmed before active integration"
+    }
+  ],
+  "deferred_items": [
+    "SHEEP-301 mapping",
+    "SHEEP-302 durable ingestion and checkpoint decisions",
+    "Legacy DOM-path repair",
+    "AI, aggregation, send, AUTO, multiple-shop rollout",
+    "Private Titan protocol decoding"
+  ],
+  "tests": [
+    {
+      "name": "13 existing pure-function assertions + 10 diagnostic counterexamples/models",
+      "result": "PASS",
+      "passed": 23,
+      "failed": 0,
+      "evidence": "reports/public-inbound-evidence-2026-09-23/pdd-inbound-analysis-2026-09-20/offline-tests.tap"
+    }
+  ],
+  "smokes": [
+    {
+      "name": "production PDD/Electron integration",
+      "result": "NOT_RUN",
+      "reason": "Missing implementation/runtime dependencies and no live authorization"
+    }
+  ],
+  "negative_tests": [
+    "Wrong roles rejected",
+    "Missing/malformed customer/message identity remains UNKNOWN",
+    "Latest-only burst loss",
+    "Duplicate text/fingerprint collision",
+    "Dedup restart limitation",
+    "Opaque pre_msg_id not assumed queryable"
+  ],
+  "validation_limitations": [
+    "Type-transform of isolated copies only, not tsc/typecheck",
+    "Full package and DOM suites NOT_RUN",
+    "No real PDD payload decoded",
+    "No official PDD chat API eligibility confirmed",
+    "No proof of platform-wide completeness",
+    "Node experimental type-transform warning observed"
+  ],
+  "modified_files": [
+    "reports/public-inbound-evidence-2026-09-23/pdd-inbound-analysis-2026-09-20/analysis.md",
+    "reports/public-inbound-evidence-2026-09-23/pdd-inbound-analysis-2026-09-20/report.json",
+    "reports/public-inbound-evidence-2026-09-23/pdd-inbound-analysis-2026-09-20/verify-offline.mjs",
+    "reports/public-inbound-evidence-2026-09-23/pdd-inbound-analysis-2026-09-20/offline-tests.tap",
+    "reports/public-inbound-evidence-2026-09-23/pdd-inbound-analysis-2026-09-20/offline-validation.json"
+  ],
+  "temporary_outputs_root": "LOCAL_ONLY:.tmp/pdd-inbound-analysis-2026-09-20",
+  "architecture_changes": [],
+  "security_changes": [],
+  "data_model_changes": [],
+  "tenant_isolation_changes": [],
+  "ai_data_disclosure_changes": [],
+  "audit_traceability_changes": [],
+  "third_party_or_license_changes": [],
+  "production_code_delta": "NONE",
+  "governance_delta": "NONE",
+  "security_boundary_changed": false,
+  "raw_ipc_renderer_added": false,
+  "unapproved_sync_or_outbox_added": false,
+  "platform_runtime_started": false,
+  "live_pdd_validation_performed": false,
+  "transport_send_calls": 0,
+  "seller_sessions_accessed": false,
+  "active_chat_requests_performed": false,
+  "message_read_state_mutations": 0,
+  "public_documentation_network_access": true,
+  "public_documentation_domains": [
+    "chromedevtools.github.io",
+    "raw.githubusercontent.com",
+    "open.pinduoduo.com"
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "external_reference_trees_accessed": false,
+  "reference_verification": "No accesses or writes by this task; external trees not independently inventoried",
+  "secrets_detected": false,
+  "secret_check_scope": "User-designated sanitized attachment, reviewed source, generated synthetic reports; not a workspace-wide secret audit",
+  "next_stage_not_executed": true,
+  "controller_decision": null,
+  "hard_stop": "Do not start the next SHEEP task. Wait for Controller PASS / REPAIR.",
+  "final_validation": {
+    "required_outputs_exist": true,
+    "test_count_verified": 23,
+    "tracked_source_or_governance_changes": [],
+    "untracked_files_within_report_root": true,
+    "attachment_unchanged": true,
+    "source_and_existing_test_hashes_unchanged": true,
+    "new_report_files": [
+      "reports/pdd-inbound-analysis-2026-09-20/analysis.md",
+      "reports/pdd-inbound-analysis-2026-09-20/offline-tests.tap",
+      "reports/pdd-inbound-analysis-2026-09-20/offline-validation.json",
+      "reports/pdd-inbound-analysis-2026-09-20/report.json",
+      "reports/pdd-inbound-analysis-2026-09-20/verify-offline.mjs"
+    ],
+    "syntax_and_json_checks": "PASS",
+    "external_reference_note": "Not accessed or written by this task; no external inventory performed"
+  },
+  "_derived_notice": "DERIVED_REDACTED_2026-09-23; historical, non-authoritative; see ../README.md"
+}

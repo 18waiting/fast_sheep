@@ -1,0 +1,149 @@
+# DERIVED / REDACTED (2026-09-23); historical test output, not rerun. See ../README.md
+TAP version 13
+# Subtest: COUNTEREXAMPLE: one latest snapshot loses two of three messages
+ok 1 - COUNTEREXAMPLE: one latest snapshot loses two of three messages
+  ---
+  duration_ms: 1.098417
+  type: 'test'
+  ...
+# Subtest: COUNTEREXAMPLE: even three perfect triggers cannot recover a latest-only burst
+ok 2 - COUNTEREXAMPLE: even three perfect triggers cannot recover a latest-only burst
+  ---
+  duration_ms: 0.079792
+  type: 'test'
+  ...
+# Subtest: COUNTEREXAMPLE: faster latest-only polling still has a finite blind interval
+ok 3 - COUNTEREXAMPLE: faster latest-only polling still has a finite blind interval
+  ---
+  duration_ms: 0.091917
+  type: 'test'
+  ...
+# Subtest: MODEL ONLY: a complete replay source with overlap can recover all three IDs
+ok 4 - MODEL ONLY: a complete replay source with overlap can recover all three IDs
+  ---
+  duration_ms: 0.062042
+  type: 'test'
+  ...
+# Subtest: NO PROTOCOL INFERENCE: pre_msg_id remains opaque and cannot reconstruct content
+ok 5 - NO PROTOCOL INFERENCE: pre_msg_id remains opaque and cannot reconstruct content
+  ---
+  duration_ms: 0.1665
+  type: 'test'
+  ...
+# Subtest: NO PROTOCOL INFERENCE: heartbeat or ACK labels are not accepted buyer messages
+ok 6 - NO PROTOCOL INFERENCE: heartbeat or ACK labels are not accepted buyer messages
+  ---
+  duration_ms: 0.059667
+  type: 'test'
+  ...
+# Subtest: SCOPE: candidate does not invent store, conversation, or canonical envelope
+ok 7 - SCOPE: candidate does not invent store, conversation, or canonical envelope
+  ---
+  duration_ms: 0.080125
+  type: 'test'
+  ...
+# Subtest: COUNTEREXAMPLE: legacy content fingerprint merges distinct identical-text messages
+ok 8 - COUNTEREXAMPLE: legacy content fingerprint merges distinct identical-text messages
+  ---
+  duration_ms: 0.146958
+  type: 'test'
+  ...
+# Subtest: COUNTEREXAMPLE: bounded in-memory dedup is not a durable replay checkpoint
+ok 9 - COUNTEREXAMPLE: bounded in-memory dedup is not a durable replay checkpoint
+  ---
+  duration_ms: 0.0645
+  type: 'test'
+  ...
+# Subtest: PROTOCOL ENCODING ONLY: opcode-2 CDP payload is base64, not raw UTF-8 JSON
+ok 10 - PROTOCOL ENCODING ONLY: opcode-2 CDP payload is base64, not raw UTF-8 JSON
+  ---
+  duration_ms: 0.179875
+  type: 'test'
+  ...
+# Subtest: normalizes a buyer text payload without conversation association
+ok 11 - normalizes a buyer text payload without conversation association
+  ---
+  duration_ms: 0.52425
+  type: 'test'
+  ...
+# Subtest: wrong roles and missing content are rejected
+ok 12 - wrong roles and missing content are rejected
+  ---
+  duration_ms: 0.078875
+  type: 'test'
+  ...
+# Subtest: missing or malformed identity facts are unknown, not success
+ok 13 - missing or malformed identity facts are unknown, not success
+  ---
+  duration_ms: 0.115167
+  type: 'test'
+  ...
+# Subtest: missing message id never receives a fallback platform identity
+ok 14 - missing message id never receives a fallback platform identity
+  ---
+  duration_ms: 0.759417
+  type: 'test'
+  ...
+# Subtest: client message id is optional and is not an idempotency claim
+ok 15 - client message id is optional and is not an idempotency claim
+  ---
+  duration_ms: 0.075334
+  type: 'test'
+  ...
+# Subtest: repeated payloads normalize independently without replay or dedup semantics
+ok 16 - repeated payloads normalize independently without replay or dedup semantics
+  ---
+  duration_ms: 0.072166
+  type: 'test'
+  ...
+# Subtest: observe records new keys and rejects duplicates
+ok 17 - observe records new keys and rejects duplicates
+  ---
+  duration_ms: 0.433833
+  type: 'test'
+  ...
+# Subtest: DOM rerender duplicate never emits twice
+ok 18 - DOM rerender duplicate never emits twice
+  ---
+  duration_ms: 0.068959
+  type: 'test'
+  ...
+# Subtest: dedup storage is bounded (no unbounded history)
+ok 19 - dedup storage is bounded (no unbounded history)
+  ---
+  duration_ms: 0.654208
+  type: 'test'
+  ...
+# Subtest: normalizeMessage uses canonical fields and never includes raw HTML
+ok 20 - normalizeMessage uses canonical fields and never includes raw HTML
+  ---
+  duration_ms: 0.446291
+  type: 'test'
+  ...
+# Subtest: fallback fingerprint is stable and design-marked
+ok 21 - fallback fingerprint is stable and design-marked
+  ---
+  duration_ms: 0.145833
+  type: 'test'
+  ...
+# Subtest: content is bounded
+ok 22 - content is bounded
+  ---
+  duration_ms: 0.57075
+  type: 'test'
+  ...
+# Subtest: normalizeScan preserves DOM order deterministically
+ok 23 - normalizeScan preserves DOM order deterministically
+  ---
+  duration_ms: 0.846417
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1467.907875

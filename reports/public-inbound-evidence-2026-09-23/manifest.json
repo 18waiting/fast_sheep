@@ -1,0 +1,96 @@
+{
+  "kind": "DERIVED_REDACTED_HISTORICAL_EVIDENCE",
+  "derived_at": "2026-09-23",
+  "historical_evidence_date": "2026-09-20",
+  "authoritative": false,
+  "source_file_count": 17,
+  "files": [
+    {
+      "path": "pdd-inbound-analysis-2026-09-20/analysis.md",
+      "sha256": "4e9ee7d2ab0d979068d9f9c16eb0e125750a663b9d0c841c33ca5253ed2dfb3d",
+      "bytes": 16006
+    },
+    {
+      "path": "pdd-inbound-analysis-2026-09-20/clarencejh-reference-review.json",
+      "sha256": "6ddace3410b48a4193a210765f2f9566b729877739f014a26608278a14ae31f4",
+      "bytes": 914
+    },
+    {
+      "path": "pdd-inbound-analysis-2026-09-20/clarencejh-reference-review.md",
+      "sha256": "8fe2b6048bda307fe4fc27a14fc46e332622b8ac9bbcf45fc2cca8ee2b23e79e",
+      "bytes": 5885
+    },
+    {
+      "path": "pdd-inbound-analysis-2026-09-20/offline-tests.tap",
+      "sha256": "78d4b2bee26beada7dfdb2e0c834c18b4761dd5a84688f14339dc4353f2c1b17",
+      "bytes": 4725
+    },
+    {
+      "path": "pdd-inbound-analysis-2026-09-20/offline-validation.json",
+      "sha256": "ebd2df205cd4a8e00d7482537792e880be084a142fff019d72ac4960606de4f6",
+      "bytes": 1427
+    },
+    {
+      "path": "pdd-inbound-analysis-2026-09-20/online-research.md",
+      "sha256": "43d7df0cb9a09c823d0c3ac1d376cab50b53e70f47d40c33e7d07dd1e598b609",
+      "bytes": 3962
+    },
+    {
+      "path": "pdd-inbound-analysis-2026-09-20/recommended-solution.json",
+      "sha256": "854b62105c34c68da423213e48c7d916a4d9285e65853663014f56b346613316",
+      "bytes": 703
+    },
+    {
+      "path": "pdd-inbound-analysis-2026-09-20/recommended-solution.md",
+      "sha256": "aea5f636c63d3b2afa65b87b402d347ab2c02952b2075416ca21f6bd28cec036",
+      "bytes": 12834
+    },
+    {
+      "path": "pdd-inbound-analysis-2026-09-20/report.json",
+      "sha256": "a3da87bcdbc9429a4a2860efb732d6a7b6efeae67148e9a7fddc9f19bbf07766",
+      "bytes": 7656
+    },
+    {
+      "path": "pdd-inbound-analysis-2026-09-20/verify-offline.mjs",
+      "sha256": "38451cde23dea4c6d981eab747fd8cd966b6949713910fb837136c2ab188b124",
+      "bytes": 7183
+    },
+    {
+      "path": "pdd-inbound-engineering-plan-2026-09-20/engineering-plan.md",
+      "sha256": "e85ffdf74491fd2294112fe3b5689a614ca4e269d35eef6310d53b68de01cce7",
+      "bytes": 54745
+    },
+    {
+      "path": "pdd-inbound-engineering-plan-2026-09-20/validation.json",
+      "sha256": "59fd5987ef5325322ae96323180ad89d16a09963237a1b6291d3369584c3d191",
+      "bytes": 5588
+    },
+    {
+      "path": "zhinianboke-pdd-review-2026-09-20/analysis.md",
+      "sha256": "f52fa54e51652bbd94cf789d7bde4814e9f1da294f5780215542d7f4b0073074",
+      "bytes": 21105
+    },
+    {
+      "path": "zhinianboke-pdd-review-2026-09-20/build_report.py",
+      "sha256": "757040bee4fc6f2ae98037c8d617aa5ca236170e3411e92b47000e3a9a72426f",
+      "bytes": 23983
+    },
+    {
+      "path": "zhinianboke-pdd-review-2026-09-20/report.json",
+      "sha256": "9b3eb25c53e0d8815a0b5e1c095a5640e1766936637441bd17e7840c0da71b01",
+      "bytes": 6995
+    },
+    {
+      "path": "zhinianboke-pdd-review-2026-09-20/source-manifest.json",
+      "sha256": "5bdc00c8ccc2431013333f2150ccc4279ad3ced2c58037997a77be2d720f8eeb",
+      "bytes": 39344
+    },
+    {
+      "path": "zhinianboke-pdd-review-2026-09-20/sources.json",
+      "sha256": "eec8274dad65fa78acc62574d2da7ef5b2f2985b34286d7b77770722fd05806e",
+      "bytes": 14033
+    }
+  ],
+  "hash_scope": "SHA-256 of derived files only; original-to-derived hash mapping is retained locally in ignored .tmp, not published",
+  "next_stage_not_executed": true
+}

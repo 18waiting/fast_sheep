@@ -1,0 +1,268 @@
+{
+  "repository": "https://github.com/zhinianboke/pdd-auto-reply",
+  "commit": "61dac37fb6c329ca397c8bb03d274421254b1498",
+  "review_date": "2026-09-20",
+  "sources": [
+    {
+      "id": "S01",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/README.md",
+      "line_start": 19,
+      "line_end": 94,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/README.md#L19-L94",
+      "sha256": "3030bffa86ed93ffcce05e4e599b59d259386074b575af5ee44d9cade0971c32"
+    },
+    {
+      "id": "S02",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/pdd_channel.py",
+      "line_start": 340,
+      "line_end": 411,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/pdd_channel.py#L340-L411",
+      "sha256": "a3c3a52c5a3d4a3f0630657628171c7bb7d416901eaa77d2ec9dc306feee49c8"
+    },
+    {
+      "id": "S03",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/pdd_channel.py",
+      "line_start": 413,
+      "line_end": 551,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/pdd_channel.py#L413-L551",
+      "sha256": "a3c3a52c5a3d4a3f0630657628171c7bb7d416901eaa77d2ec9dc306feee49c8"
+    },
+    {
+      "id": "S04",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/message_queue.py",
+      "line_start": 34,
+      "line_end": 147,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/message_queue.py#L34-L147",
+      "sha256": "ada34b1b401f126b81b6597c0ba5531e9bd296089ae7cb6c0ca10e61bb6a2167"
+    },
+    {
+      "id": "S05",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/engine/message_consumer.py",
+      "line_start": 355,
+      "line_end": 541,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/engine/message_consumer.py#L355-L541",
+      "sha256": "0c2519d0da9383bd78e723159aae4ed51801f85a43650e35a24bb805343ed998"
+    },
+    {
+      "id": "S06",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/engine/message_consumer.py",
+      "line_start": 941,
+      "line_end": 976,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/engine/message_consumer.py#L941-L976",
+      "sha256": "0c2519d0da9383bd78e723159aae4ed51801f85a43650e35a24bb805343ed998"
+    },
+    {
+      "id": "S07",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/engine/message_consumer.py",
+      "line_start": 1330,
+      "line_end": 1391,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/engine/message_consumer.py#L1330-L1391",
+      "sha256": "0c2519d0da9383bd78e723159aae4ed51801f85a43650e35a24bb805343ed998"
+    },
+    {
+      "id": "S08",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/common/models/log_models.py",
+      "line_start": 30,
+      "line_end": 80,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/common/models/log_models.py#L30-L80",
+      "sha256": "b1d55560d2ee1edab8442841ede8c91d28724fb2017ac1f00a7f79e0bf3a4f59"
+    },
+    {
+      "id": "S09",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/get_chat_history.py",
+      "line_start": 103,
+      "line_end": 258,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/api/get_chat_history.py#L103-L258",
+      "sha256": "38266f13bd53769e4f64a7cca47b06f7dc2f47d9e784ab0e68e97b5d135b2a28"
+    },
+    {
+      "id": "S10",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/get_chat_history.py",
+      "line_start": 260,
+      "line_end": 346,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/api/get_chat_history.py#L260-L346",
+      "sha256": "38266f13bd53769e4f64a7cca47b06f7dc2f47d9e784ab0e68e97b5d135b2a28"
+    },
+    {
+      "id": "S11",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/routes/messages.py",
+      "line_start": 35,
+      "line_end": 190,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/routes/messages.py#L35-L190",
+      "sha256": "316fce997ab13a6d543f2076f70619afb2e13b5a4f0e27abfc06fda8d56d20e7"
+    },
+    {
+      "id": "S12",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/_bootstrap.py",
+      "line_start": 177,
+      "line_end": 195,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/_bootstrap.py#L177-L195",
+      "sha256": "f7d80400e3c43a586bd7e09c9d9e00656d3b6ad33eb275d68317f55895ba4405"
+    },
+    {
+      "id": "S13",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/routes/__init__.py",
+      "line_start": 25,
+      "line_end": 45,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/routes/__init__.py#L25-L45",
+      "sha256": "e78551d73a25986d898a956d4d4e89df2b7bc890ddbccd353327e4a02797a008"
+    },
+    {
+      "id": "S14",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/docker-compose.yml",
+      "line_start": 124,
+      "line_end": 186,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/docker-compose.yml#L124-L186",
+      "sha256": "c163a415dd0764ef9e7a9d4a17417667fbd69cc844baaddb4b1cf434270cb32a"
+    },
+    {
+      "id": "S15",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/engine/reply_engine.py",
+      "line_start": 306,
+      "line_end": 437,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/engine/reply_engine.py#L306-L437",
+      "sha256": "a5b99af04a0f8cd21a351038ab241e5c7061f98406dcc01711753c6c00293f61"
+    },
+    {
+      "id": "S16",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/agent/ai_reply_engine.py",
+      "line_start": 98,
+      "line_end": 184,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/agent/ai_reply_engine.py#L98-L184",
+      "sha256": "e6116f28b0d2adacf33ac311effc5b4e598c87db9dbf11a1f71890d179ac7663"
+    },
+    {
+      "id": "S17",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/common/services/kb_service.py",
+      "line_start": 178,
+      "line_end": 225,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/common/services/kb_service.py#L178-L225",
+      "sha256": "2358640270e65b34e5fedee03732f077b152925cff2c4251a77de13a66ab8059"
+    },
+    {
+      "id": "S18",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/frontend/src/pages/online_chat.vue",
+      "line_start": 108,
+      "line_end": 163,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/frontend/src/pages/online_chat.vue#L108-L163",
+      "sha256": "2126269ece18416998adf7a5381ba60aa7ee5611b64d5f0f2edaaf421b39f2f3"
+    },
+    {
+      "id": "S19",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/connection_manager.py",
+      "line_start": 38,
+      "line_end": 185,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/connection_manager.py#L38-L185",
+      "sha256": "960ebe9c0bf50d8a375e56b67522d5f2be903823a85886efa3d4b0898066d846"
+    },
+    {
+      "id": "S20",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/engine/message_consumer.py",
+      "line_start": 757,
+      "line_end": 840,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/engine/message_consumer.py#L757-L840",
+      "sha256": "0c2519d0da9383bd78e723159aae4ed51801f85a43650e35a24bb805343ed998"
+    },
+    {
+      "id": "S21",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/core/base_request.py",
+      "line_start": 238,
+      "line_end": 320,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/core/base_request.py#L238-L320",
+      "sha256": "1033df9d8bb57b0e289d6ca09d16cf10d4da53a2dfa0c414bf33696050e93e8c"
+    },
+    {
+      "id": "S22",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/send_message.py",
+      "line_start": 78,
+      "line_end": 118,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/api/send_message.py#L78-L118",
+      "sha256": "f58b9ad42d82fe8e1870dd8c4bdb1f3a2cb1e891cc2c626aa3a8e376b083468e"
+    },
+    {
+      "id": "S23",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/tests/test_pdd_channel.py",
+      "line_start": 1,
+      "line_end": 59,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/tests/test_pdd_channel.py#L1-L59",
+      "sha256": "ca64d057577adc491775ccc5a11a4cf8f8c9aa9c3fc82bc3d4299d05751cdc4e"
+    },
+    {
+      "id": "S24",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/common/core/config.py",
+      "line_start": 90,
+      "line_end": 130,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/common/core/config.py#L90-L130",
+      "sha256": "587422a7cbef3e46011ad1bc85259b21272967f65aaa7b6a25177aa701e5d3a7"
+    },
+    {
+      "id": "S25",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/agent/agent_config.py",
+      "line_start": 29,
+      "line_end": 66,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/agent/agent_config.py#L29-L66",
+      "sha256": "ad9418c4d5fd8123b7d20e784bb3e227bad9304c4039e1d6e30c0fb2bb2ca749"
+    },
+    {
+      "id": "S26",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/engine/message_consumer.py",
+      "line_start": 546,
+      "line_end": 597,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/engine/message_consumer.py#L546-L597",
+      "sha256": "0c2519d0da9383bd78e723159aae4ed51801f85a43650e35a24bb805343ed998"
+    },
+    {
+      "id": "S27",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/LICENSE",
+      "line_start": 1,
+      "line_end": 20,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/LICENSE#L1-L20",
+      "sha256": "38ad61f51cf0757f315f2d1816958f6704ec32355f5d3135a80e6d0771645875"
+    },
+    {
+      "id": "S28",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/get_conversations.py",
+      "line_start": 35,
+      "line_end": 112,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/api/get_conversations.py#L35-L112",
+      "sha256": "2d572e92e2cc324c8bcbad520a79f754cfd77cb63ffcb3ce1ac0eb59e47ee28e"
+    },
+    {
+      "id": "S29",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/get_token.py",
+      "line_start": 30,
+      "line_end": 47,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/api/get_token.py#L30-L47",
+      "sha256": "ae3e6c6becbdadb7ef7a779b074826969da3cc1633fea7b5f882ca0ce7fe7cae"
+    },
+    {
+      "id": "S30",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/pdd_channel.py",
+      "line_start": 231,
+      "line_end": 322,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/pdd_channel.py#L231-L322",
+      "sha256": "a3c3a52c5a3d4a3f0630657628171c7bb7d416901eaa77d2ec9dc306feee49c8"
+    },
+    {
+      "id": "S31",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/transfer_service.py",
+      "line_start": 90,
+      "line_end": 128,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/transfer_service.py#L90-L128",
+      "sha256": "2c16d2547ccd5e815f468dd610cad8af03150db8f5ba450cdb85eaf87fd0441b"
+    },
+    {
+      "id": "S32",
+      "path": "LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/connection_registry.py",
+      "line_start": 65,
+      "line_end": 81,
+      "url": "https://github.com/zhinianboke/pdd-auto-reply/blob/61dac37fb6c329ca397c8bb03d274421254b1498/websocket/channel_pdd/connection_registry.py#L65-L81",
+      "sha256": "f289dfaee535fca9c0e8654aafc540425f26d5e72569205f9844b4efb3bbcada"
+    }
+  ],
+  "upstream_urls": [
+    "https://raw.githubusercontent.com/python-websockets/websockets/15.0.1/src/websockets/asyncio/connection.py",
+    "https://raw.githubusercontent.com/python-websockets/websockets/12.0/src/websockets/legacy/protocol.py"
+  ],
+  "_derived_notice": "DERIVED_REDACTED_2026-09-23; historical, non-authoritative; see ../README.md"
+}

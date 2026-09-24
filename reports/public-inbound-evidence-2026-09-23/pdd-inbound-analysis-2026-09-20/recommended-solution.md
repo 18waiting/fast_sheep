@@ -1,7 +1,9 @@
+> **DERIVED / REDACTED (2026-09-23).** Historical 2026-09-20 evidence, not an original byte-for-byte record or current authorization. See [package notice](../README.md).
+
 # 快羊 PDD 消息接收：综合建议与验证路线
 
 日期：2026-09-20。
-对应附件：`/Users/wb02605050/Downloads/快羊-PDD消息接收问题说明.md`。
+对应附件：`PRIVATE_ATTACHMENT_NOT_INCLUDED`。
 性质：基于附件和公开源码核验的诊断建议；不是平台协议规范、产品决策或执行授权；不表示漏收已修复。
 
 ## 一、建议结论

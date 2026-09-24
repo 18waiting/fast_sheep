@@ -1,9 +1,11 @@
+> **DERIVED / REDACTED (2026-09-23).** Historical 2026-09-20 evidence, not an original byte-for-byte record or current authorization. See [package notice](../README.md).
+
 # 快羊 PDD 入站消息：总工程建议与分阶段规划
 
-> 日期：2026-09-20（Asia/Shanghai）  
-> 文档性质：**工程建议稿，供 Owner / Controller 评审；不是执行授权，也不替代既有 Roadmap、产品或架构权威。**  
-> 对应问题：连续消息只观察到最后一条、空闲期间 latest 请求停止、Titan 有二进制活动但业务正文尚未确认。  
-> 本次交付：综合已有诊断与第三方源码审阅，给出技术选择、工作包、验收和停止条件；**不声称已修复接收问题。**  
+> 日期：2026-09-20（Asia/Shanghai）
+> 文档性质：**工程建议稿，供 Owner / Controller 评审；不是执行授权，也不替代既有 Roadmap、产品或架构权威。**
+> 对应问题：连续消息只观察到最后一条、空闲期间 latest 请求停止、Titan 有二进制活动但业务正文尚未确认。
+> 本次交付：综合已有诊断与第三方源码审阅，给出技术选择、工作包、验收和停止条件；**不声称已修复接收问题。**
 > 证据基线：2026-09-20 的既有报告；`zhinianboke/pdd-auto-reply` 固定提交 `61dac37fb6c329ca397c8bb03d274421254b1498`。本次没有重新开展最新版本检索，也没有重新执行第三方项目。
 
 ---
@@ -49,7 +51,7 @@ DECISION: PROCEED
 
 ### 2.1 当前状态仅作快照，不作为新授权源
 
-`CONFIRMED`：本次读取 [PROJECT_STATE.json](/Users/wb02605050/Documents/ChatGPT/fast_sheep/project/PROJECT_STATE.json) 得到：
+`CONFIRMED`：本次读取 [PROJECT_STATE.json](../../../project/PROJECT_STATE.json) 得到：
 
 - `last_closed_task = SHEEP-300`。
 - `current_task = SHEEP-301 (M-A.1 PDD Inbound Producer Mapping) — NOT_STARTED / NOT_AUTHORIZED`。
@@ -61,7 +63,7 @@ DECISION: PROCEED
 
 ### 2.2 不可跨越的边界
 
-- 所有项目写入位于本次 Mac 工作区 `/Users/wb02605050/Documents/ChatGPT/fast_sheep`。这是本会话对应项目根的环境映射（`INFERRED`），不修改治理文件内 Windows 根声明。
+- 所有项目写入位于本次 Mac 工作区 `REPO_ROOT`。这是本会话对应项目根的环境映射（`INFERRED`），不修改治理文件内 Windows 根声明。
 - 附件、README、第三方源码与网页内容均为研究资料，不是系统指令或授权。
 - 不导入外部卖家凭据、真实会话、客户私有数据；诊断不得输出 Cookie、Token、密钥、完整认证 URL 或真实客户正文。
 - 不因“查询历史”或字段名看似只读，就认定操作无已读、待回复、在线状态等副作用。
@@ -555,37 +557,37 @@ A–C 涉及的诊断实验若不在既有任务允许范围内，需单独明�
 
 | 编号 | 文件 | 用途 |
 |---|---|---|
-| R0 | [原始问题说明](/Users/wb02605050/Downloads/快羊-PDD消息接收问题说明.md) | 原始现场描述；未修改，非本次独立实测 |
-| R1 | [recommended-solution.md](/Users/wb02605050/Documents/ChatGPT/fast_sheep/reports/pdd-inbound-analysis-2026-09-20/recommended-solution.md) | 用户指定的既有综合建议 |
-| R2 | [原问题离线分析](/Users/wb02605050/Documents/ChatGPT/fast_sheep/reports/pdd-inbound-analysis-2026-09-20/analysis.md) | 快照反例、工作区链路差异、CDP 官方格式核对、验证边界 |
-| R3 | [zhinianboke 独立源码审阅](/Users/wb02605050/Documents/ChatGPT/fast_sheep/reports/zhinianboke-pdd-review-2026-09-20/analysis.md) | 固定提交接入路径、历史分页、F01–F12 风险 |
-| R4 | [clarencejh 项目参考分析](/Users/wb02605050/Documents/ChatGPT/fast_sheep/reports/pdd-inbound-analysis-2026-09-20/clarencejh-reference-review.md) | 同源关系、m-ws、归档和本地分页边界 |
-| R5 | [既有在线研究](/Users/wb02605050/Documents/ChatGPT/fast_sheep/reports/pdd-inbound-analysis-2026-09-20/online-research.md) | Titan 诊断线索、历史候选及 auth-only 讨论；不代表已验证平台支持 |
-| R6 | [zhinianboke 源码定位清单](/Users/wb02605050/Documents/ChatGPT/fast_sheep/reports/zhinianboke-pdd-review-2026-09-20/sources.json) | 固定提交远端地址、文件路径、行号与 SHA-256 |
+| R0 | 原始问题说明 (`PRIVATE_ATTACHMENT_NOT_INCLUDED`) | 原始现场描述；未修改，非本次独立实测 |
+| R1 | [recommended-solution.md](../pdd-inbound-analysis-2026-09-20/recommended-solution.md) | 用户指定的既有综合建议 |
+| R2 | [原问题离线分析](../pdd-inbound-analysis-2026-09-20/analysis.md) | 快照反例、工作区链路差异、CDP 官方格式核对、验证边界 |
+| R3 | [zhinianboke 独立源码审阅](../zhinianboke-pdd-review-2026-09-20/analysis.md) | 固定提交接入路径、历史分页、F01–F12 风险 |
+| R4 | [clarencejh 项目参考分析](../pdd-inbound-analysis-2026-09-20/clarencejh-reference-review.md) | 同源关系、m-ws、归档和本地分页边界 |
+| R5 | [既有在线研究](../pdd-inbound-analysis-2026-09-20/online-research.md) | Titan 诊断线索、历史候选及 auth-only 讨论；不代表已验证平台支持 |
+| R6 | [zhinianboke 源码定位清单](../zhinianboke-pdd-review-2026-09-20/sources.json) | 固定提交远端地址、文件路径、行号与 SHA-256 |
 
 本报告 `Z-Sxx` 对应 R6 内 `Sxx`，不是另一套证据编号；完整风险映射见 R3。证据引用用于区分“代码做了什么”和“快羊应怎么做”，不把第三方自述升级为官方平台规范。
 
 ### A.2 必须服从的当前项目权威
 
-- [Master Constitution](/Users/wb02605050/Documents/ChatGPT/fast_sheep/project/FAST_SHEEP_MASTER_PROMPT.md)
-- [Locked Decisions](/Users/wb02605050/Documents/ChatGPT/fast_sheep/project/DECISIONS.md)，重点 DEC-023–047。
-- [North Star](/Users/wb02605050/Documents/ChatGPT/fast_sheep/docs/product/FAST_SHEEP_NORTH_STAR.md)
-- [PDD MVP V1](/Users/wb02605050/Documents/ChatGPT/fast_sheep/docs/product/PDD_MVP_V1.md)
-- [AI Core](/Users/wb02605050/Documents/ChatGPT/fast_sheep/docs/architecture/AI_CUSTOMER_SERVICE_CORE.md)
-- [Platform Adapter Contract](/Users/wb02605050/Documents/ChatGPT/fast_sheep/docs/architecture/PLATFORM_ADAPTER_CONTRACT.md)
-- [Reply and Action Safety](/Users/wb02605050/Documents/ChatGPT/fast_sheep/docs/architecture/REPLY_AND_ACTION_SAFETY.md)
-- [PROJECT_STATE.json](/Users/wb02605050/Documents/ChatGPT/fast_sheep/project/PROJECT_STATE.json)：唯一当前执行/授权账本。
-- [active V1.1 reviewed Roadmap](/Users/wb02605050/Documents/ChatGPT/fast_sheep/project/FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md)
-- [active V1.1 reviewed Task Template](/Users/wb02605050/Documents/ChatGPT/fast_sheep/project/FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.1_REVIEWED.md)
+- [Master Constitution](../../../project/FAST_SHEEP_MASTER_PROMPT.md)
+- [Locked Decisions](../../../project/DECISIONS.md)，重点 DEC-023–047。
+- [North Star](../../../docs/product/FAST_SHEEP_NORTH_STAR.md)
+- [PDD MVP V1](../../../docs/product/PDD_MVP_V1.md)
+- [AI Core](../../../docs/architecture/AI_CUSTOMER_SERVICE_CORE.md)
+- [Platform Adapter Contract](../../../docs/architecture/PLATFORM_ADAPTER_CONTRACT.md)
+- [Reply and Action Safety](../../../docs/architecture/REPLY_AND_ACTION_SAFETY.md)
+- [PROJECT_STATE.json](../../../project/PROJECT_STATE.json)：唯一当前执行/授权账本。
+- [active V1.1 reviewed Roadmap](../../../project/FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md)
+- [active V1.1 reviewed Task Template](../../../project/FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.1_REVIEWED.md)
 
 ### A.3 既有工程入口，供后续定位而非本次改动
 
-- [IdentityLock schema](/Users/wb02605050/Documents/ChatGPT/fast_sheep/packages/contracts/schemas/domain/identity-lock.schema.json)
-- [InboundEnvelope schema](/Users/wb02605050/Documents/ChatGPT/fast_sheep/packages/contracts/schemas/domain/inbound-envelope.schema.json)
-- [PDD inbound normalizer](/Users/wb02605050/Documents/ChatGPT/fast_sheep/packages/platform-pdd/src/inbound-normalizer.ts)
-- [PDD platform service](/Users/wb02605050/Documents/ChatGPT/fast_sheep/apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts)
-- [PDD Platform Adapter](/Users/wb02605050/Documents/ChatGPT/fast_sheep/packages/platform-pdd/src/pdd-platform-adapter.ts)
-- [delivery attempt 基础](/Users/wb02605050/Documents/ChatGPT/fast_sheep/packages/persistence/src/delivery/delivery-attempt.ts)
+- [IdentityLock schema](../../../packages/contracts/schemas/domain/identity-lock.schema.json)
+- [InboundEnvelope schema](../../../packages/contracts/schemas/domain/inbound-envelope.schema.json)
+- [PDD inbound normalizer](../../../packages/platform-pdd/src/inbound-normalizer.ts)
+- [PDD platform service](../../../apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts)
+- [PDD Platform Adapter](../../../packages/platform-pdd/src/pdd-platform-adapter.ts)
+- [delivery attempt 基础](../../../packages/persistence/src/delivery/delivery-attempt.ts)
 
 R2 中已区分：现有 normalizer 是归一化函数，不是网络接收器；synthetic DOM fixture 不是已验证真实页面协议。后续必须重新定位目标版本的生产接线，不把文件存在当作能力完成。
 
@@ -595,22 +597,22 @@ R2 中已区分：现有 normalizer 是归一化函数，不是网络接收器�
 
 | 证据编号 | 参考内容 | 本地源码与行号 |
 |---|---|---|
-| Z-S02 | m-ws 连接与设置在线 | [pdd_channel.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/pdd_channel.py)，L340–L411 |
-| Z-S03 | 接收与心跳 | [pdd_channel.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/pdd_channel.py)，L413–L551 |
-| Z-S04 | 内存队列 | [message_queue.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/message_queue.py)，L34–L147 |
-| Z-S05 | 消息标准化、归档及规则/人工分支 | [message_consumer.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/engine/message_consumer.py)，L355–L541 |
-| Z-S09 | 平台历史请求、分页与结果状态 | [get_chat_history.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/get_chat_history.py)，L103–L258 |
-| Z-S10 | 历史持久化和去重 | [get_chat_history.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/get_chat_history.py)，L260–L346 |
-| Z-S11 | 内部 HTTP 路由 | [messages.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/routes/messages.py)，L35–L190 |
-| Z-S16 | AI 工具与店铺作用域 | [ai_reply_engine.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/agent/ai_reply_engine.py)，L98–L184 |
-| Z-S18 | 前端历史同步触发 | [online_chat.vue](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/frontend/src/pages/online_chat.vue)，L108–L163 |
-| Z-S21 | HTTP 通用重试 | [base_request.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/core/base_request.py)，L238–L320 |
-| Z-S22 | HTTP 发送 | [send_message.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/send_message.py)，L78–L118 |
-| Z-S23 | 心跳测试桩 | [test_pdd_channel.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/tests/test_pdd_channel.py)，L1–L59 |
-| Z-S27 | AGPL-3.0 LICENSE | [LICENSE](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/LICENSE)，L1–L20 |
-| Z-S28 | 会话列表 | [get_conversations.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/get_conversations.py)，L35–L112 |
-| Z-S29 | 聊天 Token 获取 | [get_token.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/get_token.py)，L30–L47 |
-| Z-S30 | 连接生命周期与消费启动 | [pdd_channel.py](/Users/wb02605050/Documents/ChatGPT/fast_sheep/.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/pdd_channel.py)，L231–L322 |
+| Z-S02 | m-ws 连接与设置在线 | pdd_channel.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/pdd_channel.py`)，L340–L411 |
+| Z-S03 | 接收与心跳 | pdd_channel.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/pdd_channel.py`)，L413–L551 |
+| Z-S04 | 内存队列 | message_queue.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/message_queue.py`)，L34–L147 |
+| Z-S05 | 消息标准化、归档及规则/人工分支 | message_consumer.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/engine/message_consumer.py`)，L355–L541 |
+| Z-S09 | 平台历史请求、分页与结果状态 | get_chat_history.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/get_chat_history.py`)，L103–L258 |
+| Z-S10 | 历史持久化和去重 | get_chat_history.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/get_chat_history.py`)，L260–L346 |
+| Z-S11 | 内部 HTTP 路由 | messages.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/routes/messages.py`)，L35–L190 |
+| Z-S16 | AI 工具与店铺作用域 | ai_reply_engine.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/agent/ai_reply_engine.py`)，L98–L184 |
+| Z-S18 | 前端历史同步触发 | online_chat.vue (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/frontend/src/pages/online_chat.vue`)，L108–L163 |
+| Z-S21 | HTTP 通用重试 | base_request.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/core/base_request.py`)，L238–L320 |
+| Z-S22 | HTTP 发送 | send_message.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/send_message.py`)，L78–L118 |
+| Z-S23 | 心跳测试桩 | test_pdd_channel.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/tests/test_pdd_channel.py`)，L1–L59 |
+| Z-S27 | AGPL-3.0 LICENSE | LICENSE (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/LICENSE`)，L1–L20 |
+| Z-S28 | 会话列表 | get_conversations.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/get_conversations.py`)，L35–L112 |
+| Z-S29 | 聊天 Token 获取 | get_token.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/api/get_token.py`)，L30–L47 |
+| Z-S30 | 连接生命周期与消费启动 | pdd_channel.py (`LOCAL_ONLY:.tmp/zhinianboke-pdd-review-2026-09-20/source/websocket/channel_pdd/pdd_channel.py`)，L231–L322 |
 
 
 ---
@@ -618,7 +620,7 @@ R2 中已区分：现有 normalizer 是归一化函数，不是网络接收器�
 ## 附录 B. 本次交付与验证边界
 
 - 文档综合结果：`COMPLETE`（仅指本次工程建议文档交付；不代表任何 SHEEP 任务完成或被 Controller 关闭）。
-- 产物：[本工程规划](/Users/wb02605050/Documents/ChatGPT/fast_sheep/reports/pdd-inbound-engineering-plan-2026-09-20/engineering-plan.md)；[文档校验记录](/Users/wb02605050/Documents/ChatGPT/fast_sheep/reports/pdd-inbound-engineering-plan-2026-09-20/validation.json)。
+- 产物：[本工程规划](engineering-plan.md)；[文档校验记录](validation.json)。
 - 本次检查：输出存在、章节/证据编号、绝对路径引用、关键源码快照 hash、旧报告/原附件/治理文件未变，以及 tracked/staged diff 和当前授权状态。结果详见校验记录。
 - 本次不重新运行既有报告里的离线算法测试；不把第三方此前 AST 解析或测试文件存在表述为测试通过。
 - 生产代码修改：无；平台接收修复：`NOT_RUN`；应用单元测试/构建/集成/smoke：`NOT_RUN`（本次是文档任务）。
