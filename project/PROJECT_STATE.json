@@ -4595,6 +4595,19 @@
         "services/ai-worker/src/fastwork_ai_worker/persistence/store_knowledge_repository.py",
         "services/ai-worker/src/fastwork_ai_worker/rpc/methods/store_knowledge.py"
       ]
+    },
+    {
+      "id": "DEC-SHEEP-306-REPLY-PLAN-EVOLUTION",
+      "date": "2026-09-24",
+      "title": "SHEEP-306: ContextEnvelope and ReplyPlan Contract Evolution",
+      "status": "IMPLEMENTED",
+      "summary": "Defined ContextEnvelope (AI input) and ReplyPlan (AI output) contracts. Established evolution path from Suggestion/SendCommand. Key invariants: identity lock is structural, facts/knowledge/inference are distinguished, unknowns are explicit.",
+      "artifacts": [
+        "resources/contracts/schemas/domain/context-envelope.schema.json",
+        "resources/contracts/schemas/domain/reply-plan.schema.json",
+        "docs/architecture/REPLY_PLAN_EVOLUTION.md",
+        "tests/contracts/test_context_envelope_reply_plan_schemas.mjs"
+      ]
     }
   ]
 }

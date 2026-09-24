@@ -2823,6 +2823,38 @@
       "schema_draft": "https://json-schema.org/draft/2020-12/schema",
       "status": "REGISTERED",
       "description": "Store Knowledge (DEC-008 layer 3). Merchant-configured store rules. SHEEP-305 MVP-A."
+    },
+    {
+      "id": "fastwork:domain:context-envelope",
+      "version": "1.0",
+      "path": "domain/context-envelope.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "SHEEP-306"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ContextEnvelope",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED",
+      "description": "Context envelope: bounded, identity-scoped input to AI generation. SHEEP-306."
+    },
+    {
+      "id": "fastwork:domain:reply-plan",
+      "version": "1.0",
+      "path": "domain/reply-plan.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "SHEEP-306"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ReplyPlan",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED",
+      "description": "Reply plan: governed evolution of Suggestion. SHEEP-306."
     }
   ]
 }

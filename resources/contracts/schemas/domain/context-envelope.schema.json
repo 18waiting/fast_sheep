@@ -1,0 +1,286 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:context-envelope",
+  "$title": "ContextEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "envelope_id",
+    "conversation_id",
+    "identity_lock",
+    "scene",
+    "trigger_message",
+    "created_at"
+  ],
+  "properties": {
+    "envelope_id": {
+      "type": "string",
+      "description": "Unique envelope identifier"
+    },
+    "conversation_id": {
+      "type": "string",
+      "description": "Internal conversation identity"
+    },
+    "identity_lock": {
+      "$ref": "#/$defs/IdentityLock",
+      "description": "Immutable identity scope for this envelope"
+    },
+    "scene": {
+      "type": "string",
+      "description": "Classified scene (e.g., SHIPPING_TIME, PRODUCT_INQUIRY)"
+    },
+    "trigger_message": {
+      "$ref": "#/$defs/TriggerMessage",
+      "description": "The inbound message that triggered this envelope"
+    },
+    "authoritative_facts": {
+      "$ref": "#/$defs/AuthoritativeFacts",
+      "description": "Authoritative business facts (shop, product, order, logistics, knowledge)"
+    },
+    "retrieved_knowledge": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/RetrievedKnowledge"
+      },
+      "description": "Retrieved supporting knowledge (from Store Knowledge, product knowledge, etc.)"
+    },
+    "conversation_context": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ConversationTurn"
+      },
+      "description": "Recent conversation history"
+    },
+    "explicit_unknowns": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ExplicitUnknown"
+      },
+      "description": "Explicit unknowns that block deterministic execution"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "IdentityLock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "merchant_id",
+        "store_id",
+        "platform",
+        "platform_account_id",
+        "customer_identity",
+        "conversation_id",
+        "trigger_message_id"
+      ],
+      "properties": {
+        "merchant_id": {
+          "type": "string"
+        },
+        "store_id": {
+          "type": "string"
+        },
+        "platform": {
+          "$ref": "fastwork:common:platform"
+        },
+        "platform_account_id": {
+          "type": "string"
+        },
+        "customer_identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": ["customerUid", "buyer_id", "user_id"]
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        },
+        "conversation_id": {
+          "type": "string"
+        },
+        "trigger_message_id": {
+          "type": "string"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Document/runtime generation evidence"
+        }
+      }
+    },
+    "TriggerMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["message_id", "content", "received_at"],
+      "properties": {
+        "message_id": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "received_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "AuthoritativeFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shop_facts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ProvenancedFact"
+          }
+        },
+        "product_facts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ProvenancedFact"
+          }
+        },
+        "order_facts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ProvenancedFact"
+          }
+        },
+        "logistics_facts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ProvenancedFact"
+          }
+        },
+        "knowledge_facts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ProvenancedFact"
+          },
+          "description": "Store Knowledge facts (DEC-008 layer 3)"
+        }
+      }
+    },
+    "ProvenancedFact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "source", "provenance"],
+      "properties": {
+        "value": {
+          "description": "Fact value (any JSON type)"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["platform_api", "merchant_config", "store_knowledge", "product_knowledge", "order_system", "logistics_system"],
+          "description": "Fact source system"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["retrieved_at"],
+          "properties": {
+            "retrieved_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "source_ref": {
+              "type": "string",
+              "description": "Reference to source record (e.g., knowledge entry ID, API endpoint)"
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Confidence score (1.0 = authoritative)"
+            }
+          }
+        }
+      }
+    },
+    "RetrievedKnowledge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["knowledge_id", "knowledge_type", "title", "content", "relevance_score"],
+      "properties": {
+        "knowledge_id": {
+          "type": "string",
+          "description": "Store Knowledge entry ID (SHEEP-305)"
+        },
+        "knowledge_type": {
+          "type": "string",
+          "enum": ["SHIPPING_TIME", "RETURN_POLICY", "FAQ", "OTHER"]
+        },
+        "title": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "relevance_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Retrieval relevance score"
+        },
+        "matched_keywords": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Keywords that matched this knowledge"
+        }
+      }
+    },
+    "ConversationTurn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["turn_id", "actor", "content", "timestamp"],
+      "properties": {
+        "turn_id": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "string",
+          "enum": ["customer", "merchant", "ai", "system"]
+        },
+        "content": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ExplicitUnknown": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unknown_id", "category", "description"],
+      "properties": {
+        "unknown_id": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["missing_identity", "missing_fact", "contradictory_facts", "stale_evidence", "unresolved_scene"],
+          "description": "Category of unknown"
+        },
+        "description": {
+          "type": "string"
+        },
+        "blocking": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether this unknown blocks deterministic execution"
+        }
+      }
+    }
+  }
+}

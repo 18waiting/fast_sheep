@@ -1,0 +1,316 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:reply-plan",
+  "$title": "ReplyPlan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "plan_id",
+    "envelope_ref",
+    "identity_lock",
+    "scene",
+    "trigger_message",
+    "reply_content",
+    "verification_requirements",
+    "created_at"
+  ],
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "description": "Unique reply plan identifier"
+    },
+    "envelope_ref": {
+      "type": "string",
+      "description": "Reference to the ContextEnvelope that generated this plan"
+    },
+    "identity_lock": {
+      "$ref": "fastwork:domain:context-envelope#/$defs/IdentityLock",
+      "description": "Immutable identity scope (inherited from envelope)"
+    },
+    "scene": {
+      "type": "string",
+      "description": "Classified scene (inherited from envelope)"
+    },
+    "trigger_message": {
+      "$ref": "fastwork:domain:context-envelope#/$defs/TriggerMessage",
+      "description": "The inbound message that triggered this plan (inherited from envelope)"
+    },
+    "reply_content": {
+      "$ref": "#/$defs/ReplyContent",
+      "description": "Structured reply content"
+    },
+    "fact_references": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/FactReference"
+      },
+      "description": "References to authoritative facts used in this reply"
+    },
+    "knowledge_references": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/KnowledgeReference"
+      },
+      "description": "References to retrieved knowledge used in this reply"
+    },
+    "inference_references": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/InferenceReference"
+      },
+      "description": "AI inferences used in this reply (MUST be distinguished from facts)"
+    },
+    "policy_metadata": {
+      "$ref": "#/$defs/PolicyMetadata",
+      "description": "Policy-relevant metadata (rollout mode, confirmation requirements, etc.)"
+    },
+    "verification_requirements": {
+      "$ref": "#/$defs/VerificationRequirements",
+      "description": "Pre-execution verification requirements"
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/PlanUnknown"
+      },
+      "description": "Unknowns that affect execution authorization"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "ReplyContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "language"],
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Reply text content"
+        },
+        "language": {
+          "type": "string",
+          "description": "Language code (e.g., 'zh-CN')"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ReplySegment"
+          },
+          "description": "Structured reply segments (for future use)"
+        }
+      }
+    },
+    "ReplySegment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["segment_type", "content"],
+      "properties": {
+        "segment_type": {
+          "type": "string",
+          "enum": ["text", "greeting", "answer", "closing", "disclaimer"]
+        },
+        "content": {
+          "type": "string"
+        },
+        "fact_refs": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Fact references used in this segment"
+        },
+        "knowledge_refs": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Knowledge references used in this segment"
+        }
+      }
+    },
+    "FactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fact_id", "fact_key", "source"],
+      "properties": {
+        "fact_id": {
+          "type": "string",
+          "description": "Unique reference ID"
+        },
+        "fact_key": {
+          "type": "string",
+          "description": "Key in authoritative_facts (e.g., 'shop_facts.shipping_policy')"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["platform_api", "merchant_config", "store_knowledge", "product_knowledge", "order_system", "logistics_system"]
+        },
+        "value_snapshot": {
+          "description": "Snapshot of fact value at retrieval time"
+        },
+        "retrieved_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "KnowledgeReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["knowledge_id", "knowledge_type", "relevance_score"],
+      "properties": {
+        "knowledge_id": {
+          "type": "string",
+          "description": "Store Knowledge entry ID (SHEEP-305)"
+        },
+        "knowledge_type": {
+          "type": "string",
+          "enum": ["SHIPPING_TIME", "RETURN_POLICY", "FAQ", "OTHER"]
+        },
+        "title": {
+          "type": "string"
+        },
+        "content_snapshot": {
+          "type": "string",
+          "description": "Snapshot of knowledge content"
+        },
+        "relevance_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "InferenceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inference_id", "inference_type", "description", "confidence"],
+      "properties": {
+        "inference_id": {
+          "type": "string"
+        },
+        "inference_type": {
+          "type": "string",
+          "enum": ["intent_classification", "sentiment_analysis", "entity_extraction", "summarization", "paraphrase"],
+          "description": "Type of AI inference"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of what was inferred"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "AI confidence in this inference"
+        },
+        "based_on": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Fact/knowledge IDs this inference is based on"
+        }
+      }
+    },
+    "PolicyMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rollout_mode"],
+      "properties": {
+        "rollout_mode": {
+          "type": "string",
+          "enum": ["SHADOW", "HUMAN_CONFIRM", "AUTO"],
+          "description": "Current rollout mode"
+        },
+        "requires_confirmation": {
+          "type": "boolean",
+          "description": "Whether this reply requires human confirmation before sending"
+        },
+        "confirmation_reason": {
+          "type": "string",
+          "description": "Reason for confirmation requirement (if any)"
+        },
+        "risk_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "Risk level assessment"
+        },
+        "applicable_policies": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Policy IDs that apply to this reply"
+        }
+      }
+    },
+    "VerificationRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity_lock_valid", "facts_validated"],
+      "properties": {
+        "identity_lock_valid": {
+          "type": "boolean",
+          "description": "Whether IdentityLock has been validated"
+        },
+        "facts_validated": {
+          "type": "boolean",
+          "description": "Whether all required facts have been validated"
+        },
+        "required_verifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RequiredVerification"
+          },
+          "description": "List of required pre-execution verifications"
+        }
+      }
+    },
+    "RequiredVerification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verification_id", "category", "description"],
+      "properties": {
+        "verification_id": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["identity_lock", "fact_freshness", "target_binding", "stale_selection", "cross_shop_check"],
+          "description": "Verification category"
+        },
+        "description": {
+          "type": "string"
+        },
+        "blocking": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether this verification blocks execution"
+        }
+      }
+    },
+    "PlanUnknown": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unknown_id", "category", "description"],
+      "properties": {
+        "unknown_id": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["missing_identity", "missing_fact", "contradictory_facts", "stale_evidence", "unresolved_scene", "low_confidence_inference"],
+          "description": "Category of unknown"
+        },
+        "description": {
+          "type": "string"
+        },
+        "blocking": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether this unknown blocks execution"
+        },
+        "mitigation": {
+          "type": "string",
+          "description": "Suggested mitigation (e.g., 'request human review')"
+        }
+      }
+    }
+  }
+}
