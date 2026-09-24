@@ -4580,5 +4580,21 @@
       "owner_approved": true,
       "document": "project/DECISION_RECORD_SHEEP_305_REALIGNMENT.md"
     }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-SHEEP-305-IMPLEMENTATION",
+      "date": "2026-09-24",
+      "title": "SHEEP-305 Implementation: Store Knowledge Pipeline",
+      "status": "IMPLEMENTED",
+      "summary": "Implemented minimal Store Knowledge pipeline aligned with DEC-008. SHIPPING_TIME rules are Store Knowledge (layer 3), not standalone fact providers. Keyword retrieval for MVP-A; vector retrieval deferred to Phase 9.",
+      "artifacts": [
+        "resources/contracts/schemas/domain/store-knowledge.schema.json",
+        "resources/persistence/migrations/0008_store_knowledge.sql",
+        "apps/desktop/src/main/services/store-knowledge-service.ts",
+        "services/ai-worker/src/fastwork_ai_worker/persistence/store_knowledge_repository.py",
+        "services/ai-worker/src/fastwork_ai_worker/rpc/methods/store_knowledge.py"
+      ]
+    }
   ]
 }

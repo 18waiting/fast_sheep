@@ -42,13 +42,18 @@ export const IPC = {
   legacyImportStatus: "legacy_import.status",
   legacyImportCancel: "legacy_import.cancel",
   legacyImportChanged: "legacy_import.changed",
+  storeKnowledgeUpsert: "store_knowledge.upsert",
+  storeKnowledgeQuery: "store_knowledge.query",
+  storeKnowledgeList: "store_knowledge.list",
+  storeKnowledgeDelete: "store_knowledge.delete",
+  storeKnowledgeChanged: "store_knowledge.changed",
 } as const;
 
 export type IpcChannel = (typeof IPC)[keyof typeof IPC];
 
-export const QUERY_CHANNELS: readonly string[] = [IPC.bootstrap, IPC.listShops, IPC.snapshot, IPC.workerStatus, IPC.conversationsList, IPC.conversationsListMessages, IPC.platformStatus, IPC.jobsList, IPC.jobsGet, IPC.legacyImportStatus];
-export const COMMAND_CHANNELS: readonly string[] = [IPC.setMode, IPC.manualSend, IPC.noSaveSend, IPC.cancel, IPC.focus, IPC.platformActivateShop, IPC.platformSetViewBounds, IPC.platformReload, IPC.jobsCancel, IPC.learningStart, IPC.reviewPropose, IPC.reviewApply, IPC.reviewRestore, IPC.auditDecide, IPC.optimizationPropose, IPC.optimizationApply, IPC.legacyImportSelect, IPC.legacyImportScan, IPC.legacyImportPlan, IPC.legacyImportDryRun, IPC.legacyImportApply, IPC.legacyImportCancel];
-export const EVENT_CHANNELS: readonly string[] = [IPC.orchestratorEvent, IPC.workerStatusChanged, IPC.shopsChanged, IPC.platformStatusChanged, IPC.jobsChanged, IPC.learningChanged, IPC.reviewChanged, IPC.auditChanged, IPC.optimizationChanged, IPC.legacyImportChanged];
+export const QUERY_CHANNELS: readonly string[] = [IPC.bootstrap, IPC.listShops, IPC.snapshot, IPC.workerStatus, IPC.conversationsList, IPC.conversationsListMessages, IPC.platformStatus, IPC.jobsList, IPC.jobsGet, IPC.legacyImportStatus, IPC.storeKnowledgeQuery, IPC.storeKnowledgeList];
+export const COMMAND_CHANNELS: readonly string[] = [IPC.setMode, IPC.manualSend, IPC.noSaveSend, IPC.cancel, IPC.focus, IPC.platformActivateShop, IPC.platformSetViewBounds, IPC.platformReload, IPC.jobsCancel, IPC.learningStart, IPC.reviewPropose, IPC.reviewApply, IPC.reviewRestore, IPC.auditDecide, IPC.optimizationPropose, IPC.optimizationApply, IPC.legacyImportSelect, IPC.legacyImportScan, IPC.legacyImportPlan, IPC.legacyImportDryRun, IPC.legacyImportApply, IPC.legacyImportCancel, IPC.storeKnowledgeUpsert, IPC.storeKnowledgeDelete];
+export const EVENT_CHANNELS: readonly string[] = [IPC.orchestratorEvent, IPC.workerStatusChanged, IPC.shopsChanged, IPC.platformStatusChanged, IPC.jobsChanged, IPC.learningChanged, IPC.reviewChanged, IPC.auditChanged, IPC.optimizationChanged, IPC.legacyImportChanged, IPC.storeKnowledgeChanged];
 export const ALL_CHANNELS: readonly string[] = [...QUERY_CHANNELS, ...COMMAND_CHANNELS, ...EVENT_CHANNELS];
 
 export function isAllowedChannel(channel: string): boolean {

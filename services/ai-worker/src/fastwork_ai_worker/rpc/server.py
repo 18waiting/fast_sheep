@@ -35,6 +35,7 @@ from .methods.m4_test_only import M4TestOnlyMethods
 from .methods.rag import RagMethods
 from .methods.system import SystemMethods
 from .methods.test_only import TestOnlyMethods
+from .methods.store_knowledge import StoreKnowledgeMethods
 from .protocol import validate_ready_payload
 
 
@@ -68,6 +69,7 @@ class RpcServer:
         LegacyImportMethods(self).register(self._dispatcher)
         M4EngineMethods(self).register(self._dispatcher)
         M4TestOnlyMethods(self).register(self._dispatcher)
+        StoreKnowledgeMethods(self).register(self._dispatcher)
         TestOnlyMethods(self).register(self._dispatcher)
 
     @property

@@ -9,6 +9,7 @@ import type { WorkbenchProjectionService } from "../services/workbench-projectio
 import type { BackgroundJobService } from "../services/background-job-service.js";
 import type { LegacyImportService } from "../services/legacy-import-service.js";
 import type { WorkspaceMerchantContext } from "../services/workspace-merchant-context.js";
+import type { StoreKnowledgeService } from "../services/store-knowledge-service.js";
 import type { NormalizedConversationRepository, StoreRepository, PlatformAccountRepository, MessageRepository } from "@fastwork/persistence";
 import { ok, err } from "./ipc-guard.js";
 
@@ -39,6 +40,8 @@ export interface QueryDeps {
    *  null = no trusted merchant authority (offline/test composition without context);
    *  handlers must fail closed (no merchant-contained results). */
   workspaceMerchant: WorkspaceMerchantContext | null;
+  /** SHEEP-305: Store Knowledge service (DEC-008 layer 3). */
+  storeKnowledge: StoreKnowledgeService;
 }
 
 export const QUERY_HANDLERS = {
@@ -142,6 +145,25 @@ export const QUERY_HANDLERS = {
       return ok(view);
     } catch {
       return err(new DesktopError(DESKTOP_ERROR_CODES.NOT_FOUND, "unknown import session"));
+    }
+  },
+  // SHEEP-305: Store Knowledge query handlers
+  [IPC.storeKnowledgeQuery]: (deps: QueryDeps) => async (req: { merchant_id: string; store_id: string; knowledge_type?: string; keywords?: string[]; status?: string; limit?: number }): Promise<DesktopResult<{ entries: unknown[]; count: number }>> => {
+    if (!req?.merchant_id || !req?.store_id) return err(new DesktopError(DESKTOP_ERROR_CODES.INVALID_REQUEST, "merchant_id and store_id are required"));
+    try {
+      const entries = deps.storeKnowledge.query(req as any);
+      return ok({ entries: entries as unknown[], count: entries.length });
+    } catch (e) {
+      return err(new DesktopError(DESKTOP_ERROR_CODES.INTERNAL_ERROR, String(e)));
+    }
+  },
+  [IPC.storeKnowledgeList]: (deps: QueryDeps) => async (req: { merchant_id: string; store_id: string; knowledge_type?: string; status?: string; limit?: number }): Promise<DesktopResult<{ entries: unknown[]; count: number }>> => {
+    if (!req?.merchant_id || !req?.store_id) return err(new DesktopError(DESKTOP_ERROR_CODES.INVALID_REQUEST, "merchant_id and store_id are required"));
+    try {
+      const entries = deps.storeKnowledge.list(req as any);
+      return ok({ entries: entries as unknown[], count: entries.length });
+    } catch (e) {
+      return err(new DesktopError(DESKTOP_ERROR_CODES.INTERNAL_ERROR, String(e)));
     }
   },
 } as const;

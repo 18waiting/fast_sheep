@@ -2807,6 +2807,22 @@
       "title": "AgentRunResult",
       "schema_draft": "https://json-schema.org/draft/2020-12/schema",
       "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:store-knowledge",
+      "version": "1.0",
+      "path": "domain/store-knowledge.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "StoreKnowledgeService"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "StoreKnowledge",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED",
+      "description": "Store Knowledge (DEC-008 layer 3). Merchant-configured store rules. SHEEP-305 MVP-A."
     }
   ]
 }

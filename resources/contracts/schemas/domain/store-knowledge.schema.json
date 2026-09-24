@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:store-knowledge",
+  "$title": "StoreKnowledge",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "merchant_id",
+    "store_id",
+    "knowledge_type",
+    "title",
+    "content",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique knowledge entry ID (UUID v4)"
+    },
+    "merchant_id": {
+      "type": "string",
+      "description": "Owner merchant (DEC-008 layer 2 scope)"
+    },
+    "store_id": {
+      "type": "string",
+      "description": "Store scope (DEC-008 layer 3)"
+    },
+    "knowledge_type": {
+      "type": "string",
+      "enum": [
+        "SHIPPING_TIME",
+        "RETURN_POLICY",
+        "FAQ",
+        "OTHER"
+      ],
+      "description": "Knowledge category. SHIPPING_TIME = store shipping rules."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Short human-readable title"
+    },
+    "content": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10000,
+      "description": "Full knowledge text (merchant-authored)"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Optional keyword tags for retrieval"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["OWNER_INPUT", "IMPORTED"],
+      "default": "OWNER_INPUT",
+      "description": "How this knowledge was created"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ACTIVE", "DRAFT", "ARCHIVED"],
+      "default": "ACTIVE",
+      "description": "Lifecycle status"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "description": "Store Knowledge (DEC-008 layer 3). Merchant-configured rules and facts for a store. MVP-A: keyword retrieval only. Phase 9: vector retrieval."
+}

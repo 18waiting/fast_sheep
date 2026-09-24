@@ -11,6 +11,7 @@ import type { ReviewService } from "../services/review-service.js";
 import type { AuditService } from "../services/audit-service.js";
 import type { DesktopProductOptimizationService } from "../services/product-optimization-service.js";
 import type { LegacyImportService } from "../services/legacy-import-service.js";
+import type { StoreKnowledgeService, StoreKnowledgeUpsertInput } from "../services/store-knowledge-service.js";
 import type { LegacyImportSelectRequest, LegacyImportPlanRequest, LegacyImportApplyAction } from "@fastwork/desktop-ipc";
 import { ok, err } from "./ipc-guard.js";
 import { DesktopError, DESKTOP_ERROR_CODES } from "@fastwork/desktop-ipc";
@@ -26,6 +27,7 @@ export interface CommandDeps {
   audit: AuditService;
   optimization: DesktopProductOptimizationService;
   legacyImport: LegacyImportService;
+  storeKnowledge: StoreKnowledgeService;
 }
 
 export const COMMAND_HANDLERS = {
@@ -135,7 +137,26 @@ export const COMMAND_HANDLERS = {
         legacy_timezone: req.legacy_timezone,
         import_provider_secret: req.import_provider_secret,
         rebuild_rag: true,
-      };
+      
+  // SHEEP-305: Store Knowledge command handlers
+  [IPC.storeKnowledgeUpsert]: (deps: CommandDeps) => async (req: StoreKnowledgeUpsertInput): Promise<DesktopResult<{ entry: unknown }>> => {
+    if (!req?.merchant_id || !req?.store_id) return err(new DesktopError(DESKTOP_ERROR_CODES.INVALID_REQUEST, "merchant_id and store_id are required"));
+    try {
+      const entry = deps.storeKnowledge.upsert(req);
+      return ok({ entry });
+    } catch (e) {
+      return err(new DesktopError(DESKTOP_ERROR_CODES.INTERNAL_ERROR, String(e)));
+    }
+  },
+  [IPC.storeKnowledgeDelete]: (deps: CommandDeps) => async (req: { id: string; merchant_id: string }): Promise<DesktopResult<{ deleted: boolean }>> => {
+    if (!req?.id || !req?.merchant_id) return err(new DesktopError(DESKTOP_ERROR_CODES.INVALID_REQUEST, "id and merchant_id are required"));
+    try {
+      const deleted = deps.storeKnowledge.delete(req.id, req.merchant_id);
+      return ok({ deleted });
+    } catch (e) {
+      return err(new DesktopError(DESKTOP_ERROR_CODES.INTERNAL_ERROR, String(e)));
+    }
+  },};
       const r = await deps.legacyImport.apply(req.selection_token, req.plan_sha256 ?? "", req.session_id, options);
       return ok({ session_id: r.session.session_id, state: r.state });
     } catch (e) {
