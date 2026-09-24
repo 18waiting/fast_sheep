@@ -80,7 +80,7 @@ export function renderAppShell(root: HTMLElement, state: UiState, actions: Workb
     && state.platform.activeShopId === state.selectedShopId
     && state.platform.platformType !== null;
   if (activePlatformSurface) {
-    renderPlatformSurface(platformHost, state, { onBoundsChange: actions.onPlatformBoundsChange });
+    renderPlatformSurface(platformHost, state, { onBoundsChange: (bounds) => actions.onPlatformBoundsChange(state.selectedShopId!, bounds) });
   } else {
     renderEmptyPlatformPanel(platformHost);
   }

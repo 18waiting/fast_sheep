@@ -295,29 +295,43 @@ export class WorkbenchStore {
 
   /** UI-local shop switch; loads a fresh authoritative snapshot from Main. */
   async selectShop(shopId: string): Promise<void> {
+    const priorShopId = this.state.selectedShopId;
     const next = selectShopPure(this.state, shopId);
-    this.setState({ ...next, pendingCommand: null });
+    const nextType = next.viewModel?.shop_summaries.find((s) => s.shop_id === shopId)?.type;
+    this.setState({ ...next, pendingCommand: null, platform: EMPTY_PLATFORM_VIEW_STATE });
+    // A non-PDD selection has no embedded surface. Close the previous native
+    // target through the existing typed bounds command, never only via DOM.
+    const closePrior = priorShopId && priorShopId !== shopId && nextType !== "pdd"
+      ? this.api.setPlatformViewBounds({ shop_id: priorShopId, x: 0, y: 0, width: 0, height: 0, visible: false })
+      : null;
+    // Dispatch activation before snapshot refresh so Main can hide the old
+    // native view promptly. The completion is still guarded by selection.
+    const activation = this.activatePlatformFor(shopId);
     await this.resync();
-    await this.activatePlatformFor(shopId);
+    await activation;
+    if (closePrior) await closePrior;
   }
 
   /** Activate a platform session when a PDD shop is selected; reset otherwise. */
   async activatePlatformFor(shopId: string): Promise<void> {
+    if (this.state.selectedShopId !== shopId) return;
     const shopType = this.state.viewModel?.shop_summaries.find((s) => s.shop_id === shopId)?.type;
     if (shopType === "pdd") {
       const res = await this.api.activatePlatformShop({ shop_id: shopId });
-      if (!res.ok) {
-        this.setState({ ...this.state, platform: { ...EMPTY_PLATFORM_VIEW_STATE, activeShopId: shopId, platformType: "pdd", sessionStatus: "ERROR", lastSafeError: safeMessage(res.error) } });
+      if (this.state.selectedShopId !== shopId) return;
+      if (!res.ok || !res.data.ok) {
+        this.setState({ ...this.state, platform: { ...EMPTY_PLATFORM_VIEW_STATE, activeShopId: shopId, platformType: "pdd", sessionStatus: "ERROR", lastSafeError: res.ok ? "平台会话未激活" : safeMessage(res.error) } });
         return;
       }
       const status = await this.api.getPlatformStatus({ shop_id: shopId });
-      if (status.ok) this.applyPlatformStatus(status.data);
-    } else {
+      if (this.state.selectedShopId === shopId && status.ok) this.applyPlatformStatus(status.data);
+    } else if (this.state.selectedShopId === shopId) {
       this.setState({ ...this.state, platform: EMPTY_PLATFORM_VIEW_STATE });
     }
   }
 
   applyPlatformStatus(view: PlatformStatusView): void {
+    if (view.shop_id !== this.state.selectedShopId) return;
     this.setState({
       ...this.state,
       platform: {
@@ -332,6 +346,7 @@ export class WorkbenchStore {
   }
 
   applyPlatformStatusChanged(ev: PlatformStatusChangedEvent): void {
+    if (ev.shop_id !== this.state.selectedShopId) return;
     this.setState({
       ...this.state,
       platform: {
@@ -346,11 +361,10 @@ export class WorkbenchStore {
   }
 
   /** Report local surface bounds so Main can position the seller view. */
-  async reportPlatformBounds(bounds: { x: number; y: number; width: number; height: number; visible: boolean }): Promise<void> {
-    const shopId = this.state.selectedShopId;
-    if (!shopId) return;
+  async reportPlatformBounds(shopId: string, bounds: { x: number; y: number; width: number; height: number; visible: boolean }): Promise<void> {
+    if (shopId !== this.state.selectedShopId || this.state.platform.activeShopId !== shopId) return;
     const res = await this.api.setPlatformViewBounds({ shop_id: shopId, ...bounds });
-    if (!res.ok) this.setState({ ...this.state, lastError: safeMessage(res.error) });
+    if (!res.ok && this.state.selectedShopId === shopId) this.setState({ ...this.state, lastError: safeMessage(res.error) });
   }
 
   async reloadPlatform(): Promise<void> {

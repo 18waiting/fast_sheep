@@ -494,7 +494,10 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
     ...(options.decodedEventCapture ? { decodedEventCapture: options.decodedEventCapture } : {}),
     onCanonicalInbound,
     fixturePathFor: testMode
-      ? (shopId) => join(PDD_FIXTURES, shopId === "shop-test-2" ? "conversation-switch.html" : "chat-basic.html")
+      ? (shopId) => join(PDD_FIXTURES,
+          process.env.FASTWORK_DESKTOP_FALLBACK_INTERACTION_RESULT_FILE && shopId === "shop-test-1"
+            ? "login-required.html"
+            : shopId === "shop-test-2" ? "conversation-switch.html" : "chat-basic.html")
       : undefined,
     onStatusChanged: (ev) => {
       bumpRevision();

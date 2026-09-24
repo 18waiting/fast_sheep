@@ -836,8 +836,8 @@
   "current_phase": "MVP_A_FOUNDATION",
   "current_milestone": "M-A.2 Scene and Context Foundation",
   "last_closed_task": "SHEEP-304",
-  "current_task": "SHEEP-305 (M-A.2 SHIPPING_TIME Rule and Fact Provider) — NOT_STARTED / NOT_AUTHORIZED / PRODUCT_DECISION_REQUIRED (pre-audit product decision gate only). SHEEP-304 is CLOSED by Controller decision 2026-09-22 (implementation 2b55daf, governance 6d9e029). SHEEP-301 CLOSED, SHEEP-302 covered-by-existing-evidence, SHEEP-303 sealed in 8f77d20 with technical post-audit PASS.",
-  "next_action": "SHEEP-305 (M-A.2 SHIPPING_TIME Rule and Fact Provider) — PRODUCT_DECISION_REQUIRED: the shipping-time rule semantics must be decided by the Owner/Controller before any implementation. No implementation authorization is active; do not create the rule, the fact provider, ContextEnvelope, ReplyPlan, AI wiring, policy gate or send. Production enablement, live validation, platform mutation, AI and send remain NOT_AUTHORIZED; real page operations stay STOPPED; the controlled turn-builder switch stays default OFF until the application-shutdown stop()/dispose() wiring exists.",
+  "current_task": "SHEEP-305 (M-A.2 SHIPPING_TIME Rule and Fact Provider) — Lane A offline contract SEALED/PASS and Lane B offline registration SEALED/PASS; controlled identity-source observation NOT_EXECUTED_NO_LIVE_SESSION. Remaining real platform binding, policy activation and field-level SHIPPING_TIME rule semantics are NOT_AUTHORIZED / PRODUCT_DECISION_REQUIRED. Overall SHEEP-305 is NOT_CLOSED; last closed task is SHEEP-304.",
+  "next_action": "SHEEP-305 (M-A.2 SHIPPING_TIME Rule and Fact Provider) — preserve Lane A and Lane B offline stage acceptance. Controlled identity-source observation has a separately recorded read-only scope but was NOT_EXECUTED_NO_LIVE_SESSION; do not infer a verified platform identity from the local shop id. Owner/Controller must resolve field-level SHIPPING_TIME rule semantics and the binding-provenance storage decision before remaining work. Real binding writes, policy activation, AI, send, production enablement and broader live operations remain NOT_AUTHORIZED; do not execute SHEEP-306.",
   "next_authoritative_roadmap_id": "SHEEP-305",
   "next_task_execution_authorized": false,
   "current_execution_authorization": false,
@@ -1031,7 +1031,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-305 (M-A.2 SHIPPING_TIME Rule and Fact Provider) — NOT_STARTED / NOT_AUTHORIZED; blocked by SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED",
+  "next_task": "SHEEP-305 (M-A.2 SHIPPING_TIME Rule and Fact Provider) — Lane A and Lane B offline SEALED/PASS; remaining real binding and policy activation NOT_AUTHORIZED; field-level SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED; overall NOT_CLOSED",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -4144,7 +4144,7 @@
     "roadmap_status": "NOT_STARTED / NOT_AUTHORIZED",
     "phase": "MVP_A_FOUNDATION",
     "milestone": "M-A.2 Scene and Context Foundation",
-    "status": "NOT_STARTED / NOT_AUTHORIZED / PRODUCT_DECISION_REQUIRED (remaining scope only: real platform binding, policy activation and the undecided SHIPPING_TIME rule semantics - Lane A and the Lane B offline registration are SEALED with stage acceptance recorded; see lane_a / lane_b_offline_implementation)",
+    "status": "LANE_A_AND_LANE_B_OFFLINE_SEALED / REMAINING_SCOPE_NOT_AUTHORIZED / PRODUCT_DECISION_REQUIRED / NOT_CLOSED (real platform identity and binding, policy activation, field-level SHIPPING_TIME rule semantics; see lane_a, lane_b_offline_implementation and identity_source_verification)",
     "product_gate": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED",
     "lane_a": {
       "status": "SEALED",

@@ -5,6 +5,7 @@ import { PlatformSessionCoordinator } from "../dist/main/platforms/platform-sess
 function fakeService(platform: string) {
   let current: string | null = null;
   return {
+    hideAllViews: () => { current = null; },
     activate: async (shopId: string) => { current = shopId; },
     status: (shopId: string) => ({ shop_id: shopId, platform, session_status: "READY", view_visible: shopId === current }),
     setViewBounds: () => true,

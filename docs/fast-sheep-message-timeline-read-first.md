@@ -1,5 +1,7 @@
 # Message Timeline Read First（SHEEP-063，Read First only）
 
+> **历史 Read First 快照，非当前阻断状态**：下文的 `BLOCKED` 是 SHEEP-063 当时的 message fact 缺口；后续 [SHEEP-063-PR1](fast-sheep-message-fact-foundation.md) 已建立事实契约，且 [SHEEP-063 Timeline](fast-sheep-message-timeline.md) 在状态账本中为 `PASS / CLOSED`。原审计正文保留；当前任务状态与授权只看 [PROJECT_STATE.json](../project/PROJECT_STATE.json)。这不表示真实平台消息生产者或 SHEEP-305 的后续工作已获授权。
+
 > 项目：Fast Sheep / 快羊客服 · Phase 4 / M4.2 · 日期：2026-08-28
 > 定位：**Read First / 决策单元**（message production fact path 未证充分前不实现 Timeline）。
 > 依据：DP-83~89 + I-12~I-14（Owner 收紧决策）、SHEEP-062 disposition（UNREAD=DEFER_TO_M4_2_MESSAGE_FACTS）、Phase 4 硬约束、R-07。

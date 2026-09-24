@@ -1,5 +1,7 @@
 # FAST_SHEEP_CODEX_TASK_TEMPLATE.md
 
+> **历史草稿 / 非当前任务模板**：本文是未 reviewed 的早期模板，其中 pre-approval 路径示例和任务派生要求不能用于当前任务。V1.0 reviewed 版本已取代本草稿；当前 SHEEP 任务格式请读 [V1.1 reviewed Template](FAST_SHEEP_CODEX_TASK_TEMPLATE_V1.1_REVIEWED.md)，当前执行授权只看 [PROJECT_STATE.json](PROJECT_STATE.json)。此提示不修改草稿正文，也不赋予任何任务执行授权。
+
 # 快羊客服 Codex 通用任务模板
 
 > **用途**：所有 `SHEEP-*` coding / audit / migration / UI / cloud / platform / test 任务都应从本模板派生。  

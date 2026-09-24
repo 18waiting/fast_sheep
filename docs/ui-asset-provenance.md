@@ -1,5 +1,7 @@
 # UI Asset Provenance（SHEEP-024）
 
+> **历史授权/来源证据（非新的访问或商用许可）**：下文 `Reference eligibility = YES` 仅描述 SHEEP-024 当时的限定参考用途，不授权现在重新访问外部树、复制代码/资产或商业再分发。具体权限仍以 [Master](../project/FAST_SHEEP_MASTER_PROMPT.md) 与当前 [PROJECT_STATE.json](../project/PROJECT_STATE.json) 为准；原始 provenance 结论保留。
+
 > 项目：Fast Sheep / 快羊客服 · Phase 2 / M2.1（Track A archaeology 收官）· 日期：2026-08-25
 > 参考树：`E:\ai客服数据\FastWork_asar_extracted\dist\renderer\`（READ_ONLY_OWNER_AUTHORIZED_UI_REFERENCE）
 

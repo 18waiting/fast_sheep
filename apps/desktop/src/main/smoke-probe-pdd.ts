@@ -193,6 +193,9 @@ export interface PddSessionIsolationResult {
   partitions_unique: boolean;
   state_machine: boolean;
   shop_switch: boolean;
+  cross_platform_view_isolation: boolean;
+  native_view_bounds_rejected: boolean;
+  fixture_urls_local: boolean;
   cross_shop_message_leak: boolean;
   cross_shop_send_leak: boolean;
   session_reuse: boolean;
@@ -209,6 +212,9 @@ export async function runPddSessionIsolationProbe(context: MainContext, resultFi
     partitions_unique: false,
     state_machine: false,
     shop_switch: false,
+    cross_platform_view_isolation: false,
+    native_view_bounds_rejected: false,
+    fixture_urls_local: false,
     cross_shop_message_leak: true,
     cross_shop_send_leak: true,
     session_reuse: false,
@@ -218,9 +224,14 @@ export async function runPddSessionIsolationProbe(context: MainContext, resultFi
     errors,
   };
   const svc = context.platform;
+  const coordinator = context.coordinator;
+  const bounds = { x: 0, y: 0, width: 100, height: 100, visible: true };
+  const contentBounds = { x: 0, y: 0, width: 800, height: 600, visible: true };
   try {
-    await svc.activate("shop-a");
-    await svc.activate("shop-b");
+    await coordinator.activateShop("pdd", "shop-a");
+    await coordinator.activateShop("pdd", "shop-b");
+    const aUrl = svc.webContentsFor("shop-a")?.getURL();
+    const bUrl = svc.webContentsFor("shop-b")?.getURL();
     out.partitions_unique = partitionFor("shop-a") !== partitionFor("shop-b");
     out.session_reuse = true;
 
@@ -240,15 +251,38 @@ export async function runPddSessionIsolationProbe(context: MainContext, resultFi
     const b = svc.adapterFor("shop-b");
     out.cross_shop_send_leak = a !== null && b !== null && a !== b;
 
-    // view activation switch
-    svc.setViewBounds("shop-a", { x: 0, y: 0, width: 100, height: 100, visible: true }, { x: 0, y: 0, width: 800, height: 600, visible: true });
-    svc.setViewBounds("shop-b", { x: 0, y: 0, width: 100, height: 100, visible: false }, { x: 0, y: 0, width: 800, height: 600, visible: true });
-    out.shop_switch = true;
+    // Exercise real Electron WebContentsView instances through the Main-owned
+    // coordinator, not a fixed boolean or a direct service call that bypasses
+    // the cross-platform visual target. All navigation stays on local fixtures.
+    const staleARejected = !coordinator.setViewBounds("pdd", "shop-a", bounds, contentBounds);
+    const bBoundsApplied = coordinator.setViewBounds("pdd", "shop-b", bounds, contentBounds);
+    out.shop_switch = staleARejected && bBoundsApplied
+      && coordinator.status("pdd", "shop-a")?.view_visible === false
+      && coordinator.status("pdd", "shop-b")?.view_visible === true;
+    if (!out.shop_switch) errors.push("shop_switch_native_view=false");
+
+    await coordinator.activateShop("doudian", "shop-doudian-1");
+    const doudianUrl = coordinator.serviceFor("doudian")?.webContentsFor("shop-doudian-1")?.getURL();
+    out.fixture_urls_local = [aUrl, bUrl, doudianUrl].every((url) => url?.startsWith("file://"));
+    if (!out.fixture_urls_local) errors.push("fixture_urls_local=false");
+    const staleBRejected = !coordinator.setViewBounds("pdd", "shop-b", bounds, contentBounds);
+    const genericBoundsApplied = coordinator.setViewBounds("doudian", "shop-doudian-1", bounds, contentBounds);
+    out.cross_platform_view_isolation = staleBRejected && genericBoundsApplied
+      && coordinator.status("pdd", "shop-b")?.view_visible === false
+      && coordinator.status("doudian", "shop-doudian-1")?.view_visible === true;
+    if (!out.cross_platform_view_isolation) errors.push("cross_platform_native_view=false");
+
+    const closeAccepted = coordinator.setViewBounds("doudian", "shop-doudian-1", { ...bounds, visible: false }, contentBounds);
+    out.native_view_bounds_rejected = closeAccepted
+      && !coordinator.setViewBounds("doudian", "shop-doudian-1", bounds, contentBounds)
+      && coordinator.status("doudian", "shop-doudian-1")?.view_visible === false
+      && coordinator.status("pdd", "shop-b")?.view_visible === false;
+    if (!out.native_view_bounds_rejected) errors.push("closed_native_view_bounds=false");
 
     // Login is manual-only by design; the no-auth extraction tests statically
     // verify no automation path exists in platform code.
     out.manual_login_boundary = true;
-    svc.disposeAll();
+    coordinator.disposeAll();
   } catch (e) {
     errors.push("isolation_exception=" + (e instanceof Error ? e.message : String(e)));
   }

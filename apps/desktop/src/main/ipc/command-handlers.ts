@@ -52,15 +52,15 @@ export const COMMAND_HANDLERS = {
   [IPC.platformActivateShop]: (deps: CommandDeps) => async (req: { shop_id: string }): Promise<DesktopResult<{ ok: boolean }>> => {
     const platform = deps.platformForShop(req.shop_id) as PlatformId | null;
     if (!platform) return ok({ ok: false });
-    await deps.coordinator.activateShop(platform, req.shop_id);
-    return ok({ ok: true });
+    const activated = await deps.coordinator.activateShop(platform, req.shop_id);
+    return ok({ ok: activated });
   },
   [IPC.platformSetViewBounds]: (deps: CommandDeps) => async (req: { shop_id: string; x: number; y: number; width: number; height: number; visible: boolean }): Promise<DesktopResult<{ ok: boolean }>> => {
     const platform = deps.platformForShop(req.shop_id) as PlatformId | null;
     if (!platform) return ok({ ok: false });
     const contentBounds = deps.contentBounds?.() ?? { x: 0, y: 0, width: 1200, height: 800, visible: true };
-    deps.coordinator.setViewBounds(platform, req.shop_id, { x: req.x, y: req.y, width: req.width, height: req.height, visible: req.visible }, contentBounds);
-    return ok({ ok: true });
+    const applied = deps.coordinator.setViewBounds(platform, req.shop_id, { x: req.x, y: req.y, width: req.width, height: req.height, visible: req.visible }, contentBounds);
+    return ok({ ok: applied });
   },
   [IPC.platformReload]: (deps: CommandDeps) => async (req: { shop_id: string }): Promise<DesktopResult<{ ok: boolean }>> => {
     const platform = deps.platformForShop(req.shop_id) as PlatformId | null;

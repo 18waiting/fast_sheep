@@ -55,6 +55,20 @@ test("platform.set_view_bounds routes via the coordinator", async () => {
   assert.deepEqual(calls, ["bounds:pdd:shop-1"]);
 });
 
+test("platform bounds and activation rejection return data.ok=false, not a false outer result", async () => {
+  const { coordinator } = makeCoordinator();
+  const rejected = {
+    ...coordinator,
+    activateShop: async () => false,
+    setViewBounds: () => false,
+  } as never;
+  const deps = { orchestrator: {} as never, coordinator: rejected, platformForShop: () => "pdd" } as never;
+  const activated = await COMMAND_HANDLERS["platform.activate_shop"](deps)({ shop_id: "old-shop" });
+  const bounds = await COMMAND_HANDLERS["platform.set_view_bounds"](deps)({ shop_id: "old-shop", x: 0, y: 0, width: 100, height: 100, visible: true });
+  assert.deepEqual(activated, { ok: true, data: { ok: false } });
+  assert.deepEqual(bounds, { ok: true, data: { ok: false } });
+});
+
 test("platform.reload routes via the coordinator", async () => {
   const { coordinator, calls } = makeCoordinator();
   const handler = COMMAND_HANDLERS["platform.reload"]({ orchestrator: {} as never, coordinator, platformForShop: (s) => (s === "shop-1" ? "pdd" : null) } as never);

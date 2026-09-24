@@ -7,7 +7,7 @@ import { validateProjectState } from "../scripts/validate-project-state.mjs";
 const root = resolve(import.meta.dirname, "..");
 const actualState = JSON.parse(readFileSync(resolve(root, "project", "PROJECT_STATE.json"), "utf8"));
 const roadmapPath = actualState.state_authority.roadmap_identity_source;
-const roadmapText = readFileSync(resolve(root, roadmapPath), "utf8");
+const roadmapText = readFileSync(resolve(root, roadmapPath.replaceAll("\\", "/")), "utf8");
 const nextTaskId = actualState.next_authoritative_roadmap_id;
 const nextTaskKey = taskKey(nextTaskId);
 
@@ -49,15 +49,16 @@ function ensureCurrentTask(state) {
   return state[key];
 }
 
-test("actual PROJECT_STATE closes SHEEP-300 and advances to unauthorized SHEEP-301", () => {
+test("actual PROJECT_STATE advances to the next unauthorized Roadmap task", () => {
   assert.ok(actualState.state_authority.roadmap_identity_source.includes("V1.1_REVIEWED"));
   assert.ok(actualState.task_template.reviewed_path.includes("V1.1_REVIEWED"));
-  assert.equal(actualState.last_closed_task, "SHEEP-300");
-  assert.equal(actualState.sheep_300.status, "PASS / CLOSED");
-  assert.equal(actualState.sheep_300.implementation_commit, "40b92d5d0f53f4a226b88e27d071f1a1fb82b593");
-  assert.equal(actualState.next_authoritative_roadmap_id, "SHEEP-301");
-  assert.ok(actualState.current_task.startsWith("SHEEP-301"));
-  assert.ok(actualState.next_task.startsWith("SHEEP-301"));
+  const taskIds = [...roadmapText.matchAll(/^###\s+(SHEEP-\d{3})\b/gm)].map((match) => match[1]);
+  const closedIndex = taskIds.indexOf(actualState.last_closed_task);
+  assert.ok(closedIndex >= 0);
+  assert.equal(actualState.next_authoritative_roadmap_id, taskIds[closedIndex + 1]);
+  assert.equal(actualState[taskKey(actualState.last_closed_task)].controller_decision, "PASS");
+  assert.ok(actualState.current_task.startsWith(nextTaskId));
+  assert.ok(actualState.next_task.startsWith(nextTaskId));
   assert.equal(actualState.next_task_execution_authorized, false);
   assert.equal(actualState.current_execution_authorization, false);
   assert.equal(actualState.next_stage_not_executed, true);
@@ -107,6 +108,26 @@ test("task identity mismatch is rejected", () => {
   const state = cloneState();
   state.current_task = state.current_task.replace(state.next_authoritative_roadmap_id, "SHEEP-999");
   assert.ok(codes(validateProjectState(state, { roadmapText })).includes("PROJECTION_TASK_ID_MISMATCH"));
+});
+
+test("accepted offline lanes cannot be summarized as an unstarted whole task", () => {
+  const state = cloneState();
+  const task = ensureCurrentTask(state);
+  task.lane_a = { status: "SEALED", controller_decision: "PASS" };
+  state.current_task = `${state.next_authoritative_roadmap_id} — NOT_STARTED`;
+  state.next_task = `${state.next_authoritative_roadmap_id} — NOT_STARTED`;
+  task.status = "NOT_STARTED / NOT_AUTHORIZED";
+  const errors = validateProjectState(state, { roadmapText });
+  assert.deepEqual(
+    errors.filter((error) => error.code === "ACCEPTED_LANE_PROJECTED_NOT_STARTED").map((error) => error.field),
+    ["current_task", "next_task", `${nextTaskKey}.status`],
+  );
+});
+
+test("roadmap baseline remains historical and does not claim current progress", () => {
+  const state = cloneState();
+  ensureCurrentTask(state).roadmap_status = "NOT_STARTED / NOT_AUTHORIZED";
+  assert.deepEqual(validateProjectState(state, { roadmapText }), []);
 });
 
 test("top-level false with current task execution true is rejected", () => {

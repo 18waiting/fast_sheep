@@ -1,5 +1,7 @@
 # FAST_SHEEP_CODING_ROADMAP.md
 
+> **历史草稿 / 非当前执行入口**：本文是未 reviewed 的早期 Roadmap，正文中的「正式编码尚未开始」、Phase/任务顺序等只反映编写时状态。V1.0 reviewed 版本已取代本草稿；当前执行顺序请读 [V1.1 reviewed Roadmap](FAST_SHEEP_CODING_ROADMAP_V1.1_REVIEWED.md)，当前进度与授权只看 [PROJECT_STATE.json](PROJECT_STATE.json)。此提示不修改草稿正文，也不赋予任何任务执行授权。
+
 # 快羊客服（Fast Sheep）完整 Coding Roadmap
 
 > **项目根目录**：`E:\fast_sheep\`  

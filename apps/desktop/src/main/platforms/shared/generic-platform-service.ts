@@ -27,6 +27,8 @@ export interface GenericPlatformServiceOptions {
 }
 
 export class GenericPlatformService {
+  private activationEpoch = 0;
+  private activeViewShopId: string | null = null;
   private readonly sessions = new Map<string, GenericPlatformSession>();
   private readonly bridges = new Map<string, GenericPreloadBridge>();
   private readonly adapters = new Map<string, GenericPlatformAdapter>();
@@ -76,7 +78,16 @@ export class GenericPlatformService {
     else this.orchestratorBridge.onConversationChange(shopId);
   }
 
-  async activate(shopId: string): Promise<void> {
+  hideAllViews(): void {
+    this.activationEpoch++;
+    this.activeViewShopId = null;
+    for (const session of this.sessions.values()) session.hide();
+  }
+
+  async activate(shopId: string, mayShow: () => boolean = () => true): Promise<void> {
+    this.hideAllViews();
+    const epoch = this.activationEpoch;
+    this.activeViewShopId = shopId;
     let session = this.sessions.get(shopId);
     if (!session) {
       const fixturePath = this.options.fixturePathFor?.(shopId);
@@ -99,7 +110,7 @@ export class GenericPlatformService {
       this.sessions.set(shopId, session);
       await session.createAndLoad(fixturePath);
     }
-    session.activate();
+    if (epoch === this.activationEpoch && mayShow()) session.activate();
     this.broadcastStatus(shopId);
   }
 
@@ -124,7 +135,7 @@ export class GenericPlatformService {
 
   setViewBounds(shopId: string, bounds: { x: number; y: number; width: number; height: number; visible: boolean }, content: { x: number; y: number; width: number; height: number; visible: boolean }): boolean {
     const session = this.sessions.get(shopId);
-    if (!session) return false;
+    if (!session || this.activeViewShopId !== shopId) return false;
     session.setViewBounds(bounds, content);
     this.broadcastStatus(shopId);
     return true;
@@ -182,6 +193,7 @@ export class GenericPlatformService {
   }
 
   disposeAll(): void {
+    this.hideAllViews();
     for (const session of this.sessions.values()) session.dispose();
     this.sessions.clear();
     this.bridges.clear();

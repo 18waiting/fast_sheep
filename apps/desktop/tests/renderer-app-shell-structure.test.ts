@@ -39,7 +39,7 @@ test("app-shell mounts the existing Shop sidebar without implicit selection or a
 test("app-shell switches to the existing platform surface only for an active selected Shop", () => {
   const src = readFileSync(SRC, "utf-8");
   assert.match(src, /state\.selectedShopId !== null[\s\S]*state\.platform\.activeShopId === state\.selectedShopId[\s\S]*state\.platform\.platformType !== null/, "platform surface must require explicit selected Shop/runtime state");
-  assert.match(src, /renderPlatformSurface\(platformHost,\s*state,\s*\{\s*onBoundsChange:\s*actions\.onPlatformBoundsChange\s*\}\)/, "platform surface must use the existing bounds callback");
+  assert.match(src, /renderPlatformSurface\(platformHost,\s*state,\s*\{\s*onBoundsChange:\s*\(bounds\)\s*=>\s*actions\.onPlatformBoundsChange\(state\.selectedShopId!,\s*bounds\)\s*\}\)/, "platform surface must use the existing bounds callback");
   assert.match(src, /else\s*\{\s*renderEmptyPlatformPanel\(platformHost\);\s*\}/, "empty/local platform panel must remain for no runtime");
   assert.ok(!src.includes("getBoundingClientRect") && !src.includes("Math.round"), "app-shell must not hardcode bounds handling");
   assert.ok(!src.includes("onScopePlatform") && !src.includes("manualSend") && !src.includes("send_text"), "platform switching must not activate from filters or add send behavior");

@@ -1,5 +1,7 @@
 # Unread / Priority / Risk Indicator Fact-Readiness Review（SHEEP-062）
 
+> **时点导航（2026-09-24）**：本文是 SHEEP-062 当时的 indicator 审查结论；后续 [SHEEP-063-PR1](fast-sheep-message-fact-foundation.md) 建立 Message Fact 后，unread 从原始 `BLOCKED / DEFERRED` 更新为 `PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS`。不能由此推出 unread/priority/risk indicator 已实现或获授权。 当前任务状态/授权以 [PROJECT_STATE.json](../project/PROJECT_STATE.json) 为准；验收溯源见 [对应报告](../reports/SHEEP-062-report.json)。
+
 > 项目：Fast Sheep / 快羊客服 · Phase 4 / M4.1 · 日期：2026-08-28
 > 定位：**Fact-Readiness Review / Decision Package**（本轮不实现任何 indicator）。
 > 依据：DP-78~82 + I-10/I-11（Owner 收紧决策）、SHEEP-060 future notes #3/#4、Phase 4 硬约束。

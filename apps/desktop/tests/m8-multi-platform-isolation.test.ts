@@ -7,6 +7,7 @@ function fakeService(platform: string) {
   const disposed: string[] = [];
   return {
     platform, inbound, disposed,
+    hideAllViews: () => {},
     activate: async (shopId: string) => { inbound.push("activate:" + shopId); },
     status: (shopId: string) => ({ shop_id: shopId, platform, session_status: "READY", view_visible: true }),
     setViewBounds: () => true,

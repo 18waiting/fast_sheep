@@ -130,6 +130,8 @@ export class PddViewHost {
       this.readOnlyShieldView.webContents.close();
       throw error;
     }
+    // An attached native view must start hidden, including during async load.
+    this.webContentsView.setVisible(false);
     void this.readOnlyShieldView.webContents.loadURL(READ_ONLY_SHIELD_HTML);
     this.applyReadOnlyShield();
     this.nav = {

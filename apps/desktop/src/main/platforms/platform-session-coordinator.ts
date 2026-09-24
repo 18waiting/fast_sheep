@@ -20,6 +20,8 @@ export interface StatusView {
 
 export class PlatformSessionCoordinator {
   private readonly services = new Map<PlatformId, PlatformHostService>();
+  // Main-owned visual target. Session/ingress ownership remains per shop.
+  private activeViewTarget: { platform: PlatformId; shopId: string } | null = null;
 
   register(platform: PlatformId, service: PlatformHostService): void {
     this.services.set(platform, service);
@@ -32,8 +34,25 @@ export class PlatformSessionCoordinator {
   async activateShop(platform: PlatformId, shopId: string): Promise<boolean> {
     const service = this.services.get(platform);
     if (!service) return false;
-    await (service as { activate(shopId: string): Promise<void> }).activate(shopId);
-    return true;
+    // Hide first, before any asynchronous load can complete. A superseded load
+    // must not re-show its view after a newer target has been selected.
+    const target = { platform, shopId };
+    this.activeViewTarget = target;
+    for (const candidate of this.services.values()) {
+      candidate.hideAllViews();
+    }
+    try {
+      await service.activate(shopId, () => this.activeViewTarget === target);
+      return this.activeViewTarget === target;
+    } catch (error) {
+      if (this.activeViewTarget === target) {
+        this.activeViewTarget = null;
+        for (const candidate of this.services.values()) {
+          candidate.hideAllViews();
+        }
+      }
+      throw error;
+    }
   }
 
   status(platform: PlatformId, shopId: string): StatusView | null {
@@ -44,7 +63,16 @@ export class PlatformSessionCoordinator {
 
   setViewBounds(platform: PlatformId, shopId: string, bounds: { x: number; y: number; width: number; height: number; visible: boolean }, content: { x: number; y: number; width: number; height: number; visible: boolean }): boolean {
     const service = this.services.get(platform);
-    if (!service) return false;
+    if (!service || this.activeViewTarget?.platform !== platform || this.activeViewTarget.shopId !== shopId) return false;
+    // A hidden bounds command is the existing typed-IPC close boundary. It
+    // invalidates in-flight activation as well as hiding all native views.
+    if (!bounds.visible) {
+      this.activeViewTarget = null;
+      for (const candidate of this.services.values()) {
+        candidate.hideAllViews();
+      }
+      return true;
+    }
     return (service as { setViewBounds(shopId: string, b: typeof bounds, c: typeof content): boolean }).setViewBounds(shopId, bounds, content);
   }
 
@@ -69,6 +97,7 @@ export class PlatformSessionCoordinator {
   }
 
   disposeAll(): void {
+    this.activeViewTarget = null;
     for (const service of this.services.values()) {
       (service as { disposeAll(): void }).disposeAll();
     }

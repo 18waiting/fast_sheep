@@ -7,6 +7,7 @@ function fakeService(platform: string) {
   return {
     platform,
     activated,
+    hideAllViews: () => {},
     activate: async (shopId: string) => { activated.push(shopId); },
     status: (shopId: string) => ({ shop_id: shopId, platform, session_status: "READY", view_visible: true }),
     setViewBounds: () => true,

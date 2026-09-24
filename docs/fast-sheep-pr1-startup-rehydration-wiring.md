@@ -1,5 +1,7 @@
 # Startup Rehydration Wiring Foundation（SHEEP-074-PR1 执行记录）
 
+> **时点导航（2026-09-24）**：正文的“等待 Controller PASS”是交付时点表述；`PROJECT_STATE.json` 记录 SHEEP-074-PR1 已 `PASS / CLOSED`。通过仅覆盖所述 Delivery Attempt startup wiring，不包括 Background Job / Import、完整 Recovery Engine 或新执行授权。 当前任务状态/授权以 [PROJECT_STATE.json](../project/PROJECT_STATE.json) 为准；验收溯源见 [对应报告](../reports/SHEEP-074-PR1-report.json)。
+
 > 项目：Fast Sheep / 快羊客服 · Phase 4 / M4.5（独立 prerequisite）· 日期：2026-08-29
 > 定位：仅将 existing verified recovery capability 接入 **production startup wiring**；不建立通用 Recovery Engine，不改 schema。
 > 结论：**COMPLETE（等待 Controller PASS）**——Delivery Attempt merchant-scoped startup recovery 已接入真实 production composition（`createWorkerBackedMainContext`）；Background Job recovery 按 evidence gate **明确 DEFER**；Import recovery 未接入；schema v10 不变。

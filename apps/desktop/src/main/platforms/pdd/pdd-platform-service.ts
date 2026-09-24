@@ -121,6 +121,8 @@ function stoppedIngress(reason: string, diagnostics: readonly string[]): PddInbo
 }
 
 export class PddPlatformService {
+  private activationEpoch = 0;
+  private activeViewShopId: string | null = null;
   private readonly sessions = new Map<string, PddSessionHost>();
   /**
    * Controlled decoded-event state per shop. The ledger keeps the SOURCE limitations next to the
@@ -248,8 +250,18 @@ export class PddPlatformService {
     else this.orchestratorBridge.onConversationChange(shopId);
   }
 
-  /** Create/load/activate a PDD session for a shop (test mode loads local fixture). */
-  async activate(shopId: string): Promise<void> {
+  /** Hide every native view without disposing its owned session or ingress. */
+  hideAllViews(): void {
+    this.activationEpoch++;
+    this.activeViewShopId = null;
+    for (const session of this.sessions.values()) session.hide();
+  }
+
+  /** Create/load/activate a PDD session; stale loads must not re-show a view. */
+  async activate(shopId: string, mayShow: () => boolean = () => true): Promise<void> {
+    this.hideAllViews();
+    const epoch = this.activationEpoch;
+    this.activeViewShopId = shopId;
     let session = this.sessions.get(shopId);
     let startup: PddInboundObserverStartHandle | null = null;
     if (!session) {
@@ -318,7 +330,7 @@ export class PddPlatformService {
     } else {
       startup = this.observerStartups.get(shopId) ?? null;
     }
-    session.activate();
+    if (epoch === this.activationEpoch && mayShow()) session.activate();
     this.broadcastStatus(shopId);
   }
 
@@ -763,7 +775,7 @@ export class PddPlatformService {
 
   setViewBounds(shopId: string, bounds: ViewBounds, contentBounds: ViewBounds): boolean {
     const session = this.sessions.get(shopId);
-    if (!session) return false;
+    if (!session || this.activeViewShopId !== shopId) return false;
     session.setViewBounds(bounds, contentBounds);
     return true;
   }
@@ -1072,6 +1084,7 @@ export class PddPlatformService {
   }
 
   disposeAll(): void {
+    this.hideAllViews();
     for (const shopId of this.inboundObservers.keys()) this.stopInboundObserver(shopId, "SERVICE_DISPOSED");
     this.admissionRegistry.clear();
     this.connectionAdmissions.clear();

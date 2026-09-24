@@ -11,6 +11,7 @@ import { ShopEventBridge } from "./events/shop-event-bridge.js";
 import { isTestMode } from "./test-mode.js";
 import { runSmokeProbe } from "./smoke-probe.js";
 import { runPddSmokeProbe, runPddSessionIsolationProbe } from "./smoke-probe-pdd.js";
+import { runSyntheticFallbackInteractionProbe } from "./smoke-probe-fallback.js";
 import { runM8PlatformProbe, runM8MultiPlatformProbe, runM8VerticalProbe } from "./smoke-probe-m8.js";
 import { AIWorkerClient } from "@fastwork/worker-rpc";
 import { createPackagedWorkerClient, resolvePackagedDataRoot, createWorkerBackedMainContext } from "./worker-runtime.js";
@@ -67,12 +68,15 @@ function createWindow(): BrowserWindow {
     win.webContents.once("did-finish-load", () => {
       const m7ResultFile = process.env.FASTWORK_DESKTOP_M7_SMOKE_RESULT_FILE ?? process.env.FASTWORK_DESKTOP_M7_VERTICAL_RESULT_FILE;
       const isolationResultFile = process.env.FASTWORK_DESKTOP_M7_ISOLATION_RESULT_FILE;
+      const fallbackResultFile = process.env.FASTWORK_DESKTOP_FALLBACK_INTERACTION_RESULT_FILE;
       const vertical = process.env.FASTWORK_DESKTOP_M7_VERTICAL === "1";
       const m8Platform = process.env.FASTWORK_DESKTOP_M8_PLATFORM;
       const m8ResultFile = process.env.FASTWORK_DESKTOP_M8_SMOKE_RESULT_FILE;
       const m8MultiFile = process.env.FASTWORK_DESKTOP_M8_MULTI_RESULT_FILE;
       const m8VerticalFile = process.env.FASTWORK_DESKTOP_M8_VERTICAL_RESULT_FILE;
-      if (m8VerticalFile && context) {
+      if (fallbackResultFile && context) {
+        void runSyntheticFallbackInteractionProbe(context, win, fallbackResultFile).then((result) => { app.exit(result.result === "PASS" ? 0 : 1); }, () => { app.exit(1); });
+      } else if (m8VerticalFile && context) {
         void runM8VerticalProbe(context, m8VerticalFile).then(() => { app.exit(0); });
       } else if (m8MultiFile && context) {
         void runM8MultiPlatformProbe(context, m8MultiFile).then(() => { app.exit(0); });

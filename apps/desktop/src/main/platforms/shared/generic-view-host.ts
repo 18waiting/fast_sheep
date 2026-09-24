@@ -45,6 +45,8 @@ export class GenericViewHost {
         preload: options.preloadPath,
       },
     });
+    // Native visibility must agree with the initial hidden state before load.
+    this.webContentsView.setVisible(false);
     this.nav = { allowedProductionHosts: options.allowedProductionHosts ?? [], testMode: options.testMode };
     this.webContentsView.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
     this.webContentsView.webContents.on("will-navigate", (event, url) => {

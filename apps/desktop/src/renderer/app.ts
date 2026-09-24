@@ -15,16 +15,14 @@ export function mountApp(root: HTMLElement): WorkbenchStore {
 
   const store = new WorkbenchStore(api);
   const actions: WorkbenchActions = {
-    onSelectShop: (shopId) => {
-    // DP-59: shop-sidebar = PROVISIONAL queue scope control (specific_store; storeId = shop id, Main-side merchant resolution).
-    void store.selectShop(shopId);
-    void store.setQueueScope({ kind: "specific_store", storeId: shopId });
-  },
+    // Runtime Shop selection controls the embedded platform, not canonical
+    // Store scope. Queue Store selection is explicit and fact-backed below.
+    onSelectShop: (shopId) => void store.selectShop(shopId),
     onSetMode: (mode) => void store.setMode(mode),
     onManualSend: () => void store.manualSend(),
     onNoSaveSend: () => void store.noSaveSend(),
     onCancel: () => void store.cancel(),
-    onPlatformBoundsChange: (bounds) => void store.reportPlatformBounds(bounds),
+    onPlatformBoundsChange: (shopId, bounds) => void store.reportPlatformBounds(shopId, bounds),
     onReloadPlatform: () => void store.reloadPlatform(),
     // SHEEP-064 Composer: manual draft input + explicit submit intent + explicit
     // non-destructive AI-suggestion apply (DP-105/106/107/108).

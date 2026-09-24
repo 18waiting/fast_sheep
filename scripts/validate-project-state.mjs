@@ -121,6 +121,25 @@ export function validateProjectState(state, options = {}) {
     }
   }
 
+  // The reviewed Roadmap's initial status is historical, but current prose must
+  // not describe the whole task as NOT_STARTED after Controller-accepted lanes.
+  const projectedTask = taskObjectFor(state, nextId);
+  const acceptedLanes = isObject(projectedTask)
+    ? Object.entries(projectedTask).filter(([key, lane]) =>
+      key.startsWith("lane_") && isObject(lane) && lane.status === "SEALED" && lane.controller_decision === "PASS")
+    : [];
+  if (acceptedLanes.length) {
+    for (const [field, value] of [
+      ["current_task", state.current_task],
+      ["next_task", state.next_task],
+      [`${String(nextId).toLowerCase().replace("-", "_")}.status`, projectedTask.status],
+    ]) {
+      if (/\bNOT_STARTED\b/.test(String(value ?? ""))) {
+        add("ACCEPTED_LANE_PROJECTED_NOT_STARTED", field, "an accepted lane cannot coexist with a current whole-task NOT_STARTED projection");
+      }
+    }
+  }
+
   if (Object.hasOwn(state, "lifecycle_stage") && state.lifecycle_stage !== state.current_phase) {
     add("LIFECYCLE_STAGE_PHASE_MISMATCH", "lifecycle_stage", "lifecycle_stage must match canonical current_phase");
   }

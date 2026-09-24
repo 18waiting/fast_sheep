@@ -61,6 +61,7 @@ test("selecting a PDD shop activates the platform session and loads its status",
 test("applyPlatformStatusChanged updates the presentation-only projection", () => {
   const { api } = makeApi();
   const store = new WorkbenchStore(api);
+  store.applyViewModel(vm);
   store.applyPlatformStatusChanged({ shop_id: "s1", session_status: "LOGIN_REQUIRED", revision: 2 });
   assert.equal(store.getState().platform.sessionStatus, "LOGIN_REQUIRED");
 });
