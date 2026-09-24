@@ -111,7 +111,7 @@ diagnostic/fallback work or required to remove a transport/runtime blocker.
 - First scene: `SHIPPING_TIME`.
 - Second scene: `OPEN_DECISION`.
 - `LOGISTICS`: recommendation only.
-- SHIPPING_TIME rule semantics: `PRODUCT_DECISION_REQUIRED`.
+- SHIPPING_TIME rule: merchant-configured Store Knowledge (DEC-008 aligned).
 - Product/SKU context is deferred unless the approved SHIPPING_TIME rule needs
   product-level exceptions.
 - Scene model initially: `SHIPPING_TIME`, `OTHER/UNSUPPORTED`, `UNKNOWN`.
@@ -268,34 +268,45 @@ inside one IdentityLock and create one AI turn.
 
 ---
 
-### SHEEP-305 — SHIPPING_TIME Rule and Fact Provider
+### SHEEP-305 — Minimal Store Knowledge Pipeline for SHIPPING_TIME
 
 **Status:** `NOT_STARTED / NOT_AUTHORIZED`
 
-**Product gate:** `SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED`.
+**Architecture realignment:** This task now aligns with DEC-008 (Layered Knowledge Architecture) and PDD_MVP_V1 §6 (Knowledge V1). SHIPPING_TIME rules are Store Knowledge, not a standalone fact provider.
 
-**Goal:** Resolve the rule semantically, then wire only the authoritative facts
-the approved rule requires.
+**Goal:** Build a minimal knowledge retrieval pipeline that supports importing and retrieving Store Knowledge (including SHIPPING_TIME rules) for AI reply generation.
 
-**Dependencies:** `SHEEP-304`; explicit product decision closing the rule
-semantics.
+**Dependencies:** `SHEEP-304`; existing persistence infrastructure.
 
-**Allowed scope:** rule contract, fact-provider boundary, and focused tests.
+**Allowed scope:**
+- Knowledge schema (Store Knowledge type, including SHIPPING_TIME rules)
+- Simple import interface (merchant fills in text rules)
+- Simple retrieval (keyword matching + template rendering)
+- AI can retrieve and use knowledge to generate replies
+- Focused tests for schema, import, retrieval, and AI integration
 
-**Must not:** invent dispatch SLA, payment-time rule, product exception, region
-exception, or order-state semantics.
+**Must not:**
+- Implement full vector retrieval (deferred to Phase 9)
+- Implement learning model (deferred to Phase 9)
+- Implement complex conflict resolution (deferred to Phase 9)
+- Invent dispatch SLA, payment-time rule, product exception, or region exception semantics
+- Enable send
 
 **Exit criteria:**
+- Store Knowledge schema supports SHIPPING_TIME rules as a knowledge type
+- Merchant can configure SHIPPING_TIME rules via simple text input
+- Rules are persisted as Store Knowledge with proper merchant/store scope
+- AI can retrieve relevant knowledge when generating SHIPPING_TIME replies
+- Keyword-based retrieval returns correct knowledge for given query
+- Unknown/unresolved knowledge remains explicit
+- No send is possible
+- Focused tests pass
 
-- authoritative rule is recorded
-- every fact used by the rule has a named producer and provenance
-- unknown facts remain unknown
-- Product/SKU work is included only if explicitly required by the rule
-- no send is possible
+**Customer value:** AI can answer SHIPPING_TIME questions using merchant-configured rules.
 
-**Customer value:** correct and defensible SHIPPING_TIME answers.
+**Safety value:** Knowledge is merchant-scoped and authoritative; no guessed facts.
 
-**Safety value:** no guessed deterministic shipping facts.
+**Phase 9 extension path:** This minimal pipeline will be extended in Phase 9 (Knowledge/RAG/Learning) to full vector retrieval, automatic learning, and complex conflict resolution. The schema and import interface remain compatible.
 
 ---
 

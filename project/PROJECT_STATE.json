@@ -31,14 +31,23 @@
       "real_platform_operation": "NOT_AUTHORIZED",
       "production_enablement": "NOT_AUTHORIZED"
     },
-    "result_lanes": ["offline_implementation", "real_platform_validation", "production_enablement"],
+    "result_lanes": [
+      "offline_implementation",
+      "real_platform_validation",
+      "production_enablement"
+    ],
     "real_platform_validation_pending": "NOT_RUN / AWAITING_OWNER_SCOPED_AUTHORIZATION",
     "production_enablement_pending": "NOT_RUN / NOT_AUTHORIZED",
     "owner_granted_real_content_persistence": {
       "granted_date": "2026-09-20",
       "granted_by": "Owner directive: authorize real message persistence",
       "scope": "Canonical InboundEnvelope for customer messages of the single controlled test store may be written to the ISOLATED SQLite database under REPO_ROOT/.tmp (normalized_conversations / normalized_messages), for receive/save/dedupe/view verification only.",
-      "constraints": ["isolated .tmp data root only; never the production database", "no raw platform payload, no credentials, no cookies, no tokens", "no production enablement, no send, no AI, no platform business action", "does not authorize real customer data outside the controlled test store"],
+      "constraints": [
+        "isolated .tmp data root only; never the production database",
+        "no raw platform payload, no credentials, no cookies, no tokens",
+        "no production enablement, no send, no AI, no platform business action",
+        "does not authorize real customer data outside the controlled test store"
+      ],
       "status": "GRANTED / SCOPED"
     },
     "next_scoped_real_verification": {
@@ -49,7 +58,13 @@
       "observations": "Only inbound customer-role text messages in the currently selected conversation; platform timestamps when present; no outbound, no non-text, no historical backfill",
       "content_storage": "Canonical InboundEnvelope persisted to local SQLite normalized_messages/normalized_conversations under REPO_ROOT/.tmp; raw platform payload not written",
       "stop_and_success": "Stop = revoke Main admission + stop observer + dispose session. Success = one MAPPED envelope, one INGESTED row, replay yields DUPLICATE, and legacyBridgeCalls/aiCalls/transportSendCalls/businessPersistenceWrites stay 0",
-      "explicitly_not_authorized": ["real customer data outside the controlled test store", "real send", "AI", "production enablement", "platform business actions"]
+      "explicitly_not_authorized": [
+        "real customer data outside the controlled test store",
+        "real send",
+        "AI",
+        "production enablement",
+        "platform business actions"
+      ]
     }
   },
   "master_prompt": {
@@ -528,10 +543,10 @@
         "fast_sheep_local_ui_responsive": "YES",
         "pdd_visible_clipping_or_incomplete_display": "OBSERVED",
         "window_resize_alignment": "BLOCKED",
-      "current_geometry_blocker": "PDD_NATIVE_VIEWPORT_RESIZE_NOT_TRACKED_OR_APPLIED",
-      "current_geometry_blocker_status": "SUPERSEDED / REFUTED_AS_CURRENT_ROOT_CAUSE_BY_SYNTHETIC_RESIZE_EVIDENCE",
-      "current_supported_blocker": "PDD_PRIMARY_VIEWPORT_STARVED_BY_OPTION_B_SPACE_ALLOCATION",
-      "resize_root_cause": "REFUTED_BY_SYNTHETIC_DOM_TO_WEBCONTENTSVIEW_RESIZE_PROOF",
+        "current_geometry_blocker": "PDD_NATIVE_VIEWPORT_RESIZE_NOT_TRACKED_OR_APPLIED",
+        "current_geometry_blocker_status": "SUPERSEDED / REFUTED_AS_CURRENT_ROOT_CAUSE_BY_SYNTHETIC_RESIZE_EVIDENCE",
+        "current_supported_blocker": "PDD_PRIMARY_VIEWPORT_STARVED_BY_OPTION_B_SPACE_ALLOCATION",
+        "resize_root_cause": "REFUTED_BY_SYNTHETIC_DOM_TO_WEBCONTENTSVIEW_RESIZE_PROOF",
         "chat_read_only_enforcement": "NOT_PROVEN",
         "platform_mutation": "NONE"
       },
@@ -650,7 +665,7 @@
       },
       "separate_observation": {
         "local_conversation_queue_load_error": "OBSERVED",
-        "visible_message": "\u4f1a\u8bdd\u961f\u5217\u52a0\u8f7d\u5931\u8d25\uff0c\u8bf7\u91cd\u8bd5\u3002",
+        "visible_message": "会话队列加载失败，请重试。",
         "classification": "LOCAL_FAST_SHEEP_UI_OBSERVATION_NOT_PDD_GEOMETRY_ROOT_CAUSE"
       },
       "validation_target_stack": [
@@ -1577,7 +1592,12 @@
     "approved_date": "2026-08-26",
     "scope": "Phase 3 Fast Sheep UX / Design System Redesign — AI-native workflow + Professional fallback; FastWork reference = workflow/behavior/IA inspiration only (not final visual/geometry/IA spec); Phase 4 domain workflow / platform adapter / sync-Outbox / cloud / auth NOT pre-implemented",
     "product_direction": "AI-native workflow + Professional fallback (AI first, facts always available, human always in control; AI suggestion != authority; execution obeys Ownership/Capability/Entitlement/Automation Policy)",
-    "clean_room_areas": ["Conversation", "PDD", "DouDian", "Settings"],
+    "clean_room_areas": [
+      "Conversation",
+      "PDD",
+      "DouDian",
+      "Settings"
+    ],
     "audit_semantics": {
       "product_order_ux_decision": "DEFERRED to Phase 4 M4.3 (Phase 2 reference governance closed only; product UX decision still deferred; partial/local evidence preserved)",
       "sheep_031_ai_panel": "unmounted structural primitive only; final workspace integration NOT claimed"
@@ -1591,7 +1611,9 @@
     "closed_date_candidate": "2026-08-26",
     "report": "reports\\SHEEP-040-report.json",
     "proposal_doc": "docs\\fast-sheep-ia-proposal.md",
-    "decision_points": ["DP-1..DP-8 (PRODUCT_DECISION_REQUIRED; awaiting Owner IA decisions)"],
+    "decision_points": [
+      "DP-1..DP-8 (PRODUCT_DECISION_REQUIRED; awaiting Owner IA decisions)"
+    ],
     "next_per_roadmap": "SHEEP-041 (M3.1 Multi-store Navigation Model; pending Owner IA decisions + PASS)",
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
@@ -1610,14 +1632,14 @@
     "dp_7_supervisor_ops": "SEPARATE_IA_DOMAIN_FROM_AGENT_WORKSPACE (different info density & task model; shared permission/data; supervisor console NOT forced into Agent Workspace)",
     "dp_8_nav_complexity": "NO fixed <=7 hard limit. Principle: primary navigation represents stable, high-frequency product destinations, not every domain; Agent daily primary entries kept deliberately few; count by later IA validation",
     "additional_candidates": {
-        "global_search_command_palette": "record-only candidate for professional efficiency (deep access to Customer/Order/Product/Shop/Settings under fewer primary navs); NOT in implementation scope",
-        "not_locked_by_sheep_040": [
-            "Product/Order final IA",
-            "specific navigation copy",
-            "Context UI form",
-            "AI management IA",
-            "Command Palette implementation"
-        ]
+      "global_search_command_palette": "record-only candidate for professional efficiency (deep access to Customer/Order/Product/Shop/Settings under fewer primary navs); NOT in implementation scope",
+      "not_locked_by_sheep_040": [
+        "Product/Order final IA",
+        "specific navigation copy",
+        "Context UI form",
+        "AI management IA",
+        "Command Palette implementation"
+      ]
     }
   },
   "sheep_041": {
@@ -1626,8 +1648,14 @@
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-041-report.json",
     "proposal_doc": "docs\\fast-sheep-multi-store-navigation-proposal.md",
-    "invariants": ["I-1 conversation-bound context wins", "I-2 All Stores = queue scope not identity", "I-3 no ambiguous cross-store action"],
-    "decision_points": ["DP-9..DP-14 (PRODUCT_DECISION_REQUIRED; awaiting Owner decisions)"],
+    "invariants": [
+      "I-1 conversation-bound context wins",
+      "I-2 All Stores = queue scope not identity",
+      "I-3 no ambiguous cross-store action"
+    ],
+    "decision_points": [
+      "DP-9..DP-14 (PRODUCT_DECISION_REQUIRED; awaiting Owner decisions)"
+    ],
     "next_per_roadmap": "SHEEP-042 (M3.1 Conversation-centered Workspace IA; pending Owner DP-9~14 decisions + PASS)",
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
@@ -1644,9 +1672,9 @@
     "dp_13_supervisor_ops_scope": "MERCHANT_WIDE_SUPERVISOR_AGGREGATE_PLUS_STORE_PLATFORM_FILTERS (Supervisor/Ops supports merchant-wide aggregate + Store/Platform filtering; visible scope decided by Capability/ResourceScope; IA grants no authority)",
     "dp_14_cross_store_action": "NO_AMBIGUOUS_CROSS_STORE_ACTION (any business-impacting action must have explicit target Store; AI suggestion/action must not mix facts from different Stores)",
     "invariants_confirmed": [
-        "I-1 Conversation-bound context wins over ambient store selection",
-        "I-2 All Stores is a work queue scope, not a data ownership scope",
-        "I-3 No ambiguous cross-store action"
+      "I-1 Conversation-bound context wins over ambient store selection",
+      "I-2 All Stores is a work queue scope, not a data ownership scope",
+      "I-3 No ambiguous cross-store action"
     ]
   },
   "sheep_042": {
@@ -1656,7 +1684,9 @@
     "report": "reports\\SHEEP-042-report.json",
     "proposal_doc": "docs\\fast-sheep-conversation-centered-workspace-ia.md",
     "invariant": "I-4 AI-assisted decisions expose inspectable source facts without hidden chain-of-thought",
-    "decision_points": ["DP-15..DP-21 (PRODUCT_DECISION_REQUIRED; awaiting Owner decisions)"],
+    "decision_points": [
+      "DP-15..DP-21 (PRODUCT_DECISION_REQUIRED; awaiting Owner decisions)"
+    ],
     "next_per_roadmap": "SHEEP-043 (M3.2 Design Tokens; pending Owner DP-15~21 decisions + PASS)",
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
@@ -1681,7 +1711,9 @@
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-043-report.json",
     "design_doc": "docs\\fast-sheep-design-tokens.md",
-    "decisions": ["DP-22..DP-28 (OWNER_DECIDED 2026-08-27)"],
+    "decisions": [
+      "DP-22..DP-28 (OWNER_DECIDED 2026-08-27)"
+    ],
     "repair_note": "REPAIR 2026-08-27: DP-27 canonical status taxonomy (neutral/info/success/warning/danger; primary=Action/Accent); tests lock architecture invariants not exact visual set; Fact/Assistance/Evidence provisional; audit semantics = Owner decision PENDING until PASS",
     "next_per_roadmap": "SHEEP-044 (M3.2 Typography/Spacing/Color; pending Owner PASS)",
     "reference_tree_modified": false,
@@ -1707,7 +1739,9 @@
     "report": "reports\\SHEEP-044-report.json",
     "design_doc": "docs\\fast-sheep-typography-spacing-color.md",
     "visual_evidence": "reports\\visual-evidence\\sheep-044-workbench.png",
-    "decisions": ["DP-29..DP-34 (OWNER_DECIDED 2026-08-27 after visual review PASS)"],
+    "decisions": [
+      "DP-29..DP-34 (OWNER_DECIDED 2026-08-27 after visual review PASS)"
+    ],
     "next_per_roadmap": "SHEEP-045 (M3.2 Component Primitives; pending Owner visual review + PASS)",
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
@@ -1725,12 +1759,12 @@
     "dp_33_consumption": "TOKEN_AND_VISUAL_CONSUMPTION_UPDATE_WITHOUT_TOPOLOGY_CHANGE",
     "dp_34_visual_character": "CALM_PROFESSIONAL_AI_NATIVE_CLARITY",
     "future_design_notes": [
-        "Conversation must become the visual/task center in the final Agent Workspace (current small card = clean-room baseline)",
-        "AI Assistance should attach to Conversation/message/task/context, not a permanent sibling card",
-        "Background Tasks / Offline Learning current position is not final IA",
-        "SHEEP-045 Button/Action primitives must decouple action hierarchy from success/warning/danger status semantics",
-        "Store switcher evolves per Multi-store IA into a workspace scope/navigation surface (current rectangular list not final)",
-        "Future componentization further distinguishes work-object title / section heading / card heading / label / metadata"
+      "Conversation must become the visual/task center in the final Agent Workspace (current small card = clean-room baseline)",
+      "AI Assistance should attach to Conversation/message/task/context, not a permanent sibling card",
+      "Background Tasks / Offline Learning current position is not final IA",
+      "SHEEP-045 Button/Action primitives must decouple action hierarchy from success/warning/danger status semantics",
+      "Store switcher evolves per Multi-store IA into a workspace scope/navigation surface (current rectangular list not final)",
+      "Future componentization further distinguishes work-object title / section heading / card heading / label / metadata"
     ],
     "note": "This PASS does NOT approve the current clean-room workspace topology as the final product layout; existing Phase 3/4 deferrals unchanged"
   },
@@ -1740,8 +1774,13 @@
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-045-report.json",
     "primitives_doc": "docs\\fast-sheep-component-primitives.md",
-    "visual_evidence": ["reports\\visual-evidence\\sheep-045-workbench.png", "reports\\visual-evidence\\sheep-045-primitive-gallery.png"],
-    "decisions": ["DP-35..DP-40 (OWNER_DECIDED 2026-08-27 after visual review PASS)"],
+    "visual_evidence": [
+      "reports\\visual-evidence\\sheep-045-workbench.png",
+      "reports\\visual-evidence\\sheep-045-primitive-gallery.png"
+    ],
+    "decisions": [
+      "DP-35..DP-40 (OWNER_DECIDED 2026-08-27 after visual review PASS)"
+    ],
     "no_topology_change": true,
     "next_per_roadmap": "SHEEP-046 (M3.2 Empty/Error/Loading States; pending Owner visual review + PASS)",
     "reference_tree_modified": false,
@@ -1762,10 +1801,10 @@
     "gallery_visual_review": "PASS (CALM_PROFESSIONAL_AI_NATIVE_CLARITY)",
     "workbench_non_regression": "PASS (SHA-256 identical to SHEEP-044 baseline)",
     "future_design_notes": [
-        "destructive-primary must stay rare; ordinary cancel/stop must NOT auto-map to highest danger prominence",
-        "Badge composition must stay evidence-driven; avoid arbitrary badge x status-color combination system",
-        "Text roles to be re-validated for high-density page hierarchy once adopted in the real Conversation Workspace",
-        "SHEEP-045 production primitive adoption = 0; PASS approves primitive contract/design, NOT full production adoption"
+      "destructive-primary must stay rare; ordinary cancel/stop must NOT auto-map to highest danger prominence",
+      "Badge composition must stay evidence-driven; avoid arbitrary badge x status-color combination system",
+      "Text roles to be re-validated for high-density page hierarchy once adopted in the real Conversation Workspace",
+      "SHEEP-045 production primitive adoption = 0; PASS approves primitive contract/design, NOT full production adoption"
     ]
   },
   "sheep_046": {
@@ -1774,8 +1813,13 @@
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-046-report.json",
     "states_doc": "docs\\fast-sheep-empty-error-loading-states.md",
-    "visual_evidence": ["reports\\visual-evidence\\sheep-046-workbench.png", "reports\\visual-evidence\\sheep-046-state-gallery.png"],
-    "decisions": ["DP-41..DP-48 (OWNER_DECIDED 2026-08-27 after visual review PASS)"],
+    "visual_evidence": [
+      "reports\\visual-evidence\\sheep-046-workbench.png",
+      "reports\\visual-evidence\\sheep-046-state-gallery.png"
+    ],
+    "decisions": [
+      "DP-41..DP-48 (OWNER_DECIDED 2026-08-27 after visual review PASS)"
+    ],
     "no_topology_change": true,
     "next_per_roadmap": "SHEEP-047 (M3.2 Accessibility Baseline; pending Owner visual review + PASS)",
     "reference_tree_modified": false,
@@ -1797,10 +1841,10 @@
     "dp_48_absence_boundary": "ABSENCE_MUST_NOT_CONCEAL_DENIAL_UNAVAILABILITY_OR_NOT_CONFIGURED",
     "state_gallery_visual_review": "PASS (visual weight + scope hierarchy match CALM_PROFESSIONAL_AI_NATIVE_CLARITY; AI-assistance failure preserves source facts + manual path per DP-47)",
     "future_design_notes": [
-        "Initial Loading pure \"...\" is minimal baseline only; later Accessibility/real consumer may evaluate a minimal progress indicator",
-        "Quiet Refresh Gallery \"preserve last known content\" is concept evidence, not final product copy",
-        "Workspace error standalone \"错误:\" label to be validated for redundancy in real pages later",
-        "AI failure preserving source facts/manual path is a future Conversation Workspace constraint; Gallery layout/copy does not lock Phase 4 final UI"
+      "Initial Loading pure \"...\" is minimal baseline only; later Accessibility/real consumer may evaluate a minimal progress indicator",
+      "Quiet Refresh Gallery \"preserve last known content\" is concept evidence, not final product copy",
+      "Workspace error standalone \"错误:\" label to be validated for redundancy in real pages later",
+      "AI failure preserving source facts/manual path is a future Conversation Workspace constraint; Gallery layout/copy does not lock Phase 4 final UI"
     ],
     "note": "PASS does not change NO_TOPOLOGY_CHANGE; current clean-room Workspace is NOT approved as final page design"
   },
@@ -1810,8 +1854,13 @@
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-047-report.json",
     "a11y_doc": "docs\\fast-sheep-accessibility-baseline.md",
-    "visual_evidence": ["reports\\visual-evidence\\sheep-047-workbench.png", "reports\\visual-evidence\\sheep-047-a11y-focus-gallery.png"],
-    "decisions": ["DP-49..DP-56 (OWNER_DECIDED 2026-08-27 after accessibility/visual review PASS)"],
+    "visual_evidence": [
+      "reports\\visual-evidence\\sheep-047-workbench.png",
+      "reports\\visual-evidence\\sheep-047-a11y-focus-gallery.png"
+    ],
+    "decisions": [
+      "DP-49..DP-56 (OWNER_DECIDED 2026-08-27 after accessibility/visual review PASS)"
+    ],
     "no_topology_change": true,
     "next_per_roadmap": "GATE-P3-FAST-SHEEP-UX (M3.2 complete; pending Owner DP-49~56 decisions + visual review + PASS)",
     "reference_tree_modified": false,
@@ -1835,10 +1884,10 @@
     "focus_gallery_review": "PASS",
     "accessibility_driven_changes_accepted": "muted #65717c, border #87919e, focus/selected primary outline (recorded)",
     "future_design_notes": [
-        "Real Store switcher: validate combined visual when selected + keyboard-focused coexist",
-        "Modal focus contract approved but NOT yet production-implemented; first real modal consumer MUST implement + accept",
-        "Contrast audit must regress with future semantic token/theme/component changes",
-        "AI streaming/countdown/background progress dynamic UI must obey DP-55 (announce only meaningful semantic events)"
+      "Real Store switcher: validate combined visual when selected + keyboard-focused coexist",
+      "Modal focus contract approved but NOT yet production-implemented; first real modal consumer MUST implement + accept",
+      "Contrast audit must regress with future semantic token/theme/component changes",
+      "AI streaming/countdown/background progress dynamic UI must obey DP-55 (announce only meaningful semantic events)"
     ],
     "m32_design_system_complete": true
   },
@@ -1891,7 +1940,9 @@
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-060-PR1-report.json",
     "prerequisite_of": "SHEEP-060 (DATA_PATH_GAP-QUEUE-CONVERSATION-LIST resolved by PR1; SHEEP-060 restoration pending PR1 PASS)",
-    "decisions": ["DP-65..DP-68 + I-6 (OWNER_DECIDED 2026-08-27)"],
+    "decisions": [
+      "DP-65..DP-68 + I-6 (OWNER_DECIDED 2026-08-27)"
+    ],
     "next_per_roadmap": "SHEEP-060 restore (re-confirm DP-57~64 + I-5 on real production data path) after PR1 PASS",
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
@@ -1907,9 +1958,9 @@
     "i_6": "QUEUE_SCOPE_IS_ALWAYS_CONTAINED_BY_MERCHANT_BOUNDARY (merchant-store isolation evidence PASS; All Stores Queue via explicit Queue Scope contract in SHEEP-060, no fake storeId=\"all\")",
     "pr1_acceptance": "durability / production composition / merchant-store isolation / fail-closed evidence all PASS; schema v7 + migrations 0001~0007 unchanged",
     "future_constraints": [
-        "saveNormalizedConversation is plain INSERT; duplicate/idempotency/external_ref reconciliation semantics for real producer ingestion must be separately accepted by a future platform-ingestion unit",
-        "I-6 establishes the merchant boundary; All Stores Queue must be implemented in SHEEP-060 via explicit Queue Scope contract (no pseudo storeId=\"all\")",
-        "summary / updated_at / activity ordering still absent; restored SHEEP-060 must not fake summaries or \"recent activity\" ordering"
+      "saveNormalizedConversation is plain INSERT; duplicate/idempotency/external_ref reconciliation semantics for real producer ingestion must be separately accepted by a future platform-ingestion unit",
+      "I-6 establishes the merchant boundary; All Stores Queue must be implemented in SHEEP-060 via explicit Queue Scope contract (no pseudo storeId=\"all\")",
+      "summary / updated_at / activity ordering still absent; restored SHEEP-060 must not fake summaries or \"recent activity\" ordering"
     ]
   },
   "sheep_060_restored": {
@@ -1918,8 +1969,13 @@
     "closed_date_candidate": "2026-08-27",
     "report": "reports\\SHEEP-060-report.json",
     "prerequisite_resolved": "DATA_PATH_GAP-QUEUE-CONVERSATION-LIST closed by SHEEP-060-PR1 (BLOCKED audit history retained in sheep_060 + gap report)",
-    "visual_evidence": ["reports\\visual-evidence\\sheep-060-queue-populated.png", "reports\\visual-evidence\\sheep-060-queue-empty.png"],
-    "decisions": ["DP-57..DP-64 + DP-69 + I-5..I-7 (OWNER_DECIDED 2026-08-28 after visual review PASS)"],
+    "visual_evidence": [
+      "reports\\visual-evidence\\sheep-060-queue-populated.png",
+      "reports\\visual-evidence\\sheep-060-queue-empty.png"
+    ],
+    "decisions": [
+      "DP-57..DP-64 + DP-69 + I-5..I-7 (OWNER_DECIDED 2026-08-28 after visual review PASS)"
+    ],
     "next_per_roadmap": "SHEEP-061 (M4.1 Filters/Store/Platform Scopes; pending Owner PASS; not auto-executed)",
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
@@ -1942,19 +1998,19 @@
     "i_5": "QUEUE_SELECTS_WORK_CONVERSATION_EXPLAINS_WORK",
     "i_7": "DISPLAYED_CONVERSATION_FACTS_MUST_MATCH_ACTIVE_CONVERSATION_IDENTITY",
     "confirmations": [
-        "synthetic populated evidence used real production architecture path",
-        "production-real Empty Queue correctly expresses no-work",
-        "Queue did not fabricate summary/unread/priority/risk/activity",
-        "Store Scope change must not silently rewrite Active Conversation",
-        "activation is Workspace navigation state, not claim/read/ownership/persistence mutation",
-        "current technical ordering has no product priority/recency semantics"
+      "synthetic populated evidence used real production architecture path",
+      "production-real Empty Queue correctly expresses no-work",
+      "Queue did not fabricate summary/unread/priority/risk/activity",
+      "Store Scope change must not silently rewrite Active Conversation",
+      "activation is Workspace navigation state, not claim/read/ownership/persistence mutation",
+      "current technical ordering has no product priority/recency semantics"
     ],
     "future_design_notes": [
-        "Queue + Store double left rail is incremental topology only; SHEEP-061 must re-evaluate Store/Platform Scope presentation — Store is a scope dimension, must not permanently become a Queue-weight nav column",
-        "M4.2 must let the Conversation Main become the true visual/task center; current small Conversation card is still runtime baseline",
-        "identity-only Queue is the correct baseline under the current fact contract, not final Inbox richness; new fields await real fact contracts",
-        "conversation_id ordering is only a technical fallback; re-decide product ordering once real activity facts exist",
-        "after richer Queue, re-validate active vs keyboard-focused row distinction at high density when on different rows"
+      "Queue + Store double left rail is incremental topology only; SHEEP-061 must re-evaluate Store/Platform Scope presentation — Store is a scope dimension, must not permanently become a Queue-weight nav column",
+      "M4.2 must let the Conversation Main become the true visual/task center; current small Conversation card is still runtime baseline",
+      "identity-only Queue is the correct baseline under the current fact contract, not final Inbox richness; new fields await real fact contracts",
+      "conversation_id ordering is only a technical fallback; re-decide product ordering once real activity facts exist",
+      "after richer Queue, re-validate active vs keyboard-focused row distinction at high density when on different rows"
     ]
   },
   "sheep_061": {
@@ -1962,8 +2018,16 @@
     "controller_decision": "PASS",
     "closed_date_candidate": "2026-08-28",
     "report": "reports\\SHEEP-061-report.json",
-    "visual_evidence": ["reports\\visual-evidence\\sheep-061-queue-all.png", "reports\\visual-evidence\\sheep-061-queue-platform.png", "reports\\visual-evidence\\sheep-061-queue-store.png", "reports\\visual-evidence\\sheep-061-queue-outofscope.png", "reports\\visual-evidence\\sheep-061-queue-empty.png"],
-    "decisions": ["DP-70..DP-77 + I-8/I-9 (OWNER_DECIDED 2026-08-28 after visual review PASS)"],
+    "visual_evidence": [
+      "reports\\visual-evidence\\sheep-061-queue-all.png",
+      "reports\\visual-evidence\\sheep-061-queue-platform.png",
+      "reports\\visual-evidence\\sheep-061-queue-store.png",
+      "reports\\visual-evidence\\sheep-061-queue-outofscope.png",
+      "reports\\visual-evidence\\sheep-061-queue-empty.png"
+    ],
+    "decisions": [
+      "DP-70..DP-77 + I-8/I-9 (OWNER_DECIDED 2026-08-28 after visual review PASS)"
+    ],
     "next_per_roadmap": "SHEEP-062 (M4.1 Unread/Priority/Risk Indicators; pending Owner PASS; not auto-executed)",
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
@@ -1985,17 +2049,17 @@
     "i_8": "QUEUE_FILTER_DIMENSIONS_COMPOSE_BY_INTERSECTION",
     "i_9": "QUEUE_RESULTS_MUST_MATCH_CURRENT_QUERY_SCOPE",
     "visual_confirmations": [
-        "Queue + Store double left rail successfully converged",
-        "Store/Platform correctly behave as Queue query dimensions, not peer navigation",
-        "All Stores / Specific Store / Platform filter / Empty state hierarchy clear",
-        "Active Conversation outside current Queue Scope cue is neutral/info, not error/warning, no auto-switch"
+      "Queue + Store double left rail successfully converged",
+      "Store/Platform correctly behave as Queue query dimensions, not peer navigation",
+      "All Stores / Specific Store / Platform filter / Empty state hierarchy clear",
+      "Active Conversation outside current Queue Scope cue is neutral/info, not error/warning, no auto-switch"
     ],
     "future_design_notes": [
-        "canonical PlatformId vs user-facing platform label separation; internal ids like doudian shown via presentation metadata later",
-        "out-of-scope cue final copy/recovery action to be validated in the real Conversation Workspace",
-        "native Store/Platform select is the correct current baseline; searchable/custom selector only when real scale/search need arises",
-        "Queue Scope topology converged; Conversation Main still runtime baseline; M4.2 must begin delivering the Conversation-centered Workspace",
-        "Platform filter option must stay on a different semantic layer from platform availability/entitlement/connection capability"
+      "canonical PlatformId vs user-facing platform label separation; internal ids like doudian shown via presentation metadata later",
+      "out-of-scope cue final copy/recovery action to be validated in the real Conversation Workspace",
+      "native Store/Platform select is the correct current baseline; searchable/custom selector only when real scale/search need arises",
+      "Queue Scope topology converged; Conversation Main still runtime baseline; M4.2 must begin delivering the Conversation-centered Workspace",
+      "Platform filter option must stay on a different semantic layer from platform availability/entitlement/connection capability"
     ]
   },
   "sheep_062": {
@@ -2009,7 +2073,9 @@
       "PRIORITY_FACT_READINESS": "PRODUCT_DECISION_REQUIRED (no fact source; semantics undefined)",
       "RISK_FACT_READINESS": "PRODUCT_DECISION_REQUIRED/DEFER (no typed risk signal contract)"
     },
-    "decisions": ["DP-78..DP-82 + I-10/I-11 (OWNER_DECIDED 2026-08-28)"],
+    "decisions": [
+      "DP-78..DP-82 + I-10/I-11 (OWNER_DECIDED 2026-08-28)"
+    ],
     "next_per_roadmap": "Owner decision: prerequisite unit / DEFER / approve indicator implementation (not auto-advanced)",
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
@@ -2026,16 +2092,16 @@
     "i_10": "INDICATORS_DO_NOT_IMPLY_RANKING_AUTHORITY",
     "i_11": "OPERATIONAL_INDICATORS_REQUIRE_TRACEABLE_FACT_PROVENANCE",
     "dispositions": {
-        "UNREAD": "DEFER_TO_M4_2_MESSAGE_FACTS (no standalone prerequisite now; reopen readiness after M4.2 message identity/order/timestamp + reader identity/read-progress; forbidden: conversation-level unread boolean/count bypassing reader-progress model)",
-        "PRIORITY": "DEFERRED_PRODUCT_DECISION (no implementation/schema now; separate product decision when real priority authority/provenance/override/lifecycle need arises; AI recommendation != authoritative priority)",
-        "RISK": "DEFERRED_TYPED_SIGNAL_DESIGN (no generic risk badge/schema now; future must model typed + source/evidence-backed risk signal; AI-derived risk obeys I-4)"
+      "UNREAD": "DEFER_TO_M4_2_MESSAGE_FACTS (no standalone prerequisite now; reopen readiness after M4.2 message identity/order/timestamp + reader identity/read-progress; forbidden: conversation-level unread boolean/count bypassing reader-progress model)",
+      "PRIORITY": "DEFERRED_PRODUCT_DECISION (no implementation/schema now; separate product decision when real priority authority/provenance/override/lifecycle need arises; AI recommendation != authoritative priority)",
+      "RISK": "DEFERRED_TYPED_SIGNAL_DESIGN (no generic risk badge/schema now; future must model typed + source/evidence-backed risk signal; AI-derived risk obeys I-4)"
     },
     "future_constraints": [
-        "agent-local read progress and team/workflow processing state must not be conflated into unread",
-        "indicator presence does not grant Queue ranking authority",
-        "future indicators must have traceable authoritative provenance",
-        "do not design persistence schema backwards from UI convenience",
-        "after M4.2 message facts mature, UNREAD_FACT_READINESS must be re-evaluated"
+      "agent-local read progress and team/workflow processing state must not be conflated into unread",
+      "indicator presence does not grant Queue ranking authority",
+      "future indicators must have traceable authoritative provenance",
+      "do not design persistence schema backwards from UI convenience",
+      "after M4.2 message facts mature, UNREAD_FACT_READINESS must be re-evaluated"
     ],
     "note": "this round implemented no indicator — correct acceptance result, not a defect",
     "m41_evidence_aware_complete": "M4.1 COMPLETE: Queue + scopes implemented (SHEEP-060/061); Unread/Priority/Risk have explicit legal dispositions after fact-readiness review (SHEEP-062)"
@@ -2060,21 +2126,23 @@
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged; reader-progress still required; never auto-READY)"
     },
     "prerequisite": "SHEEP-063-PR1 (closed 2026-08-28) + SHEEP-063-PR2-PR1 (closed 2026-08-28) + SHEEP-063-PR2 (closed 2026-08-28 incl. REPAIR I-25) — all PASS; BLOCKED audit history retained",
-    "decisions": ["DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 + I-26 (OWNER_DECIDED 2026-08-28; visual review PASS)"],
+    "decisions": [
+      "DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 + I-26 (OWNER_DECIDED 2026-08-28; visual review PASS)"
+    ],
     "repair_applied": "REPAIR 2026-08-28 (Active Conversation presentation consistency; I-7 concretization / I-26 WORKSPACE_ACTIVE_CONVERSATION_PRESENTATION_MUST_NOT_FALL_BACK_TO_AMBIENT_SCOPE_FACTS): header/conversation-panel use activeConversationPresentation pure helper; no Queue Scope / selected shop ambient backfill; header & Timeline same active identity; no-active only when activeConversationId==null; scope-change does not rewrite active header; populated-active + empty-active visual evidence re-captured",
     "visual_review_passed": true,
     "visual_confirmations": [
-        "conv-populated active: Header / Store fact / Timeline identity consistent",
-        "conv-empty active: Header still acknowledges current Conversation; Timeline correctly shows no-message state",
-        "no Queue Scope / selected shop / ambient legacy facts used to fill Active Conversation presentation",
-        "no header/timeline mixed-context"
+      "conv-populated active: Header / Store fact / Timeline identity consistent",
+      "conv-empty active: Header still acknowledges current Conversation; Timeline correctly shows no-message state",
+      "no Queue Scope / selected shop / ambient legacy facts used to fill Active Conversation presentation",
+      "no header/timeline mixed-context"
     ],
     "future_notes": [
-        "Raw StoreId later shown as friendly name via trusted presentation metadata",
-        "AI Suggestion continues converging to DP-18 contextual attachment; current sibling card is not final",
-        "Timeline is a fact-readability baseline; final chat skin not locked",
-        "Platform/Background Tasks/Offline Learning positions remain runtime baseline, not final Workspace IA",
-        "UNREAD_FACT_READINESS stays PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS"
+      "Raw StoreId later shown as friendly name via trusted presentation metadata",
+      "AI Suggestion continues converging to DP-18 contextual attachment; current sibling card is not final",
+      "Timeline is a fact-readability baseline; final chat skin not locked",
+      "Platform/Background Tasks/Offline Learning positions remain runtime baseline, not final Workspace IA",
+      "UNREAD_FACT_READINESS stays PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS"
     ],
     "next_per_roadmap": "SHEEP-064 (Composer) Acceptance Unit proposal — submitted; awaiting Owner approval; not auto-executed",
     "reference_tree_modified": false,
@@ -2089,16 +2157,18 @@
     "report": "reports\\SHEEP-063-PR1-report.json",
     "review_doc": "docs\\fast-sheep-message-fact-foundation.md",
     "prerequisite_of": "SHEEP-063 (DATA_FACT_GAP-MESSAGE_PATH resolved by PR1; SHEEP-063 Timeline restoration pending new execution proposal approval; BLOCKED audit history retained)",
-    "decisions": ["DP-83/86/87/88/90 + I-12/I-13/I-15/I-16 (OWNER_DECIDED 2026-08-28)"],
+    "decisions": [
+      "DP-83/86/87/88/90 + I-12/I-13/I-15/I-16 (OWNER_DECIDED 2026-08-28)"
+    ],
     "fact_readiness": {
       "MESSAGE_FACT_PATH": "READY for Timeline foundation (identity/actor/content/time/ordering/source-provenance persisted; production ingestion boundary + shared DB lifecycle)",
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (never auto-READY; reader identity + read-progress watermark still required)"
     },
     "schema_change": "v7 -> v8 (0008_message_facts.sql; fresh + v7->v8 upgrade verified; 0001~0007 checksums unchanged; I-16 legacy unknown preservation)",
     "future_constraints": [
-        "saveNormalizedMessage is plain INSERT; duplicate/idempotency/external_ref reconciliation semantics for real platform producers remain DEFERRED (separate unit)",
-        "Timeline IPC/UI remains SHEEP-063 after Owner PASS; Composer/Attachments (SHEEP-065)/Unread not implemented",
-        "UNREAD_FACT_READINESS max PARTIALLY_READY until reader-progress fact contract exists"
+      "saveNormalizedMessage is plain INSERT; duplicate/idempotency/external_ref reconciliation semantics for real platform producers remain DEFERRED (separate unit)",
+      "Timeline IPC/UI remains SHEEP-063 after Owner PASS; Composer/Attachments (SHEEP-065)/Unread not implemented",
+      "UNREAD_FACT_READINESS max PARTIALLY_READY until reader-progress fact contract exists"
     ],
     "reference_tree_modified": false,
     "next_stage_not_executed": true,
@@ -2118,11 +2188,11 @@
     "i_16": "MIGRATION_MUST_NOT_FABRICATE_HISTORICAL_MESSAGE_FACTS (legacy fact-less rows keep NULL; no system/empty/migration-time backfill)",
     "unread_fact_readiness": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (never auto-READY; reader identity + read-progress watermark still required)",
     "future_constraints": [
-        "occurred_at + id ordering is an evidence-bounded baseline; re-evaluate when authoritative source ordering emerges",
-        "actor taxonomy only expands by real consumers; no pre-invented AI/system actor",
-        "external_ref dedupe/edit/recall/reconciliation/idempotency stays with real producer unit",
-        "Timeline must not implement unread boolean/count; reader-progress remains prerequisite",
-        "rich/attachment message kinds stay SHEEP-065; historical incomplete facts must not be fabricated"
+      "occurred_at + id ordering is an evidence-bounded baseline; re-evaluate when authoritative source ordering emerges",
+      "actor taxonomy only expands by real consumers; no pre-invented AI/system actor",
+      "external_ref dedupe/edit/recall/reconciliation/idempotency stays with real producer unit",
+      "Timeline must not implement unread boolean/count; reader-progress remains prerequisite",
+      "rich/attachment message kinds stay SHEEP-065; historical incomplete facts must not be fabricated"
     ]
   },
   "sheep_063_pr2": {
@@ -2133,13 +2203,15 @@
     "read_first": "docs\\fast-sheep-workspace-merchant-identity-gap.md",
     "report": "reports\\SHEEP-063-PR2-report.json",
     "review_doc": "docs\\fast-sheep-workspace-merchant-context.md",
-    "owner_decisions": ["DP-94..DP-98 + I-17..I-19 + I-25 (OWNER_DECIDED 2026-08-28)"],
+    "owner_decisions": [
+      "DP-94..DP-98 + I-17..I-19 + I-25 (OWNER_DECIDED 2026-08-28)"
+    ],
     "implemented": [
-        "WorkspaceMerchantContext (frozen, minimal: merchantId + containsMerchant; DP-94/95/96/97/I-19)",
-        "DP-98 single Main-owned merchant authority: conversations.list uses workspaceMerchant (all_stores = listByMerchant(workspaceMerchant.merchantId); specific_store containsMerchant check; cross-merchant denied; no context fail closed)",
-        "selectedShopId removed from QueryDeps (selected shop not authority, I-17)",
-        "production composition builds context from PR2-PR1 bootstrap; test mode synthetic; offline null",
-        "Queue filter/UI semantics unchanged (Store/Platform dimensions + intersection preserved)"
+      "WorkspaceMerchantContext (frozen, minimal: merchantId + containsMerchant; DP-94/95/96/97/I-19)",
+      "DP-98 single Main-owned merchant authority: conversations.list uses workspaceMerchant (all_stores = listByMerchant(workspaceMerchant.merchantId); specific_store containsMerchant check; cross-merchant denied; no context fail closed)",
+      "selectedShopId removed from QueryDeps (selected shop not authority, I-17)",
+      "production composition builds context from PR2-PR1 bootstrap; test mode synthetic; offline null",
+      "Queue filter/UI semantics unchanged (Store/Platform dimensions + intersection preserved)"
     ],
     "tests": "desktop 267/267 (5 new guards) + workspace typecheck/test PASS + m6 smoke PASS (external_network_calls=0) + boundary/secrets PASS",
     "fact_readiness": {
@@ -2148,10 +2220,10 @@
     },
     "repair_applied": "REPAIR 2026-08-28 (I-25 MISSING_AUTHORIZATION_CONTEXT_MUST_NOT_BE_REPRESENTED_AS_EMPTY_DOMAIN_DATA, DP-48): conversations.list without trusted WorkspaceMerchantContext now returns explicit desktop.workspace_unavailable failure (typed error contract), NOT successful empty Queue; only authorized 0-row produces no-work Empty; renderer queueError vs empty distinguishable; cross-merchant NOT_FOUND policy kept; Queue/UI semantics + schema v9 unchanged",
     "future_constraints": [
-        "all future merchant-bound reads must never express authorization-context unavailable as Empty domain data",
-        "Queue/Timeline/Customer/Product/Order Main-side authorization must continue sharing the WorkspaceMerchantContext single authority source",
-        "offline/null context is allowed but merchant-bound features must explicitly fail-closed/degraded",
-        "multi-merchant runtime switching, if it becomes a real requirement, requires a separate lifecycle/product decision"
+      "all future merchant-bound reads must never express authorization-context unavailable as Empty domain data",
+      "Queue/Timeline/Customer/Product/Order Main-side authorization must continue sharing the WorkspaceMerchantContext single authority source",
+      "offline/null context is allowed but merchant-bound features must explicitly fail-closed/degraded",
+      "multi-merchant runtime switching, if it becomes a real requirement, requires a separate lifecycle/product decision"
     ],
     "controller_pass_date": "2026-08-28",
     "next_per_roadmap": "After PR2 Owner PASS: restore SHEEP-063 Timeline (DP-84/85/89/91/92/93 + I-14/I-17/I-18/I-19 on trusted authorization path); NOT auto-executed; no SHEEP-064",
@@ -2166,14 +2238,16 @@
     "read_first": "docs\\fast-sheep-workspace-merchant-name-contract-gap.md",
     "report": "reports\\SHEEP-063-PR2-PR1-report.json",
     "review_doc": "docs\\fast-sheep-workspace-merchant-identity-bootstrap.md",
-    "decisions": ["DP-99..DP-104 + I-20..I-24 (OWNER_DECIDED 2026-08-28)"],
+    "decisions": [
+      "DP-99..DP-104 + I-20..I-24 (OWNER_DECIDED 2026-08-28)"
+    ],
     "schema_change": "v8 -> v9 (0009_relax_merchant_name.sql: merchants.name NOT NULL -> nullable; table rebuild preserves PK/FK/index; migration runner suspends/resumes FK around migration run)",
     "implemented": [
-        "0009 migration + SUPPORTED_DB_SCHEMA_VERSION=9",
-        "SqliteWorkspaceIdentityBootstrap (atomic merchant(name=NULL)+app_meta.workspace_merchant_id pointer; DP-101)",
-        "generateWorkspaceMerchantId (merchant-<uuid>, DP-99) + resolveOrBootstrapWorkspaceMerchantId (I-20/I-21 fail-closed)",
-        "production composition bootstrap at createWorkerBackedMainContext (after openDatabase, before services/IPC ready; never lazy)",
-        "MainContext.workspaceMerchantId exposure; test-mode synthetic merchant-test-1"
+      "0009 migration + SUPPORTED_DB_SCHEMA_VERSION=9",
+      "SqliteWorkspaceIdentityBootstrap (atomic merchant(name=NULL)+app_meta.workspace_merchant_id pointer; DP-101)",
+      "generateWorkspaceMerchantId (merchant-<uuid>, DP-99) + resolveOrBootstrapWorkspaceMerchantId (I-20/I-21 fail-closed)",
+      "production composition bootstrap at createWorkerBackedMainContext (after openDatabase, before services/IPC ready; never lazy)",
+      "MainContext.workspaceMerchantId exposure; test-mode synthetic merchant-test-1"
     ],
     "tests": "persistence 79/79 + desktop 262/262 + workspace typecheck/test PASS + m6 smoke PASS (external_network_calls=0) + M12 migration matrix PASS + boundary/secrets PASS",
     "fact_readiness": {
@@ -2181,9 +2255,9 @@
       "UNREAD_FACT_READINESS": "PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS (unchanged)"
     },
     "future_constraints": [
-        "Cloud identity must link to local workspace identity via explicit linkage/migration; never silently replace local MerchantId (I-22)",
-        "Platform connection only attaches to the Workspace Merchant; it does not define the Merchant (DP-102)",
-        "Multi-merchant local workspace, if it becomes a real requirement, requires a separate workspace switching/lifecycle product decision"
+      "Cloud identity must link to local workspace identity via explicit linkage/migration; never silently replace local MerchantId (I-22)",
+      "Platform connection only attaches to the Workspace Merchant; it does not define the Merchant (DP-102)",
+      "Multi-merchant local workspace, if it becomes a real requirement, requires a separate workspace switching/lifecycle product decision"
     ],
     "next_per_roadmap": "SHEEP-063-PR2 (WorkspaceMerchantContext + DP-98 single Main-owned authority source; Queue/UI semantics unchanged) — in execution; PR2 NOT yet PASSed; no SHEEP-064",
     "reference_tree_modified": false,
@@ -2235,17 +2309,17 @@
     "i_19": "WORKSPACE_MERCHANT_CONTEXT_IS_STABLE_FOR_A_MAIN_CONTEXT_LIFETIME",
     "i_26": "WORKSPACE_ACTIVE_CONVERSATION_PRESENTATION_MUST_NOT_FALL_BACK_TO_AMBIENT_SCOPE_FACTS",
     "repair_visual_confirmations": [
-        "conv-populated active: Header / Store fact / Timeline identity consistent",
-        "conv-empty active: Header acknowledges current Conversation; Timeline shows no-message state",
-        "no Queue Scope / selected shop / ambient legacy facts used for Active Conversation presentation",
-        "no header/timeline mixed-context"
+      "conv-populated active: Header / Store fact / Timeline identity consistent",
+      "conv-empty active: Header acknowledges current Conversation; Timeline shows no-message state",
+      "no Queue Scope / selected shop / ambient legacy facts used for Active Conversation presentation",
+      "no header/timeline mixed-context"
     ],
     "future_notes": [
-        "Raw StoreId later via trusted presentation metadata",
-        "AI Suggestion converges to DP-18 contextual attachment; sibling card not final",
-        "Timeline is fact-readability baseline; final chat skin not locked",
-        "Platform/Background Tasks/Offline Learning remain runtime baseline",
-        "UNREAD_FACT_READINESS stays PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS"
+      "Raw StoreId later via trusted presentation metadata",
+      "AI Suggestion converges to DP-18 contextual attachment; sibling card not final",
+      "Timeline is fact-readability baseline; final chat skin not locked",
+      "Platform/Background Tasks/Offline Learning remain runtime baseline",
+      "UNREAD_FACT_READINESS stays PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS"
     ]
   },
   "sheep_064": {
@@ -2262,45 +2336,47 @@
       "reports\\visual-evidence\\sheep-064-composer-switch.png",
       "reports\\visual-evidence\\sheep-064-composer-unavailable.png"
     ],
-    "decisions": ["DP-105..DP-110 + I-27..I-30 (OWNER_DECIDED 2026-08-28; visual review PASS)"],
+    "decisions": [
+      "DP-105..DP-110 + I-27..I-30 (OWNER_DECIDED 2026-08-28; visual review PASS)"
+    ],
     "visual_review_passed": true,
     "visual_confirmations": [
-        "Message Timeline and Composer coexist in the final composed DOM",
-        "Timeline is above Composer; Composer never replaces/overrides Timeline",
-        "populated Conversation actually shows Timeline facts + Composer",
-        "empty Conversation actually shows no-message Timeline + Composer",
-        "AI Suggestion keeps only 使用建议 + 取消生成; legacy 手动发送/不保存发送 removed",
-        "Composer is the single Agent reply submission surface",
-        "Send stays disabled/unavailable until SHEEP-066",
-        "per-conversation draft / AI explicit non-destructive apply / IME guard / I-27/I-28 hold",
-        "schema v9 unchanged; no Attachments/Send Pipeline/Unread/Product-Order"
+      "Message Timeline and Composer coexist in the final composed DOM",
+      "Timeline is above Composer; Composer never replaces/overrides Timeline",
+      "populated Conversation actually shows Timeline facts + Composer",
+      "empty Conversation actually shows no-message Timeline + Composer",
+      "AI Suggestion keeps only 使用建议 + 取消生成; legacy 手动发送/不保存发送 removed",
+      "Composer is the single Agent reply submission surface",
+      "Send stays disabled/unavailable until SHEEP-066",
+      "per-conversation draft / AI explicit non-destructive apply / IME guard / I-27/I-28 hold",
+      "schema v9 unchanged; no Attachments/Send Pipeline/Unread/Product-Order"
     ],
     "future_notes": [
-        "Workspace final topology continues to converge later",
-        "AI Suggestion evolves per DP-18 contextual attachment",
-        "sending/success/failure/retry belongs to SHEEP-066",
-        "draft persistence belongs to SHEEP-075",
-        "future reply sources must keep converging into the Composer; never rebuild a second agent send path"
+      "Workspace final topology continues to converge later",
+      "AI Suggestion evolves per DP-18 contextual attachment",
+      "sending/success/failure/retry belongs to SHEEP-066",
+      "draft persistence belongs to SHEEP-075",
+      "future reply sources must keep converging into the Composer; never rebuild a second agent send path"
     ],
     "controller_pass_date": "2026-08-28",
     "repair_applied": "REPAIR #1 2026-08-28 (I-30 single agent reply surface; legacy send removed)",
     "repair_2_applied": "REPAIR #2 2026-08-28 (Timeline composition actual DOM fix): root cause = renderConversationPanel/MessageTimeline/Composer each clear(shared conversation-host), last surface wiped Timeline; fix = conversation-region.ts renders each into SEPARATE sub-containers; Timeline + Composer coexist, Timeline above Composer; final-composed-DOM guard test (populated + empty via DOM shim) + capture DOM_COMPOSITION order=[message-timeline, composer] passed in both states; desktop 295/295",
     "implemented": [
-        "Composer = manual professional-fallback reply input below Timeline (DP-105/108)",
-        "ephemeral drafts keyed by conversationId; survive switches in MainContext (DP-109)",
-        "AI suggestion explicit + non-destructive apply (DP-106)",
-        "submit = explicit intent contract; no delivered-fact persistence (DP-107/I-27); intent atomic capture (DP-110)",
-        "I-28 send-result isolation; I-29 IME never triggers submit",
-        "no real Send IPC -> Send native disabled + honest unavailable (no fake success)",
-        "native textarea/button + accessible label + focus-visible + no innerHTML"
+      "Composer = manual professional-fallback reply input below Timeline (DP-105/108)",
+      "ephemeral drafts keyed by conversationId; survive switches in MainContext (DP-109)",
+      "AI suggestion explicit + non-destructive apply (DP-106)",
+      "submit = explicit intent contract; no delivered-fact persistence (DP-107/I-27); intent atomic capture (DP-110)",
+      "I-28 send-result isolation; I-29 IME never triggers submit",
+      "no real Send IPC -> Send native disabled + honest unavailable (no fake success)",
+      "native textarea/button + accessible label + focus-visible + no innerHTML"
     ],
     "tests": "desktop 294/294 (9 new composer guards) + workspace typecheck/test PASS + m6 smoke PASS (external_network_calls=0) + boundary/secrets PASS",
     "future_constraints": [
-        "SHEEP-066 Message Send Pipeline owns execution: Main command / persistence / platform delivery / success-failure semantics",
-        "I-27: send intent must never be persisted as a delivered conversation message fact",
-        "I-28: send result may mutate only the draft for its captured conversation; failure never clears draft",
-        "SHEEP-075 Local Drafts persistence; SHEEP-065 Attachments",
-        "UNREAD_FACT_READINESS stays PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS"
+      "SHEEP-066 Message Send Pipeline owns execution: Main command / persistence / platform delivery / success-failure semantics",
+      "I-27: send intent must never be persisted as a delivered conversation message fact",
+      "I-28: send result may mutate only the draft for its captured conversation; failure never clears draft",
+      "SHEEP-075 Local Drafts persistence; SHEEP-065 Attachments",
+      "UNREAD_FACT_READINESS stays PARTIALLY_READY / STILL_BLOCKED_BY_READER_PROGRESS"
     ],
     "next_per_roadmap": "SHEEP-064 awaiting Owner PASS; no SHEEP-065 without PASS",
     "reference_tree_modified": false,
@@ -2321,15 +2397,15 @@
     "i_29": "IME_COMPOSITION_MUST_NEVER_TRIGGER_COMPOSER_SUBMIT",
     "i_30": "COMPOSER_IS_THE_SINGLE_AGENT_REPLY_SUBMISSION_SURFACE",
     "repair_history": [
-        "REPAIR #1 (2026-08-28): Timeline/Composer topology + legacy send-path convergence (I-30; suggestion panel legacy 手动发送/不保存发送 removed; resolveSuggestionKey deleted; 取消生成)",
-        "REPAIR #2 (2026-08-28): Timeline composition actual DOM fix (each render clear(shared host) clobbered Timeline; conversation-region.ts separate sub-containers; final-composed-DOM guard + capture DOM_COMPOSITION order=[message-timeline, composer])"
+      "REPAIR #1 (2026-08-28): Timeline/Composer topology + legacy send-path convergence (I-30; suggestion panel legacy 手动发送/不保存发送 removed; resolveSuggestionKey deleted; 取消生成)",
+      "REPAIR #2 (2026-08-28): Timeline composition actual DOM fix (each render clear(shared host) clobbered Timeline; conversation-region.ts separate sub-containers; final-composed-DOM guard + capture DOM_COMPOSITION order=[message-timeline, composer])"
     ],
     "future_notes": [
-        "Workspace final topology converges later",
-        "AI Suggestion evolves per DP-18 contextual attachment",
-        "sending/success/failure/retry belongs to SHEEP-066",
-        "draft persistence belongs to SHEEP-075",
-        "future reply sources keep converging into the Composer; no second agent send path"
+      "Workspace final topology converges later",
+      "AI Suggestion evolves per DP-18 contextual attachment",
+      "sending/success/failure/retry belongs to SHEEP-066",
+      "draft persistence belongs to SHEEP-075",
+      "future reply sources keep converging into the Composer; no second agent send path"
     ]
   },
   "sheep_065": {
@@ -2345,15 +2421,17 @@
       "ATTACHMENT_BINARY_LIFECYCLE_READINESS": "NOT_READY (separate capability per DP-113)",
       "ATTACHMENT_PRESENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-111..DP-118 + I-31 + I-32 (OWNER_DECIDED 2026-08-28)"],
+    "decisions": [
+      "DP-111..DP-118 + I-31 + I-32 (OWNER_DECIDED 2026-08-28)"
+    ],
     "owner_disposition": "Attachment implementation = DEFER_TO_REAL_PLATFORM_ATTACHMENT_INGESTION; no 00010; no attachment repository/table; no Timeline attachment cards; no Composer attachment button/selector/placeholder; no download/cache/upload/binary lifecycle",
     "i32": "SEND_PIPELINE_SUPPORT_IS_LIMITED_TO_FACT_KINDS_WITH_APPROVED_INGESTION_AND_DELIVERY_CONTRACTS (current sole allowed content kind into SHEEP-066 = text; attachment/image/file must NOT ride along with the Send Pipeline)",
     "future_constraints": [
-        "reopen ATTACHMENT_FACT_READINESS when the first real non-text platform producer/delivery requirement appears",
-        "future 00010 (if authorized) must include typed repository + production ingestion boundary + fresh/upgrade/integrity/unknown-preservation evidence",
-        "remote source ref != renderer load authority",
-        "Composer attachment acquisition must wait until attachment + send contract ready",
-        "Product/Order message payload and M4.3 Context remain different domains"
+      "reopen ATTACHMENT_FACT_READINESS when the first real non-text platform producer/delivery requirement appears",
+      "future 00010 (if authorized) must include typed repository + production ingestion boundary + fresh/upgrade/integrity/unknown-preservation evidence",
+      "remote source ref != renderer load authority",
+      "Composer attachment acquisition must wait until attachment + send contract ready",
+      "Product/Order message payload and M4.3 Context remain different domains"
     ],
     "controller_pass_date": "2026-08-28",
     "correct_outcome": "no product code/UI output this round is the correct acceptance result, not a defect",
@@ -2407,7 +2485,9 @@
       "RETRY_IDEMPOTENCY_READINESS": "PARTIAL (commandId idempotency; no durable journal / reconciliation / UNKNOWN handling)",
       "DURABLE_SEND_ATTEMPT_READINESS": "NOT_READY (no durable delivery journal; crash window unhandled)"
     },
-    "decisions": ["DP-119/120/122/124/125/126 + I-33 + I-28 sent-definition (OWNER_DECIDED 2026-08-28)"],
+    "decisions": [
+      "DP-119/120/122/124/125/126 + I-33 + I-28 sent-definition (OWNER_DECIDED 2026-08-28)"
+    ],
     "owner_disposition": "Option A NOT approved; Option B NOT approved; approved independent prerequisite SHEEP-066-PR1 (Text Delivery Attempt & Outcome Foundation)",
     "prerequisite_proposal": "SHEEP-066-PR1 (Text Delivery Attempt & Outcome Foundation) — submitted; awaiting Owner approval; not executed",
     "controller_pass_date": "2026-08-28",
@@ -2435,41 +2515,43 @@
     "report": "reports\\SHEEP-066-PR1-report.json",
     "review_doc": "docs\\fast-sheep-text-delivery-attempt-foundation.md",
     "schema_change": "v9 -> v10 (0010_delivery_attempts.sql: durable text delivery attempt journal; immutable text payload snapshot; captured target identity; typed status/lifecycle; FK/CHECK/index; no reconciliation_note/attachment/Outbox fields)",
-    "decisions": ["DP-119/120/122/124/125/126/127/128/129/130 + I-33..I-41 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-119/120/122/124/125/126/127/128/129/130 + I-33..I-41 (OWNER_DECIDED 2026-08-29)"
+    ],
     "acceptance_confirmations": [
-        "v10 durable Delivery Attempt journal separate from normalized Message facts / Sync Outbox",
-        "immutable text payload snapshot + immutable Conversation/Store/PlatformAccount target (I-34/I-37)",
-        "authorization-before-attempt contract holds",
-        "IN_FLIGHT durable before any external delivery side effect (I-39)",
-        "unresolved IN_FLIGHT recovery -> UNKNOWN (not failed, no auto-retry; DP-128)",
-        "ACKNOWLEDGED/REJECTED/UNKNOWN typed outcome; terminal attempts not rewritten by retry (I-38)",
-        "only ACKNOWLEDGED may produce an outbound delivered Message fact (I-35)",
-        "ACK finalization + Message fact persistence atomic and per-attempt idempotent (DP-130/I-40)",
-        "occurred_at only from trusted source time; unknown stays NULL",
-        "attempt payload not in default logs/telemetry/error strings (I-41)",
-        "production Main binds only the durable repository, not fake/test delivery adapter",
-        "Composer Send stays disabled; no premature real Send Pipeline",
-        "schema v10 scope not extended to Attachment/Outbox/retry/cloud/capability taxonomy"
+      "v10 durable Delivery Attempt journal separate from normalized Message facts / Sync Outbox",
+      "immutable text payload snapshot + immutable Conversation/Store/PlatformAccount target (I-34/I-37)",
+      "authorization-before-attempt contract holds",
+      "IN_FLIGHT durable before any external delivery side effect (I-39)",
+      "unresolved IN_FLIGHT recovery -> UNKNOWN (not failed, no auto-retry; DP-128)",
+      "ACKNOWLEDGED/REJECTED/UNKNOWN typed outcome; terminal attempts not rewritten by retry (I-38)",
+      "only ACKNOWLEDGED may produce an outbound delivered Message fact (I-35)",
+      "ACK finalization + Message fact persistence atomic and per-attempt idempotent (DP-130/I-40)",
+      "occurred_at only from trusted source time; unknown stays NULL",
+      "attempt payload not in default logs/telemetry/error strings (I-41)",
+      "production Main binds only the durable repository, not fake/test delivery adapter",
+      "Composer Send stays disabled; no premature real Send Pipeline",
+      "schema v10 scope not extended to Attachment/Outbox/retry/cloud/capability taxonomy"
     ],
     "future_hardening": [
-        "real TextDeliveryPort: a rejected Promise / unexpected exception AFTER durable IN_FLIGHT with no authoritative rejection must resolve as UNKNOWN, not REJECTED; guard required before the first production adapter",
-        "if v4~v8 are supported real starting schemas, later M12 matrix should add corresponding direct-upgrade coverage"
+      "real TextDeliveryPort: a rejected Promise / unexpected exception AFTER durable IN_FLIGHT with no authoritative rejection must resolve as UNKNOWN, not REJECTED; guard required before the first production adapter",
+      "if v4~v8 are supported real starting schemas, later M12 matrix should add corresponding direct-upgrade coverage"
     ],
     "v10_migration_audit": "0010_delivery_attempts.sql (v9->v10): fresh + upgrade + integrity/FK/CHECK + checksum/future-version/reopen/backup + failure rollback verified; append-only; 0001-0009 unchanged",
     "controller_pass_date": "2026-08-29",
     "do_not_resume_send_implementation": "Composer Send implementation must NOT be resumed directly; next = SHEEP-066-PR2 (Manual Text Send Authorization Contract Readiness)",
     "implemented": [
-        "SqliteDeliveryAttemptRepository + TextDeliveryPort + DeliveryAttemptAuthorizerPort",
-        "createAuthorizedDeliveryAttempt (DP-120/I-37 target capture); runDeliveryAttempt (I-39/I-33/I-35)",
-        "finalizeAcknowledgedDelivery (DP-130/I-40 atomic single transaction); recoverInFlightAttempts (DP-128)",
-        "production composition shares m10Sqlite.conn (no second DB lifecycle); no delivery port bound (DP-129; Composer Send stays disabled)"
+      "SqliteDeliveryAttemptRepository + TextDeliveryPort + DeliveryAttemptAuthorizerPort",
+      "createAuthorizedDeliveryAttempt (DP-120/I-37 target capture); runDeliveryAttempt (I-39/I-33/I-35)",
+      "finalizeAcknowledgedDelivery (DP-130/I-40 atomic single transaction); recoverInFlightAttempts (DP-128)",
+      "production composition shares m10Sqlite.conn (no second DB lifecycle); no delivery port bound (DP-129; Composer Send stays disabled)"
     ],
     "tests": "persistence 88/88 (9 new) + desktop 298/298 (3 new) + workspace typecheck/test PASS + m6 smoke PASS (external_network_calls=0) + M12 matrix PASS + boundary/secrets PASS",
     "future_constraints": [
-        "PR1 PASS 后 Composer Send 仍 disabled; production Send enable requires real platform delivery adapter + authoritative ACK contract + manual authorization readiness (DP-129)",
-        "SHEEP-066 product implementation (text-only) restores only after PR1 PASS",
-        "I-32 text-only; attachments stay out",
-        "UNKNOWN requires reconciliation or explicit human decision before retry (I-36)"
+      "PR1 PASS 后 Composer Send 仍 disabled; production Send enable requires real platform delivery adapter + authoritative ACK contract + manual authorization readiness (DP-129)",
+      "SHEEP-066 product implementation (text-only) restores only after PR1 PASS",
+      "I-32 text-only; attachments stay out",
+      "UNKNOWN requires reconciliation or explicit human decision before retry (I-36)"
     ],
     "next_per_roadmap": "SHEEP-066-PR1 awaiting Owner PASS; no SHEEP-067 without PASS",
     "reference_tree_modified": false,
@@ -2491,29 +2573,31 @@
       "PLATFORM_TEXT_SEND_TECHNICAL_CAPABILITY_READINESS": "PARTIAL (session ready is technical only, #11)",
       "MANUAL_SEND_AUTHORIZATION_COMPOSITION_READINESS": "NOT_READY (production Send unavailable, DP-129)"
     },
-    "decisions": ["DP-131/132/133/134/135 + I-42/I-43/I-44/I-45 + DP-124 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-131/132/133/134/135 + I-42/I-43/I-44/I-45 + DP-124 (OWNER_DECIDED 2026-08-29)"
+    ],
     "owner_product_decisions": {
-        "dp_133": "MANUAL_TEXT_SEND_IS_A_BASELINE_OPERATIONAL_CAPABILITY_NOT_A_DEDICATED_FEATURE_ENTITLEMENT (no manual_send feature entitlement; global subscription/license/lease availability may later gate workspace/product-level, not per-action)",
-        "dp_134": "MANUAL_TEXT_SEND_REQUIRES_EXPLICIT_HUMAN_ACTION_AUTHORITY (future trusted human subject + explicit manual conversation-reply authority required; no concrete Capability identifier invented this round)",
-        "dp_135": "MANUAL_SEND_RESOURCE_AUTHORITY_IS_EVALUATED_AGAINST_THE_CONVERSATION_RESOLVED_TARGET (ResourceScope judged on Main-resolved Store/PlatformAccount target, not ambient Queue scope)"
+      "dp_133": "MANUAL_TEXT_SEND_IS_A_BASELINE_OPERATIONAL_CAPABILITY_NOT_A_DEDICATED_FEATURE_ENTITLEMENT (no manual_send feature entitlement; global subscription/license/lease availability may later gate workspace/product-level, not per-action)",
+      "dp_134": "MANUAL_TEXT_SEND_REQUIRES_EXPLICIT_HUMAN_ACTION_AUTHORITY (future trusted human subject + explicit manual conversation-reply authority required; no concrete Capability identifier invented this round)",
+      "dp_135": "MANUAL_SEND_RESOURCE_AUTHORITY_IS_EVALUATED_AGAINST_THE_CONVERSATION_RESOLVED_TARGET (ResourceScope judged on Main-resolved Store/PlatformAccount target, not ambient Queue scope)"
     },
     "owner_invariants": {
-        "i_44": "MANUAL_SEND_AUTHORIZATION_MUST_NOT_INFER_AN_IMPLICIT_LOCAL_OWNER_OR_DEFAULT_MEMBER",
-        "i_45": "MISSING_TRUSTED_AUTHORIZATION_FACTS_MUST_FAIL_CLOSED_NOT_FALL_BACK_TO_WORKSPACE_CONTAINMENT"
+      "i_44": "MANUAL_SEND_AUTHORIZATION_MUST_NOT_INFER_AN_IMPLICIT_LOCAL_OWNER_OR_DEFAULT_MEMBER",
+      "i_45": "MISSING_TRUSTED_AUTHORIZATION_FACTS_MUST_FAIL_CLOSED_NOT_FALL_BACK_TO_WORKSPACE_CONTAINMENT"
     },
     "acceptance": {
-        "MANUAL_SEND_AUTHORIZATION_SUBJECT_READINESS": "NOT_READY (no trusted current Member/Agent authorization subject runtime; WorkspaceMerchantContext != human subject)",
-        "disposition": "No SHEEP-066-PR3; Manual Send Authorization implementation and real SHEEP-066 Product Send DEFER",
-        "reopen_triggers": [
-            "first real authenticated Member/operator session established",
-            "first production text delivery adapter satisfies authoritative ACK contract and Composer Send is ready to enable",
-            "whichever occurs first reopens Manual Send Authorization readiness"
-        ],
-        "blockers": [
-            "trusted human Authorization Capability + ResourceScope runtime = NOT_READY",
-            "real platform delivery + authoritative ACK = NOT_READY"
-        ],
-        "dp_129_continues": "Composer Send stays disabled"
+      "MANUAL_SEND_AUTHORIZATION_SUBJECT_READINESS": "NOT_READY (no trusted current Member/Agent authorization subject runtime; WorkspaceMerchantContext != human subject)",
+      "disposition": "No SHEEP-066-PR3; Manual Send Authorization implementation and real SHEEP-066 Product Send DEFER",
+      "reopen_triggers": [
+        "first real authenticated Member/operator session established",
+        "first production text delivery adapter satisfies authoritative ACK contract and Composer Send is ready to enable",
+        "whichever occurs first reopens Manual Send Authorization readiness"
+      ],
+      "blockers": [
+        "trusted human Authorization Capability + ResourceScope runtime = NOT_READY",
+        "real platform delivery + authoritative ACK = NOT_READY"
+      ],
+      "dp_129_continues": "Composer Send stays disabled"
     },
     "controller_pass_date": "2026-08-29",
     "sheep_066_product_send_marker": "DEFERRED_PENDING_AUTH_IDENTITY_SCOPE_AND_REAL_PLATFORM_ACK (must not implicitly resume real sending)",
@@ -2542,20 +2626,22 @@
       "CUSTOMER_CONTEXT_PRESENTATION_READINESS": "NOT_READY (I-48 anchor active conversation + stale guard; I-47; I-49)",
       "CUSTOMER_CONTEXT_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-136..DP-140 + I-46..I-50 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-136..DP-140 + I-46..I-50 (OWNER_DECIDED 2026-08-29)"
+    ],
     "identity_semantics_note": "Customer identity semantics is PLATFORM_EVIDENCE_REQUIRED, NOT PRODUCT_DECISION_REQUIRED; scope/stability/lifecycle must be proven by platform evidence, owner does not substitute a product decision for source facts",
     "i50": "CONVERSATION_CUSTOMER_RELATION_MUST_BE_ESTABLISHED_BY_VERIFIED_PRODUCER_FACTS_NOT_PRESENTATION_INFERENCE",
     "disposition": "DEFER_TO_REAL_CUSTOMER_INGESTION_AND_RELATION_EVIDENCE",
     "acceptance": {
-        "no_migration": "Customer relation/profile schema migration NOT authorized; schema stays v10",
-        "no_ui": "no Customer Context UI/card/service",
-        "no_wiring_for_readiness": "SqliteCustomerRepository NOT wired into production Main merely for readiness",
-        "no_metadata_bag": "no Customer/CRM metadata bag",
-        "no_inference": "no conversation->customer relation inferred from legacy buyer/buyer_id, display name, Queue scope, or same external-ref string"
+      "no_migration": "Customer relation/profile schema migration NOT authorized; schema stays v10",
+      "no_ui": "no Customer Context UI/card/service",
+      "no_wiring_for_readiness": "SqliteCustomerRepository NOT wired into production Main merely for readiness",
+      "no_metadata_bag": "no Customer/CRM metadata bag",
+      "no_inference": "no conversation->customer relation inferred from legacy buyer/buyer_id, display name, Queue scope, or same external-ref string"
     },
     "reopen_triggers": [
-        "first real platform Customer ingestion producer proves conversation/customer identity relation + identity semantics",
-        "first real platform integration is about to consume Customer Context"
+      "first real platform Customer ingestion producer proves conversation/customer identity relation + identity semantics",
+      "first real platform integration is about to consume Customer Context"
     ],
     "reopen_order": "producer -> relation -> persistence -> authorized projection -> presentation; Owner separately decides migration",
     "controller_pass_date": "2026-08-29",
@@ -2604,7 +2690,9 @@
       "PRODUCT_CONTEXT_PRESENTATION_READINESS": "NOT_READY (I-55/I-56/I-57)",
       "PRODUCT_CONTEXT_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-141..DP-145 + I-51..I-57 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-141..DP-145 + I-51..I-57 (OWNER_DECIDED 2026-08-29)"
+    ],
     "disposition": "DEFER_TO_REAL_PRODUCT_INGESTION_AND_RELATION_EVIDENCE",
     "acceptance": {
       "no_migration": "conversation.product_id / relation table / catalog fields / v11 migration NOT authorized; schema stays v10",
@@ -2669,7 +2757,9 @@
       "ORDER_LOGISTICS_CONTEXT_PRESENTATION_READINESS": "NOT_READY (I-61/I-62/I-63)",
       "ORDER_LOGISTICS_CONTEXT_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-146..DP-151 + I-58..I-67 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-146..DP-151 + I-58..I-67 (OWNER_DECIDED 2026-08-29)"
+    ],
     "relation_precision_note": "Owner correction: ORDER_LOGISTICS_RELATION_READINESS = PARTIAL / PRODUCER_NOT_READY (logistics.order_id FK directly proves current schema has Logistics->Order relation shape; production relation establishment, cardinality/lifecycle, platform fact source remain NOT_READY; schema relation shape != production relation fact, I-67)",
     "i_67": "SCHEMA_RELATION_SHAPE_DOES_NOT_BY_ITSELF_ESTABLISH_A_PRODUCTION_RELATION_FACT",
     "disposition": "DEFER_TO_REAL_ORDER_LOGISTICS_INGESTION_AND_RELATION_EVIDENCE",
@@ -2745,7 +2835,9 @@
       "CLAIM_RELEASE_ACTION_PRESENTATION_READINESS": "NOT_READY (M5 takeover_status is AI-interruption surface)",
       "CLAIM_RELEASE_UX_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-152..DP-157 + I-68..I-76 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-152..DP-157 + I-68..I-76 (OWNER_DECIDED 2026-08-29)"
+    ],
     "i_76": "OWNERSHIP_MUTATION_REQUIRES_AN_ATOMIC_EXPECTED_CURRENT_STATE_PRECONDITION (future Claim/Release mutation must atomically verify expected current ownership facts at write time; must not overwrite concurrent mutation from stale UI snapshot or unconditional last-write-wins; concrete CAS/version/transaction implementation NOT decided this round)",
     "disposition": "DEFER_PENDING_TRUSTED_HUMAN_SUBJECT_AUTHORITY_TRANSITION_AND_CONCURRENCY",
     "acceptance": {
@@ -2821,7 +2913,9 @@
       "AI_HUMAN_OWNERSHIP_PRESENTATION_READINESS": "NOT_READY (I-79/I-80/I-82/I-83)",
       "AI_HUMAN_OWNERSHIP_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-158..DP-162 + I-77..I-84 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-158..DP-162 + I-77..I-84 (OWNER_DECIDED 2026-08-29)"
+    ],
     "i_84": "OWNERSHIP_SNAPSHOT_WITHOUT_VERIFIED_PRODUCER_AND_CURRENTNESS_MUST_NOT_BE_PRESENTED_AS_CURRENT_OWNERSHIP",
     "separation_precision_note": "Owner correction: OWNERSHIP_AUTOMATION_LEVEL_SEPARATION_READINESS = READY / CONTRACT_CONFIRMED (existing evidence confirms Ownership workflow/holder facts vs AutomationLevel, AI send authority, M5 runtime activity are different domains; what is missing is the production projection between them, so ORCHESTRATOR_PROJECTION_READINESS remains NOT_READY)",
     "disposition": "DEFER_PENDING_VERIFIED_OWNERSHIP_PRODUCER_CURRENTNESS_AND_HOLDER_SEMANTICS",
@@ -2899,7 +2993,9 @@
       "HANDOFF_QUEUE_PRESENTATION_READINESS": "NOT_READY (I-92/I-93)",
       "HANDOFF_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-163..DP-168 + I-85..I-96 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-163..DP-168 + I-85..I-96 (OWNER_DECIDED 2026-08-29)"
+    ],
     "resolved_assignee_queue_note": "Owner annotation: HANDOFF_RESOLVED_ASSIGNEE_READINESS=NOT_READY is NOT a unified prerequisite for a generic Handoff Queue; a future verified target=human-pool, unresolved-assignee handoff occurrence can in principle belong to a pending-handoff Queue; resolved assignee is a blocker only for direct assignment / concrete holder / assignee-specific presentation",
     "disposition": "DEFER_PENDING_VERIFIED_HANDOFF_OCCURRENCE_PRODUCER_CURRENTNESS_AND_OWNERSHIP_LINK",
     "acceptance": {
@@ -2984,7 +3080,9 @@
       "SUPERVISOR_TAKEOVER_PRESENTATION_READINESS": "NOT_READY (I-99/I-100)",
       "SUPERVISOR_TAKEOVER_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-169..DP-172 + I-97..I-104 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-169..DP-172 + I-97..I-104 (OWNER_DECIDED 2026-08-29)"
+    ],
     "i_104": "SUPERVISOR_TAKEOVER_INTENT_OR_TARGET_STATE_MAPPING_DOES_NOT_ESTABLISH_A_COMPLETED_TAKEOVER (takeover intent, command acceptance, action->target-state mapping, or ownerRef mapping must NOT be treated as completed takeover; only future trusted authority + verified current ownership precondition + atomic mutation can claim takeover success)",
     "disposition": "DEFER_PENDING_TRUSTED_OPERATOR_AUTHORITY_CURRENT_OWNERSHIP_TRANSITION_AND_CONCURRENCY",
     "acceptance": {
@@ -3055,7 +3153,9 @@
       "RECOVERY_AUTHORIZATION_READINESS": "READY / CONTRACT_CONFIRMED (I-107/I-108/I-113)",
       "RELOAD_CRASH_RECOVERY_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-173..DP-177 + I-105..I-114 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-173..DP-177 + I-105..I-114 (OWNER_DECIDED 2026-08-29)"
+    ],
     "disposition": "BLOCKED_BY_SHEEP-074-PR1_STARTUP_REHYDRATION_WIRING",
     "precision_records": "DELIVERY_ATTEMPT_RECOVERY_READINESS=PARTIAL/STARTUP_TRIGGER_NOT_WIRED; BACKGROUND_JOB_RECOVERY_READINESS=PARTIAL/STARTUP_TRIGGER_NOT_WIRED; IMPORT_RECOVERY_READINESS=PARTIAL/NON_DURABLE_PRODUCTION_STORE_AND_NO_STARTUP_TRIGGER",
     "pr1_note": "Owner approved independent prerequisite SHEEP-074-PR1 (Startup Rehydration Wiring Foundation) - proposal submission only this round; not directly executed",
@@ -3111,7 +3211,9 @@
     "delivery_attempt_wiring": "mandatory - implemented (merchant-scoped, conversation->merchant contained, IN_FLIGHT->UNKNOWN, idempotent, fail-closed)",
     "background_job_recovery": "evidence-gated optional - explicitly DEFER (no direct evidence of job owner/scope/idempotency/external-side-effect contract)",
     "import_recovery": "explicitly excluded - not wired; no durable ImportSessionStore",
-    "decisions": ["DP-178 + I-115..I-119 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-178 + I-115..I-119 (OWNER_DECIDED 2026-08-29)"
+    ],
     "readiness_precision_updates": "DELIVERY_ATTEMPT_RECOVERY_READINESS=READY/PRODUCTION_WIRED; STARTUP_REHYDRATION_WIRING_READINESS=PARTIAL/DELIVERY_ATTEMPT_WIRED; BACKGROUND_JOB_RECOVERY_READINESS=PARTIAL/DEFERRED_PENDING_JOB_OWNER_AND_IDEMPOTENCY_EVIDENCE; IMPORT_RECOVERY_READINESS=PARTIAL/NON_DURABLE_PRODUCTION_STORE; Main/full-app recovery overall remains PARTIAL (not all runtime state crash-safe)",
     "future_hardening": [
       "when future startup recovery stages are added, verify recovery failure path cleans up already-opened DB/worker resources",
@@ -3162,7 +3264,9 @@
       "DRAFT_PRESENTATION_READINESS": "PARTIAL (I-120)",
       "LOCAL_DRAFTS_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-179..DP-184 + I-120..I-129 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-179..DP-184 + I-120..I-129 (OWNER_DECIDED 2026-08-29)"
+    ],
     "i_129": "DRAFT_REHYDRATION_MUST_MATCH_BOTH_CONVERSATION_IDENTITY_AND_RESOLVED_AUTHOR_SCOPE",
     "disposition": "DEFER_PENDING_EXPLICIT_AUTHOR_SCOPE_LIFECYCLE_AND_REVISION_CONCURRENCY_CONTRACT",
     "acceptance": {
@@ -3246,7 +3350,9 @@
       "GATE_P4_AUDIT_MUTATION_BOUNDARY_READINESS": "READY / CURRENT_IMPLEMENTED_SCOPE_COMPLIANT; FUTURE_AUDIT_IMPLEMENTATION_NOT_READY (GATE-P4 boundary compliance for current writes confirmed; Audit product itself DEFERRED)",
       "CONVERSATION_AUDIT_TRAIL_IMPLEMENTATION_READINESS": "NOT_READY"
     },
-    "decisions": ["DP-185..DP-190 + I-130..I-139 (OWNER_DECIDED 2026-08-29)"],
+    "decisions": [
+      "DP-185..DP-190 + I-130..I-139 (OWNER_DECIDED 2026-08-29)"
+    ],
     "disposition": "DEFER_PENDING_VERIFIED_AUDITED_MUTATION_PRODUCERS_ATOMICITY_ACTOR_PROVENANCE_AND_DATA_POLICY",
     "acceptance": {
       "no_migration": "schema stays v10; no Audit event table / v11 migration",
@@ -3637,208 +3743,223 @@
     "next_stage_not_executed": true
   },
   "sheep_301": {
-  "roadmap_status": "CLOSED",
-  "phase": "MVP_A_FOUNDATION",
-  "milestone": "M-A.1 Identity and Inbound Foundation",
-  "status": "PASS / CLOSED",
-  "codex_result": "COMPLETE",
-  "controller_decision": "PASS",
-  "implementation_result": "IMPLEMENTED",
-  "implementation_acceptance": "ACCEPTED",
-  "implementation_commit": "1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
-  "closed_date_candidate": "2026-09-22",
-  "closure": {
-    "closed_by": "Controller decision (2026-09-22)",
-    "previous_status": "PARTIAL / OPEN",
-    "previous_roadmap_status": "PARTIAL / BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_IMPLEMENTED_AWAITING_CONTROLLER_REVIEW",
-    "producer_commit": "1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
-    "evidence": "real-run-2 (23/23 checks; isolated DB, result JSON, screenshots) maps to the sealed producer path; all roadmap exit criteria satisfied; AI 0 / send 0 / production writes 0",
-    "not_close_conditions": ["production enablement", "history pagination", "reconnect recovery", "multi-store expansion"]
-  },
-  "owner_scope": "BOUNDED_ACCEPTANCE_UNIT_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS_REVIEWED_AT_0412A7D / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT_CONTROLLER_PASS_REVIEWED_AT_EF9FEF6 / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_IMPLEMENTED_AWAITING_CONTROLLER_REVIEW / NO_PRODUCTION_IPC_TITAN_WEBSOCKET_AI_PERSISTENCE_OR_SEND",
-  "implementation_authorization": "COMPLETED / CONSUMED",
-  "implementation_authorization_scope": "CONTROLLED_MAIN_LOCAL_FIXTURE_MAPPING_ACCEPTANCE_UNIT_ONLY / COMPLETED / CONSUMED",
-  "implementation_authorization_history": {
-    "status": "AUTHORIZED WITH CONSTRAINTS",
-    "scope": "CONTROLLED_MAIN_LOCAL_FIXTURE_MAPPING_ACCEPTANCE_UNIT_ONLY",
-    "authorization_commit": "d28424c2fdd4587b775c26f4e8dc314b5c1d220f",
-    "consumed_by_reviewed_head": "c86fcdd12b26c377fb4e0247050c5bd223431628",
-    "history_only": true,
-    "note": "Historical bounded implementation authorization; it was consumed by the accepted controlled fixture implementation and does not authorize remaining real-producer work."
-  },
-  "implementation_state": "PARTIAL",
-  "implementation_started": true,
-  "implementation_result": "COMPLETE_FOR_BOUNDED_ACCEPTANCE_UNIT / FULL_TASK_OPEN",
-  "execution_authorized": false,
-  "current_execution_authorization": false,
-  "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
-  "current_authorization_pause_reason": "SHEEP_301_BOUNDED_FIXTURE_MAPPING_ACCEPTED / FULL_TASK_PARTIAL_OPEN / LOCAL_ELECTRON_WS_DIAGNOSTIC_REPAIR_COMPLETE_AWAITING_CONTROLLER_REVIEW / PRODUCTION_LIVE_SEND_HUMAN_CONFIRM_AUTO_PERSISTENCE_PLATFORM_MUTATION_NOT_AUTHORIZED",
-  "readiness_review": {
-    "codex_audit_result": "COMPLETE",
-    "controller_decision": "PASS",
-    "audit_baseline_head": "79faea827fb6100a2860757ff61e838dbf9ac70a",
-    "accepted_acceptance_unit": "MAIN_LOCAL_RAW_INGRESS_BOUND_CONTROLLED_FIXTURE_MAPPING",
-    "review_file": "project\\SHEEP_301_READINESS_REVIEW.md",
-    "review_date_candidate": "2026-09-17",
-    "real_producer_readiness": {
-      "acceptance_unit": "REMAINING_REAL_PRODUCER_INTEGRATION_READINESS_AUDIT",
-      "controller_decision": "PASS",
-      "reviewed_commit": "8fb05f70d264943447981d19aa71a1dd4618c2b5",
-      "offline_boundary_proof_readiness": "READY_WITH_CONSTRAINTS",
-      "production_pdd_ingress_readiness": "BLOCKED",
-      "live_validation_authorization": "NOT_AUTHORIZED",
-      "report": "reports\\SHEEP-301-real-producer-readiness-audit.json",
-      "local_electron_websocket_boundary_proof": {
-        "controller_decision": "PASS",
-        "reviewed_implementation_commit": "0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578",
-        "accepted_scope": "CONTROLLED_LOCAL_ELECTRON_WEBSOCKET_DIAGNOSTIC_BOUNDARY_ONLY",
-        "diagnostic_implementation_authorization": "COMPLETED / CONSUMED",
-        "same_webcontents_recovery": "NOT_SUPPORTED_AFTER_TERMINATION / DIAGNOSTIC_LIMIT_NOT_PRODUCTION_DECISION"
-      },
-      "trusted_main_pdd_ingress_readiness_audit": {
-        "acceptance_unit": "TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT",
-        "result": "COMPLETE",
-        "next_unit_implementation_readiness": "READY_WITH_CONSTRAINTS",
-        "production_pdd_ingress_readiness": "BLOCKED",
-        "live_validation_authorization": "NOT_AUTHORIZED",
-        "controller_decision": "PASS",
-        "reviewed_commit": "ef9fef6c84797c3f31684d999a58fd61b978a501",
-        "controller_review_status": "PASS",
-        "targeted_repair": {
-          "controller_decision": "REPAIR",
-          "repair_baseline": "e8f9f6353f92efe5224d2429bfb9b3a0f18cec7f",
-          "previous_repair_baseline": "a5d4bfd73502e3569142186c85335e9e947aca64",
-          "repair_result": "COMPLETE",
-          "scope": "PATH_AND_EVIDENCE_REPAIR / R1_STARTUP_TIMING / R2_IDENTITY_HANDOVER / R3_LEGACY_ISOLATION / R4_CLASSIFICATION",
-          "new_probe_root": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness",
-          "historical_probe_archive": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/historical/e8f9f63",
-          "reviewed_commit": "ef9fef6c84797c3f31684d999a58fd61b978a501",
-          "controller_review_status": "PASS"
-        }
-      }
-    }
-  },
-  "approved_path": [
-    "controlled Main-local fixture",
-    "document-bound trusted Main binding",
-    "raw PDD payload semantic validation",
-    "explicit partial-identity handling",
-    "canonical IdentityLock / InboundEnvelope",
-    "canonical schema validation",
-    "controlled result or test collector",
-    "STOP"
-  ],
-  "active_scope_constraints": [
-    "controlled Main-local fixture mapping acceptance unit only",
-    "raw historical PDD payload semantics only",
-    "sender must bind to actual session instance, runtime shop, current live document generation, and live session/view ownership",
-    "old document observations and disposed/recreated session contexts must be rejected",
-    "missing customerUid and msg_id may map to explicit UNKNOWN only when the trusted inbound payload is otherwise valid",
-    "invalid field format and conflicting identity must not be silently converted into a valid identity",
-    "selected customer remains independent runtime evidence only and never fills platformCustomerId",
-    "canonical envelope validation is mandatory and must fail closed if the validator is unavailable",
-    "all success, failure, missing-collector, and exception paths stop without PddOrchestratorBridge",
-    "AI calls = 0, transport send calls = 0, persistence writes = 0"
-  ],
-  "forbidden_scope": [
-    "production IPC ingress",
-    "Titan or WebSocket receive integration",
-    "legacy DOM message_received to AI bridge",
-    "AI Worker invocation",
-    "persistence or observedAt implementation",
-    "transport send",
-    "HUMAN_CONFIRM or AUTO",
-    "platform mutation"
-  ],
-  "persistence_authorization": "NOT_AUTHORIZED",
-  "live_validation_authorization": "NOT_AUTHORIZED",
-  "platform_mutation_authorization": "NOT_AUTHORIZED",
-  "message_send_authorization": "NOT_AUTHORIZED",
-  "human_confirm_authorization": "NOT_AUTHORIZED",
-  "auto_authorization": "NOT_AUTHORIZED",
-  "later_tasks_authorized": false,
-  "next_stage_not_executed": true,
-  "bounded_acceptance_unit": {
-    "id": "MAIN_LOCAL_RAW_INGRESS_BOUND_CONTROLLED_FIXTURE_MAPPING",
-    "state": "IMPLEMENTED / COMPLETE / CONTROLLER PASS",
+    "roadmap_status": "CLOSED",
+    "phase": "MVP_A_FOUNDATION",
+    "milestone": "M-A.1 Identity and Inbound Foundation",
+    "status": "PASS / CLOSED",
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
-    "implementation_commit": "7dd7d4f0b8a50bba3034e04a4b37a9a37f99967f",
-    "identity_exception_repair_commit": "fdfdca90215db2aea14a1ad5155a2a516fb9a1b6",
-    "association_ownership_repair_commit": "2808c179529f6b820946a754553343e06e2fc8f6",
-    "evidence_completion_commit": "c86fcdd12b26c377fb4e0247050c5bd223431628",
-    "reviewed_head": "c86fcdd12b26c377fb4e0247050c5bd223431628",
-    "report": "reports\\SHEEP-301-bounded-fixture-mapping-report.json",
-    "readiness_review": "project\\SHEEP_301_READINESS_REVIEW.md",
-    "accepted_path": [
+    "implementation_result": "COMPLETE_FOR_BOUNDED_ACCEPTANCE_UNIT / FULL_TASK_OPEN",
+    "implementation_acceptance": "ACCEPTED",
+    "implementation_commit": "1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
+    "closed_date_candidate": "2026-09-22",
+    "closure": {
+      "closed_by": "Controller decision (2026-09-22)",
+      "previous_status": "PARTIAL / OPEN",
+      "previous_roadmap_status": "PARTIAL / BOUNDED_FIXTURE_MAPPING_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_IMPLEMENTED_AWAITING_CONTROLLER_REVIEW",
+      "producer_commit": "1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
+      "evidence": "real-run-2 (23/23 checks; isolated DB, result JSON, screenshots) maps to the sealed producer path; all roadmap exit criteria satisfied; AI 0 / send 0 / production writes 0",
+      "not_close_conditions": [
+        "production enablement",
+        "history pagination",
+        "reconnect recovery",
+        "multi-store expansion"
+      ]
+    },
+    "owner_scope": "BOUNDED_ACCEPTANCE_UNIT_ACCEPTED / REAL_PRODUCER_READINESS_AUDIT_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS_REVIEWED_AT_0412A7D / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT_CONTROLLER_PASS_REVIEWED_AT_EF9FEF6 / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_IMPLEMENTED_AWAITING_CONTROLLER_REVIEW / NO_PRODUCTION_IPC_TITAN_WEBSOCKET_AI_PERSISTENCE_OR_SEND",
+    "implementation_authorization": "COMPLETED / CONSUMED",
+    "implementation_authorization_scope": "CONTROLLED_MAIN_LOCAL_FIXTURE_MAPPING_ACCEPTANCE_UNIT_ONLY / COMPLETED / CONSUMED",
+    "implementation_authorization_history": {
+      "status": "AUTHORIZED WITH CONSTRAINTS",
+      "scope": "CONTROLLED_MAIN_LOCAL_FIXTURE_MAPPING_ACCEPTANCE_UNIT_ONLY",
+      "authorization_commit": "d28424c2fdd4587b775c26f4e8dc314b5c1d220f",
+      "consumed_by_reviewed_head": "c86fcdd12b26c377fb4e0247050c5bd223431628",
+      "history_only": true,
+      "note": "Historical bounded implementation authorization; it was consumed by the accepted controlled fixture implementation and does not authorize remaining real-producer work."
+    },
+    "implementation_state": "PARTIAL",
+    "implementation_started": true,
+    "execution_authorized": false,
+    "current_execution_authorization": false,
+    "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
+    "current_authorization_pause_reason": "SHEEP_301_BOUNDED_FIXTURE_MAPPING_ACCEPTED / FULL_TASK_PARTIAL_OPEN / LOCAL_ELECTRON_WS_DIAGNOSTIC_REPAIR_COMPLETE_AWAITING_CONTROLLER_REVIEW / PRODUCTION_LIVE_SEND_HUMAN_CONFIRM_AUTO_PERSISTENCE_PLATFORM_MUTATION_NOT_AUTHORIZED",
+    "readiness_review": {
+      "codex_audit_result": "COMPLETE",
+      "controller_decision": "PASS",
+      "audit_baseline_head": "79faea827fb6100a2860757ff61e838dbf9ac70a",
+      "accepted_acceptance_unit": "MAIN_LOCAL_RAW_INGRESS_BOUND_CONTROLLED_FIXTURE_MAPPING",
+      "review_file": "project\\SHEEP_301_READINESS_REVIEW.md",
+      "review_date_candidate": "2026-09-17",
+      "real_producer_readiness": {
+        "acceptance_unit": "REMAINING_REAL_PRODUCER_INTEGRATION_READINESS_AUDIT",
+        "controller_decision": "PASS",
+        "reviewed_commit": "8fb05f70d264943447981d19aa71a1dd4618c2b5",
+        "offline_boundary_proof_readiness": "READY_WITH_CONSTRAINTS",
+        "production_pdd_ingress_readiness": "BLOCKED",
+        "live_validation_authorization": "NOT_AUTHORIZED",
+        "report": "reports\\SHEEP-301-real-producer-readiness-audit.json",
+        "local_electron_websocket_boundary_proof": {
+          "controller_decision": "PASS",
+          "reviewed_implementation_commit": "0412a7d8c2497b9f15703f5aac1ec0ffcdcfb578",
+          "accepted_scope": "CONTROLLED_LOCAL_ELECTRON_WEBSOCKET_DIAGNOSTIC_BOUNDARY_ONLY",
+          "diagnostic_implementation_authorization": "COMPLETED / CONSUMED",
+          "same_webcontents_recovery": "NOT_SUPPORTED_AFTER_TERMINATION / DIAGNOSTIC_LIMIT_NOT_PRODUCTION_DECISION"
+        },
+        "trusted_main_pdd_ingress_readiness_audit": {
+          "acceptance_unit": "TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT",
+          "result": "COMPLETE",
+          "next_unit_implementation_readiness": "READY_WITH_CONSTRAINTS",
+          "production_pdd_ingress_readiness": "BLOCKED",
+          "live_validation_authorization": "NOT_AUTHORIZED",
+          "controller_decision": "PASS",
+          "reviewed_commit": "ef9fef6c84797c3f31684d999a58fd61b978a501",
+          "controller_review_status": "PASS",
+          "targeted_repair": {
+            "controller_decision": "REPAIR",
+            "repair_baseline": "e8f9f6353f92efe5224d2429bfb9b3a0f18cec7f",
+            "previous_repair_baseline": "a5d4bfd73502e3569142186c85335e9e947aca64",
+            "repair_result": "COMPLETE",
+            "scope": "PATH_AND_EVIDENCE_REPAIR / R1_STARTUP_TIMING / R2_IDENTITY_HANDOVER / R3_LEGACY_ISOLATION / R4_CLASSIFICATION",
+            "new_probe_root": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness",
+            "historical_probe_archive": "E:/fast_sheep/.tmp/sheep-301-ingress-startup-readiness/historical/e8f9f63",
+            "reviewed_commit": "ef9fef6c84797c3f31684d999a58fd61b978a501",
+            "controller_review_status": "PASS"
+          }
+        }
+      }
+    },
+    "approved_path": [
       "controlled Main-local fixture",
       "document-bound trusted Main binding",
-      "raw PDD semantic validation",
-      "scoped identity association checks",
+      "raw PDD payload semantic validation",
+      "explicit partial-identity handling",
       "canonical IdentityLock / InboundEnvelope",
       "canonical schema validation",
-      "controlled collector",
+      "controlled result or test collector",
       "STOP"
     ],
-    "full_task_closed": false,
-    "authorization_consumed": true
-  },
-  "producer_path_acceptance": {
-    "acceptance_unit": "CONTROLLED_PDD_DECODED_EVENT_PRODUCER_PATH",
-    "attempted_at": "2026-09-22",
-    "verdict": "PASS — controlled PDD producer path accepted (8 of 8 confirmation items)",
-    "producer_commit": "1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
-    "producer_commit_parent": "8f77d206e5699626dbbe56f1eac784bd20800951",
-    "report": "reports\\SHEEP-301-producer-path-acceptance.json",
-    "traceable_code": {
-      "adapter": "apps/desktop/src/main/platforms/pdd/pdd-decoded-inbound-event-adapter.ts",
-      "candidate_gate": "apps/desktop/src/main/platforms/pdd/pdd-inbound-event-candidate.ts",
-      "chat_list_transport": "apps/desktop/src/main/platforms/pdd/pdd-chat-list-transport.ts",
-      "identity_derivation": "packages/platform-pdd/src/internal-conversation-id.ts (+ index export)",
-      "service": "apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts",
-      "session_binding": "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
-      "observer": "apps/desktop/src/main/platforms/pdd/pdd-inbound-observer.ts",
-      "persistence_scope_repair": "apps/desktop/src/main/services/canonical-inbound-persistence.ts",
-      "bootstrap_switch": "apps/desktop/src/main/bootstrap.ts (decodedEventCapture option + passthrough)",
-      "controlled_runners": ["apps/desktop/src/main/controlled/*", "scripts/run-sheep-301-offline-app-acceptance.mjs", "scripts/run-sheep-301-real-app-capture.mjs"],
-      "tests_and_fixtures": ["apps/desktop/tests/pdd-decoded-event-*.test.ts", "apps/desktop/tests/pdd-inbound-*.test.ts", "apps/desktop/tests/canonical-inbound-attribution.test.ts", "apps/desktop/tests/controlled-decoded-event-capture-entry.test.ts", "apps/desktop/tests/fixtures/pdd-transport/chat-list.synthetic.json", "apps/desktop/tests/fixtures/sheep-301-decoded-event-page.html"]
-    },
-    "item_results": {
-      "page_decoded_event_from_controlled_entry": "SATISFIED",
-      "main_binding_identity_mapper": "SATISFIED",
-      "receipt_written_to_isolated_db": "SATISFIED (out-of-process read: 1 conversation, 4 rows, 3 target labels one row each)",
-      "real_run_used_that_path": "SATISFIED (real-run-2 via createMainContext + the controlled entry; the older event-proof unit that called the mapper directly is excluded as evidence)",
-      "incomplete_identity_explicit": "SATISFIED",
-      "no_cross_shop_mapping": "SATISFIED",
-      "no_production_send": "SATISFIED (AI 0 / send 0 / production writes 0)",
-      "source_time_null_semantics": "SATISFIED",
-      "code_version_traceability": "SATISFIED — the sealed commit contains the exact producer-path files the run used (baseline bcda787 + the same file contents), and the runners are committed with them"
-    },
-    "evidence_to_commit_mapping": "real-run-2 (2026-09-20, 23/23 checks) ran against the same producer-path file contents that commit 1ffc9ef seals; the isolated DB, the result JSON and the screenshots are preserved under .tmp/sheep-301-real-app/real-run-2/. No new real run was performed for this acceptance.",
-    "snapshot_verification": "git archive 1ffc9ef into an isolated tree (no dirty source copied) with the workspace package pinned to the snapshot: 8 SHEEP-301 focused suites 70/70 pass, SHEEP-303 builder 25/25, SHEEP-303 integration 5/5 (previously ERR_MODULE_NOT_FOUND is gone), 0 unresolved relative imports, platform-pdd resolves inside the snapshot",
-    "roadmap_exit_criteria": {
-      "controlled_mapping_of_identity_content_source_time": "SATISFIED",
-      "incomplete_identity_remains_explicit": "SATISFIED",
-      "no_cross_shop_mapping": "SATISFIED",
-      "no_production_send_path_invoked": "SATISFIED"
-    },
-    "full_task_close_conditions": "appear MET on evidence (producer accepted + all roadmap exit criteria + no production send); flipping full_sheep_301_closed / next_stage_not_executed is a Controller stage decision and was NOT done by this round",
-    "completion_facts": [
-      "controlled producer path sealed in commit 1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
-      "adapter / candidate gate / chat-list transport / identity derivation / service / session binding / observer / persistence scope repair / bootstrap switch / controlled runners / tests / fixtures are all traceable in that commit",
-      "real-run-2 (2026-09-20, 23/23 checks) used the same producer-path file contents; isolated DB, result JSON and screenshots preserved under .tmp/sheep-301-real-app/real-run-2/",
-      "isolated snapshot of the commit: 8 SHEEP-301 focused suites 70/70 pass, 0 unresolved relative imports, SHEEP-303 builder 25/25 and integration 5/5",
-      "no new real run was performed for this acceptance"
+    "active_scope_constraints": [
+      "controlled Main-local fixture mapping acceptance unit only",
+      "raw historical PDD payload semantics only",
+      "sender must bind to actual session instance, runtime shop, current live document generation, and live session/view ownership",
+      "old document observations and disposed/recreated session contexts must be rejected",
+      "missing customerUid and msg_id may map to explicit UNKNOWN only when the trusted inbound payload is otherwise valid",
+      "invalid field format and conflicting identity must not be silently converted into a valid identity",
+      "selected customer remains independent runtime evidence only and never fills platformCustomerId",
+      "canonical envelope validation is mandatory and must fail closed if the validator is unavailable",
+      "all success, failure, missing-collector, and exception paths stop without PddOrchestratorBridge",
+      "AI calls = 0, transport send calls = 0, persistence writes = 0"
     ],
-    "carried_forward": [
-      "P2-1 application shutdown stop()/dispose() wiring for the SHEEP-303 turn builder (precondition for enabling the controlled switch)",
-      "P2-2 in-process ordering semantics and the absence of a cross-restart ordering guarantee"
-    ]
-  },
-  "full_task_state": "CLOSED",
-  "full_sheep_301_closed": true,
-  "next_step": "SHEEP-301 — TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING (bounded implementation, awaiting review)",
-      "next_step_status": "IMPLEMENTED / AWAITING_CONTROLLER_REVIEW",
+    "forbidden_scope": [
+      "production IPC ingress",
+      "Titan or WebSocket receive integration",
+      "legacy DOM message_received to AI bridge",
+      "AI Worker invocation",
+      "persistence or observedAt implementation",
+      "transport send",
+      "HUMAN_CONFIRM or AUTO",
+      "platform mutation"
+    ],
+    "persistence_authorization": "NOT_AUTHORIZED",
+    "live_validation_authorization": "NOT_AUTHORIZED",
+    "platform_mutation_authorization": "NOT_AUTHORIZED",
+    "message_send_authorization": "NOT_AUTHORIZED",
+    "human_confirm_authorization": "NOT_AUTHORIZED",
+    "auto_authorization": "NOT_AUTHORIZED",
+    "later_tasks_authorized": false,
+    "next_stage_not_executed": true,
+    "bounded_acceptance_unit": {
+      "id": "MAIN_LOCAL_RAW_INGRESS_BOUND_CONTROLLED_FIXTURE_MAPPING",
+      "state": "IMPLEMENTED / COMPLETE / CONTROLLER PASS",
+      "codex_result": "COMPLETE",
+      "controller_decision": "PASS",
+      "implementation_commit": "7dd7d4f0b8a50bba3034e04a4b37a9a37f99967f",
+      "identity_exception_repair_commit": "fdfdca90215db2aea14a1ad5155a2a516fb9a1b6",
+      "association_ownership_repair_commit": "2808c179529f6b820946a754553343e06e2fc8f6",
+      "evidence_completion_commit": "c86fcdd12b26c377fb4e0247050c5bd223431628",
+      "reviewed_head": "c86fcdd12b26c377fb4e0247050c5bd223431628",
+      "report": "reports\\SHEEP-301-bounded-fixture-mapping-report.json",
+      "readiness_review": "project\\SHEEP_301_READINESS_REVIEW.md",
+      "accepted_path": [
+        "controlled Main-local fixture",
+        "document-bound trusted Main binding",
+        "raw PDD semantic validation",
+        "scoped identity association checks",
+        "canonical IdentityLock / InboundEnvelope",
+        "canonical schema validation",
+        "controlled collector",
+        "STOP"
+      ],
+      "full_task_closed": false,
+      "authorization_consumed": true
+    },
+    "producer_path_acceptance": {
+      "acceptance_unit": "CONTROLLED_PDD_DECODED_EVENT_PRODUCER_PATH",
+      "attempted_at": "2026-09-22",
+      "verdict": "PASS — controlled PDD producer path accepted (8 of 8 confirmation items)",
+      "producer_commit": "1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
+      "producer_commit_parent": "8f77d206e5699626dbbe56f1eac784bd20800951",
+      "report": "reports\\SHEEP-301-producer-path-acceptance.json",
+      "traceable_code": {
+        "adapter": "apps/desktop/src/main/platforms/pdd/pdd-decoded-inbound-event-adapter.ts",
+        "candidate_gate": "apps/desktop/src/main/platforms/pdd/pdd-inbound-event-candidate.ts",
+        "chat_list_transport": "apps/desktop/src/main/platforms/pdd/pdd-chat-list-transport.ts",
+        "identity_derivation": "packages/platform-pdd/src/internal-conversation-id.ts (+ index export)",
+        "service": "apps/desktop/src/main/platforms/pdd/pdd-platform-service.ts",
+        "session_binding": "apps/desktop/src/main/platforms/pdd/pdd-session-host.ts",
+        "observer": "apps/desktop/src/main/platforms/pdd/pdd-inbound-observer.ts",
+        "persistence_scope_repair": "apps/desktop/src/main/services/canonical-inbound-persistence.ts",
+        "bootstrap_switch": "apps/desktop/src/main/bootstrap.ts (decodedEventCapture option + passthrough)",
+        "controlled_runners": [
+          "apps/desktop/src/main/controlled/*",
+          "scripts/run-sheep-301-offline-app-acceptance.mjs",
+          "scripts/run-sheep-301-real-app-capture.mjs"
+        ],
+        "tests_and_fixtures": [
+          "apps/desktop/tests/pdd-decoded-event-*.test.ts",
+          "apps/desktop/tests/pdd-inbound-*.test.ts",
+          "apps/desktop/tests/canonical-inbound-attribution.test.ts",
+          "apps/desktop/tests/controlled-decoded-event-capture-entry.test.ts",
+          "apps/desktop/tests/fixtures/pdd-transport/chat-list.synthetic.json",
+          "apps/desktop/tests/fixtures/sheep-301-decoded-event-page.html"
+        ]
+      },
+      "item_results": {
+        "page_decoded_event_from_controlled_entry": "SATISFIED",
+        "main_binding_identity_mapper": "SATISFIED",
+        "receipt_written_to_isolated_db": "SATISFIED (out-of-process read: 1 conversation, 4 rows, 3 target labels one row each)",
+        "real_run_used_that_path": "SATISFIED (real-run-2 via createMainContext + the controlled entry; the older event-proof unit that called the mapper directly is excluded as evidence)",
+        "incomplete_identity_explicit": "SATISFIED",
+        "no_cross_shop_mapping": "SATISFIED",
+        "no_production_send": "SATISFIED (AI 0 / send 0 / production writes 0)",
+        "source_time_null_semantics": "SATISFIED",
+        "code_version_traceability": "SATISFIED — the sealed commit contains the exact producer-path files the run used (baseline bcda787 + the same file contents), and the runners are committed with them"
+      },
+      "evidence_to_commit_mapping": "real-run-2 (2026-09-20, 23/23 checks) ran against the same producer-path file contents that commit 1ffc9ef seals; the isolated DB, the result JSON and the screenshots are preserved under .tmp/sheep-301-real-app/real-run-2/. No new real run was performed for this acceptance.",
+      "snapshot_verification": "git archive 1ffc9ef into an isolated tree (no dirty source copied) with the workspace package pinned to the snapshot: 8 SHEEP-301 focused suites 70/70 pass, SHEEP-303 builder 25/25, SHEEP-303 integration 5/5 (previously ERR_MODULE_NOT_FOUND is gone), 0 unresolved relative imports, platform-pdd resolves inside the snapshot",
+      "roadmap_exit_criteria": {
+        "controlled_mapping_of_identity_content_source_time": "SATISFIED",
+        "incomplete_identity_remains_explicit": "SATISFIED",
+        "no_cross_shop_mapping": "SATISFIED",
+        "no_production_send_path_invoked": "SATISFIED"
+      },
+      "full_task_close_conditions": "appear MET on evidence (producer accepted + all roadmap exit criteria + no production send); flipping full_sheep_301_closed / next_stage_not_executed is a Controller stage decision and was NOT done by this round",
+      "completion_facts": [
+        "controlled producer path sealed in commit 1ffc9eff4f45c7c1c929ebebd270b91a6b23cf01",
+        "adapter / candidate gate / chat-list transport / identity derivation / service / session binding / observer / persistence scope repair / bootstrap switch / controlled runners / tests / fixtures are all traceable in that commit",
+        "real-run-2 (2026-09-20, 23/23 checks) used the same producer-path file contents; isolated DB, result JSON and screenshots preserved under .tmp/sheep-301-real-app/real-run-2/",
+        "isolated snapshot of the commit: 8 SHEEP-301 focused suites 70/70 pass, 0 unresolved relative imports, SHEEP-303 builder 25/25 and integration 5/5",
+        "no new real run was performed for this acceptance"
+      ],
+      "carried_forward": [
+        "P2-1 application shutdown stop()/dispose() wiring for the SHEEP-303 turn builder (precondition for enabling the controlled switch)",
+        "P2-2 in-process ordering semantics and the absence of a cross-restart ordering guarantee"
+      ]
+    },
+    "full_task_state": "CLOSED",
+    "full_sheep_301_closed": true,
+    "next_step": "SHEEP-301 — TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING (bounded implementation, awaiting review)",
+    "next_step_status": "IMPLEMENTED / AWAITING_CONTROLLER_REVIEW",
     "diagnostic_authorization": {
       "acceptance_unit": "LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF",
       "status": "COMPLETE / CONTROLLER PASS / CONSUMED",
@@ -3985,7 +4106,7 @@
       "cleanup_authorized": false,
       "note": "The path was an actual prior diagnostic write outside the project root, not merely a documentation typo. It is preserved as historical evidence; this task does not authorize cleanup or further writes there."
     }
-},
+  },
   "sheep_302": {
     "acceptance_unit": "DURABLE_NORMALIZED_INBOUND_PERSISTENCE",
     "roadmap_status": "covered-by-existing-evidence",
@@ -4019,7 +4140,12 @@
       ".tmp\\SHEEP-301-REAL-APP-RECEIVE-DISPLAY-RESULT.md",
       ".tmp\\SHEEP-301-SERVICE-LOOP-COMPLETE.md"
     ],
-    "not_added_as_close_conditions": ["production enablement", "history pagination", "reconnect recovery", "multi-store expansion"],
+    "not_added_as_close_conditions": [
+      "production enablement",
+      "history pagination",
+      "reconnect recovery",
+      "multi-store expansion"
+    ],
     "gates": {
       "ai": "OFF",
       "sending": "OFF",
@@ -4079,7 +4205,6 @@
       "the SHEEP-301 controlled/real runner set (main/controlled/*, scripts/run-sheep-301-*.mjs)"
     ],
     "shutdown_wiring": "NOT_WIRED — an app-level caller (index.ts before-quit or a MainContext dispose) must call context.inboundTurns.stop() before the controlled switch is enabled; precondition for enablement, not for the sealed feature",
-
     "gates": {
       "ai": "OFF",
       "sending": "OFF",
@@ -4122,8 +4247,18 @@
     "authorization": "AUTHORIZED TO IMPLEMENT (Controller, 2026-09-22) — scene contract and deterministic classifier boundary only",
     "dependency": "SHEEP-303 (sealed in 8f77d20; technical post-audit PASS; stage acceptance recorded)",
     "scope": "MINIMAL_V1 scene contract + deterministic classifier boundary; bounded vocabulary SHIPPING_TIME / OTHER_UNSUPPORTED / UNKNOWN",
-    "must_not": ["broad intent taxonomy", "implement the second scene", "AI", "send", "fact providers", "canonical schema change"],
-    "changed_files": ["apps/desktop/src/main/services/minimal-scene-classifier.ts (new)", "apps/desktop/tests/minimal-scene-classifier.test.ts (new)"],
+    "must_not": [
+      "broad intent taxonomy",
+      "implement the second scene",
+      "AI",
+      "send",
+      "fact providers",
+      "canonical schema change"
+    ],
+    "changed_files": [
+      "apps/desktop/src/main/services/minimal-scene-classifier.ts (new)",
+      "apps/desktop/tests/minimal-scene-classifier.test.ts (new)"
+    ],
     "focused_tests": "11/11 pass (bounded vocabulary, unknown/unsupported safe paths, identity fail-closed, content never guessed, no cross-turn bleed, determinism, first-scene rule routing, invalid-scene refusal, no-send structure, SHEEP-303 handoff)",
     "exit_criteria": {
       "result_vocabulary_is_bounded": "SATISFIED (MINIMAL_V1_SCENES frozen + isMinimalScene runtime validator)",
@@ -4134,7 +4269,12 @@
     "shipping_time_rule": "NOT implemented here — SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED (SHEEP-305); with no approved rule registered the classifier never emits SHIPPING_TIME",
     "second_scene": "OPEN_DECISION (unchanged)",
     "report": "reports\\SHEEP-304-minimal-scene-contract-report.json",
-    "gates": { "ai": "OFF", "sending": "OFF", "production_enablement": "OFF / NOT_AUTHORIZED", "real_operations": "STOPPED" },
+    "gates": {
+      "ai": "OFF",
+      "sending": "OFF",
+      "production_enablement": "OFF / NOT_AUTHORIZED",
+      "real_operations": "STOPPED"
+    },
     "execution_authorized": false,
     "next_stage_not_executed": true,
     "full_sheep_304_closed": true
@@ -4144,8 +4284,8 @@
     "roadmap_status": "NOT_STARTED / NOT_AUTHORIZED",
     "phase": "MVP_A_FOUNDATION",
     "milestone": "M-A.2 Scene and Context Foundation",
-    "status": "LANE_A_AND_LANE_B_OFFLINE_SEALED / REMAINING_SCOPE_NOT_AUTHORIZED / PRODUCT_DECISION_REQUIRED / NOT_CLOSED (real platform identity and binding, policy activation, field-level SHIPPING_TIME rule semantics; see lane_a, lane_b_offline_implementation and identity_source_verification)",
-    "product_gate": "SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED",
+    "status": "REDEFINED / NOT_AUTHORIZED",
+    "product_gate": "RESOLVED: SHIPPING_TIME rules are merchant-configured Store Knowledge",
     "lane_a": {
       "status": "SEALED",
       "controller_decision": "PASS",
@@ -4155,9 +4295,17 @@
       "full_lane_a_closed": true,
       "sealed_at": "2026-09-23",
       "scope": "offline shipping policy contract + pure validation/matching (declared-only); no real policy, no order/carrier facts, no AI/send/persistence/provider/network port, no canonical schema change",
-      "changed_files": ["apps/desktop/src/main/services/shipping-policy-contract.ts", "apps/desktop/tests/shipping-policy-contract.test.ts"],
+      "changed_files": [
+        "apps/desktop/src/main/services/shipping-policy-contract.ts",
+        "apps/desktop/tests/shipping-policy-contract.test.ts"
+      ],
       "verification": "27/27 focused; desktop 595/595; typecheck PASS; PROJECT_STATE consistency PASS; canonical schema diff 0; AI 0 / sending 0 / production writes 0 / real operations STOPPED",
-      "p3_carried_forward": ["matrix 19 uses a conditional assertion (if policy_fact) - should assert fact presence unconditionally before the value checks","the 木易先生 draft test uses an OR assertion (SCOPE_UNBOUND || NAME_NOT_IDENTITY_EVIDENCE) while both reasons hold - assert both separately","matrix rows 10 and 20 describe the same scenario in the authoritative matrix - an intentional duplicate, both kept and asserted","the 木易先生 draft cannot trigger the bound-DRAFT path (its identifiers are null by contract) - that path is covered by the bound synthetic DRAFT fixture in matrix 13; reaching it on the draft itself needs Lane B identity binding"],
+      "p3_carried_forward": [
+        "matrix 19 uses a conditional assertion (if policy_fact) - should assert fact presence unconditionally before the value checks",
+        "the 木易先生 draft test uses an OR assertion (SCOPE_UNBOUND || NAME_NOT_IDENTITY_EVIDENCE) while both reasons hold - assert both separately",
+        "matrix rows 10 and 20 describe the same scenario in the authoritative matrix - an intentional duplicate, both kept and asserted",
+        "the 木易先生 draft cannot trigger the bound-DRAFT path (its identifiers are null by contract) - that path is covered by the bound synthetic DRAFT fixture in matrix 13; reaching it on the draft itself needs Lane B identity binding"
+      ],
       "not_an_activation": "Lane A stage acceptance PASS is NOT Lane B activation, NOT real policy activation, NOT SHEEP-305 closure and NOT production enablement"
     },
     "candidate_policy": {
@@ -4170,7 +4318,13 @@
       "runtime_active_set": "the draft is not part of any runtime policy set (no policy registry/fact provider exists yet)",
       "acceptance_matrix_total": 21,
       "lane_A_contract_offline_testable": "YES — policy type/version/scope/lifecycle/conflict/UNKNOWN/provenance can be verified offline with synthetic fixtures; requires a separate Controller implementation authorization",
-      "lane_B_required_before_activation": ["trusted shop binding", "final policy approval", "fulfilment time confirmation", "applicable goods and exceptions confirmation", "effective scheduling"],
+      "lane_B_required_before_activation": [
+        "trusted shop binding",
+        "final policy approval",
+        "fulfilment time confirmation",
+        "applicable goods and exceptions confirmation",
+        "effective scheduling"
+      ],
       "prepared_at": "2026-09-23"
     },
     "owner_confirmation": {
@@ -4183,13 +4337,24 @@
       "platform_binding": "UNVERIFIED",
       "numeric_identifier_available": false,
       "content_confirmed_is_not_activation": "content confirmation and runtime activatability are different states; the policy stays DRAFT / NOT_EFFECTIVE",
-      "not_approved": ["all goods are regular stock", "existence of pre-sale/custom/special-cycle exceptions", "the previously listed candidate exceptions", "any effective date or retroactive application", "real policy activation, order derivation or automatic sending"]
+      "not_approved": [
+        "all goods are regular stock",
+        "existence of pre-sale/custom/special-cycle exceptions",
+        "the previously listed candidate exceptions",
+        "any effective date or retroactive application",
+        "real policy activation, order derivation or automatic sending"
+      ]
     },
     "lane_b_registration_design": {
       "status": "DESIGN_ONLY (no implementation, no real binding written, no activation)",
       "record": "reports\\SHEEP-305-policy-first-v1-product-decision.json (lane_b_registration_design)",
       "steps": 7,
-      "expected_files_if_authorized": ["apps/desktop/src/main/services/shipping-policy-registry.ts", "apps/desktop/src/main/services/shipping-policy-registration.ts", "apps/desktop/tests/shipping-policy-registry.test.ts", "apps/desktop/tests/shipping-policy-registration.test.ts"],
+      "expected_files_if_authorized": [
+        "apps/desktop/src/main/services/shipping-policy-registry.ts",
+        "apps/desktop/src/main/services/shipping-policy-registration.ts",
+        "apps/desktop/tests/shipping-policy-registry.test.ts",
+        "apps/desktop/tests/shipping-policy-registration.test.ts"
+      ],
       "durable_persistence": "DEFERRED — a SQLite policy table would need a governed canonical schema change (registry + frozen manifest); not authorized and not designed here",
       "offline_registration_needs_no_login_session": true,
       "online_verification_not_executed_this_round": true
@@ -4207,8 +4372,20 @@
       "sealed_scope_note": "this commit contains the complete Lane B offline implementation plus both fix rounds (replacement integrity + semantic idempotency, then scope isolation + replacement history)",
       "persistence_and_identity_limits": "in-memory only: a rebuilt registry instance is empty; no durable registration, no cross-restart idempotency and no platform identity verification; scope equality is an isolation check by a trusted Main-side caller, not ownership proof",
       "authorized_at": "2026-09-23",
-      "changed_files": ["apps/desktop/src/main/services/shipping-policy-registry.ts", "apps/desktop/src/main/services/shipping-policy-registration.ts", "apps/desktop/tests/shipping-policy-registry.test.ts", "apps/desktop/tests/shipping-policy-registration.test.ts"],
-      "capabilities": ["Owner identity declaration (OWNER_DECLARED / UNVERIFIED, no promotion path)", "content-confirmed policy version registered as DRAFT / NOT_EFFECTIVE", "query/list by internal registration id with scope isolation", "controlled revoke of not-yet-effective registrations", "replacement link (draft-level; never supersedes the older version by itself)", "explicit restriction reasons"],
+      "changed_files": [
+        "apps/desktop/src/main/services/shipping-policy-registry.ts",
+        "apps/desktop/src/main/services/shipping-policy-registration.ts",
+        "apps/desktop/tests/shipping-policy-registry.test.ts",
+        "apps/desktop/tests/shipping-policy-registration.test.ts"
+      ],
+      "capabilities": [
+        "Owner identity declaration (OWNER_DECLARED / UNVERIFIED, no promotion path)",
+        "content-confirmed policy version registered as DRAFT / NOT_EFFECTIVE",
+        "query/list by internal registration id with scope isolation",
+        "controlled revoke of not-yet-effective registrations",
+        "replacement link (draft-level; never supersedes the older version by itself)",
+        "explicit restriction reasons"
+      ],
       "identity_rule": "the internal registration id is NOT a canonical store_id / platform_account_id / platform external_ref; the registration scope is an internal candidate scope",
       "verification_rule": "no VERIFIED or ACTIVE promotion entry point exists and no force parameter is accepted; the pure transition rule is exported for tests only",
       "idempotency": "identical resubmission returns IDEMPOTENT with the same registration id; the same policy_id/policy_version with different content is REFUSED (no silent overwrite); declarations with conflicting evidence are REFUSED",
@@ -4217,7 +4394,10 @@
       "focused_tests": "44/44 pass (33 registry + 11 registration); Lane A contract regression 27/27; desktop suite 639/639",
       "real_binding_and_activation": "NOT_AUTHORIZED — no stores/platform_accounts rows written, no ACTIVE policy, no Lane A fact produced for the registered draft",
       "p1": "none",
-      "p2": ["real platform binding + policy activation remain unauthorized", "durable policy persistence needs a governed canonical schema change"],
+      "p2": [
+        "real platform binding + policy activation remain unauthorized",
+        "durable policy persistence needs a governed canonical schema change"
+      ],
       "fix_round_2026-09-23": {
         "status": "FIX COMPLETE / AWAITING_POST_AUDIT",
         "scope": "replacement integrity + semantic idempotency (offline registration only; no activation, no real binding)",
@@ -4243,7 +4423,10 @@
         "exposure_scope": "the module still has no runtime wiring and no caller outside its tests; that limits exposure but is NOT evidence that isolation was correct - the collision was reproduced at the module boundary using only the public API",
         "regression_tests": "7 isolation tests (reproduced NUL pair, account null vs empty string, quotes/backslashes/separators, same-scope idempotency, cross-scope get/list, cross-scope revoke/link, independent idempotency index) + 4 replacement-history tests (same-target replay, different-target refusal, refused requests change nothing, revoked checks before the idempotent path)",
         "verification": "registry 33/33; registration 11/11; Lane A 27/27; desktop 639/639; typecheck PASS",
-        "not_in_scope_this_round": ["the earlier carried P3 list (registeredAt equality asymmetry, defensive invalid_reason branches, extra item properties)", "real binding, activation, durable persistence, AI, send"],
+        "not_in_scope_this_round": [
+          "the earlier carried P3 list (registeredAt equality asymmetry, defensive invalid_reason branches, extra item properties)",
+          "real binding, activation, durable persistence, AI, send"
+        ],
         "real_binding_and_activation": "NOT_AUTHORIZED"
       }
     },
@@ -4257,8 +4440,20 @@
       "blocker_detail": "the read-only observation authorization is in place; the missing piece is an attached, logged-in controlled session. The approved controlled entry attaches to an already-running debug browser (nothing version-controlled launches it), the previously used debug profile exists but its seller session state is unknown and was not probed, and no debug endpoint is currently listening",
       "owner_action_needed": "start the debug browser with the recorded arguments (--remote-debugging-port=9222 --user-data-dir=<repo>/.tmp/chrome-debug-profile), open the authorized controlled shop's merchant chat page as a fresh startup, complete the login if the session expired, then confirm the session is up",
       "next_action_after_session": "build, run the existing approved launcher in real mode, discover the identity area from the observed page, then write the minimal default-OFF read-only identity reader with offline tests before reading any field value",
-      "not_widened": ["no new debug entry", "no debug port widening", "no scanning of other ports or browser sessions", "no real binding write", "no policy activation", "no AI", "no send", "no production write"],
-      "round_history": ["round 1: NOT_EXECUTED_NO_LIVE_SESSION (target slot uniquely determined locally; identity domain empty)", "round 2: same blocker confirmed operational (startup requires Owner browser action, not a new approval)"],
+      "not_widened": [
+        "no new debug entry",
+        "no debug port widening",
+        "no scanning of other ports or browser sessions",
+        "no real binding write",
+        "no policy activation",
+        "no AI",
+        "no send",
+        "no production write"
+      ],
+      "round_history": [
+        "round 1: NOT_EXECUTED_NO_LIVE_SESSION (target slot uniquely determined locally; identity domain empty)",
+        "round 2: same blocker confirmed operational (startup requires Owner browser action, not a new approval)"
+      ],
       "conclusion": "INSUFFICIENT_EVIDENCE__CANDIDATE_SOURCES_ONLY - no session-self platform identity source was observed and no local identifier was substituted for it",
       "target": "the single locally designated controlled PDD shop slot; an application-local id, never a platform identity",
       "real_binding_write": "NOT_AUTHORIZED",
@@ -4272,7 +4467,10 @@
       "recorded_at": "2026-09-23",
       "finding": "no session-self platform identity evidence is obtainable from the current code; every identifier in use is application-generated (local shop id, PlatformConfig.controlled_shop_id documented as never a platform identity, runtime session/document ids)",
       "gap": "platform_accounts has no store linkage and no verification-provenance columns, so an Owner-declared vs platform-verified binding cannot be recorded without a governed schema decision",
-      "blocked_on": ["an authorized read-only identity observation for the controlled shop", "the governed decision on binding-provenance storage"],
+      "blocked_on": [
+        "an authorized read-only identity observation for the controlled shop",
+        "the governed decision on binding-provenance storage"
+      ],
       "real_binding_and_activation": "NOT_AUTHORIZED"
     },
     "product_decision": {
@@ -4280,9 +4478,18 @@
       "approved_direction": "POLICY_FIRST_V1 — V1 provides Owner-approved, versioned shop/product shipping policy facts; no per-order expected/committed shipping date derivation",
       "approved_by": "Owner (relayed by the Controller, 2026-09-22)",
       "closes": "source-class selection only (policy facts are the authoritative shipping-time source class)",
-      "does_not_close": ["the specific shop/product policy text (none exists in the repository)", "field-level rule semantics: continuous hours vs business days, clock-start event, cut-off, business calendar, timezone, effective/expiry handling", "SHIPPING_TIME_RULE_SEMANTICS remains PRODUCT_DECISION_REQUIRED"],
+      "does_not_close": [
+        "the specific shop/product policy text (none exists in the repository)",
+        "field-level rule semantics: continuous hours vs business days, clock-start event, cut-off, business calendar, timezone, effective/expiry handling",
+        "SHIPPING_TIME_RULE_SEMANTICS remains PRODUCT_DECISION_REQUIRED"
+      ],
       "decision_record_placement": "version-managed report + this ledger pointer; a formal DEC-0xx entry in project/DECISIONS.md remains an Owner/Controller governance step (Codex must not modify the locked decision set)",
-      "carried_dependencies": ["policy registry / fact provider (not implemented)", "product/SKU scope reference (declared scope only; full SKU management not built)", "order start-time source (unknown -> no per-order date)", "Owner policy collection form pending"]
+      "carried_dependencies": [
+        "policy registry / fact provider (not implemented)",
+        "product/SKU scope reference (declared scope only; full SKU management not built)",
+        "order start-time source (unknown -> no per-order date)",
+        "Owner policy collection form pending"
+      ]
     },
     "pre_audit": {
       "report": "reports\\SHEEP-305-shipping-time-fact-source-preaudit.json",
@@ -4299,7 +4506,14 @@
     "dependency": "SHEEP-304 (sealed in 2b55daf; CLOSED by Controller decision 2026-09-22)",
     "goal": "Resolve the shipping-time rule semantically, then wire only the authoritative facts the approved rule requires",
     "allowed_scope": "rule contract, fact-provider boundary and focused tests (AFTER the product decision)",
-    "must_not": ["invent dispatch SLA semantics", "payment-time rule", "product exception", "region exception", "order-state semantics", "send"],
+    "must_not": [
+      "invent dispatch SLA semantics",
+      "payment-time rule",
+      "product exception",
+      "region exception",
+      "order-state semantics",
+      "send"
+    ],
     "exit_criteria_pending": [
       "authoritative rule is recorded",
       "every fact used by the rule has a named producer and provenance",
@@ -4307,11 +4521,17 @@
       "Product/SKU work included only if explicitly required by the rule",
       "no send is possible"
     ],
-    "blocking_decision": "Owner/Controller must close SHIPPING_TIME_RULE_SEMANTICS before implementation; no code, rule or fact provider exists for this unit",
-    "gates": { "ai": "OFF", "sending": "OFF", "production_enablement": "OFF / NOT_AUTHORIZED", "real_operations": "STOPPED" },
+    "gates": {
+      "ai": "OFF",
+      "sending": "OFF",
+      "production_enablement": "OFF / NOT_AUTHORIZED",
+      "real_operations": "STOPPED"
+    },
     "execution_authorized": false,
     "next_stage_not_executed": true,
-    "full_sheep_305_closed": false
+    "full_sheep_305_closed": false,
+    "definition": "Minimal Store Knowledge Pipeline for SHIPPING_TIME",
+    "architecture_alignment": "DEC-008 (Layered Knowledge Architecture)"
   },
   "mvp_a_foundation_entry": {
     "status": "SHEEP_300_CLOSED / SHEEP_301_CLOSED_BY_CONTROLLER_DECISION / SHEEP_302_COVERED_BY_EXISTING_EVIDENCE / SHEEP_303_SEALED_TECHNICAL_POST_AUDIT_PASS / SHEEP_304_CLOSED_BY_CONTROLLER_DECISION / SHEEP_305_PRODUCT_DECISION_REQUIRED_NOT_AUTHORIZED",
@@ -4345,5 +4565,20 @@
     "sheep_081_closed": true,
     "sheep_082_execution_authorized": false,
     "sheep_082_status": "PASS / CLOSED"
-  }
+  },
+  "decision_records": [
+    {
+      "id": "DR-2026-09-24-SHEEP-305-REALIGNMENT",
+      "date": "2026-09-24",
+      "type": "ARCHITECTURE_REALIGNMENT",
+      "summary": "SHEEP-305 redefined to align with DEC-008 (Layered Knowledge Architecture). SHIPPING_TIME rules are now Store Knowledge, not a standalone fact provider.",
+      "impact": [
+        "SHEEP-305",
+        "MVP-A",
+        "Phase 9 Knowledge/RAG"
+      ],
+      "owner_approved": true,
+      "document": "project/DECISION_RECORD_SHEEP_305_REALIGNMENT.md"
+    }
+  ]
 }
