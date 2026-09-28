@@ -2,7 +2,7 @@
 
 **Status:** PROPOSED — awaiting Controller review  
 **Created:** 2026-09-24  
-**Updated:** 2026-09-24 (修正关联模式)  
+**Updated:** 2026-09-28 (删除未使用的映射层，修正迁移策略)  
 **Supersedes:** 无（首次明确定义）  
 **Related:** AI_CUSTOMER_SERVICE_CORE.md §2 (IdentityLock), DEC-027, DEC-039
 
@@ -91,7 +91,7 @@ CREATE TABLE stores (
 interface ShopRow {
   shop_id: string;         // 运行时标识（存储在 PlatformAccount.externalRef）
   name: string;            // 显示名称
-  type: string;            // 平台类型（pdd, doudian, jd, ...）
+  type: string;            // 平台类型（pdd, douding, jd, ...）
   enabled: boolean;        // 是否启用
 }
 ```
@@ -151,16 +151,21 @@ const shop: StoreRecord = { ...shopRecord };  // 类型不匹配
 
 **正确：**
 ```typescript
-// ✅ 正确：显式映射
-const mapping = await resolveStoreFromShopId(shop.shop_id, platformAccountRepo, storeRepo);
-const shop: ShopRow = mapStoreToShopRow(store, shopId);
+// ✅ 正确：在持久化边界显式转换
+// 1. 从 Shop 到 Store：通过 PlatformAccount.externalRef 关联
+const account = platformAccountRepo.findByExternalRef(shopId);
+const store = storeRepo.findByMerchantAndPlatform(account.merchantId, account.platform);
+
+// 2. 从 Store 到 Shop：通过 PlatformAccount 反向查找
+const accounts = platformAccountRepo.listByMerchant(store.merchantId);
+const shopId = accounts.find(a => a.platform === store.platform)?.externalRef;
 ```
 
 ---
 
-## 4. 映射规则
+## 4. 关联模式
 
-### 4.1 关联模式
+### 4.1 数据关联
 
 **正确的关联模式：**
 
@@ -200,83 +205,17 @@ const MERCHANT_ID = "merchant-test";
 }
 ```
 
-### 4.2 Store → Shop（领域到运行时）
+### 4.2 运行时使用
 
-**场景：** 将 Store 信息展示在 UI 上，或用于 IPC 通信。
+**当前架构（MVP 阶段）：**
 
-**映射函数：**
+- **Orchestrator** 使用 `shopId` 作为内存会话 key（Map<string, ShopState>）
+- **持久化层** 在写入 `normalized_conversations` 时，将 `shopId` 转换为 `store_id`
+- **IdentityLock** 使用 `storeId` 构建 AI 上下文
 
-```typescript
-// apps/desktop/src/main/services/shop-store-mapper.ts
-export function mapStoreToShopRow(store: StoreRecord, shopId: string): ShopRow {
-  return {
-    shop_id: shopId,              // Shop.id 需要外部提供
-    name: store.name,
-    type: store.platform,         // Store.platform 映射为 Shop.type
-    enabled: true,
-  };
-}
-```
-
-**注意：** Store 本身不包含 Shop.id，需要通过 PlatformAccount.externalRef 反向查找。
-
-### 4.3 Shop → Store（运行时到领域）
-
-**场景：** 从 UI 或 IPC 接收 shop_id，需要查询 Store 信息。
-
-**映射函数：**
-
-```typescript
-// apps/desktop/src/main/services/shop-store-mapper.ts
-export async function resolveStoreFromShopId(
-  shopId: string,
-  platformAccountRepo: PlatformAccountRepository,
-  storeRepo: StoreRepository
-): Promise<ShopToStoreMapping | null> {
-  // Step 1: 通过 externalRef 查找 PlatformAccount
-  const account = platformAccountRepo.findByExternalRef(shopId);
-  if (!account) {
-    return null;
-  }
-  
-  // Step 2: 通过 merchantId + platform 查找 Store
-  const store = storeRepo.findByMerchantAndPlatform(account.merchantId, account.platform);
-  if (!store) {
-    return null;
-  }
-  
-  return {
-    shopId,
-    store,
-    platformAccountId: account.id,
-  };
-}
-```
-
-**关键点：**
-- 需要通过两个步骤完成映射
-- 需要 PlatformAccountRepository 和 StoreRepository 两个依赖
-- 返回 ShopToStoreMapping 对象，包含完整的映射信息
-
-### 4.4 反向查找：Store → Shop.id
-
-**场景：** 已知 Store，需要找到对应的 Shop.id。
-
-**映射函数：**
-
-```typescript
-// apps/desktop/src/main/services/shop-store-mapper.ts
-export function findShopIdFromStore(
-  store: StoreRecord,
-  platformAccountRepo: PlatformAccountRepository
-): string | null {
-  const accounts = platformAccountRepo.listByMerchant(store.merchantId);
-  const account = accounts.find(a => a.platform === store.platform);
-  return account?.externalRef ?? null;
-}
-```
-
-**注意：** 一个 Store 可能对应多个 PlatformAccount（多平台场景），但在 MVP-A 阶段（单平台 PDD），一个 Store 只对应一个 PlatformAccount。
+**关键事实：**
+- Orchestrator 中的 `shopId` 从来不是 Store 身份——它只是一个内存中的会话分组 key
+- 真正的 Store 身份只出现在持久化边界（normalized_conversations.store_id）和 IdentityLock
 
 ---
 
@@ -289,21 +228,19 @@ export function findShopIdFromStore(
 | `packages/persistence/src/repositories/identity-repositories.ts` | Store/PlatformAccount 持久化 | Store, PlatformAccount |
 | `packages/persistence/src/repositories/shop-repository.ts` | Shop 持久化（Legacy） | Shop |
 | `apps/desktop/src/main/services/shop-service.ts` | Shop 运行时服务 | Shop |
-| `apps/desktop/src/main/services/shop-store-mapper.ts` | Shop ↔ Store 映射 | Shop + Store + PlatformAccount |
 | `apps/desktop/src/main/ipc/command-handlers.ts` | IPC 命令处理 | Shop（保持 legacy） |
 | `apps/desktop/src/main/ipc/query-handlers.ts` | IPC 查询处理 | Shop（保持 legacy） |
-| `apps/desktop/src/main/services/inbound-turn-builder.ts` | 入站消息聚合 | Shop（运行时）→ Store（领域） |
 | `resources/contracts/schemas/domain/context-envelope.schema.json` | ContextEnvelope 定义 | Store |
 | `resources/contracts/schemas/desktop/*.schema.json` | Desktop IPC 定义 | Shop |
 
-### 5.2 新增方法
+### 5.2 Repository 方法
 
-**PlatformAccountRepository 新增：**
+**PlatformAccountRepository：**
 ```typescript
 findByExternalRef(externalRef: string): PlatformAccountRecord | null;
 ```
 
-**StoreRepository 新增：**
+**StoreRepository：**
 ```typescript
 findByMerchantAndPlatform(merchantId: string, platform: string): StoreRecord | null;
 ```
@@ -315,27 +252,22 @@ findByMerchantAndPlatform(merchantId: string, platform: string): StoreRecord | n
 ### Phase 1: 文档化（已完成）
 - [x] 创建本文档，明确语义边界
 - [x] 修正关联模式（Shop.id → PlatformAccount.externalRef → Store）
+- [x] 删除未使用的映射层（shop-store-mapper.ts）
 - [ ] Controller 审核
 - [ ] 合并到主分支
 
-### Phase 2: 添加映射层（已完成）
-- [x] 创建 `shop-store-mapper.ts`
-- [x] 添加 `findByExternalRef` 方法到 PlatformAccountRepository
-- [x] 添加 `findByMerchantAndPlatform` 方法到 StoreRepository
-- [x] 在边界点添加显式映射调用
-- [x] 添加注释说明映射关系
+### Phase 2: 当前状态（MVP 阶段）
+- [x] Shop 和 Store 在各自的域中使用，没有隐式混用
+- [x] Orchestrator 使用 shopId 作为会话 key
+- [x] 持久化层在边界处进行转换
+- [x] Repository 提供查询方法（findByExternalRef, findByMerchantAndPlatform）
 
-### Phase 3: 代码审查（建议）
-- [ ] 审查所有 `shop_id` 使用点，确认语义
-- [ ] 审查所有 `store_id` 使用点，确认语义
-- [ ] 确保没有隐式转换
+### Phase 3: 未来演进（ContextEnvelope 实施时）
+- [ ] 实现 ContextEnvelope builder，在持久化边界构建完整的 Store 身份
+- [ ] 在 IdentityLock 构建时使用显式映射
+- [ ] 评估是否需要统一的映射层工具函数
 
-### Phase 4: 测试验证（建议）
-- [ ] 添加映射函数的单元测试
-- [ ] 添加边界点的集成测试
-- [ ] 验证 IdentityLock 构建正确
-
-### Phase 5: 长期演进（可选）
+### Phase 4: 长期演进（可选）
 - [ ] 评估是否可以统一为 Store（方向 A）
 - [ ] 评估是否需要废弃 Shop（方向 C）
 
@@ -346,7 +278,8 @@ findByMerchantAndPlatform(merchantId: string, platform: string): StoreRecord | n
 ### DEC-XXX — Shop vs Store 语义分离（待 Controller 确认）
 
 **Status:** PROPOSED  
-**Date:** 2026-09-24
+**Date:** 2026-09-24  
+**Updated:** 2026-09-28
 
 **Decision:**
 
@@ -365,12 +298,13 @@ Shop 和 Store 是两个不同的概念，应该明确分离：
 2. 保持向后兼容（Shop 的 legacy 代码不需要大规模重构）
 3. 明确职责边界（领域 vs 运行时）
 4. 降低迁移风险（不需要一次性改 239 个文件）
+5. 删除未使用的映射层，避免死代码误导（2026-09-28 更新）
 
 **Consequences:**
 
-- 需要维护映射代码（shop-store-mapper.ts）
 - 开发者需要理解两个概念的区别和关联模式
-- 边界点需要显式映射（增加代码量，但提高清晰度）
+- 持久化边界需要显式转换（当前已在做）
+- 未来实施 ContextEnvelope 时，可能需要添加映射工具函数
 
 ---
 
@@ -385,6 +319,6 @@ Shop 和 Store 是两个不同的概念，应该明确分离：
 ---
 
 **Document created:** 2026-09-24  
-**Document updated:** 2026-09-24 (修正关联模式)  
+**Document updated:** 2026-09-28 (删除未使用的映射层，修正迁移策略)  
 **Author:** Codex  
 **Review authority:** Controller

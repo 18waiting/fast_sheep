@@ -1,15 +1,5 @@
 //
 // ═══════════════════════════════════════════════════════════════════════════════
-// Shop vs Store 语义说明（参见 docs/architecture/SHOP_VS_STORE_SEMANTICS.md）
-// ═══════════════════════════════════════════════════════════════════════════════
-//
-// 本文件中的 `shopId` 参数属于 **运行时/UI 层** 概念（Shop），表示：
-// - 平台会话的管理标识
-// - 平台 I/O 操作的上下文标识
-//
-// 在领域模型层，`shopId` 实际上是 **Store.id** 的引用。
-// 所有跨域转换必须通过 apps/desktop/src/main/services/shop-store-mapper.ts
-// ═══════════════════════════════════════════════════════════════════════════════
 // M7 PddPlatformAdapter (clean-room). Implements the M5 PlatformAdapter interface
 // as the PDD I/O boundary. Ownership boundaries:
 // - sends EXACTLY ONE already-decided segment per sendText call (segmentation is M5-owned)

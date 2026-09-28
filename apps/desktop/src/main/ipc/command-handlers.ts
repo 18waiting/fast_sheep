@@ -1,19 +1,5 @@
 //
 // ═══════════════════════════════════════════════════════════════════════════════
-// Shop vs Store 语义说明（参见 docs/architecture/SHOP_VS_STORE_SEMANTICS.md）
-// ═══════════════════════════════════════════════════════════════════════════════
-//
-// 本文件中的 `shop_id` 参数属于 **运行时/UI 层** 概念（Shop），表示：
-// - 用户当前激活的会话上下文
-// - IPC 通信的上下文标识
-// - 平台会话的管理标识
-//
-// 在领域模型层，`shop_id` 实际上是 **Store.id** 的引用：
-// - Store = 领域模型中的身份实体（Identity Domain）
-// - Shop = 运行时/UI 层的会话上下文（Runtime/UI Domain）
-//
-// 所有跨域转换必须通过 apps/desktop/src/main/services/shop-store-mapper.ts
-// ═══════════════════════════════════════════════════════════════════════════════
 // M6/M10 command handlers: orchestrator.set_mode / manual_send / no_save_send / cancel / focus,
 // platform.activate_shop / set_view_bounds / reload, jobs.cancel, learning.start,
 // review.propose / apply / restore, audit.decide, optimization.propose / apply.

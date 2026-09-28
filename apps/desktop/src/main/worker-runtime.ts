@@ -1,18 +1,6 @@
 // fail loudly with the exact expected path.
 //
 // ═══════════════════════════════════════════════════════════════════════════════
-// Shop vs Store 语义说明（参见 docs/architecture/SHOP_VS_STORE_SEMANTICS.md）
-// ═══════════════════════════════════════════════════════════════════════════════
-//
-// 本文件同时使用 Shop 和 Store 两个概念：
-// - Shop（ShopRow）= 运行时/UI 层概念，表示会话上下文
-// - Store（StoreRecord）= 领域模型层概念，表示身份实体
-//
-// 关键映射点：
-// - controlled_shop_id 实际上是 Store.id 的引用
-// - ShopRow 是 Store 的运行时表示
-// - 所有跨域转换必须通过 apps/desktop/src/main/services/shop-store-mapper.ts
-// ═══════════════════════════════════════════════════════════════════════════════
 // PACK-003: production packaged-worker runtime path integration (clean-room).
 // Resolves and launches the PACK-002 packaged AI Worker from Electron Main in
 // packaged mode (<process.resourcesPath>\worker\fastwork-ai-worker.exe) through

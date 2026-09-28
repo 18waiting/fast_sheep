@@ -1423,3 +1423,77 @@ private mapRow(row: any): StoreKnowledgeRecord {
 1. **最终验证** — 全项目编译
 2. **提交代码** — 包含所有 ISSUE 的修复
 3. **后续任务** — 等 PDD 流程跑通后，再考虑架构演进
+
+---
+
+## ISSUE-1 修复记录（2026-09-28）
+
+### 问题发现
+
+在审核 `shop-store-mapper.ts` 和 `SHOP_VS_STORE_SEMANTICS.md` 时发现：
+
+1. **映射层是 100% 死代码**
+   - 7 个导出函数，0 个被调用
+   - 没有任何代码 import `shop-store-mapper`
+
+2. **边界点只有注释，没有实际调用**
+   - 5 个文件有注释引用 mapper
+   - 0 个文件实际调用映射函数
+
+3. **重复的 ShopRow 接口**
+   - `shop-service.ts` 和 `shop-store-mapper.ts` 各定义了一个
+   - TypeScript 名义类型系统下，它们是不兼容的类型
+
+4. **文档状态不一致**
+   - Phase 2 声称"已完成"，但实际未集成
+   - 文档说"所有跨域转换必须通过 mapper"，但代码没有遵守
+
+### 根本原因分析
+
+映射层是为"未来可能需要"而添加的，但：
+
+1. **当前架构不需要** — Orchestrator 用 `shopId` 做会话 key 完全够用
+2. **真正的转换在持久化层** — 持久化层直接知道 `store_id`，不需要经过 PlatformAccount 中介
+3. **保留死代码会误导** — 让人以为这是已建立的架构
+
+### 修复方案
+
+**选项 A：删除死代码**（已执行）
+
+1. 删除 `apps/desktop/src/main/services/shop-store-mapper.ts`
+2. 更新 `docs/architecture/SHOP_VS_STORE_SEMANTICS.md`
+   - 修正 Phase 2 的描述（删除"已完成"标记）
+   - 重写 §4-§6（删除映射规则，保留语义定义）
+   - 更新迁移策略（删除映射层相关步骤）
+3. 移除边界点文件中对 mapper 的注释引用
+   - `command-handlers.ts`
+   - `worker-runtime.ts`
+   - `orchestrator-host.ts`
+   - `desktop-ipc/types.ts`
+   - `pdd-platform-adapter.ts`
+
+### 验证结果
+
+- ✅ 全项目 typecheck 通过（0 错误）
+- ✅ 所有对 mapper 的引用已清除
+- ✅ 文档状态与实际代码一致
+
+### 当前状态
+
+**ISSUE-1 现在真正完成：**
+
+1. ✅ Shop 和 Store 在各自的域中使用，没有隐式混用
+2. ✅ 语义定义文档准确反映当前架构
+3. ✅ 没有死代码或误导性注释
+4. ✅ Repository 提供查询方法（`findByExternalRef`, `findByMerchantAndPlatform`），供未来使用
+
+### 未来演进
+
+当实施 ContextEnvelope 时，可能需要：
+
+1. 在持久化边界实现显式映射（使用现有的 Repository 方法）
+2. 评估是否需要统一的映射层工具函数
+3. 在 IdentityLock 构建时使用显式映射
+
+但这些都不是当前 MVP 阶段的任务。
+

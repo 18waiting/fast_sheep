@@ -167,3 +167,53 @@ If a required path or core validation is missing, do not claim `COMPLETE`.
 Do not resume `SHEEP-091` or add live execution authorization merely because a
 Roadmap item is next. Current task/live authorization remains exactly as
 recorded in `project/PROJECT_STATE.json`.
+---
+
+## 8. Development and Testing Environment
+
+**重要：开发和测试环境分离**
+
+### 8.1 开发环境（公司电脑）
+
+- **机器：** macOS（当前开发机）
+- **项目路径：** `/Users/wb02605050/Documents/ChatGPT/fast_sheep`
+- **Node.js 版本：** v20（通过 Homebrew 安装）
+- **可用操作：**
+  - ✅ TypeScript 编译（`pnpm run typecheck`）
+  - ✅ 代码编辑和重构
+  - ✅ Git 操作
+  - ❌ **单元测试**（需要 Node.js v22+ 支持 `--experimental-strip-types`）
+
+### 8.2 测试环境（个人电脑）
+
+- **机器：** 个人电脑（Windows，项目路径 `E:\fast_sheep\`）
+- **Node.js 版本：** v22+（支持 `--experimental-strip-types`）
+- **可用操作：**
+  - ✅ 单元测试（`pnpm run test`）
+  - ✅ 集成测试
+  - ✅ 完整验证流程
+
+### 8.3 Codex 执行约束
+
+在**公司电脑**（macOS 开发环境）上执行任务时：
+
+1. **不要声称测试已运行** — 如果任务要求运行单元测试，但当前环境是 macOS 开发机，必须明确说明"测试需要在个人电脑上运行"
+2. **不要尝试升级 Node.js** — 开发环境保持 v20，不要为了跑测试而升级
+3. **typecheck 是最高验证标准** — 在开发环境上，`pnpm run typecheck` 通过即为代码正确性的最高保证
+4. **测试验证标记为 DEFERRED** — 如果任务需要测试验证，在任务报告中标记为 `DEFERRED: 需要在个人电脑上运行测试`
+
+### 8.4 环境识别
+
+可以通过以下方式识别当前环境：
+
+```bash
+# macOS 开发环境
+uname -s  # 输出: Darwin
+whoami    # 输出: wb02605050（公司账号）
+
+# Windows 测试环境
+# 项目路径包含 E:\fast_sheep\
+```
+
+**当前环境：** macOS 开发环境（公司电脑）
+
