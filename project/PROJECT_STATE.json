@@ -4579,6 +4579,19 @@
       ],
       "owner_approved": true,
       "document": "project/DECISION_RECORD_SHEEP_305_REALIGNMENT.md"
+    },
+    {
+      "id": "DR-2026-09-28-SHEEP-305-RAG-REDEFINITION",
+      "date": "2026-09-28",
+      "type": "TASK_REDEFINITION",
+      "summary": "SHEEP-305 redefined from 'Minimal Store Knowledge Pipeline' to 'RAG Knowledge Base Infrastructure'. New design establishes unified knowledge retrieval infrastructure with type registry, unified retrieval interface, and scene-based routing. SHIPPING_TIME is the first knowledge type.",
+      "impact": [
+        "SHEEP-305",
+        "MVP-A",
+        "Phase 9 Knowledge/RAG"
+      ],
+      "owner_approved": true,
+      "document": "docs/architecture/RAG_KNOWLEDGE_BASE.md"
     }
   ],
   "decisions": [
@@ -4609,5 +4622,42 @@
         "tests/contracts/test_context_envelope_reply_plan_schemas.mjs"
       ]
     }
-  ]
+  ],
+  "sheep_305_entry": {
+    "status": "NOT_AUTHORIZED",
+    "current_stage": "PRE_AUDIT_PRODUCT_DECISION_GATE_ONLY",
+    "dependency": "SHEEP-304 (sealed in 2b55daf; CLOSED by Controller decision 2026-09-22)",
+    "goal": "Build unified RAG knowledge base infrastructure with type registry, retrieval interface, and scene-based routing",
+    "allowed_scope": [
+      "Knowledge type registry (register/manage types without code changes)",
+      "Unified retrieval interface (single entry point for knowledge queries)",
+      "Scene-based routing (route queries to appropriate knowledge types)",
+      "SHIPPING_TIME as first knowledge type on new infrastructure",
+      "TypeScript domain types for knowledge contracts",
+      "Python-side knowledge type registry and retrieval service",
+      "Integration with AI reply generation (via existing RPC boundary)",
+      "Focused tests for type registry, retrieval, and scene routing"
+    ],
+    "must_not": [
+      "full vector retrieval (Phase 9)",
+      "learning model (Phase 9)",
+      "complex conflict resolution (Phase 9)",
+      "Merchant/Product/Conversation layer repositories (Phase 2+)",
+      "dispatch SLA, payment-time, product exception, region exception semantics",
+      "send"
+    ],
+    "gates": {
+      "ai": "OFF",
+      "sending": "OFF",
+      "production_enablement": "OFF / NOT_AUTHORIZED",
+      "real_operations": "STOPPED"
+    },
+    "execution_authorized": false,
+    "next_stage_not_executed": true,
+    "full_sheep_305_closed": false,
+    "definition": "RAG Knowledge Base Infrastructure",
+    "architecture_alignment": "DEC-008 (Layered Knowledge Architecture)",
+    "supersedes": "Minimal Store Knowledge Pipeline for SHIPPING_TIME",
+    "design_document": "docs/architecture/RAG_KNOWLEDGE_BASE.md"
+  }
 }

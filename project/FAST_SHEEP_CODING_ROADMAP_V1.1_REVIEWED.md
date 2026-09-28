@@ -268,45 +268,63 @@ inside one IdentityLock and create one AI turn.
 
 ---
 
-### SHEEP-305 — Minimal Store Knowledge Pipeline for SHIPPING_TIME
+### SHEEP-305 — RAG Knowledge Base Infrastructure
 
 **Status:** `NOT_STARTED / NOT_AUTHORIZED`
 
-**Architecture realignment:** This task now aligns with DEC-008 (Layered Knowledge Architecture) and PDD_MVP_V1 §6 (Knowledge V1). SHIPPING_TIME rules are Store Knowledge, not a standalone fact provider.
+**Architecture realignment:** Supersedes the previous "Minimal Store Knowledge Pipeline" design.
+This task now establishes the unified RAG knowledge base infrastructure per the user's
+vision: "知识信息放在店铺规则、商品规则等信息里，作为 agent 的 RAG 资料库".
+Aligned with DEC-008 (Layered Knowledge Architecture) and PDD_MVP_V1 §6 (Knowledge V1).
 
-**Goal:** Build a minimal knowledge retrieval pipeline that supports importing and retrieving Store Knowledge (including SHIPPING_TIME rules) for AI reply generation.
+**Goal:** Build a unified knowledge retrieval infrastructure (RAG knowledge base) that
+supports multiple knowledge types (store rules, product rules, order facts, etc.) with
+a type registry, unified retrieval interface, and scene-based routing. SHIPPING_TIME
+is the first knowledge type implemented on this infrastructure.
 
-**Dependencies:** `SHEEP-304`; existing persistence infrastructure.
+**Dependencies:** `SHEEP-304`; existing persistence infrastructure (0008_store_knowledge.sql,
+store_knowledge_repository.py).
 
 **Allowed scope:**
-- Knowledge schema (Store Knowledge type, including SHIPPING_TIME rules)
-- Simple import interface (merchant fills in text rules)
-- Simple retrieval (keyword matching + template rendering)
-- AI can retrieve and use knowledge to generate replies
-- Focused tests for schema, import, retrieval, and AI integration
+- Knowledge type registry — register/manage knowledge types without code changes
+- Unified retrieval interface — single entry point for all knowledge queries
+- Scene-based routing — route queries to appropriate knowledge types and repositories
+- SHIPPING_TIME as the first knowledge type on the new infrastructure
+- TypeScript domain types for knowledge contracts
+- Python-side knowledge type registry and retrieval service
+- Integration with AI reply generation (via existing RPC boundary)
+- Focused tests for type registry, retrieval, and scene routing
 
 **Must not:**
 - Implement full vector retrieval (deferred to Phase 9)
 - Implement learning model (deferred to Phase 9)
 - Implement complex conflict resolution (deferred to Phase 9)
+- Add Merchant/Product/Conversation layer repositories (Phase 2+)
 - Invent dispatch SLA, payment-time rule, product exception, or region exception semantics
 - Enable send
 
 **Exit criteria:**
-- Store Knowledge schema supports SHIPPING_TIME rules as a knowledge type
-- Merchant can configure SHIPPING_TIME rules via simple text input
-- Rules are persisted as Store Knowledge with proper merchant/store scope
-- AI can retrieve relevant knowledge when generating SHIPPING_TIME replies
-- Keyword-based retrieval returns correct knowledge for given query
-- Unknown/unresolved knowledge remains explicit
+- Knowledge type registry supports registering new types without code changes
+- Unified retrieval interface accepts scene-based queries and returns ranked results
+- SHIPPING_TIME is registered and retrievable as the first knowledge type
+- Scene-based routing correctly maps SHIPPING_TIME scene to SHIPPING_TIME knowledge type
+- AI reply generation can retrieve knowledge via the unified interface
+- Existing store_knowledge_repository.py is preserved and used by the new service
+- TypeScript domain types define the knowledge contract across the boundary
 - No send is possible
-- Focused tests pass
+- Typecheck passes; focused tests pass (deferred to personal PC for unit tests)
 
-**Customer value:** AI can answer SHIPPING_TIME questions using merchant-configured rules.
+**Customer value:** AI can retrieve merchant-configured knowledge (starting with SHIPPING_TIME)
+using a unified, extensible infrastructure.
 
-**Safety value:** Knowledge is merchant-scoped and authoritative; no guessed facts.
+**Safety value:** Knowledge is merchant-scoped, type-registered, and authoritative;
+no guessed facts. Unknown/unresolved knowledge remains explicit.
 
-**Phase 9 extension path:** This minimal pipeline will be extended in Phase 9 (Knowledge/RAG/Learning) to full vector retrieval, automatic learning, and complex conflict resolution. The schema and import interface remain compatible.
+**Phase 2 extension path:** Add Product layer knowledge (product_knowledge table),
+more knowledge types (PRODUCT_SPEC, RETURN_POLICY, FAQ), and Product-level retrieval.
+
+**Phase 9 extension path:** Vector retrieval (embeddings + FAISS), hybrid retrieval
+(keyword + vector), reranking, and automatic learning.
 
 ---
 
