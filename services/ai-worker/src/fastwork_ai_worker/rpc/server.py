@@ -36,6 +36,7 @@ from .methods.rag import RagMethods
 from .methods.system import SystemMethods
 from .methods.test_only import TestOnlyMethods
 from .methods.store_knowledge import StoreKnowledgeMethods
+from .methods.knowledge_retrieval import KnowledgeRetrievalMethods
 from .protocol import validate_ready_payload
 
 
@@ -70,6 +71,7 @@ class RpcServer:
         M4EngineMethods(self).register(self._dispatcher)
         M4TestOnlyMethods(self).register(self._dispatcher)
         StoreKnowledgeMethods(self).register(self._dispatcher)
+        KnowledgeRetrievalMethods(self).register(self._dispatcher)
         TestOnlyMethods(self).register(self._dispatcher)
 
     @property

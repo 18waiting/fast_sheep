@@ -109,3 +109,6 @@ export * from "./ownership-execution.js";
 
 // SHEEP-300: IdentityLock and InboundEnvelope contract foundation.
 export * from "./identity-inbound.js";
+
+// SHEEP-305: RAG Knowledge Base Infrastructure — domain types for unified knowledge retrieval.
+export * from "./knowledge-domain.js";
