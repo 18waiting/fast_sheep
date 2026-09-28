@@ -65,22 +65,48 @@ class IndexBuilder:
         self,
         entries: List[Dict[str, Any]],
         data_root: str,
+        conn: Optional[Any] = None,
+        merchant_id: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Build all derived indexes into a staging dir and atomically promote."""
+        """Build all derived indexes into a staging dir and atomically promote.
+        
+        Args:
+            entries: List of knowledge_entries
+            data_root: Data root directory
+            conn: Optional database connection for loading store_knowledge
+            merchant_id: Optional merchant filter for store_knowledge
+        """
+        # Load store_knowledge if connection provided
+        store_entries = []
+        if conn is not None:
+            from .store_knowledge_adapter import StoreKnowledgeAdapter
+            adapter = StoreKnowledgeAdapter(conn)
+            store_entries = adapter.fetch_store_knowledge(merchant_id)
+        
+        # Merge entries
+        all_entries = entries + store_entries
+        
         root = storage.resolve_derived_root(data_root, self.config)
         parent = os.path.dirname(root)
         os.makedirs(parent, exist_ok=True)
         staging = os.path.join(parent, ".rag-build-" + uuid.uuid4().hex)
         os.makedirs(staging, exist_ok=True)
         try:
-            self._build_into(staging, entries, faiss)
+            self._build_into(staging, all_entries, faiss)
             # validate staging before promote
             meta = storage.read_meta(staging) or {}
             storage.safe_read_index(storage.global_index_path(staging))
             for pdir in ["common", "global"]:
                 if os.path.exists(storage.global_mapping_path(staging) if pdir == "global" else storage.common_mapping_path(staging)):
                     pass
-            return {"staging": staging, "root": root, "meta": meta}
+            return {
+                "staging": staging,
+                "root": root,
+                "meta": meta,
+                "total_entries": len(all_entries),
+                "product_knowledge_count": len(entries),
+                "store_knowledge_count": len(store_entries)
+            }
         except Exception:
             shutil.rmtree(staging, ignore_errors=True)
             raise
@@ -155,6 +181,8 @@ class IndexBuilder:
                         "product_id": e.get("product_id", ""),
                         "source": e.get("source", ""),
                         "tags": e.get("tags") or [],
+                        "knowledge_type": e.get("knowledge_type", "PRODUCT_KNOWLEDGE"),
+                        "store_knowledge_type": e.get("store_knowledge_type"),
                     }
                 )
         if kind == "global":

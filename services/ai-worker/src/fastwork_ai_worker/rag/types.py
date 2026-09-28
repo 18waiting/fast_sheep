@@ -22,6 +22,8 @@ class RawHit:
     faiss_id: int
     raw_similarity: float
     tier: str  # common | product | global
+    knowledge_type: str = "PRODUCT_KNOWLEDGE"  # NEW: PRODUCT_KNOWLEDGE | STORE_RULE
+    store_knowledge_type: Optional[str] = None  # NEW: SHIPPING_TIME | RETURN_POLICY | etc.
 
 
 @dataclass

@@ -26,7 +26,7 @@ class Retriever:
     def _min_search_score(self) -> float:
         return float(self.config.get("min_search_score", 0.02))
 
-    def _search_tier(self, kind: str, query_vector: np.ndarray, top_k: int, product_id: Optional[str] = None) -> List[RawHit]:
+    def _search_tier(self, kind: str, query_vector: np.ndarray, top_k: int, product_id: Optional[str] = None, knowledge_type: Optional[str] = None) -> List[RawHit]:
         hits: List[RawHit] = []
         threshold = self._quality_threshold() if kind in ("common", "product") else self._min_search_score()
         pairs = self.repo.search(kind, query_vector, top_k, product_id=product_id)
@@ -36,6 +36,11 @@ class Retriever:
             m = self.repo.resolve_entry(kind, faiss_id, product_id=product_id)
             if m is None:
                 continue
+            
+            # Filter by knowledge_type if specified
+            if knowledge_type and m.get("knowledge_type") != knowledge_type:
+                continue
+            
             hits.append(
                 RawHit(
                     entry_id=str(m.get("entry_id", "")),
@@ -47,6 +52,8 @@ class Retriever:
                     faiss_id=int(faiss_id),
                     raw_similarity=float(score),
                     tier=kind,
+                    knowledge_type=str(m.get("knowledge_type", "PRODUCT_KNOWLEDGE")),
+                    store_knowledge_type=m.get("store_knowledge_type"),
                 )
             )
         return hits
@@ -57,16 +64,17 @@ class Retriever:
         product_id: Optional[str],
         top_k: int,
         knowledge_isolation: Optional[bool] = None,
+        knowledge_type: Optional[str] = None,
     ) -> TieredRetrieval:
         isolation = knowledge_isolation if knowledge_isolation is not None else bool(self.config.get("product_isolation", False))
-        common = self._search_tier("common", query_vector, top_k)
+        common = self._search_tier("common", query_vector, top_k, knowledge_type=knowledge_type)
         product: List[RawHit] = []
         if product_id and product_id != COMMON_PRODUCT_ID:
-            product = self._search_tier("product", query_vector, top_k, product_id=product_id)
+            product = self._search_tier("product", query_vector, top_k, product_id=product_id, knowledge_type=knowledge_type)
         global_hits: List[RawHit] = []
         if not isolation:
             multiplier = int(self.config.get("global_search_multiplier", 2))
-            global_hits = self._search_tier("global", query_vector, top_k * multiplier)
+            global_hits = self._search_tier("global", query_vector, top_k * multiplier, knowledge_type=knowledge_type)
         # Merge in priority order, dedupe by entry_id.
         merged: List[RawHit] = []
         seen: set = set()
