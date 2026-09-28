@@ -1,3 +1,19 @@
+//
+// ═══════════════════════════════════════════════════════════════════════════════
+// Shop vs Store 语义说明（参见 docs/architecture/SHOP_VS_STORE_SEMANTICS.md）
+// ═══════════════════════════════════════════════════════════════════════════════
+//
+// 本文件中的 `shop_id` 参数属于 **运行时/UI 层** 概念（Shop），表示：
+// - 用户当前激活的会话上下文
+// - IPC 通信的上下文标识
+// - 平台会话的管理标识
+//
+// 在领域模型层，`shop_id` 实际上是 **Store.id** 的引用：
+// - Store = 领域模型中的身份实体（Identity Domain）
+// - Shop = 运行时/UI 层的会话上下文（Runtime/UI Domain）
+//
+// 所有跨域转换必须通过 apps/desktop/src/main/services/shop-store-mapper.ts
+// ═══════════════════════════════════════════════════════════════════════════════
 // M6/M10 command handlers: orchestrator.set_mode / manual_send / no_save_send / cancel / focus,
 // platform.activate_shop / set_view_bounds / reload, jobs.cancel, learning.start,
 // review.propose / apply / restore, audit.decide, optimization.propose / apply.
@@ -11,7 +27,6 @@ import type { ReviewService } from "../services/review-service.js";
 import type { AuditService } from "../services/audit-service.js";
 import type { DesktopProductOptimizationService } from "../services/product-optimization-service.js";
 import type { LegacyImportService } from "../services/legacy-import-service.js";
-import type { StoreKnowledgeService, StoreKnowledgeUpsertInput } from "../services/store-knowledge-service.js";
 import type { LegacyImportSelectRequest, LegacyImportPlanRequest, LegacyImportApplyAction } from "@fastwork/desktop-ipc";
 import { ok, err } from "./ipc-guard.js";
 import { DesktopError, DESKTOP_ERROR_CODES } from "@fastwork/desktop-ipc";
@@ -27,7 +42,6 @@ export interface CommandDeps {
   audit: AuditService;
   optimization: DesktopProductOptimizationService;
   legacyImport: LegacyImportService;
-  storeKnowledge: StoreKnowledgeService;
 }
 
 export const COMMAND_HANDLERS = {
@@ -137,26 +151,7 @@ export const COMMAND_HANDLERS = {
         legacy_timezone: req.legacy_timezone,
         import_provider_secret: req.import_provider_secret,
         rebuild_rag: true,
-      
-  // SHEEP-305: Store Knowledge command handlers
-  [IPC.storeKnowledgeUpsert]: (deps: CommandDeps) => async (req: StoreKnowledgeUpsertInput): Promise<DesktopResult<{ entry: unknown }>> => {
-    if (!req?.merchant_id || !req?.store_id) return err(new DesktopError(DESKTOP_ERROR_CODES.INVALID_REQUEST, "merchant_id and store_id are required"));
-    try {
-      const entry = deps.storeKnowledge.upsert(req);
-      return ok({ entry });
-    } catch (e) {
-      return err(new DesktopError(DESKTOP_ERROR_CODES.INTERNAL_ERROR, String(e)));
-    }
-  },
-  [IPC.storeKnowledgeDelete]: (deps: CommandDeps) => async (req: { id: string; merchant_id: string }): Promise<DesktopResult<{ deleted: boolean }>> => {
-    if (!req?.id || !req?.merchant_id) return err(new DesktopError(DESKTOP_ERROR_CODES.INVALID_REQUEST, "id and merchant_id are required"));
-    try {
-      const deleted = deps.storeKnowledge.delete(req.id, req.merchant_id);
-      return ok({ deleted });
-    } catch (e) {
-      return err(new DesktopError(DESKTOP_ERROR_CODES.INTERNAL_ERROR, String(e)));
-    }
-  },};
+      };
       const r = await deps.legacyImport.apply(req.selection_token, req.plan_sha256 ?? "", req.session_id, options);
       return ok({ session_id: r.session.session_id, state: r.state });
     } catch (e) {

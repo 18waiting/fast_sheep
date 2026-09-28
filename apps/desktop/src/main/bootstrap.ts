@@ -231,6 +231,10 @@ class InMemoryPlatformAccountRepositoryImpl implements PlatformAccountRepository
   save(p: PlatformAccountRecord): void { this.map.set(p.id, { ...p, externalRef: p.externalRef ?? null }); }
   findById(id: string): PlatformAccountRecord | null { const r = this.map.get(id); return r ? { ...r, externalRef: r.externalRef ?? null } : null; }
   listByMerchant(merchantId: string): PlatformAccountRecord[] { return [...this.map.values()].filter((p) => p.merchantId === merchantId).map((p) => ({ ...p, externalRef: p.externalRef ?? null })); }
+  findByExternalRef(externalRef: string): PlatformAccountRecord | null {
+    const accounts = [...this.map.values()].filter((p) => p.externalRef === externalRef);
+    return accounts.length > 0 ? { ...accounts[0], externalRef: accounts[0].externalRef ?? null } : null;
+  }
 }
 
 class InMemoryStoreRepositoryImpl implements StoreRepository {
@@ -238,6 +242,10 @@ class InMemoryStoreRepositoryImpl implements StoreRepository {
   save(s: StoreRecord): void { this.map.set(s.id, { ...s }); }
   findById(id: string): StoreRecord | null { const r = this.map.get(id); return r ? { ...r } : null; }
   listByMerchant(merchantId: string): StoreRecord[] { return [...this.map.values()].filter((s) => s.merchantId === merchantId).map((s) => ({ ...s })); }
+  findByMerchantAndPlatform(merchantId: string, platform: string): StoreRecord | null {
+    const stores = [...this.map.values()].filter((s) => s.merchantId === merchantId && s.platform === platform);
+    return stores.length > 0 ? { ...stores[0] } : null;
+  }
 }
 
 class InMemoryNormalizedConversationRepositoryImpl implements NormalizedConversationRepository {

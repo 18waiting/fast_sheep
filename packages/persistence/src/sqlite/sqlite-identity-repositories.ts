@@ -40,6 +40,10 @@ export class SqliteStoreRepository implements StoreRepository {
     return this.conn.all<StoreRow>("SELECT id, merchant_id, name, platform FROM stores WHERE merchant_id = ? ORDER BY id", merchantId)
       .map((r) => ({ id: r.id, merchantId: r.merchant_id, name: r.name, platform: r.platform }));
   }
+  findByMerchantAndPlatform(merchantId: string, platform: string): StoreRecord | null {
+    const r = this.conn.get<StoreRow | undefined>("SELECT id, merchant_id, name, platform FROM stores WHERE merchant_id = ? AND platform = ?", merchantId, platform);
+    return r ? { id: r.id, merchantId: r.merchant_id, name: r.name, platform: r.platform } : null;
+  }
 }
 
 export class SqlitePlatformAccountRepository implements PlatformAccountRepository {
@@ -54,6 +58,10 @@ export class SqlitePlatformAccountRepository implements PlatformAccountRepositor
   listByMerchant(merchantId: string): PlatformAccountRecord[] {
     return this.conn.all<PlatformAccountRow>("SELECT id, merchant_id, platform, external_ref FROM platform_accounts WHERE merchant_id = ? ORDER BY id", merchantId)
       .map((r) => ({ id: r.id, merchantId: r.merchant_id, platform: r.platform, externalRef: r.external_ref }));
+  }
+  findByExternalRef(externalRef: string): PlatformAccountRecord | null {
+    const r = this.conn.get<PlatformAccountRow | undefined>("SELECT id, merchant_id, platform, external_ref FROM platform_accounts WHERE external_ref = ?", externalRef);
+    return r ? { id: r.id, merchantId: r.merchant_id, platform: r.platform, externalRef: r.external_ref } : null;
   }
 }
 

@@ -58,3 +58,11 @@ export type {
   M8PageCommandBase,
   M8PageCommandResultBase,
 } from "./generated/platform-m8.js";
+export type {
+  ConversationEngineRequest,
+  ConversationMessage,
+  ConversationContext,
+  ConversationEngineResult,
+  ConversationTraceEntry,
+  HandoffDecision,
+} from "./generated/conversation.js";

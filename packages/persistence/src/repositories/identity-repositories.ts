@@ -41,12 +41,23 @@ export interface StoreRepository {
   save(s: StoreRecord): void;
   findById(id: string): StoreRecord | null;
   listByMerchant(merchantId: string): StoreRecord[];
+  /**
+   * Shop vs Store 语义分离（参见 docs/architecture/SHOP_VS_STORE_SEMANTICS.md）
+   * 通过 merchantId + platform 查找 Store，用于 Shop → Store 映射。
+   */
+  findByMerchantAndPlatform(merchantId: string, platform: string): StoreRecord | null;
 }
 
 export interface PlatformAccountRepository {
   save(p: PlatformAccountRecord): void;
   findById(id: string): PlatformAccountRecord | null;
   listByMerchant(merchantId: string): PlatformAccountRecord[];
+  /**
+   * Shop vs Store 语义分离（参见 docs/architecture/SHOP_VS_STORE_SEMANTICS.md）
+   * 通过 externalRef 查找 PlatformAccount，用于 Shop.id → PlatformAccount 映射。
+   * externalRef 存储了 Shop.id 的引用。
+   */
+  findByExternalRef(externalRef: string): PlatformAccountRecord | null;
 }
 
 export interface MemberRepository {

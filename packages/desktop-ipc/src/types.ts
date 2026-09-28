@@ -1,3 +1,17 @@
+//
+// ═══════════════════════════════════════════════════════════════════════════════
+// Shop vs Store 语义说明（参见 docs/architecture/SHOP_VS_STORE_SEMANTICS.md）
+// ═══════════════════════════════════════════════════════════════════════════════
+//
+// 本文件中的 `shop_id` 字段属于 **运行时/UI 层** 概念（Shop），表示：
+// - IPC 通信的上下文标识
+// - UI 状态的会话标识
+//
+// 在领域模型层，`shop_id` 实际上是 **Store.id** 的引用。
+// 所有跨域转换必须通过 apps/desktop/src/main/services/shop-store-mapper.ts
+//
+// 注意：QueueScope/QueueItemView 中的 `store_id` 属于领域模型层（Store）。
+// ═══════════════════════════════════════════════════════════════════════════════
 // Request/response/event type mappings for the M6 typed IPC (clean-room).
 import type { IPC } from "./channels.js";
 

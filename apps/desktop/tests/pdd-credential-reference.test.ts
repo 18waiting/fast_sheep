@@ -30,6 +30,15 @@ class FakePlatformAccountRepository implements PlatformAccountRepository {
       .filter((account) => account.merchantId === merchantId)
       .map((account) => ({ ...account }));
   }
+
+  findByExternalRef(externalRef: string): PlatformAccountRecord | null {
+    const accounts = [...this.accounts.values()].filter((account) => account.externalRef === externalRef);
+    return accounts.length > 0 ? { ...accounts[0] } : null;
+  }
+
+  save(account: PlatformAccountRecord): void {
+    this.accounts.set(account.id, { ...account });
+  }
 }
 
 class RecordingSecretStore implements SecretStore {
