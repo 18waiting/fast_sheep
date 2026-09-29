@@ -92,11 +92,18 @@
         "customer_identity": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["kind", "value"],
+          "required": [
+            "kind",
+            "value"
+          ],
           "properties": {
             "kind": {
               "type": "string",
-              "enum": ["customerUid", "buyer_id", "user_id"]
+              "enum": [
+                "customerUid",
+                "buyer_id",
+                "user_id"
+              ]
             },
             "value": {
               "type": "string"
@@ -119,7 +126,11 @@
     "TriggerMessage": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["message_id", "content", "received_at"],
+      "required": [
+        "message_id",
+        "content",
+        "received_at"
+      ],
       "properties": {
         "message_id": {
           "type": "string"
@@ -173,20 +184,33 @@
     "ProvenancedFact": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["value", "source", "provenance"],
+      "required": [
+        "value",
+        "source",
+        "provenance"
+      ],
       "properties": {
         "value": {
           "description": "Fact value (any JSON type)"
         },
         "source": {
           "type": "string",
-          "enum": ["platform_api", "merchant_config", "store_knowledge", "product_knowledge", "order_system", "logistics_system"],
+          "enum": [
+            "platform_api",
+            "merchant_config",
+            "store_knowledge",
+            "product_knowledge",
+            "order_system",
+            "logistics_system"
+          ],
           "description": "Fact source system"
         },
         "provenance": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["retrieved_at"],
+          "required": [
+            "retrieved_at"
+          ],
           "properties": {
             "retrieved_at": {
               "type": "string",
@@ -209,7 +233,13 @@
     "RetrievedKnowledge": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["knowledge_id", "knowledge_type", "title", "content", "relevance_score"],
+      "required": [
+        "knowledge_id",
+        "knowledge_type",
+        "title",
+        "content",
+        "relevance_score"
+      ],
       "properties": {
         "knowledge_id": {
           "type": "string",
@@ -217,7 +247,11 @@
         },
         "knowledge_type": {
           "type": "string",
-          "enum": ["SHIPPING_TIME", "RETURN_POLICY", "FAQ", "OTHER"]
+          "enum": [
+            "PRODUCT_KNOWLEDGE",
+            "STORE_RULE"
+          ],
+          "description": "Layer 1: 粗粒度分类（产品类型 vs 店铺规则）"
         },
         "title": {
           "type": "string"
@@ -233,22 +267,44 @@
         },
         "matched_keywords": {
           "type": "array",
-          "items": {"type": "string"},
+          "items": {
+            "type": "string"
+          },
           "description": "Keywords that matched this knowledge"
+        },
+        "store_knowledge_type": {
+          "type": "string",
+          "enum": [
+            "SHIPPING_TIME",
+            "RETURN_POLICY",
+            "FAQ",
+            "OTHER"
+          ],
+          "description": "Layer 2: 细粒度分类（仅当 knowledge_type=STORE_RULE 时使用）"
         }
       }
     },
     "ConversationTurn": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["turn_id", "actor", "content", "timestamp"],
+      "required": [
+        "turn_id",
+        "actor",
+        "content",
+        "timestamp"
+      ],
       "properties": {
         "turn_id": {
           "type": "string"
         },
         "actor": {
           "type": "string",
-          "enum": ["customer", "merchant", "ai", "system"]
+          "enum": [
+            "customer",
+            "merchant",
+            "ai",
+            "system"
+          ]
         },
         "content": {
           "type": "string"
@@ -262,14 +318,24 @@
     "ExplicitUnknown": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["unknown_id", "category", "description"],
+      "required": [
+        "unknown_id",
+        "category",
+        "description"
+      ],
       "properties": {
         "unknown_id": {
           "type": "string"
         },
         "category": {
           "type": "string",
-          "enum": ["missing_identity", "missing_fact", "contradictory_facts", "stale_evidence", "unresolved_scene"],
+          "enum": [
+            "missing_identity",
+            "missing_fact",
+            "contradictory_facts",
+            "stale_evidence",
+            "unresolved_scene"
+          ],
           "description": "Category of unknown"
         },
         "description": {

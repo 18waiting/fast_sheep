@@ -99,6 +99,43 @@ AI inference must not silently become an authoritative fact.
 If required deterministic facts are missing, contradictory, stale, or
 unverified, the execution path must degrade safely.
 
+### 4.1 ReplyPlanVerifier (SHEEP-306 ✅)
+
+**Implementation:** `apps/desktop/src/main/services/reply-plan-verifier.ts`
+
+The ReplyPlanVerifier provides structural pre-execution verification for ReplyPlan.
+It validates:
+
+1. **IdentityLock completeness** (`verifyIdentityLock`):
+   - All required fields exist and are non-empty
+   - Platform is a valid PlatformId
+   - Customer identity kind is within bounded vocabulary
+   - Customer identity value is non-empty
+
+2. **Fact reference existence** (`verifyFactFreshness`):
+   - Each fact_reference.fact_id exists in authoritative_facts
+   - Fact source is within bounded vocabulary
+   - Fact key format is valid (`<category>.<key>`)
+
+3. **Blocking unknown detection**:
+   - Explicit unknowns with `blocking: true` prevent execution
+   - Non-blocking unknowns produce warnings
+
+**Verification results** separate errors (blocking) from warnings (non-blocking).
+All verification errors are deterministic (no AI-based judgment).
+
+**Integration:** Shadow mode in Main process
+(`apps/desktop/src/main/services/reply-plan-verification-integration.ts`).
+Verifier runs alongside existing AI reply flow without blocking it.
+
+**MVP simplifications:**
+- No timestamp freshness validation (Phase 9 future work)
+- No cross-shop consistency checks (Phase 9 future work)
+- No value_snapshot consistency validation (Phase 9 future work)
+- Mock ReplyPlan used (Worker does not yet generate ReplyPlan)
+
+**Testing:** 40 test cases across verifier test files.
+
 ---
 
 ## 5. Deterministic Policy Inputs

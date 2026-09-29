@@ -150,7 +150,33 @@ AI inference MUST NOT silently become an authoritative fact.
 
 Knowledge and context must be shop-scoped before multi-shop AUTO.
 
-The exact serialized schema is future work.
+### 5.1 Implementation Status (SHEEP-306 ✅)
+
+**Schema defined:** `packages/domain/src/context-envelope.ts`
+
+**TypeScript types** mirror JSON Schema definitions in
+`resources/contracts/schemas/domain/context-envelope.schema.json`.
+Contract Schema types use flat strings with snake_case naming (JSON-compatible).
+
+**Builder implemented:** `apps/desktop/src/main/services/context-envelope-builder.ts`
+
+The ContextEnvelopeBuilder orchestrates:
+1. IdentityLock mapping (InboundTurn → ContractIdentityLock)
+2. Scene classification (MinimalSceneClassifier)
+3. Authoritative fact gathering (AuthoritativeFactsPort)
+4. Knowledge retrieval (StoreKnowledgeRetrievalPort)
+5. Explicit unknown identification (UnknownIdentifier)
+
+**Integration:** Shadow-mode integration in Main process
+(`apps/desktop/src/main/services/context-envelope-integration.ts`).
+Builder runs alongside existing AI reply flow without blocking it.
+
+**Testing:** 7 test cases in `apps/desktop/tests/context-envelope-builder.test.ts`.
+
+**MVP simplifications:**
+- Builder runs in shadow mode (does not replace Format A)
+- Worker still receives Format A (ConversationEngineRequest)
+- Format C (ContextEnvelope) is constructed but not yet used for generation
 
 ---
 
@@ -172,10 +198,43 @@ A ReplyPlan conceptually requires:
 - policy-relevant metadata
 - verification requirements
 
-Exact schema implementation is future work.
-
 The architecture must preserve the current single-source principle: the
 canonical reply proposal model evolves; it is not duplicated.
+
+### 6.1 Implementation Status (SHEEP-306 ✅)
+
+**Schema defined:** `packages/domain/src/reply-plan.ts`
+
+**TypeScript types** mirror JSON Schema definitions in
+`resources/contracts/schemas/domain/reply-plan.schema.json`.
+
+**Verifier implemented:** `apps/desktop/src/main/services/reply-plan-verifier.ts`
+
+The ReplyPlanVerifier orchestrates pre-execution verification:
+1. IdentityLock completeness and validity (`verifyIdentityLock`)
+2. Fact reference existence and source validation (`verifyFactFreshness`)
+3. Blocking unknown detection
+4. Error/warning aggregation
+
+**Integration:** Shadow-mode verification in Main process
+(`apps/desktop/src/main/services/reply-plan-verification-integration.ts`).
+Verifier runs alongside existing AI reply flow without blocking it.
+
+**Testing:** 40 test cases across verifier test files:
+- `identity-lock-verifier.test.ts` (15 cases)
+- `fact-freshness-verifier.test.ts` (13 cases)
+- `reply-plan-verifier.test.ts` (12 cases)
+
+**MVP simplifications:**
+- Verifier runs in shadow mode (does not block send)
+- Mock ReplyPlan used (Worker does not yet generate ReplyPlan)
+- No timestamp freshness validation (Phase 9 future work)
+- No cross-shop consistency checks (Phase 9 future work)
+
+**Future (Phase 3 / SHEEP-307):**
+- Worker accepts ContextEnvelope as input
+- Worker generates real ReplyPlan (replaces Mock)
+- Verifier validates real ReplyPlan before execution
 
 ---
 

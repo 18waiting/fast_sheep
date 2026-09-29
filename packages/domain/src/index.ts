@@ -109,3 +109,16 @@ export * from "./ownership-execution.js";
 
 // SHEEP-300: IdentityLock and InboundEnvelope contract foundation.
 export * from "./identity-inbound.js";
+
+// SHEEP-306: ContextEnvelope and ReplyPlan contracts (Format C).
+export * from "./context-envelope.js";
+export * from "./reply-plan.js";
+
+// SHEEP-305: Knowledge type filtering for scene-based RAG routing.
+export * from "./knowledge.js";
+
+// SHEEP-308: Policy Decision for deterministic evaluation
+export * from "./policy-decision.js";
+
+// SHEEP-308: Policy Configuration for RolloutMode resolution
+export * from "./policy-config.js";

@@ -84,7 +84,10 @@
     "ReplyContent": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["text", "language"],
+      "required": [
+        "text",
+        "language"
+      ],
       "properties": {
         "text": {
           "type": "string",
@@ -106,23 +109,36 @@
     "ReplySegment": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["segment_type", "content"],
+      "required": [
+        "segment_type",
+        "content"
+      ],
       "properties": {
         "segment_type": {
           "type": "string",
-          "enum": ["text", "greeting", "answer", "closing", "disclaimer"]
+          "enum": [
+            "text",
+            "greeting",
+            "answer",
+            "closing",
+            "disclaimer"
+          ]
         },
         "content": {
           "type": "string"
         },
         "fact_refs": {
           "type": "array",
-          "items": {"type": "string"},
+          "items": {
+            "type": "string"
+          },
           "description": "Fact references used in this segment"
         },
         "knowledge_refs": {
           "type": "array",
-          "items": {"type": "string"},
+          "items": {
+            "type": "string"
+          },
           "description": "Knowledge references used in this segment"
         }
       }
@@ -130,7 +146,11 @@
     "FactReference": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["fact_id", "fact_key", "source"],
+      "required": [
+        "fact_id",
+        "fact_key",
+        "source"
+      ],
       "properties": {
         "fact_id": {
           "type": "string",
@@ -142,7 +162,14 @@
         },
         "source": {
           "type": "string",
-          "enum": ["platform_api", "merchant_config", "store_knowledge", "product_knowledge", "order_system", "logistics_system"]
+          "enum": [
+            "platform_api",
+            "merchant_config",
+            "store_knowledge",
+            "product_knowledge",
+            "order_system",
+            "logistics_system"
+          ]
         },
         "value_snapshot": {
           "description": "Snapshot of fact value at retrieval time"
@@ -156,7 +183,11 @@
     "KnowledgeReference": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["knowledge_id", "knowledge_type", "relevance_score"],
+      "required": [
+        "knowledge_id",
+        "knowledge_type",
+        "relevance_score"
+      ],
       "properties": {
         "knowledge_id": {
           "type": "string",
@@ -164,7 +195,11 @@
         },
         "knowledge_type": {
           "type": "string",
-          "enum": ["SHIPPING_TIME", "RETURN_POLICY", "FAQ", "OTHER"]
+          "enum": [
+            "PRODUCT_KNOWLEDGE",
+            "STORE_RULE"
+          ],
+          "description": "Layer 1: 粗粒度分类（产品类型 vs 店铺规则）"
         },
         "title": {
           "type": "string"
@@ -177,20 +212,41 @@
           "type": "number",
           "minimum": 0,
           "maximum": 1
+        },
+        "store_knowledge_type": {
+          "type": "string",
+          "enum": [
+            "SHIPPING_TIME",
+            "RETURN_POLICY",
+            "FAQ",
+            "OTHER"
+          ],
+          "description": "Layer 2: 细粒度分类（仅当 knowledge_type=STORE_RULE 时使用）"
         }
       }
     },
     "InferenceReference": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["inference_id", "inference_type", "description", "confidence"],
+      "required": [
+        "inference_id",
+        "inference_type",
+        "description",
+        "confidence"
+      ],
       "properties": {
         "inference_id": {
           "type": "string"
         },
         "inference_type": {
           "type": "string",
-          "enum": ["intent_classification", "sentiment_analysis", "entity_extraction", "summarization", "paraphrase"],
+          "enum": [
+            "intent_classification",
+            "sentiment_analysis",
+            "entity_extraction",
+            "summarization",
+            "paraphrase"
+          ],
           "description": "Type of AI inference"
         },
         "description": {
@@ -205,7 +261,9 @@
         },
         "based_on": {
           "type": "array",
-          "items": {"type": "string"},
+          "items": {
+            "type": "string"
+          },
           "description": "Fact/knowledge IDs this inference is based on"
         }
       }
@@ -213,11 +271,18 @@
     "PolicyMetadata": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["rollout_mode"],
+      "required": [
+        "rollout_mode"
+      ],
       "properties": {
         "rollout_mode": {
           "type": "string",
-          "enum": ["SHADOW", "HUMAN_CONFIRM", "AUTO"],
+          "enum": [
+            "OFF",
+            "SHADOW",
+            "HUMAN_CONFIRM",
+            "AUTO"
+          ],
           "description": "Current rollout mode"
         },
         "requires_confirmation": {
@@ -230,12 +295,18 @@
         },
         "risk_level": {
           "type": "string",
-          "enum": ["low", "medium", "high"],
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
           "description": "Risk level assessment"
         },
         "applicable_policies": {
           "type": "array",
-          "items": {"type": "string"},
+          "items": {
+            "type": "string"
+          },
           "description": "Policy IDs that apply to this reply"
         }
       }
@@ -243,7 +314,10 @@
     "VerificationRequirements": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["identity_lock_valid", "facts_validated"],
+      "required": [
+        "identity_lock_valid",
+        "facts_validated"
+      ],
       "properties": {
         "identity_lock_valid": {
           "type": "boolean",
@@ -265,14 +339,24 @@
     "RequiredVerification": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["verification_id", "category", "description"],
+      "required": [
+        "verification_id",
+        "category",
+        "description"
+      ],
       "properties": {
         "verification_id": {
           "type": "string"
         },
         "category": {
           "type": "string",
-          "enum": ["identity_lock", "fact_freshness", "target_binding", "stale_selection", "cross_shop_check"],
+          "enum": [
+            "identity_lock",
+            "fact_freshness",
+            "target_binding",
+            "stale_selection",
+            "cross_shop_check"
+          ],
           "description": "Verification category"
         },
         "description": {
@@ -288,14 +372,25 @@
     "PlanUnknown": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["unknown_id", "category", "description"],
+      "required": [
+        "unknown_id",
+        "category",
+        "description"
+      ],
       "properties": {
         "unknown_id": {
           "type": "string"
         },
         "category": {
           "type": "string",
-          "enum": ["missing_identity", "missing_fact", "contradictory_facts", "stale_evidence", "unresolved_scene", "low_confidence_inference"],
+          "enum": [
+            "missing_identity",
+            "missing_fact",
+            "contradictory_facts",
+            "stale_evidence",
+            "unresolved_scene",
+            "low_confidence_inference"
+          ],
           "description": "Category of unknown"
         },
         "description": {
