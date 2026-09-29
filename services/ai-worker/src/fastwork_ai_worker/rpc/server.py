@@ -22,7 +22,7 @@ from .constants import (
 from .dispatcher import Dispatcher
 from .errors import WorkerRpcError, error_response
 from .framing import log_stderr, parse_line, write_frame
-from .methods.conversation import ConversationMethods
+from .methods.conversation import ConversationMethods, ConversationMethodsV2  # SHEEP-307: v2 RPC method
 from .methods.handoff import HandoffMethods
 from .methods.feedback import FeedbackMethods
 from .methods.learning import LearningMethods
@@ -60,6 +60,7 @@ class RpcServer:
         SystemMethods(self).register(self._dispatcher)
         RagMethods(self).register(self._dispatcher)
         ConversationMethods(self).register(self._dispatcher)
+        ConversationMethodsV2(self).register(self._dispatcher)  # SHEEP-307: conversation.generate_v2
         HandoffMethods(self).register(self._dispatcher)
         FeedbackMethods(self).register(self._dispatcher)
         LearningMethods(self).register(self._dispatcher)

@@ -75,10 +75,16 @@ describe("SHEEP-306: ContextEnvelope and ReplyPlan schemas", () => {
       assert.ok(knowledge);
       assert.ok(knowledge.properties.knowledge_id);
       assert.ok(knowledge.properties.knowledge_type);
+      // Layer 1: 粗粒度分类
       const types = knowledge.properties.knowledge_type.enum;
-      assert.ok(types.includes("SHIPPING_TIME"));
-      assert.ok(types.includes("RETURN_POLICY"));
-      assert.ok(types.includes("FAQ"));
+      assert.ok(types.includes("STORE_RULE"));
+      assert.ok(types.includes("PRODUCT_KNOWLEDGE"));
+      // Layer 2: 细粒度分类（store_knowledge_type）
+      assert.ok(knowledge.properties.store_knowledge_type);
+      const storeTypes = knowledge.properties.store_knowledge_type.enum;
+      assert.ok(storeTypes.includes("SHIPPING_TIME"));
+      assert.ok(storeTypes.includes("RETURN_POLICY"));
+      assert.ok(storeTypes.includes("FAQ"));
     });
 
     it("defines ExplicitUnknown for blocking unknowns", () => {
@@ -174,6 +180,7 @@ describe("SHEEP-306: ContextEnvelope and ReplyPlan schemas", () => {
       assert.ok(modes.includes("SHADOW"));
       assert.ok(modes.includes("HUMAN_CONFIRM"));
       assert.ok(modes.includes("AUTO"));
+      assert.ok(modes.includes("OFF"));
     });
 
     it("defines VerificationRequirements for pre-execution checks", () => {

@@ -15,10 +15,12 @@ from .clock import Clock, FakeClock
 from .duplicate_cache import DuplicateCache
 from .handoff_port import HandoffDecisionPort, NoopHandoffDecisionPort
 from .order_context import OrderContextProvider
+from .scene_knowledge_mapping import get_knowledge_filter  # SHEEP-305: Scene-based knowledge routing
 from .post_processor import PostProcessor
 from .question_completion import QuestionCompletionPort
 from .trace import TraceRecorder
 from .welcome_policy import WelcomePolicy
+from .reply_plan_builder import ReplyPlanBuilder  # SHEEP-307: ReplyPlan integration
 
 ORDERED = ["未下单", "已下单"]
 
@@ -103,10 +105,30 @@ class ConversationEngine:
             product_id = None
 
         # 6. PRODUCT_RETRIEVAL (embedding failure -> degraded error)
+        # SHEEP-305: Scene-based knowledge routing
+        scene = request.get("scene") or request.get("scene_classification", {}).get("scene")
+        knowledge_type, store_knowledge_type = get_knowledge_filter(scene)
+        
+        # Build retrieval request with knowledge filters
+        retrieval_request = {
+            "query": question,
+            "product_id": product_id,
+            "order_state": order["order_state"],
+            "top_k": 15,
+        }
+        
+        # Only add filters if not default (backward compatible)
+        if knowledge_type != "ALL":
+            retrieval_request["knowledge_type"] = knowledge_type
+        if store_knowledge_type:
+            retrieval_request["store_knowledge_type"] = store_knowledge_type
+        
+        # Log the routing decision
+        self._add(trace, "SceneRouting", "knowledge_filter", 
+                  f"scene={scene}, knowledge_type={knowledge_type}, store_knowledge_type={store_knowledge_type}")
+        
         try:
-            retrieval = self.rag_engine.retrieve(
-                {"query": question, "product_id": product_id, "order_state": order["order_state"], "top_k": 15}
-            )
+            retrieval = self.rag_engine.retrieve(retrieval_request)
         except RagError as e:
             self._add(trace, "RAGEngine", "PRODUCT_RETRIEVAL", "degraded")
             return self._error({"category": "retrieval", "retryable": True, "code": e.code}, trace, mode=mode)
@@ -268,3 +290,131 @@ class ConversationEngine:
     def _completed_sim(request: Dict[str, Any], completed: str) -> float:
         # deterministic completed-sim from request mock (fixtures) or 0.0
         return float(request.get("completed_sim", 0.0))
+
+    # ---- SHEEP-307: ContextEnvelope integration ----------------------------
+    def generate_from_envelope(self, envelope: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate reply from ContextEnvelope (SHEEP-307).
+        
+        This method accepts a ContextEnvelope as input, extracts the necessary
+        fields, and calls the existing generate() method. This maintains backward
+        compatibility while enabling the new envelope-based workflow.
+        
+        Args:
+            envelope: ContextEnvelope dict conforming to context-envelope.schema.json
+        
+        Returns:
+            ConversationEngine result dict (same as generate())
+        
+        Example:
+            >>> engine = ConversationEngine(...)
+            >>> result = engine.generate_from_envelope({
+            ...     "envelope_id": "...",
+            ...     "identity_lock": {...},
+            ...     "scene": "SHIPPING_TIME",
+            ...     "trigger_message": {"content": "什么时候发货", ...},
+            ...     "authoritative_facts": {...},
+            ...     "retrieved_knowledge": [...],
+            ... })
+        """
+        # Extract question from trigger_message
+        trigger_message = envelope.get("trigger_message", {})
+        question = trigger_message.get("content", "")
+        if not question:
+            from .errors import ConversationError, CODE_INVALID_REQUEST
+            raise ConversationError(
+                CODE_INVALID_REQUEST,
+                "trigger_message.content is required",
+                category="validation"
+            )
+        
+        # Extract identity_lock fields
+        identity_lock = envelope.get("identity_lock", {})
+        
+        # Build compatible request dict
+        request: Dict[str, Any] = {
+            "question": question,
+            "correlation_id": envelope.get("envelope_id"),
+        }
+        
+        # Extract product_id from authoritative_facts if available
+        facts = envelope.get("authoritative_facts", {})
+        product_facts = facts.get("product_facts", {})
+        if product_facts and "product_id" in product_facts:
+            request["product_id"] = product_facts["product_id"].get("value")
+        
+        # Extract order_state from order_facts if available
+        order_facts = facts.get("order_facts", {})
+        if order_facts and "order_state" in order_facts:
+            request["order_state"] = order_facts["order_state"].get("value")
+        
+        # Extract scene from envelope
+        scene = envelope.get("scene")
+        if scene:
+            request["scene"] = scene
+        
+        # Extract chat_history from conversation_context if available
+        conversation_context = envelope.get("conversation_context", [])
+        if conversation_context:
+            # Convert ConversationTurn to chat_history format
+            chat_history = []
+            for turn in conversation_context:
+                role = turn.get("role", "user")
+                content = turn.get("content", "")
+                if role and content:
+                    chat_history.append({"role": role, "content": content})
+            if chat_history:
+                request["chat_history"] = chat_history
+        
+        # Add identity context for downstream use
+        if identity_lock:
+            request["_identity_lock"] = identity_lock
+            request["_envelope_id"] = envelope.get("envelope_id")
+        
+        # Add retrieved_knowledge for reference (not used in generate() yet)
+        retrieved_knowledge = envelope.get("retrieved_knowledge", [])
+        if retrieved_knowledge:
+            request["_retrieved_knowledge"] = retrieved_knowledge
+        
+        # Add explicit_unknowns for reference
+        explicit_unknowns = envelope.get("explicit_unknowns", [])
+        if explicit_unknowns:
+            request["_explicit_unknowns"] = explicit_unknowns
+        
+        # Call existing generate() method
+        result = self.generate(request)
+        
+        # Build ReplyPlan from result and envelope (SHEEP-307)
+        builder = ReplyPlanBuilder()
+        
+        # Extract reply from result
+        reply = result.get("reply", "")
+        
+        # Extract facts, knowledge, inferences from envelope and result
+        # For MVP, we pass empty lists; future: extract from result trace/metadata
+        facts_used = []  # TODO: Extract from authoritative_facts used in reply
+        knowledge_used = envelope.get("retrieved_knowledge", [])
+        inferences_used = []  # TODO: Extract from AI inferences
+        
+        # Extract segments if present
+        segments = result.get("segments")
+        
+        # Extract unknowns from envelope
+        unknowns = envelope.get("explicit_unknowns", [])
+        
+        # Build ReplyPlan
+        plan = builder.build(
+            envelope=envelope,
+            reply=reply,
+            facts_used=facts_used,
+            knowledge_used=knowledge_used,
+            inferences_used=inferences_used,
+            segments=segments,
+            unknowns=unknowns,
+        )
+        
+        # Return ReplyPlan with trace for debugging
+        return {
+            "plan": plan,
+            "trace": result.get("trace", []),
+            "fast_return": result.get("fast_return", False),
+        }
