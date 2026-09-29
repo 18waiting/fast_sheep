@@ -55,6 +55,7 @@ class RAGEngine:
         isolation = request.get("knowledge_isolation")
         top_k = int(request.get("top_k") or self.config.get("product_search_top_k", 15))
         knowledge_type = request.get("knowledge_type")  # NEW: Optional filter
+        store_knowledge_type = request.get("store_knowledge_type")  # SHEEP-305: Optional store knowledge type filter
 
         if not self.repo.ready():
             from .errors import RagError
@@ -62,7 +63,7 @@ class RAGEngine:
             raise RagError(CODE_INDEX_NOT_READY, "derived index not ready", category="internal", retryable=True)
 
         query_vector = self.embed_query(query)
-        tr = self.retriever.retrieve(query_vector, product_id, top_k, knowledge_isolation=isolation, knowledge_type=knowledge_type)
+        tr = self.retriever.retrieve(query_vector, product_id, top_k, knowledge_isolation=isolation, knowledge_type=knowledge_type, store_knowledge_type=store_knowledge_type)
 
         # dedupe
         hits = dedupe_hits(tr.common_hits + tr.product_hits + tr.global_hits)
