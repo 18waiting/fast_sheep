@@ -165,3 +165,17 @@ export {
   isVerificationFailed,
   createVerificationFailure,
 } from "./verification-record.js";
+
+// SHEEP-311: Desktop Notification
+export {
+  type NotificationType,
+  type NotificationSeverity,
+  type DesktopNotification,
+  createAcknowledgedNotification,
+  createRejectedNotification,
+  createUnknownNotification,
+  createConfirmationRequiredNotification,
+  createVerificationFailedNotification,
+  isUnknownNotification,
+  requiresHumanAction,
+} from "./desktop-notification.js";
