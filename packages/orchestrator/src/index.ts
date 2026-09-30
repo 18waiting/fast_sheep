@@ -69,3 +69,17 @@ export { PersistenceConversationRepository, type PersistenceAppendTurn, type Per
 export { ForbiddenFilter } from "./pre-send/forbidden-filter.js";
 export { MessageCleaner } from "./pre-send/message-cleaner.js";
 export { SendFailureClassifier, type SendFailureType, type SendFailureClassification } from "./core/send-failure-classifier.js";
+
+// SHEEP-311: HumanConfirmController
+export {
+  HumanConfirmController,
+  type RolloutMode,
+  type ConfirmationStatus,
+  type IdentityLock,
+  type ReplyPlanRef,
+  type PolicyDecisionRef,
+  type ConfirmationRequest,
+  type ConfirmationBinding,
+  type ConfirmationResult,
+  type HumanConfirmControllerOptions,
+} from "./core/human-confirm-controller.js";
