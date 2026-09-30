@@ -273,3 +273,133 @@ test("完整审计流程 - 端到端构建", () => {
   assert.equal(hasOutcome(audit), true);
   assert.equal(hasNotification(audit), true);
 });
+
+// ============================================================
+// SHEEP-312: 审计链完整性补充测试
+// ============================================================
+
+test("SHEEP-312: 不可变性 — record* 函数不修改原对象", () => {
+  const original = startAudit({ shop_id: "shop-1", conversation_id: "conv-1", plan_id: "plan-1" });
+  const originalVerifications = original.verifications.length;
+  const originalStatus = original.status;
+
+  // 记录验证
+  const withVerification = recordVerification(original, {
+    type: "identity_lock",
+    passed: true,
+    timestamp: "2026-09-30T10:00:01Z",
+    details: "All fields matched",
+  });
+
+  // 原对象不变
+  assert.equal(original.verifications.length, originalVerifications);
+  assert.equal(original.status, originalStatus);
+
+  // 新对象有更新
+  assert.equal(withVerification.verifications.length, originalVerifications + 1);
+});
+
+test("SHEEP-312: 完整审计流程 — 所有事件类型都记录", () => {
+  const audit = startAudit({ shop_id: "shop-1", conversation_id: "conv-1", plan_id: "plan-1" });
+
+  const withConfirmation = recordConfirmation(audit, {
+    confirmation_id: "conf-1",
+    plan_id: "plan-1",
+    identity_lock: {
+      merchant_id: "m-1",
+      store_id: "s-1",
+      platform: "pdd",
+      platform_account_id: "pa-1",
+      customer_identity: { kind: "customerUid", value: "c-1" },
+      conversation_id: "conv-1",
+      trigger_message_id: "msg-1",
+    },
+    policy_version: "1.0.0",
+    confirmed_at: "2026-09-30T10:00:01Z",
+    confirmed_by: "operator-1",
+    confirmation_hash: "sha256-abc123",
+  });
+
+  const withVerification = recordVerification(withConfirmation, {
+    type: "wrong_target",
+    passed: true,
+    timestamp: "2026-09-30T10:00:02Z",
+    details: "All targets valid",
+  });
+
+  const withOutcome = recordOutcome(withVerification, {
+    status: "delivered",
+    platform_message_id: "pm-1",
+    delivered_at: "2026-09-30T10:00:03Z",
+  });
+
+  const withNotification = recordNotification(withOutcome, {
+    type: "send_result",
+    title: "消息已发送",
+    message: "消息已成功发送给客户",
+    timestamp: "2026-09-30T10:00:04Z",
+  });
+
+  const completed = completeAudit(withNotification);
+
+  // 验证完整性
+  assert.equal(completed.status, "COMPLETED");
+  assert.ok(completed.completed_at);
+  assert.ok(hasConfirmation(completed));
+  assert.ok(completed.verifications.length > 0);
+  assert.ok(hasOutcome(completed));
+  assert.ok(hasNotification(completed));
+  assert.equal(isAuditComplete(completed), true);
+});
+
+test("SHEEP-312: 审计链可追溯 — 所有事件共享 audit_id", () => {
+  const audit = startAudit({ shop_id: "shop-1", conversation_id: "conv-1", plan_id: "plan-1" });
+  const auditId = audit.audit_id;
+
+  const withVerification = recordVerification(audit, {
+    type: "identity_lock",
+    passed: true,
+    timestamp: "2026-09-30T10:00:01Z",
+  });
+
+  const withOutcome = recordOutcome(withVerification, {
+    status: "delivered",
+    platform_message_id: "pm-1",
+    delivered_at: "2026-09-30T10:00:02Z",
+  });
+
+  const completed = completeAudit(withOutcome);
+
+  // 所有阶段的 audit_id 相同
+  assert.equal(audit.audit_id, auditId);
+  assert.equal(withVerification.audit_id, auditId);
+  assert.equal(withOutcome.audit_id, auditId);
+  assert.equal(completed.audit_id, auditId);
+});
+
+test("SHEEP-312: isAuditComplete — 缺少任何必需项都返回 false", () => {
+  const base = startAudit({ shop_id: "shop-1", conversation_id: "conv-1", plan_id: "plan-1" });
+
+  // IN_PROGRESS 不完整
+  assert.equal(isAuditComplete(base), false);
+
+  // 有验证但无结果
+  const withVerification = recordVerification(base, {
+    type: "identity_lock",
+    passed: true,
+    timestamp: "2026-09-30T10:00:01Z",
+  });
+  assert.equal(isAuditComplete(withVerification), false);
+
+  // 有结果但无通知
+  const withOutcome = recordOutcome(withVerification, {
+    status: "delivered",
+    platform_message_id: "pm-1",
+    delivered_at: "2026-09-30T10:00:02Z",
+  });
+  assert.equal(isAuditComplete(withOutcome), false);
+
+  // COMPLETED 但缺少通知
+  const completedWithoutNotification = completeAudit(withOutcome);
+  assert.equal(isAuditComplete(completedWithoutNotification), false);
+});
