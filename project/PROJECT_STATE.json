@@ -4726,6 +4726,19 @@
         "测试文件缺失 → DEFERRED 到个人电脑"
       ],
       "conclusion": "⚠️ RPC 注册问题已修复，测试文件 DEFERRED"
+    },
+    "SHEEP-312": {
+      "status": "COMPLETE",
+      "subtasks": "7/7 完成",
+      "audit_reports": [
+        "SHEEP_312_IDENTITY_LOCK_AUDIT.md",
+        "SHEEP_312_WRONG_TARGET_AUDIT.md",
+        "SHEEP_312_UNKNOWN_SEMANTICS_AUDIT.md",
+        "SHEEP_312_AUDIT_CHAIN_AUDIT.md"
+      ],
+      "adversarial_tests": "15 + 21 = 36 个测试全部通过",
+      "auto_authorization": "NOT_GRANTED",
+      "conclusion": "✅ 安全验证全部通过，AUTO 授权保持 NOT_GRANTED"
     }
   },
   "sheep_308_progress": {
@@ -4746,7 +4759,8 @@
     "SHEEP-307",
     "SHEEP-309",
     "SHEEP-310",
-    "SHEEP-311"
+    "SHEEP-311",
+    "SHEEP-312"
   ],
   "sheep_308_controller_review": "PASS",
   "sheep_308_review_date": "2026-09-30",
@@ -4806,13 +4820,27 @@
   "sheep_311_typecheck": "PASS",
   "sheep_311_tests": "DEFERRED_PERSONAL_PC",
   "sheep_311_test_count": 120,
-  "sheep_312_status": "PLANNING",
+  "sheep_312_status": "COMPLETE",
   "sheep_312_plan_date": "2026-09-30",
   "sheep_312_task_definition": "project/SHEEP_312_TASK_DEFINITION.md",
   "sheep_312_execution_plan": "project/SHEEP_312_EXECUTION_PLAN.md",
   "sheep_312_subtasks_total": 7,
-  "sheep_312_subtasks_completed": 0,
+  "sheep_312_subtasks_completed": 7,
   "sheep_312_estimated_days": 7,
   "sheep_312_dependency": "SHEEP-311",
-  "sheep_312_auto_authorization": "NOT_GRANTED"
+  "sheep_312_auto_authorization": "NOT_GRANTED",
+  "sheep_312_completion_date": "2026-09-30",
+  "sheep_312_result": "COMPLETE",
+  "sheep_312_typecheck": "PASS",
+  "sheep_312_tests": "DEFERRED_PERSONAL_PC",
+  "sheep_312_task_report": "project/SHEEP_312_TASK_REPORT.md",
+  "sheep_312_progress": {
+    "subtask_1_identity_lock": "COMPLETE",
+    "subtask_2_wrong_target": "COMPLETE",
+    "subtask_3_unknown_semantics": "COMPLETE",
+    "subtask_4_adversarial_tests": "COMPLETE",
+    "subtask_5_audit_chain": "COMPLETE",
+    "subtask_6_authorization_package": "COMPLETE",
+    "subtask_7_project_state": "COMPLETE"
+  }
 }
