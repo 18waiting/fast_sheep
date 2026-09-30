@@ -32,6 +32,7 @@ import { SendFailureClassifier } from "./send-failure-classifier.js";
 import { WrongTargetValidator } from "./wrong-target-validator.js";
 import { BindingValidator } from "./binding-validator.js";
 import { RetryPolicy } from "../policies/retry-policy.js";
+import { HumanConfirmController, type IdentityLock, type ConfirmationResult, type ReplyPlanRef, type PolicyDecisionRef } from "./human-confirm-controller.js";
 import {
   createConversationRuntimeState,
   type ConversationRuntimeState,
@@ -72,6 +73,9 @@ export interface OrchestratorOptions {
   countdownTickMs?: number;
   schedule?: ScheduleFn;
   initialState?: Record<string, Record<string, unknown>>;
+
+  // SHEEP-311: Optional HumanConfirmController for HUMAN_CONFIRM mode
+  humanConfirmController?: HumanConfirmController;
 }
 
 interface SendFeedbackOptions {
@@ -107,6 +111,9 @@ export class ConversationOrchestrator {
   private readonly wrongTargetValidator: WrongTargetValidator;
   private readonly bindingValidator: BindingValidator;
   private readonly retryPolicy: RetryPolicy;
+
+  // SHEEP-311: Human confirmation controller
+  private readonly humanConfirmController?: HumanConfirmController;
 
   private readonly conversations = new Map<string, ConversationRuntimeState>();
   private readonly decisions: DecisionRecord[] = [];
@@ -152,6 +159,9 @@ export class ConversationOrchestrator {
     this.wrongTargetValidator = new WrongTargetValidator();
     this.bindingValidator = new BindingValidator();
     this.retryPolicy = new RetryPolicy();
+
+    // SHEEP-311: Initialize human confirmation controller
+    this.humanConfirmController = options.humanConfirmController;
 
     for (const [seedKey, seed] of Object.entries(options.initialState ?? {})) {
       const separatorIndex = seedKey.indexOf("\u0000");
@@ -539,6 +549,182 @@ export class ConversationOrchestrator {
         recordFeedback: true,
       });
     }
+  }
+
+
+  // SHEEP-311: Human Confirmation Methods
+  
+  /**
+   * Request human confirmation for a ReplyPlan.
+   * 
+   * @param plan - Reference to the ReplyPlan.
+   * @param decision - Reference to the PolicyDecision.
+   * @returns The confirmation request, or null if HumanConfirmController is not configured.
+   * @throws Error if AUTO mode is attempted.
+   */
+  requestHumanConfirmation(plan: ReplyPlanRef, decision: PolicyDecisionRef): ReturnType<HumanConfirmController["requestConfirmation"]> | null {
+    if (!this.humanConfirmController) {
+      this.recordDecision({
+        decision: "human_confirm_skipped",
+        reason: "HumanConfirmController not configured",
+        plan_id: plan.plan_id,
+      });
+      return null;
+    }
+
+    const request = this.humanConfirmController.requestConfirmation(plan, decision);
+    
+    this.recordDecision({
+      decision: "human_confirm_requested",
+      plan_id: plan.plan_id,
+      confirmation_id: request.confirmation_id,
+      rollout_mode: decision.rollout_mode,
+    });
+
+    this.emit("HumanConfirmationRequested", {
+      plan_id: plan.plan_id,
+      confirmation_id: request.confirmation_id,
+      expires_at: request.expires_at,
+    });
+
+    return request;
+  }
+
+  /**
+   * Confirm a pending confirmation request.
+   * 
+   * @param confirmationId - The confirmation request ID.
+   * @param userId - The user ID who is confirming.
+   * @returns The confirmation result.
+   */
+  confirmHumanAction(confirmationId: string, userId: string): ConfirmationResult {
+    if (!this.humanConfirmController) {
+      return {
+        success: false,
+        reason: "HumanConfirmController not configured",
+      };
+    }
+
+    const result = this.humanConfirmController.confirm(confirmationId, userId);
+
+    if (result.success) {
+      this.recordDecision({
+        decision: "human_confirm_confirmed",
+        confirmation_id: confirmationId,
+        confirmed_by: userId,
+      });
+
+      this.emit("HumanConfirmationConfirmed", {
+        confirmation_id: confirmationId,
+        confirmed_by: userId,
+      });
+    } else {
+      this.recordDecision({
+        decision: "human_confirm_failed",
+        confirmation_id: confirmationId,
+        reason: result.reason,
+      });
+    }
+
+    return result;
+  }
+
+  /**
+   * Reject a pending confirmation request.
+   * 
+   * @param confirmationId - The confirmation request ID.
+   * @param userId - The user ID who is rejecting.
+   * @param reason - The reason for rejection.
+   * @returns The confirmation result.
+   */
+  rejectHumanAction(confirmationId: string, userId: string, reason: string): ConfirmationResult {
+    if (!this.humanConfirmController) {
+      return {
+        success: false,
+        reason: "HumanConfirmController not configured",
+      };
+    }
+
+    const result = this.humanConfirmController.reject(confirmationId, userId, reason);
+
+    if (result.success) {
+      this.recordDecision({
+        decision: "human_confirm_rejected",
+        confirmation_id: confirmationId,
+        rejected_by: userId,
+        reason,
+      });
+
+      this.emit("HumanConfirmationRejected", {
+        confirmation_id: confirmationId,
+        rejected_by: userId,
+        reason,
+      });
+    }
+
+    return result;
+  }
+
+  /**
+   * Get the status of a confirmation request.
+   * 
+   * @param confirmationId - The confirmation request ID.
+   * @returns The confirmation status.
+   */
+  getHumanConfirmationStatus(confirmationId: string): string {
+    if (!this.humanConfirmController) {
+      return "NOT_CONFIGURED";
+    }
+
+    return this.humanConfirmController.getConfirmationStatus(confirmationId);
+  }
+
+  /**
+   * Validate that a confirmation binding matches the expected plan and identity.
+   * 
+   * @param confirmationId - The confirmation request ID.
+   * @param expectedPlanId - The expected ReplyPlan ID.
+   * @param expectedIdentityLock - The expected IdentityLock.
+   * @returns true if the confirmation is valid.
+   */
+  validateHumanConfirmation(
+    confirmationId: string,
+    expectedPlanId: string,
+    expectedIdentityLock: IdentityLock
+  ): boolean {
+    if (!this.humanConfirmController) {
+      return false;
+    }
+
+    const request = this.humanConfirmController.getRequest(confirmationId);
+    if (!request || request.status !== "CONFIRMED") {
+      return false;
+    }
+
+    // Create a minimal binding for validation
+    const binding = {
+      confirmation_id: request.confirmation_id,
+      plan_id: request.plan_id,
+      identity_lock: request.identity_lock,
+      policy_version: request.policy_version,
+      confirmed_at: request.requested_at, // Approximation
+      confirmed_by: "unknown", // Not stored in request
+      confirmation_hash: "", // Not stored in request
+      expires_at: request.expires_at,
+    };
+
+    return this.humanConfirmController.validateConfirmation(
+      binding,
+      expectedPlanId,
+      expectedIdentityLock
+    );
+  }
+
+  /**
+   * Check if HumanConfirmController is configured.
+   */
+  isHumanConfirmationEnabled(): boolean {
+    return this.humanConfirmController !== undefined;
   }
 
   private async sendSuggestion(state: ConversationRuntimeState, options: SendFeedbackOptions): Promise<void> {
