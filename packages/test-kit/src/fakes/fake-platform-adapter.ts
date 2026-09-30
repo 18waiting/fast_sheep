@@ -11,7 +11,7 @@ export class FakePlatformAdapter {
   constructor(clock: { now(): number } | null = null) { this.clock = clock; }
   async sendText(shopId: string, conversationId: string, segments: string[]): Promise<SendAttemptLike> {
     this.sendCalls.push({ shopId, conversationId, segments, virtualTimeMs: this.clock ? this.clock.now() : 0 });
-    if (this.sendError) return { ok: false, error: "send_failed", sent_segments: 0 };
+    if (this.sendError) return { ok: false, error: "Network error: send failed", sent_segments: 0 };
     return { ok: true, sent_segments: segments.length };
   }
   async getCurrentConversationState(_shopId: string, _conversationId: string): Promise<{ hasNewMessage: boolean }> {
