@@ -4842,5 +4842,25 @@
     "subtask_5_audit_chain": "COMPLETE",
     "subtask_6_authorization_package": "COMPLETE",
     "subtask_7_project_state": "COMPLETE"
+  },
+  "sheep_313_status": "PLANNED",
+  "sheep_313_plan_date": "2026-09-30",
+  "sheep_313_task_definition": "project/SHEEP_313_TASK_DEFINITION.md",
+  "sheep_313_execution_plan": "project/SHEEP_313_EXECUTION_PLAN.md",
+  "sheep_313_milestone": "MVP-E MULTI_SHOP_EXPANSION",
+  "sheep_313_dependency": "SHEEP-312",
+  "sheep_313_subtasks_total": 7,
+  "sheep_313_subtasks_completed": 0,
+  "sheep_313_estimated_days": 7,
+  "sheep_313_exit_criteria_count": 8,
+  "sheep_313_test_count_target": "43+",
+  "sheep_313_progress": {
+    "subtask_1_audit": "PENDING",
+    "subtask_2_fixtures": "PENDING",
+    "subtask_3_concurrency_conversation": "PENDING",
+    "subtask_4_knowledge_send": "PENDING",
+    "subtask_5_audit_failure": "PENDING",
+    "subtask_6_config_adversarial": "PENDING",
+    "subtask_7_report": "PENDING"
   }
 }
