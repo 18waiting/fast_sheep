@@ -851,8 +851,8 @@
   "current_phase": "MVP_A_FOUNDATION",
   "current_milestone": "M-A.2 Scene and Context Foundation",
   "last_closed_task": "SHEEP-311",
-  "current_task": "SHEEP-311 COMPLETE: HUMAN_CONFIRM PDD Transport and Verification",
-  "next_action": "Controller review SHEEP-311 task report and validation report, then PASS or REPAIR",
+  "current_task": "SHEEP-312 PLANNING: AUTO Safety and Adversarial Validation",
+  "next_action": "Controller review SHEEP-312 task definition and execution plan, then authorize execution",
   "next_authoritative_roadmap_id": "SHEEP-312",
   "next_task_execution_authorized": false,
   "current_execution_authorization": false,
@@ -4805,5 +4805,14 @@
   "sheep_311_result": "COMPLETE",
   "sheep_311_typecheck": "PASS",
   "sheep_311_tests": "DEFERRED_PERSONAL_PC",
-  "sheep_311_test_count": 120
+  "sheep_311_test_count": 120,
+  "sheep_312_status": "PLANNING",
+  "sheep_312_plan_date": "2026-09-30",
+  "sheep_312_task_definition": "project/SHEEP_312_TASK_DEFINITION.md",
+  "sheep_312_execution_plan": "project/SHEEP_312_EXECUTION_PLAN.md",
+  "sheep_312_subtasks_total": 7,
+  "sheep_312_subtasks_completed": 0,
+  "sheep_312_estimated_days": 7,
+  "sheep_312_dependency": "SHEEP-311",
+  "sheep_312_auto_authorization": "NOT_GRANTED"
 }
