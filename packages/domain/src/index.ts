@@ -122,3 +122,18 @@ export * from "./policy-decision.js";
 
 // SHEEP-308: Policy Configuration for RolloutMode resolution
 export * from "./policy-config.js";
+
+// SHEEP-311: Transport Outcome
+export {
+  type TransportOutcomeType,
+  type TransportOutcome,
+  type UnknownOutcome,
+  type AcknowledgedOutcome,
+  type RejectedOutcome,
+  createAcknowledgedOutcome,
+  createRejectedOutcome,
+  createUnknownOutcome,
+  isUnknownOutcome,
+  isAcknowledgedOutcome,
+  isRejectedOutcome,
+} from "./transport-outcome.js";
