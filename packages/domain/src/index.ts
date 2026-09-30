@@ -137,3 +137,19 @@ export {
   isAcknowledgedOutcome,
   isRejectedOutcome,
 } from "./transport-outcome.js";
+
+// SHEEP-311: Confirmation Binding
+export {
+  type ConfirmationStatus,
+  type ConfirmationBinding,
+  type ConfirmationRequest,
+  type ConfirmationFailure,
+  type ConfirmationValidation,
+  type ConfirmationValidator,
+  type ConfirmationValidationContext,
+  createConfirmationRequest,
+  createConfirmationBinding,
+  isPendingConfirmation,
+  isConfirmedConfirmation,
+  computeConfirmationHash,
+} from "./confirmation-binding.js";
