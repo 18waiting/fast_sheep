@@ -851,7 +851,7 @@
   "current_phase": "MVP_A_FOUNDATION",
   "current_milestone": "M-A.2 Scene and Context Foundation",
   "last_closed_task": "SHEEP-307",
-  "current_task": "SHEEP-308 完成（Deterministic Policy and RolloutMode Gate）。所有 7 个子任务已完成。等待 Controller PASS。",
+  "current_task": "SHEEP-308 Controller PASS。所有 4 个任务（305-308）已完成并提交。等待规划下一个任务。",
   "next_action": "开始 SHEEP-308 子任务 1：定义 PolicyDecision 类型",
   "next_authoritative_roadmap_id": "SHEEP-308",
   "next_task_execution_authorized": false,
@@ -4737,9 +4737,14 @@
     "subtask_6": "COMPLETE",
     "subtask_7": "COMPLETE"
   },
-  "sheep_308_status": "COMPLETE",
+  "sheep_308_status": "PASS",
   "sheep_308_completed_at": "2026-09-29",
   "completed_tasks": [
-    "SHEEP-308"
-  ]
+    "SHEEP-308",
+    "SHEEP-305",
+    "SHEEP-306",
+    "SHEEP-307"
+  ],
+  "sheep_308_controller_review": "PASS",
+  "sheep_308_review_date": "2026-09-30"
 }
