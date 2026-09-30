@@ -297,24 +297,9 @@ export class ShadowPipelineOrchestrator {
         "TURN_BUILD",
         async () => {
           const outcome = this.deps.turnBuilder.ingest(ingestRequest);
-          
-          // Wait for quiet window to expire and turn to be emitted.
-          // The turnBuilder aggregates messages within a quiet window.
-          // We poll repeatedly until a turn is available or timeout.
-          // Bootstrap uses a short quiet window (50ms) for SHADOW mode.
-          let turn: InboundTurn | null = null;
-          const maxWaitMs = 1000; // 1 second timeout
-          const pollIntervalMs = 20; // Poll every 20ms
-          const startTime = Date.now();
-          
-          while (Date.now() - startTime < maxWaitMs) {
-            const emittedTurns = this.deps.turnBuilder.poll();
-            if (emittedTurns.length > 0) {
-              turn = emittedTurns[emittedTurns.length - 1];
-              break;
-            }
-            await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
-          }
+          // Poll for expired turns
+          const emittedTurns = this.deps.turnBuilder.poll();
+          const turn = emittedTurns.length > 0 ? emittedTurns[emittedTurns.length - 1] : null;
 
           return {
             outcome_status: outcome.status,
@@ -323,7 +308,6 @@ export class ShadowPipelineOrchestrator {
             turn_emitted: turn !== null,
             turn_id: turn?.turn_id ?? null,
             source_message_ids: turn?.source_message_ids ?? [],
-            wait_ms: Date.now() - startTime,
           };
         },
         { message_id: messageId, conversation_id: conversationId }

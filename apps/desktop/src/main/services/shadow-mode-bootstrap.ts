@@ -139,7 +139,7 @@ export function bootstrapShadowMode(deps: ShadowBootstrapDeps): ShadowModeCompon
   // Turn builder (SHEEP-301)
   const turnBuilder = createInboundTurnBuilder({
     enabled: true,
-    quietWindowMs: 500, // 500ms quiet window for turn aggregation
+    quietWindowMs: 50, // Short window for SHADOW mode (orchestrator polls with 1s timeout) // 500ms quiet window for turn aggregation
   });
 
   // Scene classifier (SHEEP-304)
