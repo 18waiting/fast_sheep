@@ -153,3 +153,15 @@ export {
   isConfirmedConfirmation,
   computeConfirmationHash,
 } from "./confirmation-binding.js";
+
+// SHEEP-311: Verification Record
+export {
+  type VerificationType,
+  type VerificationRecord,
+  type VerificationFailure,
+  createPassedVerification,
+  createFailedVerification,
+  isVerificationPassed,
+  isVerificationFailed,
+  createVerificationFailure,
+} from "./verification-record.js";
