@@ -154,3 +154,60 @@ test("可选字段未提供 - 跳过验证", () => {
   });
   assert.equal(result.valid, true);
 });
+
+// ============================================================
+// SHEEP-312: 补充边界场景测试
+// ============================================================
+
+test("SHEEP-312: whitespace-only platformAccountId - 拒绝", () => {
+  const v = new WrongTargetValidator();
+  const result = v.validate({
+    shopId: "shop-1",
+    conversationId: "conv-1",
+    platformAccountId: "   ",
+  });
+  assert.equal(result.valid, false);
+  assert.ok(result.failures.some(f => f.field === "platformAccountId"));
+});
+
+test("SHEEP-312: whitespace-only sessionId - 拒绝", () => {
+  const v = new WrongTargetValidator();
+  const result = v.validate({
+    shopId: "shop-1",
+    conversationId: "conv-1",
+    sessionId: "   ",
+  });
+  assert.equal(result.valid, false);
+  assert.ok(result.failures.some(f => f.field === "sessionId"));
+});
+
+test("SHEEP-312: whitespace-only documentVersion 但无 expected - 不触发 mismatch", () => {
+  const v = new WrongTargetValidator();
+  const result = v.validate({
+    shopId: "shop-1",
+    conversationId: "conv-1",
+    documentVersion: "   ",
+    // 无 expectedDocumentVersion → 不触发 mismatch 检查
+  });
+  // documentVersion 是 whitespace-only 但没有 expected，不触发 mismatch
+  // 这是设计决策：不提供 expected 则跳过版本检查
+  assert.equal(result.valid, true, "无 expected 时 whitespace documentVersion 不拒绝");
+});
+
+test("SHEEP-312: 完全有效的全字段上下文 - 通过", () => {
+  const v = new WrongTargetValidator();
+  const result = v.validate({
+    shopId: "shop-1",
+    conversationId: "conv-1",
+    customerUid: "buyer-1",
+    platformAccountId: "pa-1",
+    triggerMessageId: "msg-1",
+    sessionId: "sess-1",
+    documentVersion: "v1",
+    expectedShopId: "shop-1",
+    expectedCustomerUid: "buyer-1",
+    expectedDocumentVersion: "v1",
+  });
+  assert.equal(result.valid, true);
+  assert.equal(result.failures.length, 0);
+});

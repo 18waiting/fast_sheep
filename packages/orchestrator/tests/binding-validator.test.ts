@@ -144,3 +144,63 @@ test("空白字符串 - 视为缺失", () => {
   assert.equal(result.valid, false);
   assert.ok(result.failures.some(f => f.binding === "shop"));
 });
+
+// ============================================================
+// SHEEP-312: 补充边界场景测试
+// ============================================================
+
+test("SHEEP-312: whitespace-only platformAccountId - 拒绝", () => {
+  const v = new BindingValidator();
+  const result = v.validate({
+    shopId: "shop-1",
+    platformAccountId: "   ",
+    conversationId: "conv-1",
+    triggerMessageId: "msg-1",
+    sessionId: "sess-1",
+    documentVersion: "v1",
+  });
+  assert.equal(result.valid, false);
+  assert.ok(result.failures.some(f => f.binding === "platform"));
+});
+
+test("SHEEP-312: whitespace-only triggerMessageId - 拒绝", () => {
+  const v = new BindingValidator();
+  const result = v.validate({
+    shopId: "shop-1",
+    platformAccountId: "pa-1",
+    conversationId: "conv-1",
+    triggerMessageId: "   ",
+    sessionId: "sess-1",
+    documentVersion: "v1",
+  });
+  assert.equal(result.valid, false);
+  assert.ok(result.failures.some(f => f.binding === "trigger"));
+});
+
+test("SHEEP-312: whitespace-only sessionId - 拒绝", () => {
+  const v = new BindingValidator();
+  const result = v.validate({
+    shopId: "shop-1",
+    platformAccountId: "pa-1",
+    conversationId: "conv-1",
+    triggerMessageId: "msg-1",
+    sessionId: "   ",
+    documentVersion: "v1",
+  });
+  assert.equal(result.valid, false);
+  assert.ok(result.failures.some(f => f.binding === "session"));
+});
+
+test("SHEEP-312: whitespace-only documentVersion - 拒绝", () => {
+  const v = new BindingValidator();
+  const result = v.validate({
+    shopId: "shop-1",
+    platformAccountId: "pa-1",
+    conversationId: "conv-1",
+    triggerMessageId: "msg-1",
+    sessionId: "sess-1",
+    documentVersion: "   ",
+  });
+  assert.equal(result.valid, false);
+  assert.ok(result.failures.some(f => f.binding === "document"));
+});
