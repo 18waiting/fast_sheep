@@ -778,6 +778,27 @@ node --test "tests/*.test.ts"
 - [ ] 对抗性测试全部通过
 - [ ] Typecheck 通过（已在开发环境验证）
 
+### 11.6 现有测试兼容性验证
+
+SHEEP-310 修改了 `performSend()` 的重试逻辑，以下现有测试需要在个人电脑上验证仍然通过：
+
+| 测试文件 | 测试名称 | 验证内容 |
+|---------|---------|---------|
+| `packages/orchestrator/tests/send-failure.test.ts` | send failure -> refill/retry once (GF-ORCH-008) | 网络错误触发 refill_on_failure |
+| `packages/orchestrator/tests/orchestrator-golden-fixtures.test.ts` | GF-ORCH-008 | 金色测试：发送失败→重试 |
+
+**修复说明：**
+- `FakePlatformAdapter` 的错误消息从 `"send_failed"` 改为 `"Network error: send failed"`
+- 使其被 `SendFailureClassifier` 正确分类为 `SAFE_PRE_ATTEMPT`（允许重试）
+- 保持现有测试的预期行为不变
+
+**验证命令：**
+```bash
+cd packages/orchestrator
+node --test "tests/send-failure.test.ts"
+node --test "tests/orchestrator-golden-fixtures.test.ts"
+```
+
 ### 11.6 相关文档
 
 - 任务报告: `project/SHEEP_310_TASK_REPORT.md`
@@ -786,5 +807,5 @@ node --test "tests/*.test.ts"
 
 ---
 
-**文档更新:** v1.3（新增 SHEEP-310 测试）  
+**文档更新:** v1.4（新增现有测试兼容性验证 + FakePlatformAdapter 修复说明）  
 **更新日期:** 2026-09-30
