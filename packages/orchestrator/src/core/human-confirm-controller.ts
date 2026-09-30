@@ -194,8 +194,9 @@ export class HumanConfirmController {
     }
 
     // Calculate expiration time if configured
+    // SHEEP-312 FIX: Use this.clock() instead of Date.now() for testability
     const expiresAt = this.defaultExpirationMs
-      ? new Date(Date.now() + this.defaultExpirationMs).toISOString()
+      ? new Date(new Date(this.clock()).getTime() + this.defaultExpirationMs).toISOString()
       : undefined;
 
     // Create the confirmation request
@@ -412,10 +413,10 @@ export class HumanConfirmController {
       return false;
     }
 
-    // SHEEP-312: Validate generation if provided on both sides
-    // If expectedIdentityLock has a generation, it must match the binding's generation.
-    // This prevents stale-generation replay attacks.
-    if (expectedIdentityLock.generation !== undefined) {
+    // SHEEP-312 FIX: Validate generation bidirectionally
+    // If either side has a generation, they must match.
+    // This prevents stale-generation replay attacks and mismatched generations.
+    if (expectedIdentityLock.generation !== undefined || binding.identity_lock.generation !== undefined) {
       if (binding.identity_lock.generation !== expectedIdentityLock.generation) {
         return false;
       }

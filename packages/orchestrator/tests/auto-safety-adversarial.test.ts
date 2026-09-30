@@ -220,27 +220,44 @@ test("SHEEP-312 对抗性: 跨触发消息执行 — 消息 A 的确认不能用
 // 场景 6：过期确认执行
 // ============================================================================
 test("SHEEP-312 对抗性: 过期确认 — 过期的确认不能用于执行", () => {
+  // SHEEP-312 FIX: 正确测试过期机制
+  // 使用可变时钟来模拟时间流逝
+  let currentTime = "2026-09-30T10:00:00.000Z";
+  const mutableClock = () => currentTime;
+
   const controller = new HumanConfirmController({
-    clock: fixedClock,
-    defaultExpirationMs: 1000, // 1 秒过期
+    clock: mutableClock,
+    defaultExpirationMs: 60000, // 60 秒过期
   });
 
   const plan: ReplyPlanRef = { plan_id: "plan-expire", identity_lock: lockShopA };
   const request = controller.requestConfirmation(plan, humanConfirmDecision);
 
-  // 确认请求已过期（通过修改 clock 模拟）
-  const futureClock = () => "2026-09-30T10:01:00.000Z"; // 1 分钟后
-  const controller2 = new HumanConfirmController({
-    clock: futureClock,
-    defaultExpirationMs: 1000,
-  });
-  const request2 = controller2.requestConfirmation(plan, humanConfirmDecision);
+  // 确认请求存在且为 PENDING
+  assert.equal(request.status, "PENDING");
+  assert.ok(request.expires_at, "应该有过期时间");
 
-  // 检查状态
-  const status = controller2.getConfirmationStatus(request2.confirmation_id);
-  // 即使状态还是 PENDING，过期检查应该在 validateConfirmation 时生效
-  // 这里主要验证过期机制存在
-  assert.ok(status === "PENDING" || status === "EXPIRED");
+  // 确认还没过期
+  const statusBeforeExpiry = controller.getConfirmationStatus(request.confirmation_id);
+  assert.equal(statusBeforeExpiry, "PENDING", "还没过期时应该是 PENDING");
+
+  // 时间流逝到过期之后
+  currentTime = "2026-09-30T10:02:00.000Z"; // 2 分钟后
+
+  // 现在应该过期了
+  const statusAfterExpiry = controller.getConfirmationStatus(request.confirmation_id);
+  assert.equal(statusAfterExpiry, "EXPIRED", "过期后应该是 EXPIRED");
+
+  // 尝试确认已过期的请求应该失败
+  const confirmResult = controller.confirm(request.confirmation_id, "operator-1");
+  assert.equal(confirmResult.success, false, "已过期的确认不应该被确认");
+  // SHEEP-312 REVIEW FIX: 断言必须覆盖两种过期路径：
+  // 1. getConfirmationStatus 先调用（副作用标记 EXPIRED）→ "not pending: EXPIRED"
+  // 2. confirm 直接检测过期 → "has expired"
+  assert.ok(
+    confirmResult.reason?.toLowerCase().includes("expired") || confirmResult.reason?.includes("not pending"),
+    `应该返回过期相关的原因，实际: "${confirmResult.reason}"`
+  );
 });
 
 // ============================================================================

@@ -23,14 +23,15 @@ import { createAcknowledgedNotification } from "../src/desktop-notification.ts";
 import type { ContractIdentityLock } from "../src/context-envelope.ts";
 
 // Mock ContractIdentityLock for testing
+// SHEEP-312 FIX: Use correct ContractCustomerIdentity structure (kind + value)
 const mockIdentityLock: ContractIdentityLock = {
   merchant_id: "merchant-1",
   store_id: "store-1",
   platform: "pdd",
   platform_account_id: "account-1",
   customer_identity: {
-    customer_uid: "customer-1",
-    customer_nick: "Test Customer",
+    kind: "customerUid",
+    value: "customer-1",
   },
   conversation_id: "conv-1",
   trigger_message_id: "msg-1",
@@ -276,20 +277,28 @@ test("完整审计流程 - 端到端构建", () => {
 
 // ============================================================
 // SHEEP-312: 审计链完整性补充测试
+// SHEEP-312 FIX: 使用正确的类型和字段名
 // ============================================================
+
+// Helper to create a VerificationRecord with correct fields
+function createVerificationRecord(auditId: string, verificationType: "IDENTITY_LOCK" | "WRONG_TARGET" | "BINDING" | "REPLY_PLAN" | "CONFIRMATION"): import("../src/verification-record.js").VerificationRecord {
+  return {
+    verification_id: \`v-\${Date.now()}-\${Math.random().toString(36).slice(2, 7)}\`,
+    audit_id: auditId,
+    verification_type: verificationType,
+    verified_at: new Date().toISOString(),
+    passed: true,
+  };
+}
 
 test("SHEEP-312: 不可变性 — record* 函数不修改原对象", () => {
   const original = startAudit({ shop_id: "shop-1", conversation_id: "conv-1", plan_id: "plan-1" });
   const originalVerifications = original.verifications.length;
   const originalStatus = original.status;
 
-  // 记录验证
-  const withVerification = recordVerification(original, {
-    type: "identity_lock",
-    passed: true,
-    timestamp: "2026-09-30T10:00:01Z",
-    details: "All fields matched",
-  });
+  // 记录验证 — 使用正确的 VerificationRecord 结构
+  const verification = createVerificationRecord(original.audit_id, "IDENTITY_LOCK");
+  const withVerification = recordVerification(original, verification);
 
   // 原对象不变
   assert.equal(original.verifications.length, originalVerifications);
@@ -302,43 +311,29 @@ test("SHEEP-312: 不可变性 — record* 函数不修改原对象", () => {
 test("SHEEP-312: 完整审计流程 — 所有事件类型都记录", () => {
   const audit = startAudit({ shop_id: "shop-1", conversation_id: "conv-1", plan_id: "plan-1" });
 
-  const withConfirmation = recordConfirmation(audit, {
-    confirmation_id: "conf-1",
-    plan_id: "plan-1",
-    identity_lock: {
-      merchant_id: "m-1",
-      store_id: "s-1",
-      platform: "pdd",
-      platform_account_id: "pa-1",
-      customer_identity: { kind: "customerUid", value: "c-1" },
-      conversation_id: "conv-1",
-      trigger_message_id: "msg-1",
-    },
-    policy_version: "1.0.0",
-    confirmed_at: "2026-09-30T10:00:01Z",
-    confirmed_by: "operator-1",
-    confirmation_hash: "sha256-abc123",
-  });
+  // 使用 helper 创建正确的 ConfirmationBinding
+  const binding = createTestBinding("plan-1");
+  const withConfirmation = recordConfirmation(audit, binding);
 
-  const withVerification = recordVerification(withConfirmation, {
-    type: "wrong_target",
-    passed: true,
-    timestamp: "2026-09-30T10:00:02Z",
-    details: "All targets valid",
-  });
+  // 使用正确的 VerificationRecord
+  const verification = createVerificationRecord(audit.audit_id, "WRONG_TARGET");
+  const withVerification = recordVerification(withConfirmation, verification);
 
-  const withOutcome = recordOutcome(withVerification, {
-    status: "delivered",
-    platform_message_id: "pm-1",
-    delivered_at: "2026-09-30T10:00:03Z",
-  });
+  // 使用正确的 TransportOutcome
+  const outcome = createAcknowledgedOutcome("attempt-1", "pm-1");
+  const withOutcome = recordOutcome(withVerification, outcome);
 
-  const withNotification = recordNotification(withOutcome, {
-    type: "send_result",
+  // 使用正确的 DesktopNotification
+  const notification = {
+    notification_id: "notif-1",
+    audit_id: audit.audit_id,
+    notification_type: "SEND_ACKNOWLEDGED" as const,
+    severity: "INFO" as const,
     title: "消息已发送",
     message: "消息已成功发送给客户",
-    timestamp: "2026-09-30T10:00:04Z",
-  });
+    created_at: new Date().toISOString(),
+  };
+  const withNotification = recordNotification(withOutcome, notification);
 
   const completed = completeAudit(withNotification);
 
@@ -356,17 +351,11 @@ test("SHEEP-312: 审计链可追溯 — 所有事件共享 audit_id", () => {
   const audit = startAudit({ shop_id: "shop-1", conversation_id: "conv-1", plan_id: "plan-1" });
   const auditId = audit.audit_id;
 
-  const withVerification = recordVerification(audit, {
-    type: "identity_lock",
-    passed: true,
-    timestamp: "2026-09-30T10:00:01Z",
-  });
+  const verification = createVerificationRecord(auditId, "IDENTITY_LOCK");
+  const withVerification = recordVerification(audit, verification);
 
-  const withOutcome = recordOutcome(withVerification, {
-    status: "delivered",
-    platform_message_id: "pm-1",
-    delivered_at: "2026-09-30T10:00:02Z",
-  });
+  const outcome = createAcknowledgedOutcome("attempt-1", "pm-1");
+  const withOutcome = recordOutcome(withVerification, outcome);
 
   const completed = completeAudit(withOutcome);
 
@@ -384,19 +373,13 @@ test("SHEEP-312: isAuditComplete — 缺少任何必需项都返回 false", () =
   assert.equal(isAuditComplete(base), false);
 
   // 有验证但无结果
-  const withVerification = recordVerification(base, {
-    type: "identity_lock",
-    passed: true,
-    timestamp: "2026-09-30T10:00:01Z",
-  });
+  const verification = createVerificationRecord(base.audit_id, "IDENTITY_LOCK");
+  const withVerification = recordVerification(base, verification);
   assert.equal(isAuditComplete(withVerification), false);
 
   // 有结果但无通知
-  const withOutcome = recordOutcome(withVerification, {
-    status: "delivered",
-    platform_message_id: "pm-1",
-    delivered_at: "2026-09-30T10:00:02Z",
-  });
+  const outcome = createAcknowledgedOutcome("attempt-1", "pm-1");
+  const withOutcome = recordOutcome(withVerification, outcome);
   assert.equal(isAuditComplete(withOutcome), false);
 
   // COMPLETED 但缺少通知
