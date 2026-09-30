@@ -215,3 +215,45 @@ export function createWorkerBackedMainContext(deps: WorkerBackedMainDeps, option
     controlledProductionPddShop,
   });
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SHEEP-309: SHADOW Mode Integration
+// ═══════════════════════════════════════════════════════════════════════════════
+//
+// SHADOW mode provides end-to-end audit of the AI pipeline without sending
+// any messages. It generates ReplyPlan but verifies TRANSPORT SEND CALLS = 0.
+//
+// Integration is additive: existing inbound flow is not modified.
+// SHADOW mode is initialized on-demand via initializeShadowMode().
+
+import { bootstrapShadowMode, type ShadowModeComponents } from "./services/shadow-mode-bootstrap.js";
+
+/**
+ * Initialize SHADOW mode components.
+ *
+ * Creates the ShadowPipelineOrchestrator and all supporting components
+ * using the existing worker-runtime context. SHADOW mode is additive —
+ * existing inbound flow is not modified.
+ *
+ * @param deps - Worker-backed main dependencies (from createWorkerBackedMainContext)
+ * @returns ShadowModeComponents with orchestrator ready to execute
+ *
+ * Usage:
+ * ```typescript
+ * const shadow = initializeShadowMode(deps);
+ * const result = await shadow.orchestrator.execute(envelope, shopId, merchantId);
+ * const report = await shadow.reportGenerator.generateMarkdownReport(result.runId);
+ * ```
+ */
+export function initializeShadowMode(deps: WorkerBackedMainDeps): ShadowModeComponents {
+  const m10Sqlite = openDatabase(deps.dataRoot);
+  const conversationRepository = new SqliteNormalizedConversationRepository(m10Sqlite.conn);
+  const messageRepository = new SqliteMessageRepository(m10Sqlite.conn);
+
+  return bootstrapShadowMode({
+    conn: m10Sqlite.conn,
+    workerClient: deps.workerClient,
+    conversationRepository,
+    messageRepository,
+  });
+}

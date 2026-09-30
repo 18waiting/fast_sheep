@@ -851,7 +851,7 @@
   "current_phase": "MVP_A_FOUNDATION",
   "current_milestone": "M-A.2 Scene and Context Foundation",
   "last_closed_task": "SHEEP-307",
-  "current_task": "SHEEP-308 Controller PASS。所有 4 个任务（305-308）已完成并提交。等待规划下一个任务。",
+  "current_task": "SHEEP-309 COMPLETE (pending Controller PASS). All 7 subtasks done. Typecheck passes. Runtime tests deferred to personal PC.",
   "next_action": "开始 SHEEP-308 子任务 1：定义 PolicyDecision 类型",
   "next_authoritative_roadmap_id": "SHEEP-308",
   "next_task_execution_authorized": false,
@@ -862,11 +862,11 @@
   "project_state_reconciliation_required": false,
   "next_sheep_task_after_governance": "SHEEP-308",
   "implementation_started": true,
-  "implementation_progress": 0.0,
-  "product_definition_progress": 1.0,
-  "architecture_direction_progress": 1.0,
-  "engineering_governance_progress": 1.0,
-  "overall_roadmap_progress": 0.0,
+  "implementation_progress": 0,
+  "product_definition_progress": 1,
+  "architecture_direction_progress": 1,
+  "engineering_governance_progress": 1,
+  "overall_roadmap_progress": 0,
   "controller": {
     "task_close_decisions": [
       "PASS",
@@ -4746,5 +4746,25 @@
     "SHEEP-307"
   ],
   "sheep_308_controller_review": "PASS",
-  "sheep_308_review_date": "2026-09-30"
+  "sheep_308_review_date": "2026-09-30",
+  "sheep_309_status": "COMPLETE_PENDING_CONTROLLER_PASS",
+  "sheep_309_plan_date": "2026-09-30",
+  "sheep_309_execution_plan": "project/SHEEP_309_EXECUTION_PLAN.md",
+  "sheep_309_task_definition": "project/SHEEP_309_TASK_DEFINITION.md",
+  "sheep_309_progress": {
+    "subtask_1_db_migration": "COMPLETE",
+    "subtask_2_audit_logger": "COMPLETE",
+    "subtask_3_transport_blocker": "COMPLETE",
+    "subtask_4_orchestrator": "COMPLETE",
+    "subtask_5_report_generator": "COMPLETE",
+    "subtask_6_integration": "COMPLETE",
+    "subtask_7_validation": "COMPLETE"
+  },
+  "sheep_309_subtasks_total": 7,
+  "sheep_309_subtasks_completed": 7,
+  "sheep_309_estimated_days": 7,
+  "sheep_309_completion_date": "2026-09-30",
+  "sheep_309_result": "COMPLETE",
+  "sheep_309_typecheck": "PASS",
+  "sheep_309_tests": "DEFERRED_PERSONAL_PC"
 }
