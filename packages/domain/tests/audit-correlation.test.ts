@@ -216,8 +216,13 @@ test("isAuditComplete - 验证审计完整性", () => {
   const withN = recordNotification(withO, notif);
   assert.equal(isAuditComplete(withN), false);
 
+  // 加上 confirmation（HUMAN_CONFIRM 模式必需）
+  const binding = createTestBinding("plan-1");
+  const withC = recordConfirmation(withN, binding);
+  assert.equal(isAuditComplete(withC), false); // 还需要 completeAudit
+
   // 完成审计
-  const completed = completeAudit(withN);
+  const completed = completeAudit(withC);
   assert.equal(isAuditComplete(completed), true);
 });
 

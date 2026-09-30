@@ -383,10 +383,12 @@ test("对抗性: 验证所有 IdentityLock 字段", () => {
   const request = controller.requestConfirmation(mockPlan, mockHumanConfirmDecision);
   const result = controller.confirm(request.confirmation_id, "user-123");
 
-  // 测试每个字段的验证
+  // 测试每个字段的验证 - 所有 IdentityLock 字段
   const testCases = [
     { field: "merchant_id", value: "merchant-different" },
     { field: "store_id", value: "store-different" },
+    { field: "platform", value: "doudian" },
+    { field: "platform_account_id", value: "account-different" },
     { field: "conversation_id", value: "conv-different" },
     { field: "trigger_message_id", value: "msg-different" },
   ];

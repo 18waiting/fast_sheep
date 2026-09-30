@@ -247,7 +247,8 @@ export class HumanConfirmController {
       request.confirmation_id,
       request.plan_id,
       confirmedAt,
-      userId
+      userId,
+      request.identity_lock
     );
 
     const binding: ConfirmationBinding = {
@@ -366,7 +367,7 @@ export class HumanConfirmController {
       return false;
     }
 
-    // Check identity_lock match
+    // Check identity_lock match - ALL fields must match
     if (binding.identity_lock.conversation_id !== expectedIdentityLock.conversation_id) {
       return false;
     }
@@ -376,6 +377,14 @@ export class HumanConfirmController {
     }
 
     if (binding.identity_lock.store_id !== expectedIdentityLock.store_id) {
+      return false;
+    }
+
+    if (binding.identity_lock.platform !== expectedIdentityLock.platform) {
+      return false;
+    }
+
+    if (binding.identity_lock.platform_account_id !== expectedIdentityLock.platform_account_id) {
       return false;
     }
 
@@ -410,9 +419,16 @@ export class HumanConfirmController {
     confirmationId: string,
     planId: string,
     confirmedAt: string,
-    confirmedBy: string
+    confirmedBy: string,
+    identityLock?: IdentityLock
   ): string {
-    const content = `${confirmationId}:${planId}:${confirmedAt}:${confirmedBy}`;
+    // Include identity_lock in hash to prevent cross-target collisions
+    let content = `${confirmationId}:${planId}:${confirmedAt}:${confirmedBy}`;
+    
+    if (identityLock) {
+      content += `:${identityLock.merchant_id}:${identityLock.store_id}:${identityLock.platform}:${identityLock.platform_account_id}:${identityLock.conversation_id}:${identityLock.trigger_message_id}`;
+    }
+    
     let hash = 0;
     for (let i = 0; i < content.length; i++) {
       const char = content.charCodeAt(i);
