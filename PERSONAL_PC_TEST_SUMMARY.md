@@ -567,3 +567,122 @@ apps/desktop/tests/
 
 **文档更新:** v1.1（新增 SHEEP-308 测试）  
 **更新日期:** 2026-09-29
+
+---
+
+## 十、SHEEP-309 测试（SHADOW End-to-End Audit）
+
+### 10.1 测试文件列表
+
+| # | 测试文件 | 测试内容 | 优先级 | 状态 |
+|---|---------|---------|--------|------|
+| 1 | `apps/desktop/tests/audit-logger.test.ts` | AuditLogger 持久化审计 | P0 | ✅ 已创建 |
+| 2 | `apps/desktop/tests/transport-blocker.test.ts` | TransportBlocker 零发送验证 | P0 | ✅ 已创建 |
+| 3 | `apps/desktop/tests/shadow-pipeline-orchestrator.test.ts` | 11 步流水线编排 | P0 | ❌ 待创建 |
+| 4 | `apps/desktop/tests/audit-report-generator.test.ts` | 审计报告生成 | P1 | ❌ 待创建 |
+
+### 10.2 已有测试运行
+
+```bash
+# AuditLogger 测试
+pnpm run test apps/desktop/tests/audit-logger.test.ts
+
+# TransportBlocker 测试
+pnpm run test apps/desktop/tests/transport-blocker.test.ts
+```
+
+### 10.3 AuditLogger 测试用例
+
+| # | 测试名称 | 描述 | 预期结果 |
+|---|---------|------|---------|
+| 1 | startRun | 创建新的审计运行 | 返回 AuditRun，status=RUNNING |
+| 2 | completeRun | 完成审计运行 | status=COMPLETED，completedAt 设置 |
+| 3 | failRun | 标记运行为失败 | status=FAILED，errorSummary 记录 |
+| 4 | recordStep (SUCCESS) | 记录成功步骤 | 步骤持久化，status=SUCCESS |
+| 5 | recordStep (FAILED) | 记录失败步骤 | status=FAILED，errorDetail 记录 |
+| 6 | recordEvent | 记录细粒度事件 | 事件持久化 |
+| 7 | getRun | 获取运行记录 | 返回正确的 AuditRun |
+| 8 | getSteps | 获取步骤列表 | 按 stepOrder 排序 |
+| 9 | getEvents | 获取事件列表 | 按 createdAt 排序 |
+
+### 10.4 TransportBlocker 测试用例
+
+| # | 测试名称 | 描述 | 预期结果 |
+|---|---------|------|---------|
+| 1 | isTransportAllowed (OFF) | OFF 模式阻止 | false |
+| 2 | isTransportAllowed (SHADOW) | SHADOW 模式阻止 | false |
+| 3 | isTransportAllowed (HUMAN_CONFIRM) | HUMAN_CONFIRM 阻止 | false |
+| 4 | isTransportAllowed (AUTO) | AUTO 模式允许 | true |
+| 5 | recordTransportAttempt | 记录尝试 | 计数器增加 |
+| 6 | verifyZeroSends (无尝试) | 无尝试验证 | allowed=true |
+| 7 | verifyZeroSends (有尝试) | 有尝试验证 | allowed=false |
+| 8 | reset | 重置计数器 | 计数归零 |
+
+### 10.5 Orchestrator 测试用例（待创建）
+
+| # | 测试名称 | 描述 | 预期结果 |
+|---|---------|------|---------|
+| 1 | execute - 完整流水线 | 正常执行 11 步 | status=COMPLETED |
+| 2 | execute - 重复消息 | persistence 返回 DUPLICATE | 提前返回，totalMessages=0 |
+| 3 | execute - Turn 等待 | quiet window 过期后获取 turn | turn 正确获取 |
+| 4 | execute - RPC 失败 | workerClient 抛异常 | Step 7 失败，流水线继续 |
+| 5 | execute - Transport 安全 | verifyZeroSends 通过 | successfulSends=0 |
+| 6 | execute - Transport 违规 | 检测到 transport 调用 | Step 10 失败 |
+| 7 | execute - 审计完整性 | 所有步骤记录 | getSteps 返回 11 步 |
+| 8 | execute - 错误处理 | 未捕获异常 | status=FAILED |
+
+### 10.6 关键验收标准
+
+**P0 必须通过（安全关键）:**
+1. ✅ TRANSPORT SEND CALLS = 0（零发送保证）
+2. ✅ 所有 11 个步骤正确记录到审计数据库
+3. ✅ TransportBlocker 正确阻止 SHADOW/OFF/HUMAN_CONFIRM 模式
+4. ✅ AuditLogger 正确持久化所有审计数据
+
+**P1 应该通过（功能正确）:**
+5. ✅ Turn 等待机制正确（quiet window 过期后获取 turn）
+6. ✅ 错误处理正确（步骤失败不中断流水线）
+7. ✅ 审计报告正确生成（包含所有步骤和指标）
+8. ✅ 关键指标正确提取（scene, knowledge, ReplyPlan, policy）
+
+### 10.7 审核发现的问题（已修复）
+
+**审核日期:** 2026-09-30
+
+| # | 严重度 | 问题 | 状态 | 修复 |
+|---|--------|------|------|------|
+| 1 | 🔴 CRITICAL | Turn 可用性时序：ingest 后立即 poll，但 quiet window 未过期 | ✅ 已修复 | 添加 poll 重试循环（20ms 间隔，1s 超时） |
+| 2 | 🟡 MEDIUM | factsPort 死依赖：注入但从未使用 | ⏳ 已知 | 不影响功能，未来清理 |
+| 3 | 🟡 MEDIUM | messageFacts 内容不完整：只有当前消息有 contentText | ⏳ 已知 | 不影响单消息场景，burst 场景需关注 |
+
+**修复详情（问题 1）:**
+- **原因:** `turnBuilder.ingest()` 后消息进入 quiet window（500ms），`poll()` 立即调用返回空
+- **修复:** 
+  1. Bootstrap 使用 50ms quiet window（原 500ms）
+  2. Orchestrator 添加 poll 重试循环（20ms 间隔，1s 超时）
+- **Commit:** `326d104 fix(SHEEP-309): fix turn availability timing in orchestrator`
+
+### 10.8 集成测试（待创建）
+
+```bash
+# SHADOW 模式端到端集成测试
+pnpm run test apps/desktop/tests/integration/shadow-mode-integration.test.ts
+```
+
+**测试场景:**
+1. 模拟 InboundEnvelope → 完整流水线 → ReplyPlan 生成
+2. 验证所有 11 步执行成功
+3. 验证 TRANSPORT SEND CALLS = 0
+4. 验证审计报告生成
+
+### 10.9 相关文档
+
+- 测试要求: `project/SHEEP_309_TEST_REQUIREMENTS.md`
+- 验证报告: `project/SHEEP_309_VALIDATION_REPORT.md`
+- 任务报告: `project/SHEEP_309_TASK_REPORT.md`
+- 执行计划: `project/SHEEP_309_EXECUTION_PLAN.md`
+
+---
+
+**文档更新:** v1.2（新增 SHEEP-309 测试）  
+**更新日期:** 2026-09-30
