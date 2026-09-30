@@ -809,3 +809,52 @@ node --test "tests/orchestrator-golden-fixtures.test.ts"
 
 **文档更新:** v1.4（新增现有测试兼容性验证 + FakePlatformAdapter 修复说明）  
 **更新日期:** 2026-09-30
+
+---
+
+## 12. SHEEP-311: HUMAN_CONFIRM PDD Transport and Verification
+
+**任务状态:** IN_PROGRESS (子任务 1 完成)  
+**测试状态:** DEFERRED — 需要在个人电脑（Node.js v22+）上运行
+
+### 12.1 子任务 1: TransportOutcome 类型定义
+
+**测试文件:**
+- `packages/domain/tests/transport-outcome.test.ts` (14 tests)
+
+**测试命令:**
+```bash
+cd packages/domain
+node --test "tests/transport-outcome.test.ts"
+```
+
+**测试场景:**
+1. createAcknowledgedOutcome - 创建 ACKNOWLEDGED 结果
+2. createAcknowledgedOutcome - 自定义时间戳
+3. createRejectedOutcome - 创建 REJECTED 结果
+4. createRejectedOutcome - 包含原始响应
+5. createUnknownOutcome - 创建 UNKNOWN 结果（必须提供原因和上下文）
+6. createUnknownOutcome - 包含原始响应
+7. isUnknownOutcome - 类型守卫
+8. isAcknowledgedOutcome - 类型守卫
+9. isRejectedOutcome - 类型守卫
+10. 类型安全 - UnknownOutcome 必须包含 reason 和 context
+11. 类型安全 - AcknowledgedOutcome 必须包含 platform_message_id
+12. 类型安全 - RejectedOutcome 必须包含 rejected_at
+13. 所有结果类型都是不可变的
+14. UNKNOWN 结果用于停止自动执行
+
+**验收标准:**
+- [ ] 所有 14 个测试通过
+- [ ] 类型守卫正确工作
+- [ ] UNKNOWN 结果强制包含 reason 和 context
+- [ ] Typecheck 通过（已在开发环境验证）
+
+**相关文档:**
+- 任务定义: `project/SHEEP_311_TASK_DEFINITION.md`
+- 执行计划: `project/SHEEP_311_EXECUTION_PLAN.md`
+
+---
+
+**文档更新:** v1.5（新增 SHEEP-311 子任务 1 测试）  
+**更新日期:** 2026-09-30
