@@ -76,6 +76,7 @@ export {
   type RolloutMode,
   type ConfirmationStatus,
   type IdentityLock,
+  type CustomerIdentity,
   type ReplyPlanRef,
   type PolicyDecisionRef,
   type ConfirmationRequest,

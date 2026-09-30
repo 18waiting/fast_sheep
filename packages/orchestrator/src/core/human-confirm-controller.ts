@@ -34,14 +34,26 @@ export type RolloutMode = "OFF" | "SHADOW" | "HUMAN_CONFIRM" | "AUTO";
 export type ConfirmationStatus = "PENDING" | "CONFIRMED" | "REJECTED" | "EXPIRED" | "SUPERSEDED";
 
 /**
+ * CustomerIdentity: The customer identity within a confirmation scope.
+ * Mirrors ContractCustomerIdentity from domain (context-envelope.ts).
+ * SHEEP-312: Added to close IdentityLock completeness gap.
+ */
+export interface CustomerIdentity {
+  readonly kind: "customerUid" | "buyer_id" | "user_id";
+  readonly value: string;
+}
+
+/**
  * IdentityLock: The identity scope for a confirmation.
- * Simplified version of ContractIdentityLock from domain.
+ * Mirrors ContractIdentityLock from domain (context-envelope.ts).
+ * SHEEP-312: Added customer_identity field to match domain ContractIdentityLock.
  */
 export interface IdentityLock {
   readonly merchant_id: string;
   readonly store_id: string;
   readonly platform: string;
   readonly platform_account_id: string;
+  readonly customer_identity: CustomerIdentity;
   readonly conversation_id: string;
   readonly trigger_message_id: string;
   readonly generation?: number;
@@ -392,6 +404,23 @@ export class HumanConfirmController {
       return false;
     }
 
+    // SHEEP-312: Validate customer_identity (kind + value)
+    if (binding.identity_lock.customer_identity.kind !== expectedIdentityLock.customer_identity.kind) {
+      return false;
+    }
+    if (binding.identity_lock.customer_identity.value !== expectedIdentityLock.customer_identity.value) {
+      return false;
+    }
+
+    // SHEEP-312: Validate generation if provided on both sides
+    // If expectedIdentityLock has a generation, it must match the binding's generation.
+    // This prevents stale-generation replay attacks.
+    if (expectedIdentityLock.generation !== undefined) {
+      if (binding.identity_lock.generation !== expectedIdentityLock.generation) {
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -426,7 +455,10 @@ export class HumanConfirmController {
     let content = `${confirmationId}:${planId}:${confirmedAt}:${confirmedBy}`;
     
     if (identityLock) {
-      content += `:${identityLock.merchant_id}:${identityLock.store_id}:${identityLock.platform}:${identityLock.platform_account_id}:${identityLock.conversation_id}:${identityLock.trigger_message_id}`;
+      content += `:${identityLock.merchant_id}:${identityLock.store_id}:${identityLock.platform}:${identityLock.platform_account_id}:${identityLock.customer_identity.kind}:${identityLock.customer_identity.value}:${identityLock.conversation_id}:${identityLock.trigger_message_id}`;
+      if (identityLock.generation !== undefined) {
+        content += `:gen${identityLock.generation}`;
+      }
     }
     
     let hash = 0;

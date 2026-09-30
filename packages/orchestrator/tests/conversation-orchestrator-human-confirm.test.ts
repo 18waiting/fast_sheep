@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { ConversationOrchestrator } from "../src/core/conversation-orchestrator.ts";
 import { HumanConfirmController } from "../src/core/human-confirm-controller.ts";
-import type { IdentityLock, ReplyPlanRef, PolicyDecisionRef } from "../src/core/human-confirm-controller.ts";
+import type { IdentityLock, CustomerIdentity, ReplyPlanRef, PolicyDecisionRef } from "../src/core/human-confirm-controller.ts";
 import type { AiEngineClient } from "../src/ports/ai-engine-client.ts";
 import type { PlatformAdapter } from "../src/ports/platform-adapter.ts";
 import type { Clock } from "../src/ports/clock.ts";
@@ -11,12 +11,19 @@ import type { EventBus } from "../src/ports/event-bus.ts";
 import type { FeedbackSink } from "../src/ports/feedback-sink.ts";
 import type { ConversationRepositoryPort } from "../src/ports/conversation-repository-port.ts";
 
+// Mock CustomerIdentity (SHEEP-312)
+const mockCustomerIdentity: CustomerIdentity = {
+  kind: "customerUid",
+  value: "customer-1",
+};
+
 // Mock IdentityLock
 const mockIdentityLock: IdentityLock = {
   merchant_id: "merchant-1",
   store_id: "store-1",
   platform: "pdd",
   platform_account_id: "account-1",
+  customer_identity: mockCustomerIdentity,
   conversation_id: "conv-1",
   trigger_message_id: "msg-1",
 };

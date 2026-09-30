@@ -5,9 +5,21 @@ import assert from "node:assert/strict";
 import { HumanConfirmController } from "../src/core/human-confirm-controller.ts";
 import type {
   IdentityLock,
+  CustomerIdentity,
   ReplyPlanRef,
   PolicyDecisionRef,
 } from "../src/core/human-confirm-controller.ts";
+
+// Mock CustomerIdentity (SHEEP-312)
+const mockCustomerIdentity: CustomerIdentity = {
+  kind: "customerUid",
+  value: "customer-1",
+};
+
+const differentCustomerIdentity: CustomerIdentity = {
+  kind: "customerUid",
+  value: "customer-2",
+};
 
 // Mock IdentityLock
 const mockIdentityLock: IdentityLock = {
@@ -15,6 +27,7 @@ const mockIdentityLock: IdentityLock = {
   store_id: "store-1",
   platform: "pdd",
   platform_account_id: "account-1",
+  customer_identity: mockCustomerIdentity,
   conversation_id: "conv-1",
   trigger_message_id: "msg-1",
 };
@@ -24,6 +37,7 @@ const differentIdentityLock: IdentityLock = {
   store_id: "store-2",
   platform: "pdd",
   platform_account_id: "account-2",
+  customer_identity: differentCustomerIdentity,
   conversation_id: "conv-2",
   trigger_message_id: "msg-2",
 };
@@ -383,7 +397,7 @@ test("对抗性: 验证所有 IdentityLock 字段", () => {
   const request = controller.requestConfirmation(mockPlan, mockHumanConfirmDecision);
   const result = controller.confirm(request.confirmation_id, "user-123");
 
-  // 测试每个字段的验证 - 所有 IdentityLock 字段
+  // 测试每个字段的验证 - 所有 IdentityLock 字段 (SHEEP-312: 包含 customer_identity)
   const testCases = [
     { field: "merchant_id", value: "merchant-different" },
     { field: "store_id", value: "store-different" },
@@ -411,4 +425,178 @@ test("对抗性: 验证所有 IdentityLock 字段", () => {
       `不同的 ${testCase.field} 应该导致验证失败`
     );
   }
+
+  // SHEEP-312: 单独测试 customer_identity 字段（嵌套对象不能通过 spread 覆盖）
+  // 测试 customer_identity.value 不同
+  const lockDifferentCustomerValue: IdentityLock = {
+    ...mockIdentityLock,
+    customer_identity: { kind: "customerUid", value: "customer-different" },
+  };
+  assert.equal(
+    controller.validateConfirmation(result.confirmation!, mockPlan.plan_id, lockDifferentCustomerValue),
+    false,
+    "不同的 customer_identity.value 应该导致验证失败"
+  );
+
+  // 测试 customer_identity.kind 不同
+  const lockDifferentCustomerKind: IdentityLock = {
+    ...mockIdentityLock,
+    customer_identity: { kind: "buyer_id", value: "customer-1" },
+  };
+  assert.equal(
+    controller.validateConfirmation(result.confirmation!, mockPlan.plan_id, lockDifferentCustomerKind),
+    false,
+    "不同的 customer_identity.kind 应该导致验证失败"
+  );
+});
+
+// ============================================================
+// SHEEP-312: 跨客户攻击和过期 generation 对抗性测试
+// ============================================================
+
+test("SHEEP-312 对抗性: 跨客户攻击 - 同商家/店铺/会话但不同 customer_identity", () => {
+  const controller = new HumanConfirmController({ clock: fixedClock });
+
+  // 为客户 customer-1 创建确认
+  const request = controller.requestConfirmation(mockPlan, mockHumanConfirmDecision);
+  const result = controller.confirm(request.confirmation_id, "user-123");
+
+  // 攻击者尝试用同一商家/店铺/会话但不同客户身份验证
+  const crossCustomerLock: IdentityLock = {
+    merchant_id: "merchant-1",       // 相同
+    store_id: "store-1",             // 相同
+    platform: "pdd",                 // 相同
+    platform_account_id: "account-1", // 相同
+    customer_identity: { kind: "customerUid", value: "customer-HACKER" }, // 不同!
+    conversation_id: "conv-1",       // 相同
+    trigger_message_id: "msg-1",     // 相同
+  };
+
+  const isValid = controller.validateConfirmation(
+    result.confirmation!,
+    mockPlan.plan_id,
+    crossCustomerLock
+  );
+
+  assert.equal(isValid, false, "跨客户攻击应该被拒绝：不同 customer_identity.value");
+});
+
+test("SHEEP-312 对抗性: 跨客户攻击 - 不同 customer_identity.kind", () => {
+  const controller = new HumanConfirmController({ clock: fixedClock });
+
+  const request = controller.requestConfirmation(mockPlan, mockHumanConfirmDecision);
+  const result = controller.confirm(request.confirmation_id, "user-123");
+
+  // 攻击者尝试用不同 kind 但相同 value 绕过
+  const kindSpoofedLock: IdentityLock = {
+    merchant_id: "merchant-1",
+    store_id: "store-1",
+    platform: "pdd",
+    platform_account_id: "account-1",
+    customer_identity: { kind: "buyer_id", value: "customer-1" }, // kind 不同!
+    conversation_id: "conv-1",
+    trigger_message_id: "msg-1",
+  };
+
+  const isValid = controller.validateConfirmation(
+    result.confirmation!,
+    mockPlan.plan_id,
+    kindSpoofedLock
+  );
+
+  assert.equal(isValid, false, "跨客户攻击应该被拒绝：不同 customer_identity.kind");
+});
+
+test("SHEEP-312 对抗性: 过期 generation 攻击 - 旧 generation 重放", () => {
+  const controller = new HumanConfirmController({ clock: fixedClock });
+
+  // 创建带有 generation=2 的确认
+  const lockWithGen2: IdentityLock = {
+    ...mockIdentityLock,
+    generation: 2,
+  };
+  const planWithGen2: ReplyPlanRef = {
+    plan_id: "plan-gen2",
+    identity_lock: lockWithGen2,
+  };
+
+  const request = controller.requestConfirmation(planWithGen2, mockHumanConfirmDecision);
+  const result = controller.confirm(request.confirmation_id, "user-123");
+
+  // 攻击者尝试用旧 generation=1 验证
+  const staleLock: IdentityLock = {
+    ...mockIdentityLock,
+    generation: 1, // 旧 generation
+  };
+
+  const isValid = controller.validateConfirmation(
+    result.confirmation!,
+    "plan-gen2",
+    staleLock
+  );
+
+  assert.equal(isValid, false, "过期 generation 重放应该被拒绝");
+});
+
+test("SHEEP-312 对抗性: generation 匹配时验证通过", () => {
+  const controller = new HumanConfirmController({ clock: fixedClock });
+
+  const lockWithGen: IdentityLock = {
+    ...mockIdentityLock,
+    generation: 5,
+  };
+  const planWithGen: ReplyPlanRef = {
+    plan_id: "plan-gen5",
+    identity_lock: lockWithGen,
+  };
+
+  const request = controller.requestConfirmation(planWithGen, mockHumanConfirmDecision);
+  const result = controller.confirm(request.confirmation_id, "user-123");
+
+  // 使用相同 generation 验证
+  const expectedLock: IdentityLock = {
+    ...mockIdentityLock,
+    generation: 5,
+  };
+
+  const isValid = controller.validateConfirmation(
+    result.confirmation!,
+    "plan-gen5",
+    expectedLock
+  );
+
+  assert.equal(isValid, true, "相同 generation 应该验证通过");
+});
+
+test("SHEEP-312 对抗性: computeHash 包含 customer_identity", () => {
+  const controller = new HumanConfirmController({ clock: fixedClock });
+
+  // 创建两个仅 customer_identity 不同的确认请求
+  const plan1: ReplyPlanRef = {
+    plan_id: "plan-c1",
+    identity_lock: {
+      ...mockIdentityLock,
+      customer_identity: { kind: "customerUid", value: "customer-A" },
+    },
+  };
+  const plan2: ReplyPlanRef = {
+    plan_id: "plan-c2",
+    identity_lock: {
+      ...mockIdentityLock,
+      customer_identity: { kind: "customerUid", value: "customer-B" },
+    },
+  };
+
+  const req1 = controller.requestConfirmation(plan1, mockHumanConfirmDecision);
+  const result1 = controller.confirm(req1.confirmation_id, "user-123");
+
+  const req2 = controller.requestConfirmation(plan2, mockHumanConfirmDecision);
+  const result2 = controller.confirm(req2.confirmation_id, "user-123");
+
+  // 两个确认的 hash 应该不同（因为 customer_identity 不同）
+  assert.notEqual(
+    result1.confirmation!.confirmation_hash,
+    result2.confirmation!.confirmation_hash,
+    "不同 customer_identity 应该产生不同的 confirmation_hash"
+  );
 });

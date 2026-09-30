@@ -4,17 +4,24 @@ import assert from "node:assert/strict";
 import { HumanConfirmController } from "../src/core/human-confirm-controller.ts";
 import type {
   IdentityLock,
+  CustomerIdentity,
   ReplyPlanRef,
   PolicyDecisionRef,
   HumanConfirmControllerOptions,
 } from "../src/core/human-confirm-controller.ts";
 
 // Mock IdentityLock for testing
+const mockCustomerIdentity: CustomerIdentity = {
+  kind: "customerUid",
+  value: "customer-1",
+};
+
 const mockIdentityLock: IdentityLock = {
   merchant_id: "merchant-1",
   store_id: "store-1",
   platform: "pdd",
   platform_account_id: "account-1",
+  customer_identity: mockCustomerIdentity,
   conversation_id: "conv-1",
   trigger_message_id: "msg-1",
   generation: 1,
