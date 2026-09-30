@@ -179,3 +179,22 @@ export {
   isUnknownNotification,
   requiresHumanAction,
 } from "./desktop-notification.js";
+
+// SHEEP-311: Audit Correlation
+export {
+  type AuditStatus,
+  type AuditCorrelation,
+  type AuditContext,
+  startAudit,
+  recordConfirmation,
+  recordVerification,
+  recordOutcome,
+  recordNotification,
+  completeAudit,
+  failAudit,
+  isAuditCompleted,
+  hasConfirmation,
+  hasOutcome,
+  hasNotification,
+  isAuditComplete,
+} from "./audit-correlation.js";
