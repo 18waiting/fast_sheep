@@ -28,6 +28,10 @@ import { PreSendRevalidationPolicy } from "../policies/pre-send-revalidation-pol
 import { ReviewModePolicy } from "../policies/review-mode-policy.js";
 import { SegmentedSendPolicy } from "../policies/segmented-send-policy.js";
 import { TakeoverBreakerPolicy } from "../policies/takeover-breaker-policy.js";
+import { SendFailureClassifier } from "./send-failure-classifier.js";
+import { WrongTargetValidator } from "./wrong-target-validator.js";
+import { BindingValidator } from "./binding-validator.js";
+import { RetryPolicy } from "../policies/retry-policy.js";
 import {
   createConversationRuntimeState,
   type ConversationRuntimeState,
@@ -98,6 +102,12 @@ export class ConversationOrchestrator {
   private readonly sendSerializer: SendSerializer;
   private readonly segmentedSender: SegmentedSender;
 
+  // SHEEP-310: Retry conflict and wrong-target gate components
+  private readonly sendFailureClassifier: SendFailureClassifier;
+  private readonly wrongTargetValidator: WrongTargetValidator;
+  private readonly bindingValidator: BindingValidator;
+  private readonly retryPolicy: RetryPolicy;
+
   private readonly conversations = new Map<string, ConversationRuntimeState>();
   private readonly decisions: DecisionRecord[] = [];
   private focusedShopId: string | null = null;
@@ -136,6 +146,12 @@ export class ConversationOrchestrator {
       sendText: (shopId, conversationId, segments) =>
         this.platformAdapter.sendText(shopId, conversationId, segments),
     });
+
+    // SHEEP-310: Initialize retry conflict and wrong-target gate components
+    this.sendFailureClassifier = new SendFailureClassifier();
+    this.wrongTargetValidator = new WrongTargetValidator();
+    this.bindingValidator = new BindingValidator();
+    this.retryPolicy = new RetryPolicy();
 
     for (const [seedKey, seed] of Object.entries(options.initialState ?? {})) {
       const separatorIndex = seedKey.indexOf("\u0000");
@@ -595,6 +611,34 @@ export class ConversationOrchestrator {
 
   private async performSend(request: SendRequest): Promise<void> {
     const { shopId, conversationId, reply } = request;
+
+    // SHEEP-310: Pre-send wrong-target validation
+    const targetValidation = this.wrongTargetValidator.validate({
+      shopId,
+      conversationId,
+      // Extract optional fields from request if available
+      customerUid: typeof request.customerUid === "string" ? request.customerUid : undefined,
+      platformAccountId: typeof request.platformAccountId === "string" ? request.platformAccountId : undefined,
+      triggerMessageId: typeof request.triggerMessageId === "string" ? request.triggerMessageId : undefined,
+      sessionId: typeof request.sessionId === "string" ? request.sessionId : undefined,
+      documentVersion: typeof request.documentVersion === "string" ? request.documentVersion : undefined,
+    });
+
+    if (!targetValidation.valid) {
+      this.emit("SendFailed", {
+        conversation_id: conversationId,
+        shop_id: shopId,
+        error: new Error(`Wrong-target validation failed: ${targetValidation.failures.map(f => f.reason).join("; ")}`),
+      });
+      this.recordDecision({
+        decision: "wrong_target_rejected",
+        conversation_id: conversationId,
+        shop_id: shopId,
+        failures: targetValidation.failures.map(f => ({ field: f.field, reason: f.reason })),
+      });
+      return;
+    }
+
     this.emit("SendStarted", {
       conversation_id: conversationId,
       shop_id: shopId,
@@ -604,30 +648,41 @@ export class ConversationOrchestrator {
     let attempt = await this.segmentedSender.send(shopId, conversationId, reply, this.segmentIntervalMs);
 
     if (!attempt.ok) {
+      // SHEEP-310: Classify the failure and decide whether to retry
+      const classification = this.sendFailureClassifier.classify(attempt);
+      const retryDecision = this.retryPolicy.decide(classification);
+
       this.emit("SendFailed", {
         conversation_id: conversationId,
         shop_id: shopId,
         error: attempt.error,
       });
       this.recordDecision({
-        decision: "refill_on_failure",
+        decision: retryDecision.shouldRetry ? "refill_on_failure" : "send_failed_no_retry",
         conversation_id: conversationId,
         shop_id: shopId,
+        failure_type: classification.failureType,
+        retry_allowed: retryDecision.shouldRetry,
       });
 
-      // Refill/retry exactly once before surfacing the failure.
-      this.emit("SendStarted", {
-        conversation_id: conversationId,
-        shop_id: shopId,
-        generation: request.generation,
-      });
-      attempt = await this.segmentedSender.send(shopId, conversationId, reply, this.segmentIntervalMs);
-      if (!attempt.ok) {
-        this.emit("SendFailed", {
+      // Only retry if the RetryPolicy allows it (SAFE_PRE_ATTEMPT only)
+      if (retryDecision.shouldRetry) {
+        this.emit("SendStarted", {
           conversation_id: conversationId,
           shop_id: shopId,
-          error: attempt.error,
+          generation: request.generation,
         });
+        attempt = await this.segmentedSender.send(shopId, conversationId, reply, this.segmentIntervalMs);
+        if (!attempt.ok) {
+          this.emit("SendFailed", {
+            conversation_id: conversationId,
+            shop_id: shopId,
+            error: attempt.error,
+          });
+          return;
+        }
+      } else {
+        // Retry blocked — surface the failure
         return;
       }
     }
@@ -643,6 +698,7 @@ export class ConversationOrchestrator {
       this.suggestionManager.markSent(state.suggestion);
     }
   }
+
 
   private async persistAiTurn(state: ConversationRuntimeState): Promise<void> {
     const suggestion = state.suggestion;

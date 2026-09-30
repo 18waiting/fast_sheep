@@ -68,3 +68,4 @@ export { WorkerAiEngineClient, type WorkerGenerateReplyResponse, type WorkerLike
 export { PersistenceConversationRepository, type PersistenceAppendTurn, type PersistenceLike } from "./adapters/persistence-conversation-repository.js";
 export { ForbiddenFilter } from "./pre-send/forbidden-filter.js";
 export { MessageCleaner } from "./pre-send/message-cleaner.js";
+export { SendFailureClassifier, type SendFailureType, type SendFailureClassification } from "./core/send-failure-classifier.js";

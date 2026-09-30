@@ -686,3 +686,105 @@ pnpm run test apps/desktop/tests/integration/shadow-mode-integration.test.ts
 
 **文档更新:** v1.2（新增 SHEEP-309 测试）  
 **更新日期:** 2026-09-30
+
+---
+
+## 11. SHEEP-310: Retry Conflict and Wrong-Target Gate
+
+**任务状态:** COMPLETE (待 Controller PASS)  
+**测试状态:** DEFERRED — 需要在个人电脑（Node.js v22+）上运行
+
+### 11.1 测试文件
+
+| 文件 | 测试数量 | 描述 |
+|------|---------|------|
+| `packages/orchestrator/tests/send-failure-classifier.test.ts` | 17 | 发送失败分类器 |
+| `packages/orchestrator/tests/wrong-target-validator.test.ts` | 14 | 错误目标验证器 |
+| `packages/orchestrator/tests/binding-validator.test.ts` | 10 | 绑定验证器 |
+| `packages/orchestrator/tests/retry-policy.test.ts` | 5 | 重试策略 |
+| `packages/orchestrator/tests/wrong-target-adversarial.test.ts` | 10 | 对抗性测试 |
+
+**总计:** 56 个测试用例
+
+### 11.2 测试命令
+
+```bash
+cd packages/orchestrator
+node --test "tests/send-failure-classifier.test.ts"
+node --test "tests/wrong-target-validator.test.ts"
+node --test "tests/binding-validator.test.ts"
+node --test "tests/retry-policy.test.ts"
+node --test "tests/wrong-target-adversarial.test.ts"
+
+# 或者运行所有测试
+node --test "tests/*.test.ts"
+```
+
+### 11.3 关键测试场景
+
+**SendFailureClassifier:**
+- 成功发送返回非重试
+- 网络错误（SAFE_PRE_ATTEMPT）允许重试
+- 有 messageId 但失败（ATTEMPTED_UNKNOWN）禁止重试
+- 部分发送（SIDE_EFFECT_POSSIBLE）禁止重试
+- 平台拒绝（EXPLICIT_REJECTED）禁止重试
+- 错误标准化（字符串、对象、未知类型）
+
+**WrongTargetValidator:**
+- 有效上下文通过验证
+- 空 shopId/conversationId 拒绝
+- 跨店铺执行拒绝
+- customerUid 不匹配拒绝（独立于 conversationId）
+- 空 triggerMessageId 拒绝（stale selection）
+- documentVersion 不匹配拒绝
+
+**BindingValidator:**
+- 所有绑定完整通过
+- 缺少任一绑定拒绝
+- 所有绑定缺失报告 6 个失败
+
+**RetryPolicy:**
+- SAFE_PRE_ATTEMPT 允许重试
+- 其他 3 种类型禁止重试
+- 核心安全不变量验证
+
+**对抗性测试:**
+- 跨店铺执行被拒绝
+- 过期选择被拒绝
+- 无效绑定被拒绝
+- customerUid 不匹配被拒绝
+- 文档版本不匹配被拒绝
+- 重试策略安全不变量
+- 多重失败全部报告
+- 所有绑定缺失被完全拒绝
+- 未知错误保守分类为不重试
+- 有效上下文通过所有验证
+
+### 11.4 核心安全不变量
+
+**重试策略不变量：**
+- 只有 `SAFE_PRE_ATTEMPT` 失败类型允许重试
+- `ATTEMPTED_UNKNOWN`、`SIDE_EFFECT_POSSIBLE`、`EXPLICIT_REJECTED` 绝不重试
+
+**目标验证不变量：**
+- `customerUid` 独立于 `conversationId` 验证
+- 跨店铺执行被拒绝
+- 过期选择被拒绝
+
+### 11.5 验收标准
+
+- [ ] 所有 56 个测试通过
+- [ ] 重试策略安全不变量验证通过
+- [ ] 对抗性测试全部通过
+- [ ] Typecheck 通过（已在开发环境验证）
+
+### 11.6 相关文档
+
+- 任务报告: `project/SHEEP_310_TASK_REPORT.md`
+- 验证报告: `project/SHEEP_310_VALIDATION_REPORT.md`
+- 执行计划: `project/SHEEP_310_EXECUTION_PLAN.md`
+
+---
+
+**文档更新:** v1.3（新增 SHEEP-310 测试）  
+**更新日期:** 2026-09-30
