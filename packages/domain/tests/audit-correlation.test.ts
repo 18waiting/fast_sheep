@@ -15,11 +15,33 @@ import {
   hasNotification,
   isAuditComplete,
 } from "../src/audit-correlation.ts";
-import type { AuditCorrelation, AuditContext } from "../src/audit-correlation.ts";
+import type { AuditContext } from "../src/audit-correlation.ts";
 import { createAcknowledgedOutcome } from "../src/transport-outcome.ts";
-import { createConfirmationBinding } from "../src/confirmation-binding.ts";
+import { createConfirmationRequest, createConfirmationBinding } from "../src/confirmation-binding.ts";
 import { createPassedVerification } from "../src/verification-record.ts";
 import { createAcknowledgedNotification } from "../src/desktop-notification.ts";
+import type { ContractIdentityLock } from "../src/context-envelope.ts";
+
+// Mock ContractIdentityLock for testing
+const mockIdentityLock: ContractIdentityLock = {
+  merchant_id: "merchant-1",
+  store_id: "store-1",
+  platform: "pdd",
+  platform_account_id: "account-1",
+  customer_identity: {
+    customer_uid: "customer-1",
+    customer_nick: "Test Customer",
+  },
+  conversation_id: "conv-1",
+  trigger_message_id: "msg-1",
+  generation: 1,
+};
+
+// Helper to create a ConfirmationBinding for tests
+function createTestBinding(planId: string = "plan-1") {
+  const request = createConfirmationRequest(planId, mockIdentityLock, "v1.0");
+  return createConfirmationBinding(request, "user-1", "hash-abc");
+}
 
 test("startAudit - 创建 IN_PROGRESS 状态的审计", () => {
   const context: AuditContext = {
@@ -58,36 +80,29 @@ test("startAudit - 支持可选 metadata", () => {
 
 test("recordConfirmation - 记录确认绑定", () => {
   const audit = startAudit({ shop_id: "shop-1", conversation_id: "conv-1", plan_id: "plan-1" });
-  const binding = createConfirmationBinding(
-    "req-1",
-    "plan-1",
-    "lock-1",
-    "v1.0",
-    "HUMAN_CONFIRM",
-    "hash-abc"
-  );
+  const binding = createTestBinding();
 
   const updated = recordConfirmation(audit, binding);
 
   assert.ok(updated.confirmation);
-  assert.equal(updated.confirmation.request_id, "req-1");
-  assert.equal(updated.confirmation.status, "PENDING");
+  assert.equal(updated.confirmation.plan_id, "plan-1");
+  assert.equal(updated.confirmation.confirmed_by, "user-1");
   // 原始审计不变（不可变性）
   assert.equal(audit.confirmation, undefined);
 });
 
 test("recordVerification - 追加验证记录", () => {
   const audit = startAudit({ shop_id: "shop-1", conversation_id: "conv-1", plan_id: "plan-1" });
-  const v1 = createPassedVerification("IDENTITY_LOCK", "Identity lock verified", "plan-1");
-  const v2 = createPassedVerification("POLICY_VERSION", "Policy version matched", "v1.0");
+  const v1 = createPassedVerification("audit-1", "IDENTITY_LOCK");
+  const v2 = createPassedVerification("audit-1", "BINDING");
 
   const withV1 = recordVerification(audit, v1);
   assert.equal(withV1.verifications.length, 1);
-  assert.equal(withV1.verifications[0].check_type, "IDENTITY_LOCK");
+  assert.equal(withV1.verifications[0].verification_type, "IDENTITY_LOCK");
 
   const withV2 = recordVerification(withV1, v2);
   assert.equal(withV2.verifications.length, 2);
-  assert.equal(withV2.verifications[1].check_type, "POLICY_VERSION");
+  assert.equal(withV2.verifications[1].verification_type, "BINDING");
 
   // 原始审计不变
   assert.equal(audit.verifications.length, 0);
@@ -95,13 +110,13 @@ test("recordVerification - 追加验证记录", () => {
 
 test("recordOutcome - 记录运输结果", () => {
   const audit = startAudit({ shop_id: "shop-1", conversation_id: "conv-1", plan_id: "plan-1" });
-  const outcome = createAcknowledgedOutcome("audit-1", "pdd-msg-123");
+  const outcome = createAcknowledgedOutcome("attempt-1", "pdd-msg-123");
 
   const updated = recordOutcome(audit, outcome);
 
   assert.ok(updated.outcome);
   assert.equal(updated.outcome.outcome_type, "ACKNOWLEDGED");
-  assert.equal(updated.outcome.audit_id, "audit-1");
+  assert.equal(updated.outcome.attempt_id, "attempt-1");
   // 原始审计不变
   assert.equal(audit.outcome, undefined);
 });
@@ -167,11 +182,11 @@ test("hasConfirmation / hasOutcome / hasNotification - 类型守卫", () => {
   assert.equal(hasOutcome(audit), false);
   assert.equal(hasNotification(audit), false);
 
-  const binding = createConfirmationBinding("req-1", "plan-1", "lock-1", "v1.0", "HUMAN_CONFIRM", "hash");
+  const binding = createTestBinding();
   const withConfirm = recordConfirmation(audit, binding);
   assert.equal(hasConfirmation(withConfirm), true);
 
-  const outcome = createAcknowledgedOutcome("audit-1", "msg-1");
+  const outcome = createAcknowledgedOutcome("attempt-1", "msg-1");
   const withOutcome = recordOutcome(audit, outcome);
   assert.equal(hasOutcome(withOutcome), true);
 
@@ -187,12 +202,12 @@ test("isAuditComplete - 验证审计完整性", () => {
   assert.equal(isAuditComplete(audit), false);
 
   // 只有 verification 不完整
-  const v1 = createPassedVerification("IDENTITY_LOCK", "OK", "plan-1");
+  const v1 = createPassedVerification("audit-1", "IDENTITY_LOCK");
   const withV = recordVerification(audit, v1);
   assert.equal(isAuditComplete(withV), false);
 
   // 加上 outcome
-  const outcome = createAcknowledgedOutcome("audit-1", "msg-1");
+  const outcome = createAcknowledgedOutcome("attempt-1", "msg-1");
   const withO = recordOutcome(withV, outcome);
   assert.equal(isAuditComplete(withO), false);
 
@@ -224,19 +239,19 @@ test("完整审计流程 - 端到端构建", () => {
   assert.equal(audit.status, "IN_PROGRESS");
 
   // 2. 记录验证
-  const v1 = createPassedVerification("IDENTITY_LOCK", "Lock verified", "lock-1");
-  const v2 = createPassedVerification("POLICY_VERSION", "Version matched", "v1.0");
+  const v1 = createPassedVerification(audit.audit_id, "IDENTITY_LOCK");
+  const v2 = createPassedVerification(audit.audit_id, "BINDING");
   audit = recordVerification(audit, v1);
   audit = recordVerification(audit, v2);
   assert.equal(audit.verifications.length, 2);
 
   // 3. 记录确认
-  const binding = createConfirmationBinding("req-1", "plan-1", "lock-1", "v1.0", "HUMAN_CONFIRM", "hash-xyz");
+  const binding = createTestBinding("plan-1");
   audit = recordConfirmation(audit, binding);
   assert.ok(audit.confirmation);
 
   // 4. 记录运输结果
-  const outcome = createAcknowledgedOutcome(audit.audit_id, "pdd-msg-999");
+  const outcome = createAcknowledgedOutcome("attempt-1", "pdd-msg-999");
   audit = recordOutcome(audit, outcome);
   assert.ok(audit.outcome);
 
