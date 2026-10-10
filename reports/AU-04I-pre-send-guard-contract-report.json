@@ -1,0 +1,117 @@
+{
+  "task": "AU-04I",
+  "result": "COMPLETE",
+  "controller_review": "PASS",
+  "scope": "CONTRACT_AND_PURE_GUARD_ONLY",
+  "objective": "Implement AdapterIdentityEvidence contract and pure PreSendGuard evaluation logic without wiring the send path.",
+  "implementation_performed": true,
+  "send_path_modified": false,
+  "transport_modified": false,
+  "real_send_authorized": false,
+  "auto_authorized": false,
+  "implemented": [
+    "AdapterIdentityEvidence domain contract and validator.",
+    "AdapterIdentityEvidence JSON Schema in package and resources registries.",
+    "Pure PreSendGuard evaluate logic using ExecutionIntent and AdapterIdentityEvidence.",
+    "Mandatory invocation of WrongTargetValidator and BindingValidator within the pure guard.",
+    "Deterministic deny reason codes and audit record.",
+    "Domain, guard, and contract tests."
+  ],
+  "tests": [
+    {
+      "result": "PASS",
+      "command": "pnpm --filter @fastwork/domain run build"
+    },
+    {
+      "command": "pnpm --filter @fastwork/domain run test",
+      "result": "PASS",
+      "failures": 0,
+      "tests": 110
+    },
+    {
+      "result": "PASS",
+      "command": "pnpm --filter @fastwork/orchestrator run typecheck"
+    },
+    {
+      "result": "PASS",
+      "command": "pnpm --filter @fastwork/orchestrator run build"
+    },
+    {
+      "command": "node --test packages/orchestrator/tests/pre-send-guard.test.ts",
+      "result": "PASS",
+      "failures": 0,
+      "tests": 16
+    },
+    {
+      "command": "pnpm run test:contracts",
+      "result": "PASS",
+      "failures": 0,
+      "tests": 20
+    },
+    {
+      "command": "pnpm run validate:contracts",
+      "result": "PASS",
+      "registered_contracts": 63
+    },
+    {
+      "result": "PASS",
+      "command": "pnpm run typecheck"
+    }
+  ],
+  "full_orchestrator_suite": {
+    "relation_to_au04": "NOT_CAUSED_BY_AU-04_TARGETED_TESTS_PASS",
+    "fail": 5,
+    "failures": [
+      "tests/conversation-orchestrator-human-confirm.test.ts: direct source import resolves .js sibling files.",
+      "tests/orchestrator-golden-fixtures.test.ts: existing GF-ORCH-008 retry expectation mismatch.",
+      "tests/send-failure-classifier.test.ts: connection-refused classification mismatch.",
+      "tests/send-failure-classifier.test.ts: object-error classification mismatch.",
+      "tests/send-failure.test.ts: existing GF-ORCH-008 retry expectation mismatch."
+    ],
+    "pass": 160,
+    "tests": 165,
+    "result": "FAIL_PRE_EXISTING"
+  },
+  "decisions_required": [
+    "Controller PASS/REPAIR for AU-04I pure guard implementation.",
+    "AD-05 session_generation producer remains PRODUCT_DECISION_REQUIRED.",
+    "AD-06 document_generation producer remains PRODUCT_DECISION_REQUIRED.",
+    "AD-07 evidence freshness window remains PRODUCT_DECISION_REQUIRED.",
+    "AU-04S send-path integration remains NOT_AUTHORIZED."
+  ],
+  "modified_files": [
+    "packages/domain/src/adapter-identity-evidence.ts",
+    "packages/domain/src/index.ts",
+    "packages/domain/tests/adapter-identity-evidence.test.mjs",
+    "packages/orchestrator/src/core/pre-send-guard.ts",
+    "packages/orchestrator/src/index.ts",
+    "packages/orchestrator/tests/pre-send-guard.test.ts",
+    "packages/orchestrator/package.json",
+    "packages/contracts/schemas/domain/adapter-identity-evidence.schema.json",
+    "packages/contracts/contract-registry.json",
+    "packages/contracts/schemas/registry.json",
+    "packages/contracts/docs/schema-catalog.md",
+    "resources/contracts/schemas/domain/adapter-identity-evidence.schema.json",
+    "resources/contracts/schemas/registry.json",
+    "tests/contracts/contract-schemas.test.mjs",
+    "project/AU-04_PRE_SEND_GUARD_IMPLEMENTATION_ADDENDUM.md",
+    "project/FAST_SHEEP_RISK_REMEDIATION_ACCEPTANCE_UNITS.md",
+    "project/PROJECT_STATE.json"
+  ],
+  "architecture_changes": [
+    "Added pure PreSendGuard contract; no runtime wiring."
+  ],
+  "security_changes": [],
+  "data_model_changes": [
+    "Added AdapterIdentityEvidence contract."
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "repair_applied": [
+    "Compare confirmation_id, confirmation_hash, confirmed_at, and expires_at.",
+    "Added negative tests for confirmed_at, expires_at, missing binding confirmation, and policy confirmation replay."
+  ],
+  "closed_date": "2026-10-03"
+}

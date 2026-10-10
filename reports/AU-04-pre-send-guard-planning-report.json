@@ -1,0 +1,60 @@
+{
+  "task": "AU-04",
+  "result": "COMPLETE",
+  "controller_review": "PASS",
+  "phase": "MVP_E_MULTI_SHOP_EXPANSION",
+  "milestone": "MVP-E MULTI_SHOP_EXPANSION",
+  "objective": "Plan a mandatory fail-closed PreSendGuard that compares immutable ExecutionIntent expected identity with live AdapterIdentityEvidence and cannot bypass either validator.",
+  "implementation_performed": false,
+  "send_path_modified": false,
+  "transport_modified": false,
+  "work_units": {
+    "WU_01": "COMPLETE",
+    "WU_07": "COMPLETE",
+    "WU_02": "COMPLETE",
+    "WU_03": "COMPLETE",
+    "WU_06": "COMPLETE",
+    "WU_05": "COMPLETE",
+    "WU_04": "COMPLETE"
+  },
+  "confirmed_findings": [
+    "performSend has no independent expected identity and does not call BindingValidator.",
+    "PddPlatformAdapter.sendText currently sends session_id, shop_id, conversation_id, and text only.",
+    "getCurrentConversationState currently returns only hasNewMessage.",
+    "PddSessionState provides partial evidence including session_id, active_conversation_id, and buyer_id.",
+    "platform_account_id, document_generation, and session_generation evidence producers are missing.",
+    "PreSendController revalidation is not an identity proof and cannot replace PreSendGuard."
+  ],
+  "required_decisions": [
+    "Approve AdapterIdentityEvidence contract.",
+    "Require COMPLETE evidence for send.",
+    "Make PreSendGuard the mandatory send gate.",
+    "Require both WrongTargetValidator and BindingValidator.",
+    "Define session_generation producer.",
+    "Define document_generation producer.",
+    "Define evidence freshness window.",
+    "Keep atomic intent claim as AU-06 dependency."
+  ],
+  "deferred_items": [
+    "PreSendGuard implementation.",
+    "AdapterIdentityEvidence implementation.",
+    "ConversationOrchestrator integration.",
+    "Transport integration.",
+    "Real send and AUTO."
+  ],
+  "modified_files": [
+    "project/AU-04_PRE_SEND_GUARD_PLAN.md",
+    "project/AU-04_PRE_SEND_GUARD_DECISION_PACKAGE.md",
+    "project/FAST_SHEEP_RISK_REMEDIATION_ACCEPTANCE_UNITS.md",
+    "project/PROJECT_STATE.json"
+  ],
+  "architecture_changes": [],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "closed_date": "2026-10-03",
+  "scope": "PLANNING_ONLY"
+}

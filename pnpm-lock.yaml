@@ -181,6 +181,10 @@ importers:
         version: 5.9.3
 
   packages/orchestrator:
+    dependencies:
+      '@fastwork/domain':
+        specifier: workspace:*
+        version: link:../domain
     devDependencies:
       '@fastwork/test-kit':
         specifier: workspace:*

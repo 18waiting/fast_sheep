@@ -826,6 +826,19 @@
       "status": "REGISTERED"
     },
     {
+      "id": "fastwork:domain:adapter-identity-evidence",
+      "version": "1.0",
+      "path": "domain/adapter-identity-evidence.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "AdapterIdentityEvidence",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
       "id": "fastwork:domain:background-job",
       "version": "1.0",
       "path": "domain/background-job.schema.json",
@@ -908,6 +921,19 @@
         "B-PLATFORM-002"
       ],
       "title": "ConversationMessage",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "fastwork:domain:execution-intent",
+      "version": "1.0",
+      "path": "domain/execution-intent.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ExecutionIntent",
       "schema_draft": "https://json-schema.org/draft/2020-12/schema",
       "status": "REGISTERED"
     },

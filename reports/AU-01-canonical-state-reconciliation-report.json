@@ -1,0 +1,69 @@
+{
+  "task": "AU-01",
+  "result": "COMPLETE",
+  "controller_review": "PASS",
+  "phase": "MVP_E_MULTI_SHOP_EXPANSION",
+  "milestone": "MVP-E MULTI_SHOP_EXPANSION",
+  "objective": "Reconcile SHEEP-312 Controller PASS and canonical lifecycle projections while preserving all execution authorization gates.",
+  "completed_requirements": 12,
+  "total_requirements": 12,
+  "controller_decision_recorded": "SHEEP-312 PASS",
+  "current_phase": "MVP_E_MULTI_SHOP_EXPANSION",
+  "current_milestone": "MVP-E MULTI_SHOP_EXPANSION",
+  "current_milestone_state": "PLANNED / NOT_AUTHORIZED",
+  "last_completed_milestone": "MVP-D AUTO",
+  "last_closed_task": "SHEEP-312",
+  "next_authoritative_roadmap_id": "SHEEP-313",
+  "next_task_execution_authorized": false,
+  "current_execution_authorization": false,
+  "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
+  "tests": [
+    {
+      "result": "PASS",
+      "command": "node scripts/validate-project-state.mjs"
+    },
+    {
+      "result": "PASS",
+      "tests": 23,
+      "command": "node --test tests/project-state-consistency.test.mjs",
+      "failures": 0
+    }
+  ],
+  "evidence": {
+    "confirmed": [
+      "SHEEP-312 has Codex COMPLETE and Controller PASS recorded.",
+      "last_closed_task is SHEEP-312.",
+      "The canonical next task is SHEEP-313 with execution authorization false.",
+      "The current phase and milestone identify MVP-E while current_milestone_state remains PLANNED / NOT_AUTHORIZED.",
+      "The validator reports PROJECT_STATE_CONSISTENCY=PASS.",
+      "The project-state consistency suite reports 23/23 PASS."
+    ],
+    "inferred": []
+  },
+  "blockers": [],
+  "decisions_required": [
+    "Controller PASS/REPAIR for AU-01.",
+    "Separate authorization before starting SHEEP-313."
+  ],
+  "deferred_items": [
+    "SHEEP-313 execution.",
+    "Real send, AUTO, production enablement, and live evidence authorization."
+  ],
+  "modified_files": [
+    "project/PROJECT_STATE.json",
+    "scripts/validate-project-state.mjs",
+    "tests/project-state-consistency.test.mjs",
+    "project/FAST_SHEEP_RISK_REMEDIATION_ACCEPTANCE_UNITS.md",
+    "project/AU-01_CANONICAL_STATE_RECONCILIATION_PLAN.md"
+  ],
+  "architecture_changes": [],
+  "security_changes": [],
+  "data_model_changes": [
+    "Extended PROJECT_STATE lifecycle metadata with current_milestone_state and last_completed_milestone; preserved existing authorization lanes."
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "closed_date": "2026-10-03"
+}

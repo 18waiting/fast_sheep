@@ -1,6 +1,6 @@
 # Clean-Room Contract Schema Catalog
 
-> TASK-015B deliverable. Generated from `schemas/registry.json` (185 schemas) on 2026-09-16.
+> TASK-015B deliverable. Generated from `schemas/registry.json` (187 schemas) on 2026-10-03.
 
 ## 1. Purpose
 Authoritative catalog of clean-room implementation JSON Schemas under `rebuild/packages/contracts/schemas/`. JSON Schema (Draft 2020-12) is the single source of truth for cross-process contracts; TS/Python types mirror but do not replace it.
@@ -39,10 +39,12 @@ Authoritative catalog of clean-room implementation JSON Schemas under `rebuild/p
 
 | Schema | Version | $id | Category | Purpose | Owner | Producer | Consumer | Behavior IDs | Status |
 |---|---|---|---|---|---|---|---|---|---|
+| adapter-identity-evidence.schema.json | 1.0 | `fastwork:domain:adapter-identity-evidence` | domain | AdapterIdentityEvidence |  | - |  |  | REGISTERED |
 | background-job.schema.json | 1.0 | `fastwork:domain:background-job` | domain | BackgroundJob | BackgroundJobManager | BackgroundJobManager | BackgroundJobManager | B-JOB-001 | REGISTERED |
 | conversation.schema.json | 1.0 | `fastwork:domain:conversation` | domain | Conversation | ConversationRepository | ConversationOrchestrator | ConversationRepository | B-STORE-006 | REGISTERED |
 | conversation-context.schema.json | 1.0 | `fastwork:domain:conversation-context` | domain | ConversationContext | ConversationContextBuilder, ConversationEngine | - | ConversationContextBuilder, ConversationEngine | B-CONV-001, B-CONV-004, B-PROMPT-004 | REGISTERED |
 | conversation-message.schema.json | 1.0 | `fastwork:domain:conversation-message` | domain | ConversationMessage | ConversationRepository, ConversationOrchestrator | - | ConversationRepository, ConversationOrchestrator | B-STORE-006, B-PLATFORM-001, B-PLATFORM-002 | REGISTERED |
+| execution-intent.schema.json | 1.0 | `fastwork:domain:execution-intent` | domain | ExecutionIntent |  | - |  |  | REGISTERED |
 | feedback-record.schema.json | 1.0 | `fastwork:domain:feedback-record` | domain | FeedbackRecord | FeedbackService, FeedbackRepository | - | FeedbackService, FeedbackRepository | B-FEEDBACK-001, B-FEEDBACK-002 | REGISTERED |
 | generation-request.schema.json | 1.0 | `fastwork:domain:generation-request` | domain | GenerationRequest | GenerationProviderRouter, ConversationEngine | - | GenerationProviderRouter, ConversationEngine | B-PROV-002, B-PROV-003, B-PROV-004 | REGISTERED |
 | generation-result.schema.json | 1.0 | `fastwork:domain:generation-result` | domain | GenerationResult | GenerationProviderRouter, ConversationEngine | - | GenerationProviderRouter, ConversationEngine | B-TOOL-003, B-TOOL-005, B-PROV-001, B-PROV-005 | REGISTERED |
@@ -121,6 +123,6 @@ Authoritative catalog of clean-room implementation JSON Schemas under `rebuild/p
 - None — every schema carries a unique `$id`, `$title`, and `$schema`.
 
 ## 13. Current Coverage
-- Registered schemas: 185
+- Registered schemas: 187
 - Categories: other, common, configuration, domain, error, event, rpc
 - P0 behaviors referenced by schemas: 50 distinct behavior IDs

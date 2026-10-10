@@ -221,3 +221,73 @@ test("InboundEnvelope and IdentityLock reject forbidden downstream fields and PD
     assert.equal(envVal(envelope), false, field);
   }
 });
+test("ExecutionIntent schema enforces authority source, confirmation binding, and hash format", () => {
+  const val = v("fastwork:domain:execution-intent");
+  const base = {
+    schema_version: "1.0",
+    intent_id: "intent-1",
+    authorization_source: "HUMAN_CONFIRMATION",
+    identity_lock: {
+      merchant_id: "merchant-1",
+      store_id: "store-1",
+      platform: "pdd",
+      platform_account_id: "account-1",
+      customer_identity: { kind: "customerUid", value: "customer-1" },
+      conversation_id: "conversation-1",
+      trigger_message_id: "message-1",
+    },
+    plan_ref: { plan_id: "plan-1", plan_hash: "plan-hash-1" },
+    policy_ref: { policy_version: "policy-1" },
+    confirmation_ref: {
+      confirmation_id: "confirmation-1",
+      confirmation_hash: "confirmation-hash-1",
+      confirmed_at: "2026-10-03T00:00:00.000Z",
+    },
+    session_generation: "session-1",
+    document_generation: "document-1",
+    created_at: "2026-10-03T00:00:00.000Z",
+    expires_at: "2026-10-03T01:00:00.000Z",
+    nonce: "nonce-1",
+    state: "CREATED",
+    intent_hash: "sha256-" + "a".repeat(64),
+  };
+  assert.ok(val(base));
+  const missingConfirmation = { ...base };
+  delete missingConfirmation.confirmation_ref;
+  assert.equal(val(missingConfirmation), false);
+  const policy = { ...base, authorization_source: "POLICY_AUTHORIZATION" };
+  delete policy.confirmation_ref;
+  assert.ok(val(policy));
+  assert.equal(val({ ...policy, confirmation_ref: base.confirmation_ref }), false);
+  assert.equal(val({ ...base, intent_hash: "not-a-hash" }), false);
+});
+test("AdapterIdentityEvidence schema enforces COMPLETE evidence requirements", () => {
+  const val = v("fastwork:domain:adapter-identity-evidence");
+  const base = {
+    evidence_id: "evidence-1",
+    observed_at: "2026-10-03T00:00:00.000Z",
+    source: "test-adapter",
+    availability: "COMPLETE",
+    runtime_shop_id: "runtime-shop-1",
+    identity_lock: {
+      merchant_id: "merchant-1",
+      store_id: "store-1",
+      platform: "pdd",
+      platform_account_id: "account-1",
+      customer_identity: { kind: "customerUid", value: "customer-1" },
+      conversation_id: "conversation-1",
+      trigger_message_id: "message-1",
+    },
+    session_id: "session-1",
+    session_generation: "session-generation-1",
+    document_generation: "document-generation-1",
+  };
+  assert.ok(val(base));
+  assert.ok(val({ ...base, availability: "PARTIAL", runtime_shop_id: undefined, identity_lock: undefined }));
+  const missingGeneration = { ...base };
+  delete missingGeneration.document_generation;
+  assert.equal(val(missingGeneration), false);
+  const missingIdentity = { ...base };
+  delete missingIdentity.identity_lock;
+  assert.equal(val(missingIdentity), false);
+});

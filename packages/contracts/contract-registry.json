@@ -611,6 +611,26 @@
       "status": "IMPLEMENTED",
       "source": "docs/architecture/PLATFORM_ADAPTER_CONTRACT.md",
       "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:execution-intent",
+      "version": "1.0",
+      "schema": "schemas/domain/execution-intent.schema.json",
+      "direction": "domain",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "project/AU-02_EXPECTED_IDENTITY_AUTHORITY_DECISION_PACKAGE.md",
+      "behavior_ids": []
+    },
+    {
+      "id": "fastwork:domain:adapter-identity-evidence",
+      "version": "1.0",
+      "schema": "schemas/domain/adapter-identity-evidence.schema.json",
+      "direction": "domain",
+      "owner": "contracts",
+      "status": "IMPLEMENTED",
+      "source": "project/AU-04_PRE_SEND_GUARD_DECISION_PACKAGE.md",
+      "behavior_ids": []
     }
   ]
 }

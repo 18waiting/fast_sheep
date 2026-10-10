@@ -2855,6 +2855,38 @@
       "schema_draft": "https://json-schema.org/draft/2020-12/schema",
       "status": "REGISTERED",
       "description": "Reply plan: governed evolution of Suggestion. SHEEP-306."
+    },
+    {
+      "id": "fastwork:domain:execution-intent",
+      "version": "1.0",
+      "path": "domain/execution-intent.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "AU-03"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "ExecutionIntent",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED",
+      "description": "Immutable expected-identity authority for an executable send. AU-03 / EXPECTED_IDENTITY_AUTHORITY_V1."
+    },
+    {
+      "id": "fastwork:domain:adapter-identity-evidence",
+      "version": "1.0",
+      "path": "domain/adapter-identity-evidence.schema.json",
+      "category": "domain",
+      "stability": "stable",
+      "owners": [
+        "AU-04"
+      ],
+      "used_by": [],
+      "parity_behavior_ids": [],
+      "title": "AdapterIdentityEvidence",
+      "schema_draft": "https://json-schema.org/draft/2020-12/schema",
+      "status": "REGISTERED",
+      "description": "Current runtime identity evidence observed by a platform adapter. AU-04 planning and pure guard contract."
     }
   ]
 }

@@ -1,0 +1,88 @@
+{
+  "task": "AU-04S",
+  "result": "COMPLETE",
+  "controller_review": "PENDING",
+  "scope": "SEND_PATH_INTEGRATION",
+  "objective": "Integrate a mandatory, fail-closed PreSendGuard gate into ConversationOrchestrator without enabling Transport, real send, or AUTO.",
+  "implementation_performed": true,
+  "send_path_modified": true,
+  "transport_modified": false,
+  "real_send_authorized": false,
+  "auto_authorized": false,
+  "behavior": [
+    "preSendGuardRequired=true requires both PreSendGuard and request factory.",
+    "Missing guard, null request, or denied guard emits SendFailed and returns before SendStarted.",
+    "Successful guard evaluation permits the existing send path to continue.",
+    "Default behavior remains legacy when preSendGuardRequired is false and no guard is configured."
+  ],
+  "tests": [
+    {
+      "command": "pnpm --filter @fastwork/orchestrator run typecheck",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm --filter @fastwork/orchestrator run build",
+      "result": "PASS"
+    },
+    {
+      "tests": 24,
+      "command": "node --test packages/orchestrator/tests/pre-send-guard.test.ts packages/orchestrator/tests/pre-send-guard-integration.test.ts",
+      "result": "PASS",
+      "failures": 0
+    },
+    {
+      "command": "pnpm run typecheck",
+      "result": "PASS"
+    },
+    {
+      "tests": 20,
+      "command": "pnpm run test:contracts",
+      "result": "PASS",
+      "failures": 0
+    },
+    {
+      "registered_contracts": 63,
+      "command": "pnpm run validate:contracts",
+      "result": "PASS"
+    }
+  ],
+  "full_orchestrator_suite": {
+    "known_failures": 5,
+    "note": "Independent of AU-04S; targeted AU-04I/AU-04S tests pass.",
+    "result": "FAIL_PRE_EXISTING"
+  },
+  "remaining_decisions": [
+    "AD-05 session_generation producer remains PRODUCT_DECISION_REQUIRED.",
+    "AD-06 document_generation producer remains PRODUCT_DECISION_REQUIRED.",
+    "AD-07 evidence freshness window remains PRODUCT_DECISION_REQUIRED.",
+    "Transport integration remains NOT_AUTHORIZED.",
+    "Real send and AUTO remain disabled."
+  ],
+  "modified_files": [
+    "packages/orchestrator/src/core/conversation-orchestrator.ts",
+    "packages/orchestrator/src/core/pre-send-guard.ts",
+    "packages/orchestrator/src/index.ts",
+    "packages/orchestrator/tests/helpers.ts",
+    "packages/orchestrator/tests/pre-send-guard-integration.test.ts",
+    "project/PROJECT_STATE.json",
+    "project/FAST_SHEEP_RISK_REMEDIATION_ACCEPTANCE_UNITS.md",
+    "project/AU-04_PRE_SEND_GUARD_IMPLEMENTATION_ADDENDUM.md"
+  ],
+  "architecture_changes": [
+    "Added optional mandatory PreSendGuard integration gate to ConversationOrchestrator."
+  ],
+  "security_changes": [
+    "Fail-closed guard gate can block send before SendStarted and Transport when required mode is enabled."
+  ],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "repair_applied": [
+    "Partial guard configuration now fails closed.",
+    "Real-send and AUTO configuration require preSendGuardRequired=true.",
+    "Full PreSendGuard audit is preserved in decisions and failure events.",
+    "Added partial-configuration, configuration-lane, zero-transport, and audit tests."
+  ]
+}

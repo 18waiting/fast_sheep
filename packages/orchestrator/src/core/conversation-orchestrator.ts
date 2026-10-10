@@ -32,6 +32,7 @@ import { SendFailureClassifier } from "./send-failure-classifier.js";
 import { WrongTargetValidator } from "./wrong-target-validator.js";
 import { BindingValidator } from "./binding-validator.js";
 import { RetryPolicy } from "../policies/retry-policy.js";
+import { type PreSendGuardPort, type PreSendGuardRequest } from "./pre-send-guard.js";
 import { HumanConfirmController, type IdentityLock, type ConfirmationResult, type ReplyPlanRef, type PolicyDecisionRef } from "./human-confirm-controller.js";
 import {
   createConversationRuntimeState,
@@ -76,7 +77,21 @@ export interface OrchestratorOptions {
 
   // SHEEP-311: Optional HumanConfirmController for HUMAN_CONFIRM mode
   humanConfirmController?: HumanConfirmController;
+
+  // AU-04S: Optional mandatory PreSendGuard integration.
+  preSendGuard?: PreSendGuardPort;
+  preSendGuardRequired?: boolean;
+  preSendGuardRequestFactory?: PreSendGuardRequestFactory;
+
+  // AU-04S configuration lanes. Enabling either requires the guard-required gate.
+  realSendEnabled?: boolean;
+  autoEnabled?: boolean;
 }
+
+export type PreSendGuardRequestFactory = (
+  request: SendRequest,
+  state: ConversationRuntimeState,
+) => Promise<PreSendGuardRequest | null>;
 
 interface SendFeedbackOptions {
   feedbackClass?: "MANUAL" | "AUTO";
@@ -115,6 +130,11 @@ export class ConversationOrchestrator {
   // SHEEP-311: Human confirmation controller
   private readonly humanConfirmController?: HumanConfirmController;
 
+  // AU-04S: Optional mandatory PreSendGuard integration.
+  private readonly preSendGuard?: PreSendGuardPort;
+  private readonly preSendGuardRequired: boolean;
+  private readonly preSendGuardRequestFactory?: PreSendGuardRequestFactory;
+
   private readonly conversations = new Map<string, ConversationRuntimeState>();
   private readonly decisions: DecisionRecord[] = [];
   private focusedShopId: string | null = null;
@@ -123,6 +143,9 @@ export class ConversationOrchestrator {
   private readonly countdownTickMs: number;
 
   constructor(options: OrchestratorOptions) {
+    if ((options.realSendEnabled === true || options.autoEnabled === true) && options.preSendGuardRequired !== true) {
+      throw new Error("PreSendGuard required mode is mandatory when real send or AUTO is configured");
+    }
     this.aiEngineClient = options.aiEngineClient;
     this.platformAdapter = options.platformAdapter;
     this.clock = options.clock;
@@ -162,6 +185,11 @@ export class ConversationOrchestrator {
 
     // SHEEP-311: Initialize human confirmation controller
     this.humanConfirmController = options.humanConfirmController;
+
+    // AU-04S: Optional guard integration; required mode fails closed if absent.
+    this.preSendGuard = options.preSendGuard;
+    this.preSendGuardRequired = options.preSendGuardRequired === true;
+    this.preSendGuardRequestFactory = options.preSendGuardRequestFactory;
 
     for (const [seedKey, seed] of Object.entries(options.initialState ?? {})) {
       const separatorIndex = seedKey.indexOf("\u0000");
@@ -553,10 +581,10 @@ export class ConversationOrchestrator {
 
 
   // SHEEP-311: Human Confirmation Methods
-  
+
   /**
    * Request human confirmation for a ReplyPlan.
-   * 
+   *
    * @param plan - Reference to the ReplyPlan.
    * @param decision - Reference to the PolicyDecision.
    * @returns The confirmation request, or null if HumanConfirmController is not configured.
@@ -573,7 +601,7 @@ export class ConversationOrchestrator {
     }
 
     const request = this.humanConfirmController.requestConfirmation(plan, decision);
-    
+
     this.recordDecision({
       decision: "human_confirm_requested",
       plan_id: plan.plan_id,
@@ -592,7 +620,7 @@ export class ConversationOrchestrator {
 
   /**
    * Confirm a pending confirmation request.
-   * 
+   *
    * @param confirmationId - The confirmation request ID.
    * @param userId - The user ID who is confirming.
    * @returns The confirmation result.
@@ -631,7 +659,7 @@ export class ConversationOrchestrator {
 
   /**
    * Reject a pending confirmation request.
-   * 
+   *
    * @param confirmationId - The confirmation request ID.
    * @param userId - The user ID who is rejecting.
    * @param reason - The reason for rejection.
@@ -667,7 +695,7 @@ export class ConversationOrchestrator {
 
   /**
    * Get the status of a confirmation request.
-   * 
+   *
    * @param confirmationId - The confirmation request ID.
    * @returns The confirmation status.
    */
@@ -681,7 +709,7 @@ export class ConversationOrchestrator {
 
   /**
    * Validate that a confirmation binding matches the expected plan and identity.
-   * 
+   *
    * @param confirmationId - The confirmation request ID.
    * @param expectedPlanId - The expected ReplyPlan ID.
    * @param expectedIdentityLock - The expected IdentityLock.
@@ -795,14 +823,71 @@ export class ConversationOrchestrator {
     }
   }
 
-  private async performSend(request: SendRequest): Promise<void> {
-    const { shopId, conversationId, reply } = request;
+  private async evaluateGuardBeforeSend(
+    request: SendRequest,
+    state: ConversationRuntimeState,
+  ): Promise<boolean> {
+    const { shopId, conversationId } = request;
+    if (!this.preSendGuard || !this.preSendGuardRequestFactory) {
+      this.emit("SendFailed", {
+        conversation_id: conversationId,
+        shop_id: shopId,
+        error: new Error("PreSendGuard is required but not configured"),
+      });
+      this.recordDecision({
+        decision: "pre_send_guard_missing",
+        conversation_id: conversationId,
+        shop_id: shopId,
+      });
+      return false;
+    }
 
-    // SHEEP-310: Pre-send wrong-target validation
+    const guardRequest = await this.preSendGuardRequestFactory(request, state);
+    if (!guardRequest) {
+      this.emit("SendFailed", {
+        conversation_id: conversationId,
+        shop_id: shopId,
+        error: new Error("PreSendGuard request could not be constructed"),
+      });
+      this.recordDecision({
+        decision: "pre_send_guard_missing",
+        conversation_id: conversationId,
+        shop_id: shopId,
+      });
+      return false;
+    }
+
+    const result = await this.preSendGuard.evaluate(guardRequest);
+    if (!result.allowed) {
+      this.emit("SendFailed", {
+        conversation_id: conversationId,
+        shop_id: shopId,
+        error: new Error(`PreSendGuard rejected: ${result.audit.reason_codes.join("; ")}`),
+        guard_audit: result.audit,
+      });
+      this.recordDecision({
+        decision: "pre_send_guard_rejected",
+        conversation_id: conversationId,
+        shop_id: shopId,
+        reason_codes: result.audit.reason_codes,
+        guard_audit: result.audit,
+      });
+      return false;
+    }
+    this.recordDecision({
+      decision: "pre_send_guard_allowed",
+      conversation_id: conversationId,
+      shop_id: shopId,
+      guard_audit: result.audit,
+    });
+    return true;
+  }
+
+  private validateWrongTargetLegacy(request: SendRequest): boolean {
+    const { shopId, conversationId } = request;
     const targetValidation = this.wrongTargetValidator.validate({
       shopId,
       conversationId,
-      // Extract optional fields from request if available
       customerUid: typeof request.customerUid === "string" ? request.customerUid : undefined,
       platformAccountId: typeof request.platformAccountId === "string" ? request.platformAccountId : undefined,
       triggerMessageId: typeof request.triggerMessageId === "string" ? request.triggerMessageId : undefined,
@@ -810,18 +895,32 @@ export class ConversationOrchestrator {
       documentVersion: typeof request.documentVersion === "string" ? request.documentVersion : undefined,
     });
 
-    if (!targetValidation.valid) {
-      this.emit("SendFailed", {
-        conversation_id: conversationId,
-        shop_id: shopId,
-        error: new Error(`Wrong-target validation failed: ${targetValidation.failures.map(f => f.reason).join("; ")}`),
-      });
-      this.recordDecision({
-        decision: "wrong_target_rejected",
-        conversation_id: conversationId,
-        shop_id: shopId,
-        failures: targetValidation.failures.map(f => ({ field: f.field, reason: f.reason })),
-      });
+    if (targetValidation.valid) return true;
+
+    this.emit("SendFailed", {
+      conversation_id: conversationId,
+      shop_id: shopId,
+      error: new Error(`Wrong-target validation failed: ${targetValidation.failures.map((failure) => failure.reason).join("; ")}`),
+    });
+    this.recordDecision({
+      decision: "wrong_target_rejected",
+      conversation_id: conversationId,
+      shop_id: shopId,
+      failures: targetValidation.failures.map((failure) => ({ field: failure.field, reason: failure.reason })),
+    });
+    return false;
+  }
+
+  private async performSend(request: SendRequest): Promise<void> {
+    const { shopId, conversationId, reply } = request;
+    const state = this.ensureState(shopId, conversationId);
+    const hasGuard = this.preSendGuard !== undefined;
+    const hasGuardRequestFactory = this.preSendGuardRequestFactory !== undefined;
+    const guardPartiallyConfigured = hasGuard !== hasGuardRequestFactory;
+
+    if (this.preSendGuardRequired || hasGuard || hasGuardRequestFactory || guardPartiallyConfigured) {
+      if (!(await this.evaluateGuardBeforeSend(request, state))) return;
+    } else if (!this.validateWrongTargetLegacy(request)) {
       return;
     }
 
@@ -879,7 +978,6 @@ export class ConversationOrchestrator {
       generation: request.generation,
     });
 
-    const state = this.ensureState(shopId, conversationId);
     if (state.suggestion && state.suggestion.status === "pending") {
       this.suggestionManager.markSent(state.suggestion);
     }

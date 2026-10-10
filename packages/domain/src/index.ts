@@ -198,3 +198,34 @@ export {
   hasNotification,
   isAuditComplete,
 } from "./audit-correlation.js";
+// AU-03: ExecutionIntent expected-identity authority contract.
+export {
+  type ExecutionIntentAuthorizationSource,
+  type ExecutionIntentState,
+  type ExecutionIntentPlanRef,
+  type ExecutionIntentPolicyRef,
+  type ExecutionIntentConfirmationRef,
+  type ExecutionIntentImmutableFields,
+  type ExecutionIntent,
+  type CreateExecutionIntentInput,
+  type ExecutionIntentFailure,
+  type ExecutionIntentValidation,
+  EXECUTION_INTENT_SCHEMA_VERSION,
+  EXECUTION_INTENT_ALLOWED_TRANSITIONS,
+  ExecutionIntentValidationError,
+  getExecutionIntentHashPayload,
+  computeExecutionIntentHash,
+  verifyExecutionIntentHash,
+  validateExecutionIntent,
+  isExecutionIntentTransitionAllowed,
+  transitionExecutionIntent,
+  createExecutionIntent,
+} from "./execution-intent.js";
+// AU-04: AdapterIdentityEvidence expected/actual boundary contract.
+export {
+  type AdapterEvidenceAvailability,
+  type AdapterIdentityEvidence,
+  type AdapterEvidenceFailure,
+  type AdapterEvidenceValidation,
+  validateAdapterIdentityEvidence,
+} from "./adapter-identity-evidence.js";

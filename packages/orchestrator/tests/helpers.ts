@@ -7,6 +7,8 @@ import {
   PreSendRevalidationPolicy,
   SegmentedSendPolicy,
   FeedbackIntentPolicy,
+  type PreSendGuardPort,
+  type PreSendGuardRequestFactory,
 } from "../dist/index.js";
 import {
   VirtualClock,
@@ -36,6 +38,11 @@ export function buildHarness(opts: {
   countdownTickMs?: number;
   seed?: Record<string, Record<string, unknown>>;
   initialState?: Record<string, unknown>;
+  preSendGuard?: PreSendGuardPort;
+  preSendGuardRequired?: boolean;
+  preSendGuardRequestFactory?: PreSendGuardRequestFactory;
+  realSendEnabled?: boolean;
+  autoEnabled?: boolean;
 } = {}): Harness {
   const clock = new VirtualClock();
   const platform = new FakePlatformAdapter(clock);
@@ -62,6 +69,11 @@ export function buildHarness(opts: {
       feedbackIntentPolicy: new FeedbackIntentPolicy(),
     },
     initialState: opts.initialState,
+    preSendGuard: opts.preSendGuard,
+    preSendGuardRequired: opts.preSendGuardRequired,
+    preSendGuardRequestFactory: opts.preSendGuardRequestFactory,
+    realSendEnabled: opts.realSendEnabled,
+    autoEnabled: opts.autoEnabled,
   });
   if (opts.mode) {
     void orc.onSetMode("s1", "c1", opts.mode);

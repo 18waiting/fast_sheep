@@ -129,6 +129,8 @@
     "canonical_current_fields": [
       "current_phase",
       "current_milestone",
+      "current_milestone_state",
+      "last_completed_milestone",
       "last_closed_task",
       "next_authoritative_roadmap_id",
       "next_task_execution_authorized",
@@ -145,6 +147,8 @@
       "current_execution_authorization"
     ],
     "task_object_policy": "HISTORICAL_OR_PROJECTION_ONLY; current lifecycle and authorization fields must agree with canonical current gates",
+    "subordinate_program_field": "remediation_program",
+    "subordinate_program_policy": "NAVIGATION_ONLY; MUST_NOT_OVERRIDE_CANONICAL_CURRENT_FIELDS_OR_AUTHORIZATION",
     "historical_authorization_field": "historical_authorization",
     "pdd_integration_policy": "DERIVED_OR_DEFERRED; no duplicate top-level current truth"
   },
@@ -848,19 +852,26 @@
       "current_blocker": "PDD_PRIMARY_VIEWPORT_STARVED_BY_OPTION_B_SPACE_ALLOCATION / PDD_VISIBLE_CLIPPING_OR_INCOMPLETE_DISPLAY_OBSERVED"
     }
   },
-  "current_phase": "MVP_A_FOUNDATION",
-  "current_milestone": "M-A.2 Scene and Context Foundation",
-  "last_closed_task": "SHEEP-311",
-  "current_task": "SHEEP-312 PLANNING: AUTO Safety and Adversarial Validation",
-  "next_action": "Controller review SHEEP-312 task definition and execution plan, then authorize execution",
-  "next_authoritative_roadmap_id": "SHEEP-312",
+  "current_phase": "MVP_E_MULTI_SHOP_EXPANSION",
+  "current_milestone": "MVP-E MULTI_SHOP_EXPANSION",
+  "current_milestone_state": "PLANNED / NOT_AUTHORIZED",
+  "last_completed_milestone": "MVP-D AUTO",
+  "last_closed_task": "SHEEP-312",
+  "current_task": "SHEEP-313 PLANNED: Multi-Shop Expansion Proof",
+  "next_action": {
+    "task_id": "SHEEP-313",
+    "action": "CONTROLLER_REVIEW_EXECUTION_AUTHORIZATION",
+    "authorized": false
+  },
+  "next_authoritative_roadmap_id": "SHEEP-313",
   "next_task_execution_authorized": false,
   "current_execution_authorization": false,
   "current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
-  "current_authorization_pause_reason": "SHEEP_305_COMPLETE_AWAITING_CONTROLLER_PASS",
+  "current_authorization_pause_reason": "SHEEP_313_PLANNED_AWAITING_CONTROLLER_EXECUTION_AUTHORIZATION",
   "sheep_082_execution_authorized": false,
   "project_state_reconciliation_required": false,
-  "next_sheep_task_after_governance": "SHEEP-308",
+  "next_sheep_task_after_governance": "SHEEP-313",
+  "next_sheep_task_after_governance_authority": "LEGACY_PROJECTION_ONLY / NOT_EXECUTION_AUTHORIZATION",
   "implementation_started": true,
   "implementation_progress": 0,
   "product_definition_progress": 1,
@@ -956,18 +967,100 @@
     "SHEEP_301_BOUNDED_FIXTURE_MAPPING:CONTROLLER_PASS / FULL_TASK_PARTIAL_OPEN"
   ],
   "next_stage_not_executed": true,
-  "lifecycle_stage": "MVP_A_FOUNDATION",
+  "lifecycle_stage": "MVP_E_MULTI_SHOP_EXPANSION",
   "project_state_reconciliation": {
     "required": false,
     "status": "COMPLETE",
-    "reason": "AUTHORITATIVE_STATE_DRIFT reconciled after SHEEP-080 and SHEEP-081 Controller PASS / CLOSED",
+    "reason": "AU-01 reconciled SHEEP-312 Controller PASS and the current V1.1 lifecycle pointers",
+    "reconciled_at": "2026-10-03",
+    "controller_decision_recorded": "SHEEP-312 PASS",
     "stale_fields_reconciled": [
-      "lifecycle_stage",
-      "next_task",
+      "current_phase",
+      "current_milestone",
+      "current_milestone_state",
+      "last_completed_milestone",
+      "last_closed_task",
       "current_task",
+      "next_task",
+      "next_action",
+      "next_authoritative_roadmap_id",
+      "current_authorization_pause_reason",
+      "next_sheep_task_after_governance",
+      "mvp_a_foundation_entry",
+      "mvp_e_multi_shop_expansion_entry",
       "phase_5_entry"
     ],
     "next_stage_not_executed": true
+  },
+  "remediation_program": {
+    "path": "project\\FAST_SHEEP_RISK_REMEDIATION_ACCEPTANCE_UNITS.md",
+    "authority_status": "SUBORDINATE_PLAN_ONLY",
+    "canonical_task_override": false,
+    "current_unit": "AU-04",
+    "current_unit_state": "REPAIR_APPLIED_AWAITING_CONTROLLER_REVIEW",
+    "current_unit_plan": "project\\AU-04_PRE_SEND_GUARD_PLAN.md",
+    "current_unit_decision_package": "project\\AU-04_PRE_SEND_GUARD_DECISION_PACKAGE.md",
+    "current_unit_implementation_addendum": "project\\AU-04_PRE_SEND_GUARD_IMPLEMENTATION_ADDENDUM.md",
+    "current_unit_report": "reports\\AU-04-pre-send-guard-planning-report.json",
+    "current_unit_implementation_report": "reports\\AU-04I-pre-send-guard-contract-report.json",
+    "current_unit_integration_report": "reports\\AU-04S-pre-send-guard-integration-report.json",
+    "handoff": "project\\HANDOFF_AU04_TO_NEXT_2026-10-10.md",
+    "completed_units": [
+      {
+        "id": "AU-01",
+        "codex_result": "COMPLETE",
+        "controller_decision": "PASS",
+        "closed_date": "2026-10-03",
+        "report": "reports\\AU-01-canonical-state-reconciliation-report.json"
+      },
+      {
+        "id": "AU-02",
+        "codex_result": "COMPLETE",
+        "controller_decision": "PASS",
+        "decision": "EXPECTED_IDENTITY_AUTHORITY_V1",
+        "closed_date": "2026-10-03",
+        "decision_package": "project\\AU-02_EXPECTED_IDENTITY_AUTHORITY_DECISION_PACKAGE.md",
+        "report": "reports\\AU-02-expected-identity-authority-report.json"
+      },
+      {
+        "id": "AU-03",
+        "codex_result": "COMPLETE",
+        "controller_decision": "PASS",
+        "closed_date": "2026-10-03",
+        "plan": "project\\AU-03_EXECUTION_INTENT_CONTRACT_PLAN.md",
+        "report": "reports\\AU-03-execution-intent-contract-report.json"
+      },
+      {
+        "id": "AU-04",
+        "scope": "PLANNING_ONLY",
+        "codex_result": "COMPLETE",
+        "controller_decision": "PASS",
+        "closed_date": "2026-10-03",
+        "plan": "project\\AU-04_PRE_SEND_GUARD_PLAN.md",
+        "decision_package": "project\\AU-04_PRE_SEND_GUARD_DECISION_PACKAGE.md",
+        "report": "reports\\AU-04-pre-send-guard-planning-report.json"
+      },
+      {
+        "id": "AU-04I",
+        "scope": "CONTRACT_AND_PURE_GUARD_ONLY",
+        "codex_result": "COMPLETE",
+        "controller_decision": "PASS",
+        "closed_date": "2026-10-03",
+        "report": "reports\\AU-04I-pre-send-guard-contract-report.json"
+      }
+    ],
+    "execution_lanes": {
+      "planning": "AU04_PLANNING_PASS_CLOSED / AU05_NOT_AUTHORIZED",
+      "execution_intent_contract_implementation": "PASS_CLOSED",
+      "pre_send_guard_implementation": "CONTRACT_AND_PURE_GUARD_PASS_CLOSED",
+      "code_implementation": "NOT_AUTHORIZED",
+      "send_path_integration": "GUARD_INTEGRATION_REPAIR_APPLIED_AWAITING_CONTROLLER_REVIEW / TRANSPORT_NOT_AUTHORIZED",
+      "transport_integration": "NOT_AUTHORIZED",
+      "real_send": "NOT_AUTHORIZED",
+      "auto": "NOT_GRANTED",
+      "production_enablement": "NOT_AUTHORIZED"
+    },
+    "next_action": "Controller review AU-04S guard integration; transport, real send, and AUTO remain NOT_AUTHORIZED"
   },
   "roadmap_phase_started": true,
   "review_2_inputs_from_dry_run": [
@@ -1046,7 +1139,7 @@
     "first_acceptance_unit": "SHEEP-001",
     "sheep_001_approved": true
   },
-  "next_task": "SHEEP-305 (M-A.2 SHIPPING_TIME Rule and Fact Provider) — Lane A and Lane B offline SEALED/PASS; remaining real binding and policy activation NOT_AUTHORIZED; field-level SHIPPING_TIME_RULE_SEMANTICS = PRODUCT_DECISION_REQUIRED; overall NOT_CLOSED",
+  "next_task": "SHEEP-313 — Multi-Shop Expansion Proof; planning ready; execution NOT_AUTHORIZED",
   "sheep_001": {
     "codex_result": "COMPLETE",
     "controller_decision": "PASS",
@@ -4535,12 +4628,27 @@
   },
   "mvp_a_foundation_entry": {
     "status": "SHEEP_300_CLOSED / SHEEP_301_CLOSED_BY_CONTROLLER_DECISION / SHEEP_302_COVERED_BY_EXISTING_EVIDENCE / SHEEP_303_SEALED_TECHNICAL_POST_AUDIT_PASS / SHEEP_304_CLOSED_BY_CONTROLLER_DECISION / SHEEP_305_PRODUCT_DECISION_REQUIRED_NOT_AUTHORIZED",
+    "authority_status": "HISTORICAL_SUPERSEDED",
+    "superseded_by": "MVP_E_MULTI_SHOP_EXPANSION",
+    "historical_note": "Preserved as the original MVP-A foundation entry; it is not the current navigation source after AU-01.",
     "current_milestone": "M-A.2 Scene and Context Foundation",
     "next_authoritative_roadmap_id": "SHEEP-305",
     "execution_authorization": "BOUNDED_FIXTURE_MAPPING_AUTHORIZATION_COMPLETED_CONSUMED / REAL_PRODUCER_READINESS_CONTROLLER_PASS / LOCAL_ELECTRON_WEBSOCKET_BOUNDARY_PROOF_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_READINESS_AUDIT_CONTROLLER_PASS / TRUSTED_MAIN_PDD_INGRESS_PRODUCER_WIRING_IMPLEMENTED_AWAITING_CONTROLLER_REVIEW / NO_PRODUCTION_EXECUTION_AUTHORIZATION"
   },
+  "mvp_e_multi_shop_expansion_entry": {
+    "status": "PLANNED / NOT_AUTHORIZED",
+    "authority_status": "CURRENT_PHASE_ENTRY",
+    "current_milestone": "MVP-E MULTI_SHOP_EXPANSION",
+    "last_completed_milestone": "MVP-D AUTO",
+    "last_closed_task": "SHEEP-312",
+    "next_authoritative_roadmap_id": "SHEEP-313",
+    "execution_authorization": "NOT_AUTHORIZED",
+    "next_stage_not_executed": true
+  },
   "phase_5_entry": {
     "status": "ACTIVE",
+    "status_authority": "HISTORICAL_ONLY",
+    "effective_status": "INACTIVE_SUPERSEDED",
     "authority_status": "DEFERRED_HISTORICAL_V1_0",
     "superseded_by": "MVP_A_FOUNDATION",
     "gate_p4": "PASS",
@@ -4820,7 +4928,10 @@
   "sheep_311_typecheck": "PASS",
   "sheep_311_tests": "DEFERRED_PERSONAL_PC",
   "sheep_311_test_count": 120,
-  "sheep_312_status": "COMPLETE",
+  "sheep_312_status": "PASS / CLOSED",
+  "sheep_312_controller_decision": "PASS",
+  "sheep_312_controller_decision_date": "2026-10-03",
+  "sheep_312_closed_date": "2026-10-03",
   "sheep_312_plan_date": "2026-09-30",
   "sheep_312_task_definition": "project/SHEEP_312_TASK_DEFINITION.md",
   "sheep_312_execution_plan": "project/SHEEP_312_EXECUTION_PLAN.md",
@@ -4843,7 +4954,13 @@
     "subtask_6_authorization_package": "COMPLETE",
     "subtask_7_project_state": "COMPLETE"
   },
-  "sheep_313_status": "PLANNED",
+  "sheep_313_status": "PLANNED / NOT_AUTHORIZED",
+  "sheep_313_phase": "MVP_E_MULTI_SHOP_EXPANSION",
+  "sheep_313_execution_authorized": false,
+  "sheep_313_roadmap_status": "NOT_STARTED / NOT_AUTHORIZED",
+  "sheep_313_next_stage_not_executed": true,
+  "sheep_313_current_execution_authorization": false,
+  "sheep_313_current_live_evidence_authorization": "PAUSED / NOT_AUTHORIZED",
   "sheep_313_plan_date": "2026-09-30",
   "sheep_313_task_definition": "project/SHEEP_313_TASK_DEFINITION.md",
   "sheep_313_execution_plan": "project/SHEEP_313_EXECUTION_PLAN.md",

@@ -1,0 +1,105 @@
+{
+  "task": "AU-03",
+  "result": "COMPLETE",
+  "controller_review": "PASS",
+  "phase": "MVP_E_MULTI_SHOP_EXPANSION",
+  "milestone": "MVP-E MULTI_SHOP_EXPANSION",
+  "objective": "Implement the pure ExecutionIntent contract, JSON Schema, SHA-256 integrity verification, validation, and lifecycle transitions without modifying the send path.",
+  "implemented_scope": [
+    "ExecutionIntent TypeScript contract.",
+    "ExecutionIntent JSON Schema.",
+    "Contract registry entry.",
+    "SHA-256 intent hash and verification.",
+    "Structural validation and fail-closed failures.",
+    "Lifecycle transition contract.",
+    "Domain and contract tests."
+  ],
+  "not_implemented": [
+    "ConversationOrchestrator send-path integration.",
+    "PlatformAdapter or Transport integration.",
+    "Real send.",
+    "AUTO.",
+    "Production enablement."
+  ],
+  "tests": [
+    {
+      "command": "pnpm --filter @fastwork/domain run typecheck",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm --filter @fastwork/domain run build",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm --filter @fastwork/domain run test",
+      "tests": 106,
+      "result": "PASS",
+      "failures": 0
+    },
+    {
+      "command": "pnpm run test:contracts",
+      "tests": 19,
+      "result": "PASS",
+      "failures": 0
+    },
+    {
+      "command": "pnpm run validate:contracts",
+      "registered_contracts": 62,
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm run typecheck",
+      "result": "PASS"
+    }
+  ],
+  "evidence": {
+    "inferred": [],
+    "confirmed": [
+      "ExecutionIntent is exported from @fastwork/domain.",
+      "ExecutionIntent JSON Schema is registered and compiles.",
+      "SHA-256 hashing is deterministic and excludes lifecycle state.",
+      "HUMAN_CONFIRMATION requires confirmation_ref.",
+      "POLICY_AUTHORIZATION rejects confirmation_ref.",
+      "Invalid lifecycle transitions are rejected.",
+      "The send path and Transport were not modified."
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [
+    "Controller PASS/REPAIR for AU-03.",
+    "Separate authorization before send-path integration."
+  ],
+  "deferred_items": [
+    "PreSendGuard integration.",
+    "AdapterEvidence contract and integration.",
+    "One-time confirmation persistence.",
+    "Real send, AUTO, and production enablement."
+  ],
+  "modified_files": [
+    "packages/domain/src/execution-intent.ts",
+    "packages/domain/src/index.ts",
+    "packages/domain/tests/execution-intent.test.mjs",
+    "packages/contracts/schemas/domain/execution-intent.schema.json",
+    "packages/contracts/contract-registry.json",
+    "packages/contracts/schemas/registry.json",
+    "packages/contracts/docs/schema-catalog.md",
+    "resources/contracts/schemas/domain/execution-intent.schema.json",
+    "resources/contracts/schemas/registry.json",
+    "tests/contracts/contract-schemas.test.mjs",
+    "project/AU-03_EXECUTION_INTENT_CONTRACT_PLAN.md",
+    "project/FAST_SHEEP_RISK_REMEDIATION_ACCEPTANCE_UNITS.md",
+    "project/PROJECT_STATE.json"
+  ],
+  "architecture_changes": [
+    "ExecutionIntent contract implemented; no runtime integration."
+  ],
+  "security_changes": [],
+  "data_model_changes": [
+    "Added ExecutionIntent schema and lifecycle contract."
+  ],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "closed_date": "2026-10-03"
+}

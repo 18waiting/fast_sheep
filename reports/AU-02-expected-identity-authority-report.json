@@ -1,0 +1,73 @@
+{
+  "task": "AU-02",
+  "result": "COMPLETE",
+  "controller_review": "PASS",
+  "phase": "MVP_E_MULTI_SHOP_EXPANSION",
+  "milestone": "MVP-E MULTI_SHOP_EXPANSION",
+  "objective": "Define the sole authoritative source and lifecycle for expected send identity without implementing code.",
+  "completed_requirements": 10,
+  "total_requirements": 10,
+  "decision_status": "APPROVED",
+  "recommended_decision": "EXPECTED_IDENTITY_AUTHORITY_V1",
+  "recommended_expected_source": "inbound IdentityLock + ReplyPlan + PolicyDecision + Human Confirmation -> immutable ExecutionIntent",
+  "recommended_actual_source": "live Adapter evidence read immediately before send",
+  "fail_closed_required": true,
+  "validators_required": [
+    "WrongTargetValidator",
+    "BindingValidator"
+  ],
+  "implementation_performed": false,
+  "execution_intent_implemented": false,
+  "pre_send_guard_implemented": false,
+  "work_units": {
+    "WU_05": "COMPLETE",
+    "WU_01": "COMPLETE",
+    "WU_04": "COMPLETE",
+    "WU_06": "COMPLETE",
+    "WU_07": "COMPLETE",
+    "WU_03": "COMPLETE",
+    "WU_02": "COMPLETE"
+  },
+  "evidence": {
+    "inferred": [
+      "A future ExecutionIntent will require mapping from the canonical inbound IdentityLock into the send lifecycle.",
+      "A future AdapterEvidence contract will be required for deterministic pre-send comparison."
+    ],
+    "confirmed": [
+      "SendRequest currently lacks typed expected identity fields.",
+      "WrongTargetValidator skips expected comparisons when expected values are absent.",
+      "BindingValidator is implemented but not called by performSend.",
+      "Suggestion and send flow currently lack ReplyPlan identity/policy binding.",
+      "PlatformAdapter sendText receives only shopId, conversationId, and segments.",
+      "HumanConfirmController stores confirmations in memory and uses a placeholder hash.",
+      "The recommended authority model is documented in the decision package."
+    ]
+  },
+  "blockers": [],
+  "decisions_required": [
+    "Controller approve, approve with changes, or reject EXPECTED_IDENTITY_AUTHORITY_V1.",
+    "Separate authorization is required before AU-03 code implementation."
+  ],
+  "deferred_items": [
+    "ExecutionIntent contract implementation.",
+    "PreSendGuard integration.",
+    "One-time confirmation persistence.",
+    "Real send, AUTO, production enablement, and live evidence authorization."
+  ],
+  "modified_files": [
+    "project/AU-02_EXPECTED_IDENTITY_AUTHORITY_PLAN.md",
+    "project/AU-02_EXPECTED_IDENTITY_AUTHORITY_DECISION_PACKAGE.md",
+    "project/FAST_SHEEP_RISK_REMEDIATION_ACCEPTANCE_UNITS.md",
+    "project/PROJECT_STATE.json"
+  ],
+  "architecture_changes": [
+    "Proposed EXPECTED_IDENTITY_AUTHORITY_V1; not implemented."
+  ],
+  "security_changes": [],
+  "data_model_changes": [],
+  "old_rebuild_modified": false,
+  "original_reference_modified": false,
+  "secrets_detected": false,
+  "next_stage_not_executed": true,
+  "closed_date": "2026-10-03"
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:adapter-identity-evidence",
+  "$title": "AdapterIdentityEvidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["evidence_id", "observed_at", "source", "availability"],
+  "properties": {
+    "evidence_id": { "type": "string", "minLength": 1 },
+    "observed_at": { "type": "string", "format": "date-time" },
+    "source": { "type": "string", "minLength": 1 },
+    "availability": { "type": "string", "enum": ["COMPLETE", "PARTIAL", "UNREADABLE"] },
+    "runtime_shop_id": { "type": "string", "minLength": 1 },
+    "identity_lock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["merchant_id", "store_id", "platform", "platform_account_id", "customer_identity", "conversation_id", "trigger_message_id"],
+      "properties": {
+        "merchant_id": { "type": "string", "minLength": 1 },
+        "store_id": { "type": "string", "minLength": 1 },
+        "platform": { "type": "string", "enum": ["pdd", "doudian", "jd", "kuaishou", "qianniu", "xianyu"] },
+        "platform_account_id": { "type": "string", "minLength": 1 },
+        "customer_identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": { "type": "string", "enum": ["customerUid", "buyer_id", "user_id"] },
+            "value": { "type": "string", "minLength": 1 }
+          }
+        },
+        "conversation_id": { "type": "string", "minLength": 1 },
+        "trigger_message_id": { "type": "string", "minLength": 1 },
+        "generation": { "type": "integer" }
+      }
+    },
+    "session_id": { "type": "string", "minLength": 1 },
+    "session_generation": { "type": "string", "minLength": 1 },
+    "document_generation": { "type": "string", "minLength": 1 }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "availability": { "const": "COMPLETE" } },
+        "required": ["availability"]
+      },
+      "then": {
+        "required": ["runtime_shop_id", "identity_lock", "session_id", "session_generation", "document_generation"]
+      }
+    }
+  ]
+}

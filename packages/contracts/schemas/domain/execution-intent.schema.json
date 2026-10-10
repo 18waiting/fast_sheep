@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastwork:domain:execution-intent",
+  "$title": "ExecutionIntent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "intent_id",
+    "authorization_source",
+    "identity_lock",
+    "plan_ref",
+    "policy_ref",
+    "session_generation",
+    "document_generation",
+    "created_at",
+    "expires_at",
+    "nonce",
+    "state",
+    "intent_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "intent_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authorization_source": {
+      "type": "string",
+      "enum": [
+        "HUMAN_CONFIRMATION",
+        "POLICY_AUTHORIZATION"
+      ]
+    },
+    "identity_lock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "merchant_id",
+        "store_id",
+        "platform",
+        "platform_account_id",
+        "customer_identity",
+        "conversation_id",
+        "trigger_message_id"
+      ],
+      "properties": {
+        "merchant_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "store_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "pdd",
+            "doudian",
+            "jd",
+            "kuaishou",
+            "qianniu",
+            "xianyu"
+          ]
+        },
+        "platform_account_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "customer_identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "customerUid",
+                "buyer_id",
+                "user_id"
+              ]
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "conversation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trigger_message_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generation": {
+          "type": "integer"
+        }
+      }
+    },
+    "plan_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plan_id",
+        "plan_hash"
+      ],
+      "properties": {
+        "plan_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "plan_hash": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "policy_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_version"
+      ],
+      "properties": {
+        "policy_version": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "confirmation_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "confirmation_id",
+        "confirmation_hash",
+        "confirmed_at"
+      ],
+      "properties": {
+        "confirmation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confirmation_hash": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "session_generation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "document_generation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "nonce": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "PLAN_BOUND",
+        "CONFIRMED",
+        "CLAIMED",
+        "ATTEMPTED",
+        "ACKNOWLEDGED",
+        "REJECTED",
+        "UNKNOWN",
+        "EXPIRED",
+        "CANCELLED"
+      ]
+    },
+    "intent_hash": {
+      "type": "string",
+      "pattern": "^sha256-[0-9a-f]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "authorization_source": {
+            "const": "HUMAN_CONFIRMATION"
+          }
+        },
+        "required": [
+          "authorization_source"
+        ]
+      },
+      "then": {
+        "required": [
+          "confirmation_ref"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authorization_source": {
+            "const": "POLICY_AUTHORIZATION"
+          }
+        },
+        "required": [
+          "authorization_source"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "confirmation_ref"
+          ]
+        }
+      }
+    }
+  ]
+}

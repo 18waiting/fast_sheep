@@ -14,6 +14,8 @@ const ACTIVE_AUTHORIZATION = new Set([
 const DEFAULT_AUTHORITY_FIELDS = [
   "current_phase",
   "current_milestone",
+  "current_milestone_state",
+  "last_completed_milestone",
   "last_closed_task",
   "next_authoritative_roadmap_id",
   "next_task_execution_authorized",
@@ -33,8 +35,12 @@ function taskNumber(taskId) {
 }
 
 function firstTaskId(value) {
-  const match = /^SHEEP-\d{3}\b/.exec(String(value ?? "").trim());
-  return match ? match[0] : null;
+  if (isObject(value)) {
+    const taskId = typeof value.task_id === "string" ? value.task_id.trim() : "";
+    return /^SHEEP-\d{3}$/.test(taskId) ? taskId : null;
+  }
+  const matches = String(value ?? "").match(/\bSHEEP-\d{3}\b/g) ?? [];
+  return matches.length === 1 ? matches[0] : null;
 }
 
 function isActiveAuthorization(value) {
@@ -45,9 +51,19 @@ function isActiveAuthorization(value) {
   return ACTIVE_AUTHORIZATION.has(normalized);
 }
 
-function taskObjectFor(state, taskId) {
+export function taskRecordFor(state, taskId) {
   const key = String(taskId ?? "").toLowerCase().replace("-", "_");
-  return state[key];
+  const nested = isObject(state[key]) ? state[key] : null;
+  const prefix = `${key}_`;
+  const flat = {};
+
+  for (const [name, value] of Object.entries(state)) {
+    if (!name.startsWith(prefix)) continue;
+    flat[name.slice(prefix.length)] = value;
+  }
+
+  if (!nested && Object.keys(flat).length === 0) return undefined;
+  return { ...flat, ...(nested ?? {}) };
 }
 
 function closureContradicts(task) {
@@ -123,7 +139,7 @@ export function validateProjectState(state, options = {}) {
 
   // The reviewed Roadmap's initial status is historical, but current prose must
   // not describe the whole task as NOT_STARTED after Controller-accepted lanes.
-  const projectedTask = taskObjectFor(state, nextId);
+  const projectedTask = taskRecordFor(state, nextId);
   const acceptedLanes = isObject(projectedTask)
     ? Object.entries(projectedTask).filter(([key, lane]) =>
       key.startsWith("lane_") && isObject(lane) && lane.status === "SEALED" && lane.controller_decision === "PASS")
@@ -149,7 +165,7 @@ export function validateProjectState(state, options = {}) {
   }
 
   const currentTaskId = firstTaskId(state.current_task);
-  const currentTask = taskObjectFor(state, currentTaskId);
+  const currentTask = taskRecordFor(state, currentTaskId);
   if (isObject(currentTask)) {
     if (Object.hasOwn(currentTask, "phase") && currentTask.phase !== state.current_phase) {
       add("CURRENT_TASK_PHASE_MISMATCH", `sheep_${taskNumber(currentTaskId)}.phase`, "current task phase must match canonical current phase");
@@ -187,7 +203,30 @@ export function validateProjectState(state, options = {}) {
     add("PAUSED_TASK_WITH_CANONICAL_LIVE_EVIDENCE", "current_live_evidence_authorization", "paused task cannot have active canonical live-evidence authorization");
   }
 
-  const lastClosedTask = taskObjectFor(state, state.last_closed_task);
+  const remediation = state.remediation_program;
+  if (isObject(remediation)) {
+    if (remediation.canonical_task_override !== false) {
+      add("REMEDIATION_PROGRAM_CANNOT_OVERRIDE_CANONICAL_TASK", "remediation_program.canonical_task_override", "subordinate remediation program must not override canonical task state");
+    }
+    const lanes = remediation.execution_lanes;
+    if (!isObject(lanes)) {
+      add("REMEDIATION_PROGRAM_LANES_INVALID", "remediation_program.execution_lanes", "remediation program execution lanes must be an object");
+    } else {
+      if (!state.next_task_execution_authorized && isActiveAuthorization(lanes.code_implementation)) {
+        add("REMEDIATION_CODE_AUTHORIZED_WHILE_CANONICAL_PAUSED", "remediation_program.execution_lanes.code_implementation", "subordinate remediation program cannot authorize code implementation while canonical execution is paused");
+      }
+      if (!isActiveAuthorization(state.current_live_evidence_authorization) && isActiveAuthorization(lanes.real_send)) {
+        add("REMEDIATION_REAL_SEND_AUTHORIZED_WHILE_LIVE_PAUSED", "remediation_program.execution_lanes.real_send", "subordinate remediation program cannot authorize real send while live evidence is paused");
+      }
+      if (isActiveAuthorization(lanes.auto)) {
+        add("REMEDIATION_AUTO_AUTHORIZED", "remediation_program.execution_lanes.auto", "subordinate remediation program cannot grant AUTO authorization");
+      }
+      if (isActiveAuthorization(lanes.production_enablement)) {
+        add("REMEDIATION_PRODUCTION_AUTHORIZED", "remediation_program.execution_lanes.production_enablement", "subordinate remediation program cannot grant production enablement");
+      }
+    }
+  }
+  const lastClosedTask = taskRecordFor(state, state.last_closed_task);
   if (closureContradicts(lastClosedTask)) {
     add("LAST_CLOSED_TASK_CONTRADICTS_CLOSURE", `sheep_${taskNumber(state.last_closed_task)}`, "last closed task status/controller contradicts closure");
   }

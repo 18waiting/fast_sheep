@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { validateProjectState } from "../scripts/validate-project-state.mjs";
+import { taskRecordFor, validateProjectState } from "../scripts/validate-project-state.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const actualState = JSON.parse(readFileSync(resolve(root, "project", "PROJECT_STATE.json"), "utf8"));
@@ -17,6 +17,15 @@ function codes(errors) {
 
 function taskKey(taskId) {
   return String(taskId).toLowerCase().replace("-", "_");
+}
+function isObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function ensureTaskRecord(state, taskId) {
+  const key = taskKey(taskId);
+  if (!isObject(state[key])) state[key] = {};
+  return state[key];
 }
 
 function taskNumber(taskId) {
@@ -35,18 +44,14 @@ function cloneState() {
 }
 
 function ensureCurrentTask(state) {
-  const key = taskKey(state.next_authoritative_roadmap_id);
-  if (!state[key]) {
-    state[key] = {
-      phase: state.current_phase,
-      milestone: state.current_milestone,
-      next_stage_not_executed: state.next_stage_not_executed,
-      execution_authorized: state.next_task_execution_authorized,
-      current_execution_authorization: state.current_execution_authorization,
-      current_live_evidence_authorization: state.current_live_evidence_authorization,
-    };
-  }
-  return state[key];
+  const task = ensureTaskRecord(state, state.next_authoritative_roadmap_id);
+  if (!Object.hasOwn(task, "phase")) task.phase = state.current_phase;
+  if (!Object.hasOwn(task, "milestone")) task.milestone = state.current_milestone;
+  if (!Object.hasOwn(task, "next_stage_not_executed")) task.next_stage_not_executed = state.next_stage_not_executed;
+  if (!Object.hasOwn(task, "execution_authorized")) task.execution_authorized = state.next_task_execution_authorized;
+  if (!Object.hasOwn(task, "current_execution_authorization")) task.current_execution_authorization = state.current_execution_authorization;
+  if (!Object.hasOwn(task, "current_live_evidence_authorization")) task.current_live_evidence_authorization = state.current_live_evidence_authorization;
+  return task;
 }
 
 test("actual PROJECT_STATE advances to the next unauthorized Roadmap task", () => {
@@ -56,14 +61,61 @@ test("actual PROJECT_STATE advances to the next unauthorized Roadmap task", () =
   const closedIndex = taskIds.indexOf(actualState.last_closed_task);
   assert.ok(closedIndex >= 0);
   assert.equal(actualState.next_authoritative_roadmap_id, taskIds[closedIndex + 1]);
-  assert.equal(actualState[taskKey(actualState.last_closed_task)].controller_decision, "PASS");
+  assert.equal(taskRecordFor(actualState, actualState.last_closed_task).controller_decision, "PASS");
   assert.ok(actualState.current_task.startsWith(nextTaskId));
   assert.ok(actualState.next_task.startsWith(nextTaskId));
+  assert.equal(actualState.current_phase, "MVP_E_MULTI_SHOP_EXPANSION");
+  assert.equal(actualState.current_milestone, "MVP-E MULTI_SHOP_EXPANSION");
+  assert.equal(actualState.current_milestone_state, "PLANNED / NOT_AUTHORIZED");
+  assert.equal(actualState.last_completed_milestone, "MVP-D AUTO");
+  assert.equal(actualState.next_action.task_id, nextTaskId);
+  assert.equal(actualState.next_action.authorized, false);
   assert.equal(actualState.next_task_execution_authorized, false);
   assert.equal(actualState.current_execution_authorization, false);
   assert.equal(actualState.next_stage_not_executed, true);
   assert.equal(actualState.sheep_091.historical_classification, "DEFERRED_HISTORICAL_V1_0");
   assert.deepEqual(validateProjectState(actualState, { roadmapText }), []);
+});
+
+test("subordinate remediation program cannot override the canonical task", () => {
+  const state = cloneState();
+  state.remediation_program.canonical_task_override = true;
+  assert.ok(codes(validateProjectState(state, { roadmapText })).includes("REMEDIATION_PROGRAM_CANNOT_OVERRIDE_CANONICAL_TASK"));
+});
+
+test("subordinate remediation program cannot grant execution lanes", () => {
+  const state = cloneState();
+  state.remediation_program.execution_lanes.code_implementation = "AUTHORIZED";
+  state.remediation_program.execution_lanes.real_send = "AUTHORIZED";
+  state.remediation_program.execution_lanes.auto = "AUTHORIZED";
+  state.remediation_program.execution_lanes.production_enablement = "AUTHORIZED";
+  const result = codes(validateProjectState(state, { roadmapText }));
+  assert.ok(result.includes("REMEDIATION_CODE_AUTHORIZED_WHILE_CANONICAL_PAUSED"));
+  assert.ok(result.includes("REMEDIATION_REAL_SEND_AUTHORIZED_WHILE_LIVE_PAUSED"));
+  assert.ok(result.includes("REMEDIATION_AUTO_AUTHORIZED"));
+  assert.ok(result.includes("REMEDIATION_PRODUCTION_AUTHORIZED"));
+});
+test("structured next_action must identify the canonical next task", () => {
+  const state = cloneState();
+  state.next_action = { task_id: "SHEEP-999", action: "REVIEW", authorized: false };
+  assert.ok(codes(validateProjectState(state, { roadmapText })).includes("PROJECTION_TASK_ID_MISMATCH"));
+});
+
+test("a completed task without Controller PASS cannot be last closed", () => {
+  const state = cloneState();
+  const task = ensureTaskRecord(state, "SHEEP-312");
+  task.status = "COMPLETE";
+  delete task.controller_decision;
+  state.last_closed_task = "SHEEP-312";
+  assert.ok(codes(validateProjectState(state, { roadmapText })).includes("LAST_CLOSED_TASK_CONTRADICTS_CLOSURE"));
+});
+
+test("Controller PASS is required for the recorded last closed task", () => {
+  const state = cloneState();
+  const task = ensureTaskRecord(state, "SHEEP-312");
+  task.controller_decision = "REPAIR";
+  state.last_closed_task = "SHEEP-312";
+  assert.ok(codes(validateProjectState(state, { roadmapText })).includes("LAST_CLOSED_TASK_CONTRADICTS_CLOSURE"));
 });
 
 test("current task identity is derived from the canonical next task pointer", () => {
@@ -155,7 +207,7 @@ test("historical authorization does not become current authorization", () => {
 
 test("closure contradiction and later-task authorization are rejected", () => {
   const state = cloneState();
-  state[taskKey(state.last_closed_task)].controller_decision = "REPAIR";
+  ensureTaskRecord(state, state.last_closed_task).controller_decision = "REPAIR";
   state[taskKey(laterTaskId(state.next_authoritative_roadmap_id))] = { execution_authorized: true };
   const result = codes(validateProjectState(state, { roadmapText }));
   assert.ok(result.includes("LAST_CLOSED_TASK_CONTRADICTS_CLOSURE"));
@@ -164,7 +216,7 @@ test("closure contradiction and later-task authorization are rejected", () => {
 
 test("last-closed task status and roadmap_status cannot contradict closure", () => {
   const state = cloneState();
-  state[taskKey(state.last_closed_task)].roadmap_status = "NOT_STARTED";
+  ensureTaskRecord(state, state.last_closed_task).roadmap_status = "NOT_STARTED";
   assert.ok(codes(validateProjectState(state, { roadmapText })).includes("LAST_CLOSED_TASK_CONTRADICTS_CLOSURE"));
 });
 

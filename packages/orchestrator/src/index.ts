@@ -58,6 +58,7 @@ export {
   type BuyerMessage,
   type OrchestratorOptions,
   type OrchestratorPolicies,
+  type PreSendGuardRequestFactory,
 } from "./core/conversation-orchestrator.js";
 export {
   ShopOrchestratorRegistry,
@@ -84,3 +85,14 @@ export {
   type ConfirmationResult,
   type HumanConfirmControllerOptions,
 } from "./core/human-confirm-controller.js";
+// AU-04: pure PreSendGuard contract and deterministic evaluation logic.
+export {
+  PreSendGuard,
+  type PreSendGuardDenyReason,
+  type PreSendGuardBindingEvidence,
+  type PreSendGuardRequest,
+  type PreSendGuardFailure,
+  type PreSendGuardAuditRecord,
+  type PreSendGuardResult,
+  type PreSendGuardPort,
+} from "./core/pre-send-guard.js";
