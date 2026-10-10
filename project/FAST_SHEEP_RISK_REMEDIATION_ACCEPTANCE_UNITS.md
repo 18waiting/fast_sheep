@@ -1,11 +1,38 @@
 # Fast Sheep 风险修复计划
 
-> **状态:** AU01_PASS_CLOSED / AU02_PASS_CLOSED / AU03_PASS_CLOSED / AU04_PLANNING_PASS_CLOSED / AU04I_PASS_CLOSED / AU04S_NOT_AUTHORIZED / AU05_NOT_AUTHORIZED
-> **基线:** `main` / `3caf5d8`
+> **状态:** AU01_PASS_CLOSED / AU02_PASS_CLOSED / AU03_PASS_CLOSED / AU04_PLANNING_PASS_CLOSED / AU04I_PASS_CLOSED / AU04S_REPAIR_APPLIED_AWAITING_CONTROLLER_REVIEW / AU05_NOT_AUTHORIZED
+> **授权轴（引用账本，未变更）:** TRANSPORT_NOT_AUTHORIZED / REAL_SEND_NOT_AUTHORIZED / AUTO_NOT_GRANTED / PRODUCTION_NOT_AUTHORIZED
+> **计划基线:** `main` / `3caf5d8`（本计划撰写时的 HEAD）
+> **最近更新提交:** `main` / `1310cbf`（AU-04S 集成与本文件入库）
 > **创建日期:** 2026-10-02
 > **控制器决定:** SHEEP-312 = PASS（用户在 2026-10-02 的当前会话中明确给出）
 > **用途:** 将 R-01 至 R-08 及社区成熟模式拆成“一个单元只解决一个不变量”的候选验收单元。
+> **权威来源:** `project/PROJECT_STATE.json` → `remediation_program`（`state_authority.subordinate_program_policy = NAVIGATION_ONLY`）。本文所有状态串均为投影，不构成授权；与账本冲突时以账本为准。
 > **重要:** 本文是计划文档，不是 SHEEP-313 或任何后续单元的执行授权。所有真实发送、AUTO、生产启用和 live evidence 授权仍按 `PROJECT_STATE.json` 单独管理。
+
+---
+
+## 状态词读法（投影说明，非契约定义）
+
+本节只解释本文档中的状态词应当如何阅读。值域契约由 `project/PROJECT_STATE.json` →
+`state_authority` 与母提示词 DEC-021 / DEC-022 拥有；本节不定义新契约，不得被引用为
+授权依据，也不构成第二个事实源。
+
+三条轴必须分开读，任何一条都不能推断出另一条：
+
+| 轴 | 权威字段 | 读法 |
+|---|---|---|
+| 审查轴 | 各验收报告的 `controller_review` | 值域为 `PASS` / `REPAIR`（DEC-022 锁定）。报告中的 `PENDING` 读作“值域内尚无决定”，不是第三个决定值 |
+| 单元状态轴 | `remediation_program.current_unit_state` | 直接引用账本原值，例如 `REPAIR_APPLIED_AWAITING_CONTROLLER_REVIEW` |
+| 授权轴 | `remediation_program.execution_lanes.*` | 直接引用账本原值，例如 `NOT_AUTHORIZED` / `NOT_GRANTED` |
+
+阅读规则：
+
+1. 单元状态为“待审”不等于任何授权被打开。
+2. `controller_review = PASS` 只关闭审查门，不打开执行门。
+3. `closed_date` 仅在 `controller_review = PASS` 后出现；待审单元不得预填，字段缺失即表示未关单。
+4. 本文档与账本用词不一致时，以账本原值为准，并把差异按文档缺陷处理。
+5. 将三条轴正式结构化、并让文档状态串自动对齐账本，属于 AU-08 范围，需单独授权。
 
 ---
 
@@ -93,10 +120,10 @@
 | 字段 | 结果 |
 |---|---|
 | AU-04 planning | `PASS / CLOSED (PLANNING_ONLY)` |
-| AU-04 closed date | 2026-10-03 |
-| AU-04 closed date | `2026-10-03` |
-| AU-04 implementation | `NOT_AUTHORIZED` |
-| Send path integration | `NOT_AUTHORIZED` |
+| AU-04 planning closed date | `2026-10-03`（该关单只覆盖 `PLANNING_ONLY` 范围） |
+| 规划时点授权快照（2026-10-03） | implementation / send path integration = `NOT_AUTHORIZED`（历史证据，不回改） |
+| 当前 implementation lane | `CONTRACT_AND_PURE_GUARD_PASS_CLOSED`（账本 `pre_send_guard_implementation`） |
+| 当前 send path lane | `GUARD_INTEGRATION_REPAIR_APPLIED_AWAITING_CONTROLLER_REVIEW / TRANSPORT_NOT_AUTHORIZED`（账本 `send_path_integration`） |
 | Transport integration | `NOT_AUTHORIZED` |
 | Real send | `NOT_AUTHORIZED` |
 | AUTO | `NOT_GRANTED` |
@@ -117,7 +144,9 @@
 | Root typecheck | `PASS` |
 | Send path modified | `NO` |
 | Transport modified | `NO` |
-| Controller review of AU-04I | `PASS / CLOSED` |`n| AU-04I closed date | `2026-10-03` |`n| Repair applied | `CONFIRMATION_FIELD_COMPARISON` |
+| Controller review of AU-04I | `PASS / CLOSED` |
+| AU-04I closed date | `2026-10-03` |
+| Repair applied | `CONFIRMATION_FIELD_COMPARISON` |
 
 实现报告: `reports/AU-04I-pre-send-guard-contract-report.json`
 
@@ -132,10 +161,14 @@
 | Send path modified | `YES (guard gate only)` |
 | Transport modified | `NO` |
 | Real send / AUTO | `NOT_AUTHORIZED / NOT_GRANTED` |
-| Controller review of AU-04S | `PENDING` |`n| AU-04S repair applied | `PARTIAL_CONFIG_FAIL_CLOSED + CONFIG_LANE_GATE + FULL_AUDIT` |
+| Controller review of AU-04S | `PENDING`（DEC-022 值域内尚无决定） |
+| AU-04S unit state | `REPAIR_APPLIED_AWAITING_CONTROLLER_REVIEW`（引用账本 `current_unit_state`） |
+| AU-04S closed date | 未填（未关单；见“状态词读法”第 3 条） |
+| AU-04S repair applied | `PARTIAL_CONFIG_FAIL_CLOSED + CONFIG_LANE_GATE + FULL_AUDIT` |
 
 实现报告: `reports/AU-04S-pre-send-guard-integration-report.json`
 交接文档: `project/HANDOFF_AU04_TO_NEXT_2026-10-10.md`
+
 ---
 
 ## 0. Product Alignment Guard
@@ -830,8 +863,10 @@ Next Stage Executed: NO
 - 修复 R-04 不等于 AUTO 获授权。
 - AU 通过不等于 SHEEP-313 获授权。
 - 真实发送、平台操作和生产启用始终需要单独授权。
-- 在当前规划阶段，不执行任何代码或状态变更。
+- 任何代码或状态变更都必须有对应单元的明确 Controller 授权；未获授权的单元保持不执行。
 
-**当前状态:** AU01_PASS_CLOSED / AU02_PASS_CLOSED / AU03_PASS_CLOSED / AU04_PLANNING_PASS_CLOSED / AU04I_PASS_CLOSED / AU04S_NOT_AUTHORIZED / AU05_NOT_AUTHORIZED
+**当前状态:** AU01_PASS_CLOSED / AU02_PASS_CLOSED / AU03_PASS_CLOSED / AU04_PLANNING_PASS_CLOSED / AU04I_PASS_CLOSED / AU04S_REPAIR_APPLIED_AWAITING_CONTROLLER_REVIEW / AU05_NOT_AUTHORIZED
+
+**授权轴（引用账本，未变更）:** TRANSPORT_NOT_AUTHORIZED / REAL_SEND_NOT_AUTHORIZED / AUTO_NOT_GRANTED / PRODUCTION_NOT_AUTHORIZED
 
 **AU-02 决策包:** `project/AU-02_EXPECTED_IDENTITY_AUTHORITY_DECISION_PACKAGE.md`

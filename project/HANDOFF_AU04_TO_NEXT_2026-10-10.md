@@ -23,7 +23,7 @@ AU-04I Contract and Pure Guard: PASS / CLOSED
 Current pending review:
 
 ```text
-AU-04S Send-Path Guard Integration: REPAIR APPLIED / AWAITING CONTROLLER REVIEW
+AU-04S Send-Path Guard Integration: REPAIR_APPLIED_AWAITING_CONTROLLER_REVIEW
 ```
 
 Current authorization gates:

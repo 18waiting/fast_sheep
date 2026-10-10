@@ -1,6 +1,6 @@
 # AU-04 — PreSendGuard Fail-Closed Planning
 
-> **状态:** CONTROLLER_PASS / CLOSED / AU04S_NOT_AUTHORIZED
+> **状态:** CONTROLLER_PASS / CLOSED (PLANNING_ONLY) / AU04S_REPAIR_APPLIED_AWAITING_CONTROLLER_REVIEW / TRANSPORT_NOT_AUTHORIZED
 > **日期:** 2026-10-03
 > **决策包:** `project/AU-04_PRE_SEND_GUARD_DECISION_PACKAGE.md`
 > **验收报告:** `reports/AU-04-pre-send-guard-planning-report.json`
@@ -228,7 +228,11 @@ BINDING_VALIDATION_FAILED
 
 ---
 
-## 8. Current Status
+## 8. Status
+
+### 8.1 规划时点快照（2026-10-03）
+
+本节是规划关单当时的记录，作为历史证据保留，不随后续进展回改。
 
 ```text
 AU-04 Planning: CONTROLLER_PASS_CLOSED
@@ -239,6 +243,31 @@ Real Send: NOT_AUTHORIZED
 AUTO: NOT_GRANTED
 Production Enablement: NOT_AUTHORIZED
 ```
+
+### 8.2 当前投影（引用账本，非本文定义）
+
+来源：`project/PROJECT_STATE.json` → `remediation_program.execution_lanes`。
+键名与原值照抄账本；本节是投影说明，不构成授权，也不是第二个事实源。
+
+```text
+planning:                              AU04_PLANNING_PASS_CLOSED / AU05_NOT_AUTHORIZED
+execution_intent_contract_implementation: PASS_CLOSED
+pre_send_guard_implementation:         CONTRACT_AND_PURE_GUARD_PASS_CLOSED
+code_implementation:                   NOT_AUTHORIZED
+send_path_integration:                 GUARD_INTEGRATION_REPAIR_APPLIED_AWAITING_CONTROLLER_REVIEW / TRANSPORT_NOT_AUTHORIZED
+transport_integration:                 NOT_AUTHORIZED
+real_send:                             NOT_AUTHORIZED
+auto:                                  NOT_GRANTED
+production_enablement:                 NOT_AUTHORIZED
+```
+
+8.1 与 8.2 不一致时，以 8.2 所引用的账本原值为准，并把差异按文档缺陷处理。
+8.1 中的 `AU-04 Implementation` / `Send Path Integration` 已由 AU-04I 与 AU-04S
+两个独立授权范围推进，详见
+`project/FAST_SHEEP_RISK_REMEDIATION_ACCEPTANCE_UNITS.md` 的对应记录表。
+
+---
+
 ## 9. Planning Record — 2026-10-03
 
 - WU-01 through WU-07 completed.

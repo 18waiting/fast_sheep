@@ -167,27 +167,29 @@ If a required path or core validation is missing, do not claim `COMPLETE`.
 Do not resume `SHEEP-091` or add live execution authorization merely because a
 Roadmap item is next. Current task/live authorization remains exactly as
 recorded in `project/PROJECT_STATE.json`.
+
 ---
 
 ## 8. Development and Testing Environment
 
 **重要：必须根据实际主机判断当前环境，不得沿用过期标签。**
 
-### 8.1 macOS 开发环境（如适用）
+### 8.1 macOS 开发环境（公司电脑）
 
 - **机器：** macOS 公司电脑
 - **项目路径：** `/Users/wb02605050/Documents/ChatGPT/fast_sheep`
-- **Node.js：** v20（Homebrew）
-- **可用：** TypeScript typecheck、代码编辑、Git
-- **限制：** 如果 Node 不支持测试所需的 `--experimental-strip-types`，不得声称单元测试已运行
+- **该机 Node.js 快照：** v20（Homebrew，实测 v20.20.2）
+- **可用：** TypeScript typecheck、代码编辑、Git、`.mjs` 脚本与 `.mjs` 测试
+- **限制：** 该机 Node 不支持 `--experimental-strip-types`，因此 `.ts` 单元测试无法运行，不得声称其已运行
 - **不得：** 为运行测试而擅自升级 Node.js
 
-### 8.2 Windows 测试环境（当前环境）
+### 8.2 Windows 测试环境（个人电脑）
 
 - **机器：** Windows 个人电脑
 - **项目路径：** `E:\fast_sheep\`
-- **当前 Node.js：** v24.13.0
-- **当前 pnpm：** 10.17.1
+- **该机 Node.js 快照：** v24.13.0
+- **该机 pnpm 快照：** 10.17.1
+- **快照说明：** 以上为该机记录值，不是全局要求；全局以根 `package.json` 的 `engines.node >= 20` 与 `packageManager pnpm@10.17.1` 为准
 - **可用：**
   - ✅ `pnpm run typecheck`
   - ✅ `pnpm run test`
@@ -212,11 +214,32 @@ recorded in `project/PROJECT_STATE.json`.
 
 ### 8.4 环境识别
 
+每次任务开始时都必须实际执行判定，不得沿用本文或任何历史文档中的“当前环境”标签。
+
+macOS / Linux（POSIX shell）：
+
+```bash
+uname -s                                   # Darwin => macOS 开发环境
+pwd                                        # /Users/... => 公司电脑
+node --version
+pnpm --version
+node --experimental-strip-types -e "1"     # 报错 => 该机不能运行 .ts 单元测试
+```
+
+Windows（PowerShell）：
+
 ```powershell
 [System.Environment]::OSVersion.Platform
-(Get-Location).Path
+(Get-Location).Path                        # E:\fast_sheep => 个人电脑
 node --version
 pnpm --version
 ```
 
-**当前环境：Windows 测试环境（个人电脑，`E:\fast_sheep\`）。**
+判定结果到可声称验证范围的映射：
+
+| 判定结果 | 环境 | 可声称的验证 |
+|---|---|---|
+| `Darwin` + `/Users/...` | macOS 开发环境 | `pnpm run typecheck`、`.mjs` 脚本与 `.mjs` 测试；`.ts` 单元测试标 `DEFERRED: 需要在个人电脑上运行测试` |
+| `Windows` + `E:\fast_sheep` | Windows 测试环境 | 单元、集成、负向测试与完整验证流程 |
+
+**当前环境：不由本文预设，必须按上述命令在实际主机上判定后再声明。**

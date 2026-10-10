@@ -199,13 +199,15 @@ Scope: SEND_PATH_INTEGRATION
 ```
 
 Only the scope explicitly written by Controller may be implemented.
+
 ---
 
 ## 7. AU-04S Implementation Record — 2026-10-03
 
 ```text
 AU-04S RESULT: COMPLETE
-Controller Review: PENDING
+Controller Review: PENDING (DEC-022 值域内尚无决定)
+Unit State: REPAIR_APPLIED_AWAITING_CONTROLLER_REVIEW (引用 PROJECT_STATE.json remediation_program.current_unit_state)
 Scope: SEND_PATH_INTEGRATION
 
 Guard integration: IMPLEMENTED
