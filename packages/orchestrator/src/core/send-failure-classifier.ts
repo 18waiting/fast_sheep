@@ -75,22 +75,24 @@ export class SendFailureClassifier {
       };
     }
 
-    // 3. 检查是否可能有副作用（部分发送）
-    if (this.isSideEffectPossible(errorMessage)) {
-      return {
-        failureType: "SIDE_EFFECT_POSSIBLE",
-        retryAllowed: false,
-        reason: "Send may have partial side effects",
-        error,
-      };
-    }
-
-    // 4. 检查是否是安全的预发送失败（网络错误、发送前超时）
+    // 3. 检查是否是安全的预发送失败（网络错误、发送前超时）。
+    //    必须先于副作用检查："timeout before send" 包含子串 "timeout during send"，
+    //    顺序颠倒会把发送前超时误判为部分发送。
     if (this.isSafePreAttempt(errorMessage)) {
       return {
         failureType: "SAFE_PRE_ATTEMPT",
         retryAllowed: true,
         reason: "Safe pre-attempt failure - message was not sent",
+        error,
+      };
+    }
+
+    // 4. 检查是否可能有副作用（部分发送）
+    if (this.isSideEffectPossible(errorMessage)) {
+      return {
+        failureType: "SIDE_EFFECT_POSSIBLE",
+        retryAllowed: false,
+        reason: "Send may have partial side effects",
         error,
       };
     }
@@ -126,7 +128,6 @@ export class SendFailureClassifier {
   private isExplicitRejection(errorMessage: string): boolean {
     const rejectionKeywords = [
       "rejected",
-      "refused",
       "denied",
       "forbidden",
       "not allowed",
@@ -136,6 +137,8 @@ export class SendFailureClassifier {
       "rate limit",
       "quota exceeded",
     ];
+    // 注意：不含 "refused" —— "connection refused"(ECONNREFUSED) 是连接层错误，
+    // 消息根本未到达平台，属于 SAFE_PRE_ATTEMPT 而非平台拒绝。
     return rejectionKeywords.some(keyword => errorMessage.includes(keyword));
   }
 

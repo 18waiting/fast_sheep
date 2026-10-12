@@ -33,7 +33,23 @@
  | B4 | secret-store 移除 | 删除 `packages/secret-store`；`pdd-credential-reference-service` 改造（凭据引用逻辑随 Phase 2 session-partition 方案重做）；bootstrap 的 stub 接线移除 | typecheck 全绿；`rg "fastwork/secret-store"` 零命中 |
  | B5 | 产物与脚本清理 | `git rm resources/worker`（132MB 构建产物）并加入 `.gitignore`；根 `package.json` 脚本修剪（移除指向已删套件的 ci/test 命令）；孤儿测试套件删除 | `resources/worker` 不再被 git 跟踪；`pnpm run typecheck` 全绿；保留脚本均可执行 |
 
- 每批次独立 commit，任何批次结束时仓库必须 typecheck 全绿。
+每批次独立 commit，任何批次结束时仓库必须 typecheck 全绿。
+
+### B1 完成记录（2026-10-12）
+
+- 已删除：shadow 流水线全家（bootstrap/orchestrator/report-generator/transport-blocker）、
+  context-envelope-builder 及集成、reply-plan-verifier 及集成与孤儿 port、identity-lock-verifier、
+  policy-engine、scene 分类/适配、rollout-mode-resolver、fact-freshness-verifier、unknown-identifier、
+  audit-logger（shadow 专用，含孤儿 port 与测试）、pre-send-guard、human-confirm-controller、
+  orchestrator 五件套接线与 8 个相关测试文件。
+- 顺带修复（非拆除项）：`send-failure-classifier.ts` 两处预存 bug ——
+  `refused` 关键词把 ECONNREFUSED 误判为平台拒绝；safe-pre-attempt 检查晚于 side-effect
+  导致 "timeout before send" 被 "timeout during send" 子串抢先命中。
+- 验证：`pnpm run typecheck` 全绿；orchestrator 92/92；apps/desktop 570/570（Node 22，`node:sqlite` 需要）。
+- 残留（按验收标准允许，Phase 2 处理）：`packages/domain` 的 B 线类型
+  （context-envelope/reply-plan/policy-decision/identity-inbound/confirmation-binding 等）与其
+  contracts schema、Python worker 内部命名（reply_plan_builder 等）——它们被暂保留的 SQLite
+  持久化层引用，随 P2-1/P2-3/P2-7 一并清除；`InboundEnvelope.identityLock` 字段为验收标准明示例外。
 
  ---
 

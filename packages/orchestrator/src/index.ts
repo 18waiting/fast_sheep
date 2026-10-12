@@ -58,7 +58,6 @@ export {
   type BuyerMessage,
   type OrchestratorOptions,
   type OrchestratorPolicies,
-  type PreSendGuardRequestFactory,
 } from "./core/conversation-orchestrator.js";
 export {
   ShopOrchestratorRegistry,
@@ -70,29 +69,3 @@ export { PersistenceConversationRepository, type PersistenceAppendTurn, type Per
 export { ForbiddenFilter } from "./pre-send/forbidden-filter.js";
 export { MessageCleaner } from "./pre-send/message-cleaner.js";
 export { SendFailureClassifier, type SendFailureType, type SendFailureClassification } from "./core/send-failure-classifier.js";
-
-// SHEEP-311: HumanConfirmController
-export {
-  HumanConfirmController,
-  type RolloutMode,
-  type ConfirmationStatus,
-  type IdentityLock,
-  type CustomerIdentity,
-  type ReplyPlanRef,
-  type PolicyDecisionRef,
-  type ConfirmationRequest,
-  type ConfirmationBinding,
-  type ConfirmationResult,
-  type HumanConfirmControllerOptions,
-} from "./core/human-confirm-controller.js";
-// AU-04: pure PreSendGuard contract and deterministic evaluation logic.
-export {
-  PreSendGuard,
-  type PreSendGuardDenyReason,
-  type PreSendGuardBindingEvidence,
-  type PreSendGuardRequest,
-  type PreSendGuardFailure,
-  type PreSendGuardAuditRecord,
-  type PreSendGuardResult,
-  type PreSendGuardPort,
-} from "./core/pre-send-guard.js";
