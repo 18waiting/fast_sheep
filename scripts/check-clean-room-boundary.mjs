@@ -3,12 +3,15 @@
 // M0 gate: clean-room boundary — rebuild source/config must not reference forbidden
 // reverse-engineering artifacts (original binaries, recovered bytecode, .jsc/.pyc paths).
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join, dirname, extname, basename } from "node:path";
+import { join, dirname, extname, basename, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REBUILD = join(HERE, "..");
-const SKIP = new Set(["node_modules","dist","coverage",".git","project","reports","docs"]); // governance/evidence docs exempt (they must name reference trees)
+// Governance/evidence trees are exempt (they must name reference trees). Dependency,
+// scratch and bytecode-cache trees are third-party or generated, never our implementation.
+const SKIP = new Set(["node_modules","dist","coverage",".git","project","reports","docs",
+  ".venv","venv",".tmp","__pycache__",".pytest_cache",".ruff_cache",".turbo","out","release"]);
 const FORBIDDEN = [
   "FastWork.exe", "app.asar", "FastWork_asar_extracted", "fastwork_asar",
   "static/python/ai_bridge/recovered", "recovered/", ".pyc", "ai_bridge.dist", "auth_bridge.dist",
@@ -26,7 +29,7 @@ const files = [];
 walk(REBUILD, files);
 let findings = 0;
 for (const f of files) {
-  const rel = f.replace(REBUILD + "\\", "").replace(/\\/g, "/");
+  const rel = relative(REBUILD, f).replace(/\\/g, "/");
   const text = readFileSync(f, "utf-8");
   for (const tok of FORBIDDEN) {
     if (text.includes(tok)) {

@@ -12,6 +12,9 @@ const REBUILD = join(HERE, "..");
 const REVIEW_FILE = join(HERE, "reviewed-secret-scan-findings.json");
 const SCAN_EXT = new Set([".ts", ".mjs", ".js", ".json", ".toml", ".yml", ".yaml", ".py", ".md"]);
 const SKIP_DIRS = new Set(["node_modules", "dist", "coverage", ".git"]);
+// Frozen governance snapshots are read-only archives that never change again, so their
+// status prose must not require permanent reviewed-ledger entries. Live trees stay scanned.
+const SKIP_PATH_PREFIXES = ["project/history/"];
 const ASSIGNMENT = /(?<![A-Za-z0-9_])(?:(["'])(api[_-]?key|apikey|authorization)\1|(api[_-]?key|apikey|authorization))\s*[:=]\s*(?:(["'])([^"'\r\n]*)\4|([A-Za-z0-9_.-]{12,}))/gi;
 const BEARER = /\bBearer\s+([A-Za-z0-9._-]{20,})\b/g;
 const PRIVATE_KEY = /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g;
@@ -78,6 +81,8 @@ export function isReviewedFinding(relativePath, finding, reviewed) {
 }
 
 function walk(dir, out) {
+  const relDir = relative(REBUILD, dir).replace(/\\/g, "/");
+  if (SKIP_PATH_PREFIXES.some((prefix) => `${relDir}/`.startsWith(prefix))) return;
   for (const e of readdirSync(dir)) {
     const p = join(dir, e);
     if (statSync(p).isDirectory()) { if (!SKIP_DIRS.has(e)) walk(p, out); }

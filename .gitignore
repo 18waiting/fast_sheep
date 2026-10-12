@@ -42,6 +42,5 @@ Desktop.ini
 .vscode/
 .idea/
 
-# Worker packaged runtime (PyInstaller output — always regenerated)
-resources/worker/_internal/
-resources/worker/*.exe
+# Worker packaged runtime (PyInstaller output, always regenerated on the packaging host)
+resources/worker/

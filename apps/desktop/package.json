@@ -8,7 +8,7 @@
     "build": "tsc -p tsconfig.json && tsc -p tsconfig.preload.json && node ../../scripts/copy-renderer-assets.mjs && node scripts/build-pdd-preload.mjs",
     "start": "electron .",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.preload.json",
-    "test": "pnpm run build && node --test \"tests/*.test.ts\""
+    "test": "pnpm run build && node --import tsx --test \"tests/*.test.ts\""
   },
   "dependencies": {
     "@fastwork/contracts": "workspace:*",

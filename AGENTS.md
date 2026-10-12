@@ -15,8 +15,10 @@
 
  1. `project/FAST_SHEEP_MASTER_PROMPT.md` — 现行宪法（V2.0 重对齐版）
  2. `project/REALIGNMENT_DEMOLITION_ORDER.md` — 批次、范围决策、验收标准、Phase 2 延迟项
- 3. `project/PROJECT_STATE.json` — 执行账本（当前批次与授权状态）
- 4. REA 取证仓库 `~/Documents/ChatGPT/fastwork-rea-batch1/` — 对标证据基线
+ 3. `project/FOUNDATION_ALIGNMENT_ASSESSMENT.md` — B5 之后的地基对齐评估
+    （砸 6 / 改 7 / 留 7 + 待 Owner 拍板问题 + 建议批次 B6–B9）
+ 4. `project/PROJECT_STATE.json` — 执行账本（当前批次与授权状态）
+ 5. REA 取证仓库 `~/Documents/ChatGPT/fastwork-rea-batch1/` — 对标证据基线
     （先读 `_INDEX.md` 与 `_EVIDENCE_LOG.md`，再按需读分册）
 
  架构类旧文档（`docs/architecture/*`）在 Phase 2 重写前仅作背景参考；
@@ -68,11 +70,29 @@
 
  ## 5. 验证标准（macOS 开发机）
 
- 1. 每批次结束：`pnpm run typecheck` 全绿 + Python `compileall` 通过，独立 commit
- 2. 该机 Node v20 不支持 `--experimental-strip-types`；`.ts` 测试经 `--import tsx`
-    运行（需先 `pnpm -r run build`），跑不了就如实标 DEFERRED，不得声称已运行
- 3. 不得为跑测试擅自升级 Node
- 4. 删除代码时同步删除其孤儿测试与根 `package.json` 中失效脚本
+ B5 之后根 `package.json` 只有 11 条命令，**不存在其它入口**；不要新增一次性脚本：
+
+ | 命令 | 作用 |
+ |---|---|
+ | `pnpm run verify` | 唯一诚实闸门，串起下面全部（typecheck → build → test → contracts → python → compileall → secrets → boundary → platform）|
+ | `pnpm run typecheck` | 13 个项目 `tsc --noEmit` |
+ | `pnpm run build` | 全包构建 + renderer 资源 + PDD preload 打包 |
+ | `pnpm run test` | `pnpm -r run test`，各包 `node --import tsx --test "tests/*.test.ts"`（`.mjs` 包除外）|
+ | `pnpm run test:contracts` | 根 `tests/contracts/contract-schemas.test.mjs` |
+ | `pnpm run test:python` | `services/ai-worker/tests`（解释器经 `scripts/run-python.mjs` 解析）|
+ | `pnpm run compileall` | Python 字节码编译检查 |
+ | `pnpm run scan:secrets` | 密钥护栏（reviewed 台账 = `scripts/reviewed-secret-scan-findings.json`）|
+ | `pnpm run check:boundary` | clean-room 边界护栏 |
+ | `pnpm run verify:platform` | Electron 实跑多店视图隔离验证 |
+ | `pnpm run start` | 启动桌面端 |
+
+ 1. 每批次结束：`pnpm run verify` 全绿（最低限度 typecheck + compileall），独立 commit
+ 2. 该机默认 Node v20 不支持 `--experimental-strip-types`；`.ts` 测试一律经 `--import tsx` 运行
+ 3. `packages/persistence` 依赖 `node:sqlite`（需 Node ≥ 22.5），本机用
+    `/opt/homebrew/opt/node@22/bin` 前置到 PATH 后运行；**不得为跑测试升级系统 Node**，
+    也**不得声称未运行的测试已运行**（跑不了就如实标 DEFERRED）
+ 4. 删除代码时同步删除其孤儿测试；护栏脚本报红时先判断是真实命中还是范围误报，
+    **只能收窄扫描范围或登记 reviewed 台账，不得放宽检测规则本身**
 
  ---
 

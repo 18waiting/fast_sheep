@@ -191,6 +191,66 @@
   - 凭据面现状（B4 之后）：PDD 登录态只存在于 Electron session 分区，仓库内不再有任何
     OS 密钥库/落盘密钥路径；导入期的明文只在内存中换成 `credential_ref`。
 
+### B5 完成记录（2026-10-12）
+
+Owner 追加拍板（本批次范围）：① 根目录 135 条脚本命令全部拆除，只留“清水房”，
+清水房里对不上 FastWork 的部分一并砸；② `resources/worker` 本地删除 + `.gitignore`
+收紧为整目录；③ 孤儿测试/旧账本机制/失效文档按建议处理。
+
+- 脚本面拆除：
+  - 根 `package.json` scripts **135 → 11**：`typecheck`、`build`、`test`、`test:contracts`、
+    `test:python`、`compileall`、`verify:platform`、`scan:secrets`、`check:boundary`、`start`，
+    以及唯一诚实闸门 `verify`（串起前面全部）。
+  - `scripts/` 删除 141 个文件（run-m*/verify-m*/check-m*/audit-*/build-*.ps1/打包冒烟/
+    archive/fixtures/visual-evidence），现存 7 个：`check-clean-room-boundary.mjs`、
+    `copy-renderer-assets.mjs`、`generate-schema-registry.mjs`、`run-python.mjs`（新增）、
+    `scan-sensitive-values.mjs`、`verify-platform-native-view-isolation.mjs`、
+    `reviewed-secret-scan-findings.json`。
+  - 新增 `scripts/run-python.mjs`：可移植解释器解析（`.venv/bin/python` →
+    `.venv/Scripts/python.exe` → `py -3.12` → `python3` → `python`），根治 B4 残留的
+    Windows-only `py -3.12` 硬编码类问题。
+- 产物与孤儿清理：
+  - `resources/worker/`（132MB，未被 git 跟踪）本地删除；`.gitignore` 由两条细规则
+    （`resources/worker/_internal/`、`resources/worker/*.exe`）收紧为整目录 `resources/worker/`；
+    未改写 git 历史。
+  - 删除 `resources/staging-manifest.json`（零引用）、`scripts/create-controlled-pdd-shop.mjs`
+    及其测试、5 个孤儿 domain `.ts` 测试（SHEEP-311 死代码簇的测试，源文件处置见对齐评估 S1）。
+  - 归档到 `project/history/pre-realignment-2026-10-12/`：`scripts/validate-project-state.mjs` +
+    `tests/project-state-consistency.test.mjs`（旧账本机制）、
+    `docs/architecture/{CONTEXT_ENVELOPE_BUILDER,REPLY_PLAN_VERIFIER,REPLY_PLAN_EVOLUTION}.md`。
+  - 删除 `tests/contracts/test_context_envelope_reply_plan_schemas.mjs`（B1 遗留孤儿，
+    未被任何脚本引用，且校验的是已判 NOT_FOUND 的概念）。
+- 测试与护栏修复：
+  - 10 个包的 `test` 脚本由 `node --test "tests/*.test.ts"` 改为
+    `node --import tsx --test "tests/*.test.ts"`（Node 20 无法直接执行 `.ts`）；
+    移除 `packages/contracts` 指向不存在目录的失效 `test` 脚本（真测试在根
+    `tests/contracts/contract-schemas.test.mjs`，由 `test:contracts` 驱动）。
+  - `packages/legacy-import/tests/path-safety.test.ts` 的 2 条 Windows 分隔符断言改为
+    **平台自适应**（`node:path` 的 `resolve`/`sep`），两台主机都真正执行断言，不再靠跳过。
+  - `scripts/scan-sensitive-values.mjs`：新增 `SKIP_PATH_PREFIXES = ["project/history/"]`
+    （只读归档，永不变更，不应长期占用 reviewed 台账）；台账按现状重新基线化——
+    移除 3 条已随归档迁移的失效条目，为 `project/PROJECT_STATE.json` 现行治理状态串
+    （`OWNER_GRANTED_2026-10-12`）补 1 条 `GOVERNANCE_AUTHORIZATION_STATUS_PROSE`。
+    检测规则本身**未放宽**。
+  - `scripts/check-clean-room-boundary.mjs`：SKIP 增加 `.venv`/`venv`/`.tmp`/`__pycache__`/
+    `.pytest_cache`/`.ruff_cache`/`.turbo`/`out`/`release`（第三方与生成物，不是我方实现）；
+    修正 Windows-only 的相对路径计算为 `relative(REBUILD, f)`。FORBIDDEN 令牌表未放宽。
+- 验证（macOS，`.ts` 走 Node 22 `/opt/homebrew/opt/node@22` v22.23.3 + tsx）：
+  - `pnpm run typecheck` 全绿（13 个项目）；`pnpm run build` 全绿。
+  - `pnpm -r run test` **1062 pass / 0 fail**：apps/desktop 556、platform-pdd 119、
+    orchestrator 92、persistence 88、domain 86、legacy-import 39（含修好的 2 条路径断言）、
+    worker-rpc 33、product-optimization 17、background-jobs 13、desktop-ipc 9、feedback 9、test-kit 1。
+  - `test:contracts` 20/20；`test:python` 472 OK；`compileall` 通过。
+  - `scan:secrets` PASS（7 条 reviewed 精确匹配）；`check:boundary` PASS；
+    `verify:platform` Electron 实跑 PASS（6 项断言全过，`external_network_calls = 0`）。
+- 产出：`project/FOUNDATION_ALIGNMENT_ASSESSMENT.md` —— 拆除之后的**地基对齐评估**
+  （砸 6 / 改 7 / 留 7 + 6 个待 Owner 拍板问题 + 建议批次 B6–B9）。
+- 残留（不在 B5 范围内动）：
+  - `apps/desktop/electron-builder.yml` extraResources 仍指向已删的 `resources/worker`
+    与待砸的 `resources/contracts`（对齐评估 S4 / R7；打包在 Phase 2 重做）。
+  - 概念层本体仍在活代码中（S1/S2/S3/S6），需 Owner 签核后由 B6 处理。
+  - `parity-tests/` 夹具大量基于被砸概念（Q5 / P2-8）。
+
 ---
 
 ## 2. Phase 2 延迟项（拆除完成后按序推进，均需 REA 第二批证据配合）
