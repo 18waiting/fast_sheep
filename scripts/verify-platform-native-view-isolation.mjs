@@ -49,7 +49,7 @@ const checks = [
   ["electron_exit", child.status === 0 && !child.error],
   ["probe_result", result?.result === "PASS" && result?.errors?.length === 0],
   ["shop_switch", result?.shop_switch === true],
-  ["cross_platform_view_isolation", result?.cross_platform_view_isolation === true],
+  ["superseded_view_isolation", result?.superseded_view_isolation === true],
   ["native_view_bounds_rejected", result?.native_view_bounds_rejected === true],
   ["fixture_urls_local", result?.fixture_urls_local === true],
 ];

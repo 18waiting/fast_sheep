@@ -18,7 +18,7 @@ import {
 import { InMemorySettingsRepository, type NormalizedConversationRepository, type NormalizedConversationRecord, type StoreRepository, type StoreRecord, type PlatformAccountRepository, type PlatformAccountRecord, type MessageRepository, type MessageRecord, type DeliveryAttemptRepository, type DeliveryAttemptRecord } from "@fastwork/persistence";
 import { VirtualClock, FakeAiEngineClient, FakePlatformAdapter, CapturingEventBus, FakeFeedbackSink, InMemoryConversationRepositoryPort } from "@fastwork/test-kit";
 import { OrchestratorFeedbackSink, type FeedbackService } from "@fastwork/feedback";
-import type { PlatformStatusChangedEvent, PlatformSessionStatus } from "@fastwork/desktop-ipc";
+import type { PlatformStatusChangedEvent } from "@fastwork/desktop-ipc";
 import type { WorkerJobClientPort } from "@fastwork/background-jobs";
 import type { OptimizationWorkerClientPort, ProductRepositoryPort, ProductRow } from "@fastwork/product-optimization";
 import type { JobRepository, JobRecord, ProductRecord } from "@fastwork/persistence";
@@ -30,13 +30,7 @@ import { createWorkspaceMerchantContext, type WorkspaceMerchantContext } from ".
 import { createCanonicalInboundPersistence, type CanonicalInboundPersistenceResult } from "./services/canonical-inbound-persistence.js";
 import { createInboundTurnBuilder, type InboundTurn, type InboundTurnBuilder, type TurnExpiryScheduler } from "./services/inbound-turn-builder.js";
 import type { InboundEnvelope } from "@fastwork/domain";
-import { GenericPlatformService } from "./platforms/shared/generic-platform-service.js";
 import { PlatformSessionCoordinator } from "./platforms/platform-session-coordinator.js";
-import { createDoudianPlatformService } from "./platforms/doudian/doudian-platform-service.js";
-import { createJDPlatformService } from "./platforms/jd/jd-platform-service.js";
-import { createKuaishouPlatformService } from "./platforms/kuaishou/kuaishou-platform-service.js";
-import { createQianniuPlatformService } from "./platforms/qianniu/qianniu-platform-service.js";
-import { createXianyuPlatformService } from "./platforms/xianyu/xianyu-platform-service.js";
 import { OrchestratorHost } from "./services/orchestrator-host.js";
 import { ShopService, type ShopRow } from "./services/shop-service.js";
 import { WorkerStatusService, type WorkerStatusSource } from "./services/worker-status-service.js";
@@ -554,38 +548,11 @@ export function createMainContext(options: BootstrapOptions = {}): MainContext {
     });
   }
 
-  // M8: register the five remaining platforms on the coordinator (test mode uses
-  // local synthetic fixtures from each platform package).
+  // Platform session coordinator. FastWork realignment B3: the MVP is PDD-only,
+  // so exactly one canonical platform host is registered. The coordinator stays
+  // as the single Main-owned visual/session target authority.
   const coordinator = new PlatformSessionCoordinator();
   coordinator.register("pdd", platform);
-  const PLATFORM_IDS = ["doudian", "jd", "kuaishou", "qianniu", "xianyu"] as const;
-  const platformServices = new Map<string, GenericPlatformService>();
-  const fixturesRoot = join(HERE, "..", "..", "..", "..", "packages");
-  type StatusHook = (ev: { shop_id: string; session_status: string; revision: number; last_error?: string }) => void;
-  const statusHook: StatusHook = (ev) => {
-    bumpRevision();
-    platformStatusSink.current?.({ shop_id: ev.shop_id, session_status: ev.session_status as PlatformSessionStatus, revision: ev.revision, last_error: ev.last_error });
-  };
-  const serviceFactories: Record<(typeof PLATFORM_IDS)[number], (opts: { testMode: boolean; orchestrator: ConversationOrchestrator; fixturePathFor?: (shopId: string) => string; onStatusChanged: StatusHook; revision: () => number }) => GenericPlatformService> = {
-    doudian: (o) => createDoudianPlatformService(o),
-    jd: (o) => createJDPlatformService(o),
-    kuaishou: (o) => createKuaishouPlatformService(o),
-    qianniu: (o) => createQianniuPlatformService(o),
-    xianyu: (o) => createXianyuPlatformService(o),
-  };
-  for (const pid of PLATFORM_IDS) {
-    const service = serviceFactories[pid]({
-      testMode,
-      orchestrator,
-      fixturePathFor: testMode
-        ? () => join(fixturesRoot, "platform-" + pid, "tests", "fixtures", "chat-basic.html")
-        : undefined,
-      onStatusChanged: statusHook,
-      revision: () => revision,
-    });
-    platformServices.set(pid, service);
-    coordinator.register(pid as never, service);
-  }
 
   // ---- M10 composition (Main-owned background jobs + domain services) ----
   const m10Sink = options.m10EventSink ?? (() => {});
@@ -696,5 +663,4 @@ class InMemoryMainImportWriter implements MainImportWriterPort {
   hasIdentity(): boolean { return false; }
   foreignRefsValid(): boolean { return true; }
 }
-
 

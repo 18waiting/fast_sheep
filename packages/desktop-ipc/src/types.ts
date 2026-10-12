@@ -27,8 +27,9 @@ export type QueueScope = { kind: "all_stores" } | { kind: "specific_store"; stor
 export interface QueueItemView { conversation_id: string; store_id: string }
 /** SHEEP-061: canonical platform identity for queue filtering (typed union of the canonical
  * Main PLATFORM_IDS; no bare-string taxonomy. Main remains the authority via isPlatformId;
- * a consistency test keeps this union in sync with Main PLATFORM_IDS). */
-export type QueuePlatformFilter = "pdd" | "doudian" | "jd" | "kuaishou" | "qianniu" | "xianyu";
+ * a consistency test keeps this union in sync with Main PLATFORM_IDS).
+ * FastWork realignment B3: the MVP is PDD-only. */
+export type QueuePlatformFilter = "pdd";
 /** Query variants only (DP-74): platform filter is a query dimension; absence = all platforms (no fake "all"). */
 export interface QueueStoreOption { store_id: string; name: string }
 export interface ConversationListRequest { scope: QueueScope; platform?: QueuePlatformFilter }

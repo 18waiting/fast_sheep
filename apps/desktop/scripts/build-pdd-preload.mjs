@@ -1,4 +1,4 @@
-// M7/M8 platform preload bundler (clean-room). Bundles each sandboxed page
+// M7 platform preload bundler (clean-room). Bundles the sandboxed PDD page
 // preload into a single self-contained CJS file (sandboxed preloads cannot use
 // ESM imports).
 import { build } from "esbuild";
@@ -22,22 +22,6 @@ async function main() {
     logLevel: "silent",
   });
   console.log("PDD preload bundled");
-
-  // M8 platform preloads (dist/platform-preloads/<platform>.js).
-  for (const platform of ["doudian", "jd", "kuaishou", "qianniu", "xianyu"]) {
-    await build({
-      entryPoints: [join(APP, "src", "platform-preloads", platform + ".ts")],
-      outfile: join(APP, "dist", "platform-preloads", platform + ".js"),
-      bundle: true,
-      format: "cjs",
-      platform: "node",
-      target: "node20",
-      external: ["electron"],
-      sourcemap: false,
-      logLevel: "silent",
-    });
-    console.log(platform + " preload bundled");
-  }
 }
 
 await main();

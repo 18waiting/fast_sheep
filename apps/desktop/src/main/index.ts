@@ -12,16 +12,10 @@ import { isTestMode } from "./test-mode.js";
 import { runSmokeProbe } from "./smoke-probe.js";
 import { runPddSmokeProbe, runPddSessionIsolationProbe } from "./smoke-probe-pdd.js";
 import { runSyntheticFallbackInteractionProbe } from "./smoke-probe-fallback.js";
-import { runM8PlatformProbe, runM8MultiPlatformProbe, runM8VerticalProbe } from "./smoke-probe-m8.js";
 import { AIWorkerClient } from "@fastwork/worker-rpc";
 import { createPackagedWorkerClient, resolvePackagedDataRoot, createWorkerBackedMainContext } from "./worker-runtime.js";
 import { isPackagedSmokeEnabled, runPackagedSmokeProbe, writePackagedSmokeStartupFailure } from "./packaged-smoke-hook.js";
 import { registerPddPageIpc, PDD_PAGE_EVENT_CHANNEL, PDD_PAGE_COMMAND_RESULT_CHANNEL } from "./platforms/pdd/pdd-page-ipc.js";
-import { registerDoudianPageIpc } from "./platforms/doudian/doudian-page-ipc.js";
-import { registerJDPageIpc } from "./platforms/jd/jd-page-ipc.js";
-import { registerKuaishouPageIpc } from "./platforms/kuaishou/kuaishou-page-ipc.js";
-import { registerQianniuPageIpc } from "./platforms/qianniu/qianniu-page-ipc.js";
-import { registerXianyuPageIpc } from "./platforms/xianyu/xianyu-page-ipc.js";
 import { IPC } from "@fastwork/desktop-ipc";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -70,18 +64,8 @@ function createWindow(): BrowserWindow {
       const isolationResultFile = process.env.FASTWORK_DESKTOP_M7_ISOLATION_RESULT_FILE;
       const fallbackResultFile = process.env.FASTWORK_DESKTOP_FALLBACK_INTERACTION_RESULT_FILE;
       const vertical = process.env.FASTWORK_DESKTOP_M7_VERTICAL === "1";
-      const m8Platform = process.env.FASTWORK_DESKTOP_M8_PLATFORM;
-      const m8ResultFile = process.env.FASTWORK_DESKTOP_M8_SMOKE_RESULT_FILE;
-      const m8MultiFile = process.env.FASTWORK_DESKTOP_M8_MULTI_RESULT_FILE;
-      const m8VerticalFile = process.env.FASTWORK_DESKTOP_M8_VERTICAL_RESULT_FILE;
       if (fallbackResultFile && context) {
         void runSyntheticFallbackInteractionProbe(context, win, fallbackResultFile).then((result) => { app.exit(result.result === "PASS" ? 0 : 1); }, () => { app.exit(1); });
-      } else if (m8VerticalFile && context) {
-        void runM8VerticalProbe(context, m8VerticalFile).then(() => { app.exit(0); });
-      } else if (m8MultiFile && context) {
-        void runM8MultiPlatformProbe(context, m8MultiFile).then(() => { app.exit(0); });
-      } else if (m8Platform && m8ResultFile && context) {
-        void runM8PlatformProbe(context, m8Platform, m8ResultFile).then(() => { app.exit(0); });
       } else if (isolationResultFile && context) {
         void runPddSessionIsolationProbe(context, isolationResultFile).then(() => {
           app.exit(0);
@@ -204,25 +188,12 @@ async function init(): Promise<void> {
   });
   wireBridges(mainWindow);
 
-  // Dedicated platform page IPC with its own trusted-webContents sender guard.
-  const pageIpcStops: Array<() => void> = [];
-  const registerPageIpcFor = (platform: string, register: (deps: { isTrustedWebContents(wc: unknown): boolean; onPageEvent(p: unknown, sender: unknown): void; onCommandResult(p: unknown, sender: unknown): void }) => () => void): void => {
-    pageIpcStops.push(register({
-      isTrustedWebContents: (wc) => context!.coordinator.isTrustedWebContents(platform as never, wc),
-      onPageEvent: (payload) => context!.coordinator.handlePageEvent(platform as never, payload),
-      onCommandResult: (payload) => context!.coordinator.handleCommandResult(platform as never, payload),
-    }));
-  };
+  // Dedicated PDD page IPC with its own trusted-webContents sender guard.
   stopPddPageIpc = registerPddPageIpc({
     isTrustedPddWebContents: (wc) => context!.platform.isTrustedPddWebContents(wc),
     onPageEvent: (payload, sender) => context!.platform.handlePageEvent(payload, sender),
     onCommandResult: (payload, sender) => context!.platform.handleCommandResult(payload, sender),
   });
-  registerPageIpcFor("doudian", (d) => registerDoudianPageIpc(d));
-  registerPageIpcFor("jd", (d) => registerJDPageIpc(d));
-  registerPageIpcFor("kuaishou", (d) => registerKuaishouPageIpc(d));
-  registerPageIpcFor("qianniu", (d) => registerQianniuPageIpc(d));
-  registerPageIpcFor("xianyu", (d) => registerXianyuPageIpc(d));
 
   // Broadcast PDD status changes to the renderer (typed event channel).
   context.platformStatusSink.current = (ev) => {
@@ -281,5 +252,4 @@ app.on("web-contents-created", (_event: Electron.Event, contents: WebContents) =
   contents.setWindowOpenHandler(() => ({ action: "deny" }));
   contents.on("will-attach-webview", denyWebview);
 });
-
 

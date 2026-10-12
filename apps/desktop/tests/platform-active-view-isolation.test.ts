@@ -2,8 +2,6 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PlatformSessionCoordinator } from "../dist/main/platforms/platform-session-coordinator.js";
 import { PddPlatformService } from "../dist/main/platforms/pdd/pdd-platform-service.js";
-import { GenericPlatformService } from "../dist/main/platforms/shared/generic-platform-service.js";
-import { capabilitiesFor } from "../dist/main/platforms/platform-capability-registry.js";
 
 const bounds = { x: 10, y: 20, width: 300, height: 200, visible: true };
 const content = { x: 0, y: 0, width: 800, height: 600, visible: true };
@@ -33,7 +31,6 @@ function deferred() {
 function harness(loadFor?: (shopId: string) => Promise<void>) {
   const coordinator = new PlatformSessionCoordinator();
   const pddViews = new Map<string, FakeView>();
-  const genericViews = new Map<string, FakeView>();
   const pdd = new PddPlatformService({
     navigationMode: "FIXTURE", orchestrator,
     fixturePathFor: (shopId) => `/synthetic/${shopId}.html`,
@@ -43,19 +40,8 @@ function harness(loadFor?: (shopId: string) => Promise<void>) {
       return view as never;
     },
   });
-  const generic = new GenericPlatformService({
-    platform: "jd", testMode: true, orchestrator, capabilities: capabilitiesFor("jd"),
-    preloadPath: "/synthetic/preload.js", commandChannel: "fixture-command",
-    fixturePathFor: (shopId) => `/synthetic/${shopId}.html`,
-    makeView: (shopId) => {
-      const view = new FakeView();
-      genericViews.set(shopId, view);
-      return view as never;
-    },
-  });
   coordinator.register("pdd", pdd);
-  coordinator.register("jd", generic);
-  return { coordinator, pdd, generic, pddViews, genericViews };
+  return { coordinator, pdd, pddViews };
 }
 
 test("A -> B hides old native view, preserves old session, rejects inactive visible bounds", async () => {
@@ -76,16 +62,22 @@ test("A -> B hides old native view, preserves old session, rejects inactive visi
   assert.equal(h.coordinator.setViewBounds("pdd", "b", bounds, content), false);
 });
 
-test("cross-platform switch hides PDD; generic service also hides its prior Shop", async () => {
+// FastWork realignment B3: PDD-only MVP. The property formerly proven across two
+// platform hosts is now proven as "the coordinator holds exactly one canonical
+// host, and a non-canonical platform can never take or steal the visual target".
+test("visual target is PDD-only: a non-canonical platform cannot take or steal it", async () => {
   const h = harness();
   await h.coordinator.activateShop("pdd", "a");
-  await h.coordinator.activateShop("jd", "j1");
+  assert.equal(h.coordinator.setViewBounds("pdd", "a", bounds, content), true);
+  assert.equal(await h.coordinator.activateShop("jd" as never, "j1"), false, "unregistered platform host -> activation refused");
+  assert.equal(h.coordinator.setViewBounds("jd" as never, "j1", bounds, content), false);
+  // The refused activation must leave the live PDD target completely untouched.
+  assert.equal(h.pddViews.get("a")?.visible, true);
+  assert.equal(h.coordinator.setViewBounds("pdd", "a", bounds, content), true);
+  // A second PDD shop still supersedes the first through the same single target.
+  await h.coordinator.activateShop("pdd", "b");
   assert.equal(h.pddViews.get("a")?.visible, false);
-  assert.equal(h.genericViews.get("j1")?.visible, true);
-  assert.equal(h.coordinator.setViewBounds("pdd", "a", bounds, content), false);
-  await h.coordinator.activateShop("jd", "j2");
-  assert.equal(h.genericViews.get("j1")?.visible, false);
-  assert.equal(h.genericViews.get("j2")?.visible, true);
+  assert.equal(h.pddViews.get("b")?.visible, true);
   h.coordinator.disposeAll();
 });
 

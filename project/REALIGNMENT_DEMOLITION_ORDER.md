@@ -75,9 +75,81 @@
   `fastwork-ai-worker.spec` 的 codesign `entitlements_file` 参数（macOS 签名概念，与计费无关）。
   `rg -i "entitlement|membership" packages apps services` 无任何业务代码命中。
 
- ---
+### B3 完成记录（2026-10-12）
 
- ## 2. Phase 2 延迟项（拆除完成后按序推进，均需 REA 第二批证据配合）
+- 已删除（Owner D1：MVP 只做拼多多），共 364 个文件：
+  - `packages/platform-{doudian,jd,kuaishou,qianniu,xianyu}`（258 个文件，含 dom fixtures、
+    transfer-driver、平台测试）与 `packages/platform-web-common`（23 个文件）。
+  - `apps/desktop/src/main/platforms/{doudian,jd,kuaishou,qianniu,xianyu,shared}`（57 个文件）
+    与 `apps/desktop/src/platform-preloads/{doudian,jd,kuaishou,qianniu,xianyu}.ts`（5 个文件）。
+  - `apps/desktop/src/main/smoke-probe-m8.ts`（五平台探针，由 PDD 探针取代）与
+    `apps/desktop/tests/m8-{platform-preload-isolation,platform-permissions,platform-navigation,platform-ipc-sender-guard,multi-platform-isolation}.test.ts`（5 个文件）。
+  - `packages/contracts/schemas/` 15 个非 PDD 平台 schema；注册表用
+    `node scripts/generate-schema-registry.mjs` 重新生成为 172 条，`schema-catalog.md` 同步；
+    `behavior-contract-map.json` 经查无被删 schema 引用。
+- 收敛改造（启动路径只注册 PDD）：
+  - `platform-host-registry.ts`：`PLATFORM_IDS = ["pdd"]`、`PlatformHostService = PddPlatformService`、
+    `PlatformHostKind` 恒为 `"pdd"`，`isPlatformId` 作为唯一守卫。
+  - `platform-capability-registry.ts`：能力表只含 PDD；未知平台一律返回全 false 的
+    `FAIL_CLOSED_CAPABILITIES`（能力名沿用 `@fastwork/contracts` 的 `M8PlatformCapabilities`）。
+  - `platform-session-coordinator.ts`：`isTrustedWebContents` 委托
+    `PddPlatformService.isTrustedPddWebContents`。
+  - `bootstrap.ts` / `index.ts`：删除五平台工厂与服务、M8 探针环境分支、`registerPageIpcFor` 扇出；
+    启动只剩 `coordinator.register("pdd", platform)`。
+  - `ipc/query-handlers.ts`：`CANONICAL_PLATFORMS = ["pdd"]`，并新增 `isPlatformId(req.platform)`
+    校验 —— 非 PDD 过滤条件直接 `INVALID_REQUEST "unknown platform"`，避免历史数据靠裸字符串
+    匹配穿透收缩后的队列过滤（fail closed）。
+  - `smoke-probe-pdd.ts`：原抖店跨平台段改为 PDD 三店 a/b/c，字段
+    `cross_platform_view_isolation` → `superseded_view_isolation`，`shops_tested: 3`；
+    `scripts/verify-platform-native-view-isolation.mjs` 断言同步更新。
+  - `test-mode.ts`（2 家 PDD 店）、`packages/desktop-ipc` 的 `QueuePlatformFilter = "pdd"`、
+    `apps/desktop/package.json`（移除 6 个已删包依赖）、`scripts/build-pdd-preload.mjs`
+    （去掉平台循环）、`scripts/audit-electron-unpacked.mjs`（5 个 preload 硬校验改为反向校验：
+    打包产物中不得再出现 `dist/platform-preloads/`）。
+  - workspace 由 20 个项目收缩为 15 个；`pnpm-lock.yaml` 已刷新。
+- 顺带修复（非拆除项）：`packages/desktop-ipc/tests/channel-registry.test.ts` 在 HEAD 即为红
+  （SHEEP-305 新增 `store_knowledge` 后实际 47 条通道 vs 陈旧期望 42），更新为 47/12/24/11
+  并补 `store_knowledge` 断言。
+- 测试改写：`m8-platform-{host-registry,capabilities,session-coordinator,shop-switch}`、
+  `platform-active-view-isolation`、`conversation-list-query`、`main-composition`（7 店 → 2 店）。
+- 验证（macOS 开发机，`.ts` 测试统一走 Node 22 + tsx）：
+  - `pnpm run typecheck` 全绿（14 个 workspace 项目）。
+  - apps/desktop **567/567**；orchestrator 92/92；persistence 88/88；domain 86/86（官方脚本
+    只跑 `tests/*.test.mjs`）；desktop-ipc 9/9；contracts 20/20；platform-pdd 119/119；
+    worker-rpc 33/33；background-jobs 13/13；feedback 9/9；product-optimization 17/17；
+    secret-store 9/9；Python 472/472（+ `compileall`）。
+  - Electron 实跑：`node scripts/verify-platform-native-view-isolation.mjs` **PASS**
+    （3 家 PDD 店、`partitions_unique`、`shop_switch`、`superseded_view_isolation`、
+    `native_view_bounds_rejected`、`cross_shop_message_leak`、`cross_shop_send_leak`、
+    `manual_login_boundary` 全 true，`external_network_calls = 0`）。
+  - desktop 三包重建（desktop-ipc → contracts → desktop）成功，`PDD preload bundled`。
+- 残留（验收标准允许项 / 移交 B5）：
+  - 根 `package.json` 的 `test:m8-platforms`、`test:m9-feedback-ts`、`ci:m8`、`ci:m9` 以及
+    `scripts/run-m8-*`、`scripts/verify-m8-*`、`scripts/visual-evidence/capture-*` 仍指向已删套件
+    与已删包 —— 属 B5「产物与脚本清理」范围，本批刻意不动，避免一次改动跨越两个批次边界。
+  - `scripts/archive/milestone-verification/check-m8-no-network.mjs`、
+    `check-m9-handoff-security.mjs` 仍含旧包名（历史归档脚本）→ B5。
+  - `packages/domain` 的 `Platform` 联合类型与 `PLATFORM_DOUDIAN` 等常量作为**词表**保留：
+    FastWork 本身是多平台产品，MVP 收缩发生在应用层（注册表 / bootstrap / IPC 过滤），
+    领域词表保留可避免 Phase 2 加平台时反复改契约。
+  - `packages/domain/tests/{audit-correlation,confirmation-binding,desktop-notification,transport-outcome,verification-record}.test.ts`
+    未被任何脚本引用（domain 官方 test 脚本只跑 `*.test.mjs`），其中 B1 保留概念的孤儿断言已失效
+    → B5 与孤儿测试套件一并处置。
+  - `packages/legacy-import/tests/path-safety.test.ts` 2 条断言为 Windows 路径语义
+    （`C:\…` / `a\b\c.txt`），在 macOS 失败，与 B3 无关 → `DEFERRED: 需要在个人电脑上运行测试`。
+  - **B3 验证期间新发现的治理孤儿（非 B3 引入，移交 B5）**：
+    `tests/project-state-consistency.test.mjs` 仍按 B0 之前的账本 schema 断言
+    （读取 `state_authority.roadmap_identity_source` / `next_authoritative_roadmap_id`），
+    自 B0 重置 `PROJECT_STATE.json` 为 V2.0 起即为红；它未被根 `package.json` 任何脚本引用。
+    处置建议：随旧治理机械一并归档或删除（B5）。同类还有 `scripts/validate-project-state.mjs`。
+  - 说明：本机 `node --test` 默认 Node v20.20.2 缺 `node:sqlite`，凡涉及 SQLite 的 `.mjs`/`.ts`
+    套件必须走 Node 22（`/opt/homebrew/opt/node@22/bin`）；这不是失败，是主机能力差异。
+    本轮实测 Node 22 下 `tests/scripts/create-controlled-pdd-shop.test.mjs` 6/6、
+    `tests/secret-scan-rules.test.mjs` 5/5、`packages/secret-store` 9/9 全绿。
+
+---
+
+## 2. Phase 2 延迟项（拆除完成后按序推进，均需 REA 第二批证据配合）
 
  | # | 项 | 说明 | 依赖 |
  |---|---|---|---|

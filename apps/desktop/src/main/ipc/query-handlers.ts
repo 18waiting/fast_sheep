@@ -1,7 +1,7 @@
 // M6/M10 query handlers: bootstrap / shops / snapshot / worker.status / platform.status / jobs.
 import { IPC, DesktopError, DESKTOP_ERROR_CODES, type BootstrapState, type DesktopResult, type JobListResult, type JobRecordView, type LegacyImportStatusView, type PlatformStatusView, type WorkbenchViewModel, type WorkerStatusView, type ConversationListRequest, type ConversationListResult, type ConversationTimelineRequest, type ConversationTimelineResult, type QueueItemView, type QueuePlatformFilter, type TimelineMessageView } from "@fastwork/desktop-ipc";
 import type { PlatformSessionCoordinator } from "../platforms/platform-session-coordinator.js";
-import type { PlatformId } from "../platforms/platform-host-registry.js";
+import { isPlatformId, type PlatformId } from "../platforms/platform-host-registry.js";
 import type { OrchestratorHost } from "../services/orchestrator-host.js";
 import type { ShopService } from "../services/shop-service.js";
 import type { WorkerStatusService } from "../services/worker-status-service.js";
@@ -13,7 +13,8 @@ import type { NormalizedConversationRepository, StoreRepository, PlatformAccount
 import { ok, err } from "./ipc-guard.js";
 
 // SHEEP-061: canonical platform set for queue filter options (mirror of Main PLATFORM_IDS; validated by isPlatformId).
-const CANONICAL_PLATFORMS: QueuePlatformFilter[] = ["pdd", "doudian", "jd", "kuaishou", "qianniu", "xianyu"];
+// FastWork realignment B3: PDD-only MVP.
+const CANONICAL_PLATFORMS: QueuePlatformFilter[] = ["pdd"];
 
 export interface QueryDeps {
   orchestrator: OrchestratorHost;
@@ -57,6 +58,13 @@ export const QUERY_HANDLERS = {
   [IPC.conversationsList]: (deps: QueryDeps) => async (req: ConversationListRequest): Promise<DesktopResult<ConversationListResult>> => {
     if (!req || !req.scope) return err(new DesktopError(DESKTOP_ERROR_CODES.INVALID_REQUEST, "missing queue scope"));
     const scope = req.scope;
+    // DP-71: renderer input is untrusted and Main is the canonical-platform
+    // authority. A filter outside the canonical set (PDD-only since realignment
+    // B3) is an explicit request failure — it must never fall through to a
+    // bare-string comparison against legacy platform_account rows.
+    if (req.platform !== undefined && !isPlatformId(req.platform)) {
+      return err(new DesktopError(DESKTOP_ERROR_CODES.INVALID_REQUEST, "unknown platform"));
+    }
     const platform = req.platform;
     const workspace = deps.workspaceMerchant;
     // DP-94/I-17/DP-98: merchant authority = Main-owned WorkspaceMerchantContext,
@@ -158,4 +166,3 @@ export function toJobView(job: { job_id: string; type: string; state: string; pr
     error: typeof job.error === "string" ? job.error : job.error ? JSON.stringify(job.error) : null,
   };
 }
-

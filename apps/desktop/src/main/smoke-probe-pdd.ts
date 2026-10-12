@@ -193,7 +193,7 @@ export interface PddSessionIsolationResult {
   partitions_unique: boolean;
   state_machine: boolean;
   shop_switch: boolean;
-  cross_platform_view_isolation: boolean;
+  superseded_view_isolation: boolean;
   native_view_bounds_rejected: boolean;
   fixture_urls_local: boolean;
   cross_shop_message_leak: boolean;
@@ -208,11 +208,11 @@ export interface PddSessionIsolationResult {
 export async function runPddSessionIsolationProbe(context: MainContext, resultFile: string | undefined): Promise<PddSessionIsolationResult> {
   const errors: string[] = [];
   const out: PddSessionIsolationResult = {
-    shops_tested: 2,
+    shops_tested: 3,
     partitions_unique: false,
     state_machine: false,
     shop_switch: false,
-    cross_platform_view_isolation: false,
+    superseded_view_isolation: false,
     native_view_bounds_rejected: false,
     fixture_urls_local: false,
     cross_shop_message_leak: true,
@@ -253,7 +253,7 @@ export async function runPddSessionIsolationProbe(context: MainContext, resultFi
 
     // Exercise real Electron WebContentsView instances through the Main-owned
     // coordinator, not a fixed boolean or a direct service call that bypasses
-    // the cross-platform visual target. All navigation stays on local fixtures.
+    // the coordinator's single visual target. All navigation stays on local fixtures.
     const staleARejected = !coordinator.setViewBounds("pdd", "shop-a", bounds, contentBounds);
     const bBoundsApplied = coordinator.setViewBounds("pdd", "shop-b", bounds, contentBounds);
     out.shop_switch = staleARejected && bBoundsApplied
@@ -261,21 +261,27 @@ export async function runPddSessionIsolationProbe(context: MainContext, resultFi
       && coordinator.status("pdd", "shop-b")?.view_visible === true;
     if (!out.shop_switch) errors.push("shop_switch_native_view=false");
 
-    await coordinator.activateShop("doudian", "shop-doudian-1");
-    const doudianUrl = coordinator.serviceFor("doudian")?.webContentsFor("shop-doudian-1")?.getURL();
-    out.fixture_urls_local = [aUrl, bUrl, doudianUrl].every((url) => url?.startsWith("file://"));
+    // FastWork realignment B3: PDD-only MVP. The isolation property that used to be
+    // proven across platforms is now proven across superseded shop targets: a newer
+    // activation takes the single Main-owned visual target and the previous shop's
+    // native view is hidden while its session stays alive.
+    await coordinator.activateShop("pdd", "shop-c");
+    const cUrl = coordinator.serviceFor("pdd")?.webContentsFor("shop-c")?.getURL();
+    out.fixture_urls_local = [aUrl, bUrl, cUrl].every((url) => url?.startsWith("file://"));
     if (!out.fixture_urls_local) errors.push("fixture_urls_local=false");
     const staleBRejected = !coordinator.setViewBounds("pdd", "shop-b", bounds, contentBounds);
-    const genericBoundsApplied = coordinator.setViewBounds("doudian", "shop-doudian-1", bounds, contentBounds);
-    out.cross_platform_view_isolation = staleBRejected && genericBoundsApplied
+    const cBoundsApplied = coordinator.setViewBounds("pdd", "shop-c", bounds, contentBounds);
+    out.superseded_view_isolation = staleBRejected && cBoundsApplied
       && coordinator.status("pdd", "shop-b")?.view_visible === false
-      && coordinator.status("doudian", "shop-doudian-1")?.view_visible === true;
-    if (!out.cross_platform_view_isolation) errors.push("cross_platform_native_view=false");
+      && coordinator.status("pdd", "shop-c")?.view_visible === true;
+    if (!out.superseded_view_isolation) errors.push("superseded_native_view=false");
 
-    const closeAccepted = coordinator.setViewBounds("doudian", "shop-doudian-1", { ...bounds, visible: false }, contentBounds);
+    // A hidden bounds command is the typed-IPC close boundary: it invalidates the
+    // active target, so a later visible bounds command for the same shop is rejected.
+    const closeAccepted = coordinator.setViewBounds("pdd", "shop-c", { ...bounds, visible: false }, contentBounds);
     out.native_view_bounds_rejected = closeAccepted
-      && !coordinator.setViewBounds("doudian", "shop-doudian-1", bounds, contentBounds)
-      && coordinator.status("doudian", "shop-doudian-1")?.view_visible === false
+      && !coordinator.setViewBounds("pdd", "shop-c", bounds, contentBounds)
+      && coordinator.status("pdd", "shop-c")?.view_visible === false
       && coordinator.status("pdd", "shop-b")?.view_visible === false;
     if (!out.native_view_bounds_rejected) errors.push("closed_native_view_bounds=false");
 

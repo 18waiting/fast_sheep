@@ -1,8 +1,11 @@
-// M8 platform session coordinator (clean-room). Creates/gets/disposes shop
-// sessions across platforms, activates shops, applies view bounds, projects
-// status, and isolates sessions. No platform DOM knowledge.
+// Platform session coordinator (clean-room). Creates/gets/disposes shop
+// sessions, activates shops, applies view bounds, projects status, and
+// isolates sessions. No platform DOM knowledge.
+// FastWork realignment B3: PDD-only MVP, so the coordinator is the single
+// Main-owned visual/session target authority over one canonical platform host.
 import type { PlatformId } from "./platform-host-registry.js";
 import type { PlatformHostService } from "./platform-host-registry.js";
+import type { WebContents } from "electron";
 
 export interface SessionCoordinatorEntry {
   platform: PlatformId;
@@ -85,7 +88,8 @@ export class PlatformSessionCoordinator {
   isTrustedWebContents(platform: PlatformId, wc: unknown): boolean {
     const service = this.services.get(platform);
     if (!service) return false;
-    return (service as { isTrustedWebContents(wc: unknown): boolean }).isTrustedWebContents(wc);
+    // PDD owns its sender guard; the coordinator stays platform-neutral.
+    return service.isTrustedPddWebContents(wc as WebContents);
   }
 
   handlePageEvent(platform: PlatformId, payload: unknown): void {

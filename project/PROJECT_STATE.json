@@ -30,7 +30,12 @@
       "completed": "2026-10-12",
       "verification": "typecheck green; persistence 88/88; orchestrator 92/92; apps/desktop 570/570 (Node 22); domain 86/86; python 472/472 + compileall; GF-TOOL-008 ledger+fixture updated"
     },
-    "B3_platform_narrow_to_pdd": { "status": "PENDING", "authorization": "OWNER_GRANTED_2026-10-12" },
+    "B3_platform_narrow_to_pdd": {
+      "status": "COMPLETE",
+      "authorization": "OWNER_GRANTED_2026-10-12",
+      "completed": "2026-10-12",
+      "verification": "typecheck green (14 projects); apps/desktop 567/567; platform-pdd 119/119; orchestrator 92/92; persistence 88/88; domain 86/86; worker-rpc 33/33; contracts 20/20; background-jobs 13/13; desktop-ipc 9/9; feedback 9/9; product-optimization 17/17; secret-store 9/9; python 472/472 + compileall; electron verify-platform-native-view-isolation PASS (3 PDD shops, external_network_calls=0); 364 files deleted, workspace 20 -> 15 projects"
+    },
     "B4_secret_store_removal": { "status": "PENDING", "authorization": "OWNER_GRANTED_2026-10-12" },
     "B5_artifacts_scripts_cleanup": { "status": "PENDING", "authorization": "OWNER_GRANTED_2026-10-12" }
   },

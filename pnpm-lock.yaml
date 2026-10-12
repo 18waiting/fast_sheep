@@ -41,27 +41,9 @@ importers:
       '@fastwork/persistence':
         specifier: workspace:*
         version: link:../../packages/persistence
-      '@fastwork/platform-doudian':
-        specifier: workspace:*
-        version: link:../../packages/platform-doudian
-      '@fastwork/platform-jd':
-        specifier: workspace:*
-        version: link:../../packages/platform-jd
-      '@fastwork/platform-kuaishou':
-        specifier: workspace:*
-        version: link:../../packages/platform-kuaishou
       '@fastwork/platform-pdd':
         specifier: workspace:*
         version: link:../../packages/platform-pdd
-      '@fastwork/platform-qianniu':
-        specifier: workspace:*
-        version: link:../../packages/platform-qianniu
-      '@fastwork/platform-web-common':
-        specifier: workspace:*
-        version: link:../../packages/platform-web-common
-      '@fastwork/platform-xianyu':
-        specifier: workspace:*
-        version: link:../../packages/platform-xianyu
       '@fastwork/product-optimization':
         specifier: workspace:*
         version: link:../../packages/product-optimization
@@ -212,63 +194,6 @@ importers:
         specifier: ^5.5.0
         version: 5.9.3
 
-  packages/platform-doudian:
-    dependencies:
-      '@fastwork/orchestrator':
-        specifier: workspace:*
-        version: link:../orchestrator
-      '@fastwork/platform-web-common':
-        specifier: workspace:*
-        version: link:../platform-web-common
-    devDependencies:
-      '@types/node':
-        specifier: ^22.0.0
-        version: 22.20.1
-      jsdom:
-        specifier: ^26.0.0
-        version: 26.1.0
-      typescript:
-        specifier: ^5.5.0
-        version: 5.9.3
-
-  packages/platform-jd:
-    dependencies:
-      '@fastwork/orchestrator':
-        specifier: workspace:*
-        version: link:../orchestrator
-      '@fastwork/platform-web-common':
-        specifier: workspace:*
-        version: link:../platform-web-common
-    devDependencies:
-      '@types/node':
-        specifier: ^22.0.0
-        version: 22.20.1
-      jsdom:
-        specifier: ^26.0.0
-        version: 26.1.0
-      typescript:
-        specifier: ^5.5.0
-        version: 5.9.3
-
-  packages/platform-kuaishou:
-    dependencies:
-      '@fastwork/orchestrator':
-        specifier: workspace:*
-        version: link:../orchestrator
-      '@fastwork/platform-web-common':
-        specifier: workspace:*
-        version: link:../platform-web-common
-    devDependencies:
-      '@types/node':
-        specifier: ^22.0.0
-        version: 22.20.1
-      jsdom:
-        specifier: ^26.0.0
-        version: 26.1.0
-      typescript:
-        specifier: ^5.5.0
-        version: 5.9.3
-
   packages/platform-pdd:
     dependencies:
       '@fastwork/domain':
@@ -277,60 +202,6 @@ importers:
       '@fastwork/orchestrator':
         specifier: workspace:*
         version: link:../orchestrator
-    devDependencies:
-      '@types/node':
-        specifier: ^22.0.0
-        version: 22.20.1
-      jsdom:
-        specifier: ^26.0.0
-        version: 26.1.0
-      typescript:
-        specifier: ^5.5.0
-        version: 5.9.3
-
-  packages/platform-qianniu:
-    dependencies:
-      '@fastwork/orchestrator':
-        specifier: workspace:*
-        version: link:../orchestrator
-      '@fastwork/platform-web-common':
-        specifier: workspace:*
-        version: link:../platform-web-common
-    devDependencies:
-      '@types/node':
-        specifier: ^22.0.0
-        version: 22.20.1
-      jsdom:
-        specifier: ^26.0.0
-        version: 26.1.0
-      typescript:
-        specifier: ^5.5.0
-        version: 5.9.3
-
-  packages/platform-web-common:
-    dependencies:
-      '@fastwork/orchestrator':
-        specifier: workspace:*
-        version: link:../orchestrator
-    devDependencies:
-      '@types/node':
-        specifier: ^22.0.0
-        version: 22.20.1
-      jsdom:
-        specifier: ^26.0.0
-        version: 26.1.0
-      typescript:
-        specifier: ^5.5.0
-        version: 5.9.3
-
-  packages/platform-xianyu:
-    dependencies:
-      '@fastwork/orchestrator':
-        specifier: workspace:*
-        version: link:../orchestrator
-      '@fastwork/platform-web-common':
-        specifier: workspace:*
-        version: link:../platform-web-common
     devDependencies:
       '@types/node':
         specifier: ^22.0.0

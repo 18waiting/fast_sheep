@@ -1,6 +1,6 @@
 # Clean-Room Contract Schema Catalog
 
-> TASK-015B deliverable. Generated from `schemas/registry.json` (187 schemas) on 2026-10-03.
+> TASK-015B deliverable. Generated from `schemas/registry.json` (172 schemas) on 2026-10-12.
 
 ## 1. Purpose
 Authoritative catalog of clean-room implementation JSON Schemas under `rebuild/packages/contracts/schemas/`. JSON Schema (Draft 2020-12) is the single source of truth for cross-process contracts; TS/Python types mirror but do not replace it.
@@ -123,6 +123,6 @@ Authoritative catalog of clean-room implementation JSON Schemas under `rebuild/p
 - None — every schema carries a unique `$id`, `$title`, and `$schema`.
 
 ## 13. Current Coverage
-- Registered schemas: 187
+- Registered schemas: 172
 - Categories: other, common, configuration, domain, error, event, rpc
 - P0 behaviors referenced by schemas: 50 distinct behavior IDs

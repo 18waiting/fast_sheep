@@ -3,11 +3,15 @@ import assert from "node:assert/strict";
 
 import { IPC, QUERY_CHANNELS, COMMAND_CHANNELS, EVENT_CHANNELS, ALL_CHANNELS, isAllowedChannel } from "../dist/index.js";
 
-test("channel registry has 42 canonical channels (M6/M7/M10 + M11 8 + SHEEP-060 conversations.list + SHEEP-063 conversations.listMessages)", () => {
-  assert.equal(ALL_CHANNELS.length, 42);
-  assert.equal(QUERY_CHANNELS.length, 10);
-  assert.equal(COMMAND_CHANNELS.length, 22);
-  assert.equal(EVENT_CHANNELS.length, 10);
+// Incidental repair recorded under realignment B3: the registry grew by the five
+// SHEEP-305 store_knowledge channels (12 query + 24 command + 11 event = 47) but
+// this constant was never updated, so the suite was red before B3 started.
+test("channel registry has 47 canonical channels (M6/M7/M10 + M11 8 + SHEEP-060/063 conversations + SHEEP-305 store_knowledge)", () => {
+  assert.equal(ALL_CHANNELS.length, 47);
+  assert.equal(QUERY_CHANNELS.length, 12);
+  assert.equal(COMMAND_CHANNELS.length, 24);
+  assert.equal(EVENT_CHANNELS.length, 11);
+  assert.equal(new Set(ALL_CHANNELS).size, ALL_CHANNELS.length, "no channel appears in two classes");
   assert.equal(IPC.bootstrap, "desktop.bootstrap");
   assert.equal(IPC.manualSend, "orchestrator.manual_send");
   assert.equal(IPC.orchestratorEvent, "orchestrator.event");
@@ -35,6 +39,11 @@ test("channel registry has 42 canonical channels (M6/M7/M10 + M11 8 + SHEEP-060 
   assert.equal(IPC.legacyImportApply, "legacy_import.apply");
   assert.equal(IPC.legacyImportChanged, "legacy_import.changed");
   assert.equal(IPC.conversationsListMessages, "conversations.listMessages");
+  assert.equal(IPC.storeKnowledgeUpsert, "store_knowledge.upsert");
+  assert.equal(IPC.storeKnowledgeQuery, "store_knowledge.query");
+  assert.equal(IPC.storeKnowledgeList, "store_knowledge.list");
+  assert.equal(IPC.storeKnowledgeDelete, "store_knowledge.delete");
+  assert.equal(IPC.storeKnowledgeChanged, "store_knowledge.changed");
 });
 
 test("isAllowedChannel rejects arbitrary channels", () => {
@@ -45,5 +54,4 @@ test("isAllowedChannel rejects arbitrary channels", () => {
   assert.ok(!isAllowedChannel("generic.anything"));
   assert.ok(!isAllowedChannel("ipcRenderer.invoke"));
 });
-
 

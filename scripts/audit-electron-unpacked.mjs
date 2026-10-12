@@ -5,11 +5,12 @@
 //   explicit dir to audit a repo-external copy (same checks).
 //
 // Verifies the real packaged tree: application exe, packaged application archive contents, packaged
-// Worker runtime, contracts schemas + registries, migrations, renderer/preload/
-// platform-preloads, runtime-required @fastwork/* packages, no symlinks back to
-// the repo, no source maps / .d.ts / tests / reports / parity assets, and no
-// absolute developer paths. Also runs the packaged runtime resolution probe
-// under an asar-aware Electron binary (no UI). Exits non-zero on any failure.
+// Worker runtime, contracts schemas + registries, migrations, renderer/preload
+// (PDD platform preload only since realignment B3), runtime-required @fastwork/*
+// packages, no symlinks back to the repo, no source maps / .d.ts / tests /
+// reports / parity assets, and no absolute developer paths. Also runs the
+// packaged runtime resolution probe under an asar-aware Electron binary (no UI).
+// Exits non-zero on any failure.
 import { existsSync, statSync, readdirSync, lstatSync, readFileSync, rmSync, mkdtempSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { tmpdir } from "node:os";
@@ -88,8 +89,9 @@ check("asar: renderer index.html", has("\\dist\\renderer\\index.html"));
 check("asar: renderer styles.css", has("\\dist\\renderer\\styles.css"));
 check("asar: renderer app.js", has("\\dist\\renderer\\app.js"));
 check("asar: pdd platform preload", has("\\dist\\platforms\\pdd\\preload.js"));
-const platPreloads = ["doudian", "jd", "kuaishou", "qianniu", "xianyu"];
-for (const p of platPreloads) check("asar: platform-preload " + p + ".js", has("\\dist\\platform-preloads\\" + p + ".js"));
+// FastWork realignment B3: PDD-only MVP, so the PDD preload above is the whole
+// platform-preload surface. No dist/platform-preloads/ bundle is produced anymore.
+check("asar: no stale multi-platform preload dir", !files.some((f) => f.startsWith("\\dist\\platform-preloads\\")));
 
 // ---- 4) runtime-required @fastwork/* workspace packages ----
 const desktopPkg = JSON.parse(readFileSync(join(ROOT, "apps", "desktop", "package.json"), "utf-8"));
@@ -190,7 +192,5 @@ if (failed.length > 0) {
   process.exit(1);
 }
 process.exit(0);
-
-
 
 

@@ -20,6 +20,9 @@ import type { QueueScope } from "@fastwork/desktop-ipc";
 // closed (empty, no leak).
 function tempRoot() { return mkdtempSync(join(tmpdir(), "fs-q-")); }
 
+// FastWork realignment B3: the canonical platform set is PDD-only. The seed below
+// deliberately keeps "doudian" platform_account rows as NON-canonical free-string
+// data so the platform filter is proven to fail closed against legacy rows.
 function seed(root: string): { conversations: NormalizedConversationRepository; stores: StoreRepository } {
   const ctx = openDatabase(root);
   const m = new SqliteMerchantRepository(ctx.conn);
@@ -123,16 +126,18 @@ test("QueueScope has no pseudo storeId=\"all\" at query layer (I-2)", () => {
   const src = readFileSync(pathJoin(dirname(fileURLToPath(import.meta.url)), "..", "src", "renderer", "components", "conversation-list.ts"), "utf-8");
   assert.ok(!src.includes('storeId: "all"'));
 });
-test("platform filter composes by intersection (I-8): store ∩ platform", async () => {
+test("platform filter composes by intersection (I-8): store ∩ canonical platform", async () => {
   const root = tempRoot();
   try {
     const { conversations, stores, platformAccounts } = seed(root);
     const handler = QUERY_HANDLERS["conversations.list"](deps(conversations, stores, "m-A", platformAccounts));
-    const r = await handler({ scope: { kind: "specific_store", storeId: "A1" }, platform: "doudian" });
+    const r = await handler({ scope: { kind: "specific_store", storeId: "A1" }, platform: "pdd" });
     assert.equal(r.ok, true);
-    if (r.ok) assert.deepEqual(r.data.items.map((i) => i.conversation_id), ["c-a2-dd"], "A1 + doudian => only doudian conversation");
-    const r2 = await handler({ scope: { kind: "specific_store", storeId: "A1" }, platform: "pdd" });
-    if (r2.ok) assert.deepEqual(r2.data.items.map((i) => i.conversation_id), ["c-a1"], "A1 + pdd => only pdd conversation");
+    if (r.ok) assert.deepEqual(r.data.items.map((i) => i.conversation_id), ["c-a1"], "A1 + pdd => only the PDD conversation; the non-canonical doudian row in A1 is filtered out");
+    // A non-canonical platform value is outside the typed contract; Main rejects it
+    // explicitly instead of matching legacy platform_account rows by bare string.
+    const r2 = await handler({ scope: { kind: "specific_store", storeId: "A1" }, platform: "doudian" as never });
+    assert.equal(r2.ok, false, "non-canonical platform => explicit failure, no legacy row leak");
   } finally { try { rmSync(root, { recursive: true, force: true }); } catch { } }
 });
 
@@ -141,18 +146,18 @@ test("all_stores + platform filter stays merchant-bounded (I-6/I-8), options fac
   try {
     const { conversations, stores, platformAccounts } = seed(root);
     const handler = QUERY_HANDLERS["conversations.list"](deps(conversations, stores, "m-A", platformAccounts));
-    const r = await handler({ scope: { kind: "all_stores" }, platform: "doudian" });
+    const r = await handler({ scope: { kind: "all_stores" }, platform: "pdd" });
     assert.equal(r.ok, true);
     if (r.ok) {
       const ids = r.data.items.map((i) => i.conversation_id).sort();
-      assert.deepEqual(ids, ["c-a2-dd"], "all_stores + doudian => merchant A doudian only (no B leak)");
+      assert.deepEqual(ids, ["c-a1", "c-a2"], "all_stores + pdd => merchant A PDD conversations only (no merchant B leak, no non-canonical row)");
       assert.ok(r.data.stores.some((s) => s.store_id === "A1") && r.data.stores.some((s) => s.store_id === "A2"), "stores option fact-backed");
-      assert.ok(r.data.platforms.includes("pdd") && r.data.platforms.includes("doudian"), "platforms option canonical");
+      assert.deepEqual(r.data.platforms, ["pdd"], "platforms option is the canonical PDD-only set");
     }
   } finally { try { rmSync(root, { recursive: true, force: true }); } catch { } }
 });
 
-test("platform filter validates canonical identity (DP-71): unknown platform yields empty, no crash", async () => {
+test("platform filter validates canonical identity (DP-71): unknown platform is rejected, no crash", async () => {
   const root = tempRoot();
   try {
     const { conversations, stores, platformAccounts } = seed(root);
@@ -160,5 +165,13 @@ test("platform filter validates canonical identity (DP-71): unknown platform yie
     const r = await handler({ scope: { kind: "all_stores" }, platform: "pdd" as never });
     assert.equal(r.ok, true);
     if (r.ok) assert.ok(Array.isArray(r.data.items));
+    for (const unknown of ["bogus", "doudian", "jd", "kuaishou", "qianniu", "xianyu"]) {
+      const bad = await handler({ scope: { kind: "all_stores" }, platform: unknown as never });
+      assert.equal(bad.ok, false, unknown + " is not a canonical platform");
+    }
+    // Absence of the filter is still the "all canonical platforms" query (no fake "all").
+    const none = await handler({ scope: { kind: "all_stores" } });
+    assert.equal(none.ok, true);
+    if (none.ok) assert.deepEqual(none.data.items.map((i) => i.conversation_id).sort(), ["c-a1", "c-a2", "c-a2-dd"], "no filter => every merchant-A conversation, including the legacy non-canonical row");
   } finally { try { rmSync(root, { recursive: true, force: true }); } catch { } }
 });

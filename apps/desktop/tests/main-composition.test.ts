@@ -11,11 +11,12 @@ import { partitionFor } from "../dist/main/platforms/pdd/pdd-session-partition.j
 test("main composition builds the full offline context in test mode", async () => {
   const ctx = createMainContext({ testMode: true });
   const shops = await ctx.shops.list();
-  assert.equal(shops.length, 7, "M8 test mode exposes one synthetic shop per platform (2 PDD + 5 others)");
+  assert.equal(shops.length, 2, "PDD-only MVP (realignment B3): test mode exposes the two synthetic PDD shops");
   assert.equal(shops[0].shop_id, "shop-test-1");
+  assert.deepEqual(shops.map((s) => s.type), ["pdd", "pdd"], "every synthetic shop is a PDD shop");
   const vm = ctx.projection.project();
   assert.equal(vm.platform_capability, "pdd", "test mode activates the PDD platform projection");
-  assert.equal(vm.shop_summaries.length, 7);
+  assert.equal(vm.shop_summaries.length, 2);
   assert.equal(vm.worker_status.status, "ready");
   assert.ok(ctx.orchestratorHost.get(), "orchestrator host owns the ConversationOrchestrator");
   const settings = ctx.settings.view();
