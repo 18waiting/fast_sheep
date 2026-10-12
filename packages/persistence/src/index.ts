@@ -62,8 +62,8 @@ export { InMemoryStatsRepository } from "./memory/memory-stats-repository.js";
 export { InMemoryJobRepository } from "./memory/memory-job-repository.js";
 
 // SHEEP-019-A: Phase 1 identity domain persistence.
-export type { MerchantRecord, StoreRecord, PlatformAccountRecord, MemberRecord, MembershipRecord, SeatRecord, MerchantRepository, StoreRepository, PlatformAccountRepository, MemberRepository, MembershipRepository, SeatRepository } from "./repositories/identity-repositories.js";
-export { SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountRepository, SqliteMemberRepository, SqliteMembershipRepository, SqliteSeatRepository } from "./sqlite/sqlite-identity-repositories.js";
+export type { MerchantRecord, StoreRecord, PlatformAccountRecord, MerchantRepository, StoreRepository, PlatformAccountRepository } from "./repositories/identity-repositories.js";
+export { SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountRepository } from "./sqlite/sqlite-identity-repositories.js";
 
 // SHEEP-066-PR1: durable text delivery attempt journal (Send Attempt truth model / typed outcome / recovery).
 export { DeliveryAttemptError, SqliteDeliveryAttemptRepository, generateDeliveryAttemptId, generateDeliveryMessageId, createAuthorizedDeliveryAttempt, runDeliveryAttempt, finalizeAcknowledgedDelivery, recoverInFlightAttempts, recoverWorkspaceInFlightDeliveryAttempts } from "./delivery/delivery-attempt.js";
@@ -84,5 +84,4 @@ export { SqliteCustomerRepository, SqliteDomainProductRepository, SqliteSkuRepos
 // M1.5-R06: Backup/Restore Foundation.
 export { BACKUP_METADATA_FILENAME, createBackup, listBackups, restoreBackup, rotateBackups } from "./backup/backup-manager.js";
 export type { BackupMetadata } from "./backup/backup-manager.js";
-
 

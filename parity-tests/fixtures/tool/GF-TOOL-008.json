@@ -1,6 +1,6 @@
 {
   "case_id": "GF-TOOL-008",
-  "title": "tool disabled / insufficient points",
+  "title": "tool disabled (definition enabled=false)",
   "behavior_ids": [
     "B-TOOL-005"
   ],
@@ -25,13 +25,7 @@
       "name": "尺码推荐"
     }
   },
-  "mocks": {
-    "entitlement": {
-      "disabled": [
-        "尺码推荐"
-      ]
-    }
-  },
+  "mocks": {},
   "expected": {
     "result": {
       "tool_result": {
@@ -47,5 +41,5 @@
     "mode": "NO_CALL"
   },
   "tags": [],
-  "notes": ""
+  "notes": "2026-10-12 realignment B2: entitlement mock removed (Owner D2 skips billing line); disabled path now exercised via registry definition enabled=false. See evidence-ledger.md."
 }

@@ -28,7 +28,7 @@ test("empty meanings explicit; no default CTA (DP-41/2)", () => {
   }
   assert.ok(src.includes("data-state-meaning"), "meaning must be explicit");
   assert.ok(src.includes("options.action") && src.includes("if (options.action)"), "action only when provided (no default CTA)");
-  assert.ok(!src.includes("entitlement") && !src.includes("auth"), "no entitlement/auth UI in empty pattern (DP-48 boundary)");
+  assert.ok(!src.includes("billing") && !src.includes("auth"), "no billing/auth UI in empty pattern (DP-48 boundary)");
 });
 
 test("loading is quiet textual; no skeleton/animation/fake progress (DP-42)", () => {

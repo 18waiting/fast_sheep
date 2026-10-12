@@ -70,20 +70,6 @@ class TestToolExecutor(unittest.TestCase):
         self.assertEqual(out["error"]["code"], "tool.bad_arguments")
         self.assertEqual(len(ToolExecutor(r).call_log), 0)
 
-    def test_disabled_entitlement_no_call(self):
-        called = []
-        r = ToolRegistry()
-        r.register_skill({"name": "尺码推荐", "type": "instruction", "handler": lambda args: called.append(args) or {"ok": True}})
-        e = ToolExecutor(r)
-        out = e.execute(
-            {"tool_call_id": "c1", "name": "尺码推荐", "arguments": {}},
-            entitlement={"disabled": ["尺码推荐"]},
-        )
-        self.assertFalse(out["ok"])
-        self.assertEqual(out["error"]["code"], "tool.disabled")
-        self.assertEqual(called, [])
-        self.assertEqual(e.call_log, [])
-
     def test_disabled_definition(self):
         r = ToolRegistry()
         r.register_skill({"name": "x", "enabled": False})

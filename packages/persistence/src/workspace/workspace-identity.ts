@@ -17,7 +17,7 @@
 // business/display-name fact) + one app_meta.workspace_merchant_id pointer, in a
 // single atomic transaction. It NEVER infers identity from ambient data
 // (selected shop / queue scope / active conversation / first row / count == 1).
-// It never fabricates a merchant name, member, membership, or auth fact.
+// It never fabricates a merchant name or auth fact.
 import { randomUUID } from "node:crypto";
 import type { SqliteConnection } from "../db/sqlite-driver.js";
 import { PersistenceError, ERROR_CODES } from "../db/errors.js";
@@ -123,4 +123,3 @@ export function resolveOrBootstrapWorkspaceMerchantId(
   }
   return bootstrap.bootstrapWorkspaceMerchantId(generateId);
 }
-

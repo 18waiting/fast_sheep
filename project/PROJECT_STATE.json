@@ -24,7 +24,12 @@
   "batches": {
     "B0_governance_reset": { "status": "COMPLETE", "authorization": "OWNER_GRANTED_2026-10-12", "completed": "2026-10-12", "commit": "bf66d46" },
     "B1_concept_layer_demolition": { "status": "COMPLETE", "authorization": "OWNER_GRANTED_2026-10-12", "completed": "2026-10-12", "verification": "typecheck green; orchestrator 92/92; apps/desktop 570/570 on Node 22" },
-    "B2_billing_line_skip": { "status": "PENDING", "authorization": "OWNER_GRANTED_2026-10-12" },
+    "B2_billing_line_skip": {
+      "status": "COMPLETE",
+      "authorization": "OWNER_GRANTED_2026-10-12",
+      "completed": "2026-10-12",
+      "verification": "typecheck green; persistence 88/88; orchestrator 92/92; apps/desktop 570/570 (Node 22); domain 86/86; python 472/472 + compileall; GF-TOOL-008 ledger+fixture updated"
+    },
     "B3_platform_narrow_to_pdd": { "status": "PENDING", "authorization": "OWNER_GRANTED_2026-10-12" },
     "B4_secret_store_removal": { "status": "PENDING", "authorization": "OWNER_GRANTED_2026-10-12" },
     "B5_artifacts_scripts_cleanup": { "status": "PENDING", "authorization": "OWNER_GRANTED_2026-10-12" }

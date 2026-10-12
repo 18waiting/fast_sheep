@@ -51,6 +51,30 @@
   contracts schema、Python worker 内部命名（reply_plan_builder 等）——它们被暂保留的 SQLite
   持久化层引用，随 P2-1/P2-3/P2-7 一并清除；`InboundEnvelope.identityLock` 字段为验收标准明示例外。
 
+### B2 完成记录（2026-10-12）
+
+- 已删除（Owner D2：整条计费/授权/试用线跳过）：
+  - `packages/domain`：`entitlement.ts`、`membership-domain.ts`、`authorization-domain.ts`
+    及 3 个对应测试；`index.ts` 导出同步移除。`MemberId` 改为在
+    `conversation-ownership.ts` 本地定义（branded string），`ownership-execution.ts` 从其导入。
+  - `packages/persistence`：Member/Membership/Seat 的 record、仓储接口与 SQLite 实现全部移除；
+    migration `0005_identity_domain.sql`（含 `resources/persistence/migrations/` 副本，两处同步）
+    改为 DROP members/memberships/seats 三表并留注释说明。
+  - Python：`tool_executor.py` 的 `entitlement` 闸门参数与 `_disabled()` 移除（disabled 路径
+    改由 definition `enabled=false` 表达）；`agent_loop.py` 停止读取 entitlement；
+    `test_tool_executor.py` 相关用例删除；`m4_helpers.py`/`test_tool_golden_fixtures.py` 参数清理。
+  - parity 金样 `GF-TOOL-008`：按宪法 §5 先在 `parity-tests/evidence-ledger.md` 记账，再将
+    entitlement-mock 重定向为 definition `enabled=false`（期望结果不变：tool.disabled / NO_CALL）。
+  - 渲染层结构测试：3 个负向断言文件的 "entitlement" token 换为 "billing"，语义保留。
+- 测试修复：`workspace-identity.test.ts` / `identity-persistence.test.ts` 的
+  "COUNT(*)=0" 断言改为 sqlite_master 表不存在断言（表已 DROP）。
+- 验证：`pnpm run typecheck` 全绿；persistence 88/88、orchestrator 92/92、
+  apps/desktop 570/570（Node 22）；domain 86/86；Python 472/472 + `compileall` 通过；
+  GF-TOOL-008 金样 runner OK。
+- 残留（均为允许项）：迁移文件与源码中的历史注释/移除说明；domain 测试中的负向断言 token；
+  `fastwork-ai-worker.spec` 的 codesign `entitlements_file` 参数（macOS 签名概念，与计费无关）。
+  `rg -i "entitlement|membership" packages apps services` 无任何业务代码命中。
+
  ---
 
  ## 2. Phase 2 延迟项（拆除完成后按序推进，均需 REA 第二批证据配合）

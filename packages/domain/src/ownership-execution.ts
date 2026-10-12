@@ -20,7 +20,7 @@
  */
 
 import type { ConversationOwnershipState, OwnershipActorRef } from "./conversation-ownership.js";
-import type { MemberId } from "./membership-domain.js";
+import type { MemberId } from "./conversation-ownership.js";
 
 /** The four governance-confirmed ownership actions (DEC-014). No others. */
 export type OwnershipAction = "claim" | "release" | "handoff" | "supervisor_takeover";

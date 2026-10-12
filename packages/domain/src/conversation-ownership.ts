@@ -20,7 +20,13 @@
  */
 
 import type { ConversationId } from "./conversation-identity.js";
-import type { MemberId } from "./membership-domain.js";
+
+/**
+ * Human actor identity for conversation ownership (e.g. a 客服 account).
+ * Defined locally since the membership/seat domain was removed in realignment
+ * batch B2 (FastWork has no membership/billing line; owner decision D2).
+ */
+export type MemberId = string & { readonly __member: true };
 
 /** Ownership state vocabulary — exactly the 8 governance-confirmed states. */
 export type ConversationOwnershipState =
@@ -56,7 +62,7 @@ export const CONVERSATION_OWNERSHIP_STATES: readonly ConversationOwnershipState[
 
 /**
  * Minimal current-owner actor reference capability (tightening #1).
- * - member: a team member (reuses SHEEP-011 MemberId).
+ * - member: a human actor (customer-service account).
  * - ai: the AI actor.
  * No assignedBy/claimedBy/handoffFrom/handoffTo/lease-holder fields — those are
  * execution semantics for M1.5 / Phase 4 / Phase 12.

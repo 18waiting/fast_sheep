@@ -34,7 +34,7 @@ test("sidebar adds no add/delete shop UI (DO_NOT_PORT_DIRECTLY)", () => {
 
 test("sidebar does not reinterpret shop_summaries.enabled/type semantics", () => {
   const src = readFileSync(SRC, "utf-8");
-  for (const t of ["disabled", "entitlement", "platform_availability", "isEnabled", "isAvailable"]) {
+  for (const t of ["disabled", "billing", "platform_availability", "isEnabled", "isAvailable"]) {
     assert.ok(!src.includes(t), "shop-sidebar.ts must not reinterpret " + t);
   }
 });

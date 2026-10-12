@@ -239,8 +239,7 @@ def run_tool_fixture(fx: Dict[str, Any]) -> Dict[str, Any]:
         # GF-TOOL-006/007: tool name comes from the mock key (empty fixture input).
         tool_call = {"name": next(iter(mocks["tool"].keys()))}
     tc = {"tool_call_id": tool_call.get("tool_call_id", "tc1"), "name": tool_call.get("name", ""), "arguments": tool_call.get("arguments", {})}
-    entitlement = mocks.get("entitlement")
-    result = executor.execute(tc, entitlement=entitlement)
+    result = executor.execute(tc)
     tool_calls_executed = len([c for c in executor.call_log if c[0] == "tool"])
     if result.get("error"):
         actual = {"tool_result": {"ok": False, "error": {"code": result["error"].get("code")}}}

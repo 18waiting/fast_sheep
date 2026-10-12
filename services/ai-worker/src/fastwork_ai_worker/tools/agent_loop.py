@@ -31,7 +31,6 @@ class AgentLoop:
     def run(self, request: Dict[str, Any]) -> Dict[str, Any]:
         request = request or {}
         messages: List[Dict[str, Any]] = list(request.get("messages") or [])
-        entitlement = request.get("entitlement")
 
         rounds = 0
         text = ""
@@ -57,7 +56,7 @@ class AgentLoop:
                 tool_call_id = tool_call.get("tool_call_id") or ("call_" + str(len(tool_results) + 1))
                 tool_call["tool_call_id"] = tool_call_id
 
-                raw = self.executor.execute(tool_call, entitlement)
+                raw = self.executor.execute(tool_call)
                 normalized = normalize_result(
                     tool_call_id,
                     bool(raw.get("ok", False)) if isinstance(raw, dict) else False,
@@ -134,5 +133,4 @@ class AgentLoop:
         args_json = json.dumps(tool_call.get("arguments", {}), ensure_ascii=False, sort_keys=True, default=str)
         code = error.get("code") if isinstance(error, dict) else str(error)
         return json.dumps([name, args_json, code], ensure_ascii=False, sort_keys=True)
-
 

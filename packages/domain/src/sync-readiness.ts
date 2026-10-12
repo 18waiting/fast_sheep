@@ -4,7 +4,7 @@
  * Capability/contract level ONLY:
  * - NO sync implementation, NO Outbox, NO pull/apply/conflict, NO sync state.
  * - NO per-entity sync fields and NO new tables; existing domain identity contracts
- *   stay authoritative (Merchant/Store/PlatformAccount/Member/Membership/Seat/
+ *   stay authoritative (Merchant/Store/PlatformAccount/
  *   Conversation/Message/Customer/Product/Sku/Order/Logistics). This module does NOT
  *   define a second identity system, a unified Sync ID, or re-purpose AccountRef.
  *

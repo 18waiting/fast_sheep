@@ -10,7 +10,6 @@ import { createHash } from "node:crypto";
 import {
   openDatabase, SqliteConnection, MigrationRunner, MIGRATIONS_DIR, DB_FILENAME,
   SqliteMerchantRepository, SqliteStoreRepository, SqlitePlatformAccountRepository,
-  SqliteMemberRepository, SqliteMembershipRepository, SqliteSeatRepository,
 } from "../dist/index.js";
 
 function root() { return mkdtempSync(join(tmpdir(), "fs-idt-")); }
@@ -27,8 +26,11 @@ test("fresh DB: migrates to schema v10, new identity tables + legacy tables coex
   const { conn, schemaVersion } = openDatabase(r);
   assert.equal(schemaVersion, 10);
   assert.equal(conn.get("SELECT COUNT(*) AS c FROM schema_migrations").c, 10);
-  for (const t of ["merchants","stores","platform_accounts","members","memberships","seats"]) {
+  for (const t of ["merchants","stores","platform_accounts"]) {
     assert.ok(conn.get("SELECT name FROM sqlite_master WHERE type='table' AND name=?", t), `table ${t}`);
+  }
+  for (const t of ["members","memberships","seats"]) {
+    assert.equal(conn.get("SELECT name FROM sqlite_master WHERE type='table' AND name=?", t), undefined, `B2: table ${t} removed`);
   }
   for (const t of ["shops","products","conversations","conversation_messages"]) {
     assert.ok(conn.get("SELECT name FROM sqlite_master WHERE type='table' AND name=?", t), `legacy table ${t} coexists`);
@@ -74,25 +76,12 @@ test("failure rollback: a failing migration does not partially apply", () => {
   conn.close();
 });
 
-test("members table has NO merchant_id (single ownership source = memberships)", () => {
-  const r = root();
-  const { conn } = openDatabase(r);
-  const names = conn.all<{ name: string }>("PRAGMA table_info(members)").map((c) => c.name);
-  assert.ok(names.includes("id"));
-  assert.ok(names.includes("account_ref_kind"));
-  assert.ok(!names.includes("merchant_id"), "members must not hold merchant ownership");
-  conn.close();
-});
-
-test("identity repositories: merchant/store/platformAccount/member/membership/seat CRUD + merchant-scoped lists", () => {
+test("identity repositories: merchant/store/platformAccount CRUD + merchant-scoped lists", () => {
   const r = root();
   const { conn } = openDatabase(r);
   const merchants = new SqliteMerchantRepository(conn);
   const stores = new SqliteStoreRepository(conn);
   const pas = new SqlitePlatformAccountRepository(conn);
-  const members = new SqliteMemberRepository(conn);
-  const memberships = new SqliteMembershipRepository(conn);
-  const seats = new SqliteSeatRepository(conn);
 
   merchants.save({ id: "m1", name: "测试商户" });
   assert.deepEqual(merchants.findById("m1"), { id: "m1", name: "测试商户" });
@@ -117,17 +106,6 @@ test("identity repositories: merchant/store/platformAccount/member/membership/se
   });
   assert.deepEqual(pas.listByMerchant("m1").map((p) => p.id), ["pa-pdd-local", "pa1"]);
 
-  members.save({ id: "mem1", accountRefKind: "local", accountRefValue: "acc-1" });
-  assert.deepEqual(members.findById("mem1"), { id: "mem1", accountRefKind: "local", accountRefValue: "acc-1" });
-
-  memberships.save({ id: "ms1", merchantId: "m1", memberId: "mem1", role: "owner" });
-  memberships.save({ id: "ms2", merchantId: "m2", memberId: "mem1", role: "agent" });
-  assert.deepEqual(memberships.listByMerchant("m1").map((m) => m.id), ["ms1"]);
-  assert.deepEqual(memberships.listByMember("mem1").map((m) => m.id).sort(), ["ms1", "ms2"]);
-
-  seats.save({ id: "seat1", merchantId: "m1" });
-  assert.deepEqual(seats.listByMerchant("m1").map((s) => s.id), ["seat1"]);
-
   conn.close();
 });
 
@@ -136,8 +114,7 @@ test("repositories expose NO delete/remove/tombstone operations", () => {
   const { conn } = openDatabase(r);
   const instances = [
     new SqliteMerchantRepository(conn), new SqliteStoreRepository(conn),
-    new SqlitePlatformAccountRepository(conn), new SqliteMemberRepository(conn),
-    new SqliteMembershipRepository(conn), new SqliteSeatRepository(conn),
+    new SqlitePlatformAccountRepository(conn),
   ];
   for (const inst of instances) {
     for (const name of ["delete", "remove", "hardDelete", "tombstone"]) {
@@ -146,4 +123,3 @@ test("repositories expose NO delete/remove/tombstone operations", () => {
   }
   conn.close();
 });
-

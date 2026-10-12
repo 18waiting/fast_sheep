@@ -25,23 +25,5 @@ CREATE TABLE platform_accounts (
 );
 CREATE INDEX idx_platform_accounts_merchant ON platform_accounts(merchant_id);
 
-CREATE TABLE members (
-  id TEXT PRIMARY KEY,
-  account_ref_kind TEXT NOT NULL,      -- local|platform|cloud identity boundary
-  account_ref_value TEXT NOT NULL
-);
-
-CREATE TABLE memberships (
-  id TEXT PRIMARY KEY,
-  merchant_id TEXT NOT NULL REFERENCES merchants(id),
-  member_id TEXT NOT NULL REFERENCES members(id),
-  role TEXT NOT NULL
-);
-CREATE INDEX idx_memberships_merchant ON memberships(merchant_id);
-CREATE INDEX idx_memberships_member ON memberships(member_id);
-
-CREATE TABLE seats (
-  id TEXT PRIMARY KEY,
-  merchant_id TEXT NOT NULL REFERENCES merchants(id)
-);
-CREATE INDEX idx_seats_merchant ON seats(merchant_id);
+-- members / memberships / seats tables removed in realignment B2 (2026-10-12):
+-- FastWork has no membership/seat/billing line (owner decision D2).

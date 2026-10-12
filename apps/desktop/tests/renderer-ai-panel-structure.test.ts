@@ -19,7 +19,7 @@ const DIST = join(HERE, "..", "dist", "renderer", "components", "ai-panel.js");
 const REGIONS = ["ai-panel", "ai-tools", "ai-chat", "ai-welcome"];
 const BRIDGE_TOKENS = ["店铺API", "ipcRenderer", "fetch(", "WebSocket", "localStorage", "sessionStorage", "navigate(", "api_key", "credential", "token", "session", "cookie"];
 const MESSAGING_TOKENS = ["onSend", "sendMessage", "stream", "composer", "presetCard", "onPresetClick", "管家API", "onClick", "addEventListener", "button(", "input(", "textarea"];
-const DOMAIN_TOKENS = ["toolRegistry", "toolId", "capability", "entitlement", "permission", "authorize", "allow"];
+const DOMAIN_TOKENS = ["toolRegistry", "toolId", "capability", "billing", "permission", "authorize", "allow"];
 
 test("ai panel establishes the three evidence-backed regions", () => {
   const src = readFileSync(SRC, "utf-8");

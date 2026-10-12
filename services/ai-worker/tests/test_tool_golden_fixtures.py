@@ -125,8 +125,11 @@ def _make_executor_for_case(fx, tmpdir):
             "type": "query",
             "run": {"command": path, "runtime": "python"},
         })
-    elif case_id in ("GF-TOOL-003", "GF-TOOL-004", "GF-TOOL-008"):
+    elif case_id in ("GF-TOOL-003", "GF-TOOL-004"):
         registry.register_skill({"name": "尺码推荐", "type": "instruction", "body": "推荐"})
+    elif case_id == "GF-TOOL-008":
+        # B2 realignment: entitlement gate removed; disabled path via definition flag.
+        registry.register_skill({"name": "尺码推荐", "type": "instruction", "body": "推荐", "enabled": False})
     elif case_id == "GF-TOOL-009":
         registry.register_builtin(
             "查价",
@@ -165,9 +168,8 @@ def _run_fixture(fx):
                 tool_call["name"] = mock_names[0]
         tool_call.setdefault("tool_call_id", "call_" + case_id)
         tool_call.setdefault("arguments", {})
-        entitlement = mocks.get("entitlement")
 
-        raw = executor.execute(tool_call, entitlement)
+        raw = executor.execute(tool_call)
 
         if case_id == "GF-TOOL-012":
             actual = raw.get("result", raw)

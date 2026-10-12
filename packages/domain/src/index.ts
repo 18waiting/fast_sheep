@@ -68,14 +68,6 @@ export interface BackgroundJob {
 export * from "./merchant-domain.js";
 
 
-// SHEEP-011: Membership / Seat Domain (M1.1 Core Identity Domain).
-export * from "./membership-domain.js";
-
-
-// SHEEP-012: Capability & Resource Scope Model (M1.1 Core Identity Domain).
-export * from "./authorization-domain.js";
-
-
 // SHEEP-013: Normalized Conversation Identity (M1.2 Conversation Domain).
 export * from "./conversation-identity.js";
 
@@ -98,10 +90,6 @@ export * from "./order.js";
 
 // M1.5-R07: Sync-Readiness Persistence Contract (capability/contract level).
 export * from "./sync-readiness.js";
-
-
-// M1.5-R03: Minimal Entitlement Contract.
-export * from "./entitlement.js";
 
 
 // M1.5-R02: Local Ownership Execution Semantics.

@@ -3,18 +3,13 @@
 // SHEEP-019-A: Sqlite implementations for Phase 1 identity domain repositories.
 import type { SqliteConnection } from "../db/sqlite-driver.js";
 import type {
-  MerchantRecord, StoreRecord, PlatformAccountRecord, MemberRecord,
-  MembershipRecord, SeatRecord,
+  MerchantRecord, StoreRecord, PlatformAccountRecord,
   MerchantRepository, StoreRepository, PlatformAccountRepository,
-  MemberRepository, MembershipRepository, SeatRepository,
 } from "../repositories/identity-repositories.js";
 
 interface MerchantRow { id: string; name: string | null; }
 interface StoreRow { id: string; merchant_id: string; name: string; platform: string; }
 interface PlatformAccountRow { id: string; merchant_id: string; platform: string; external_ref: string | null; }
-interface MemberRow { id: string; account_ref_kind: string; account_ref_value: string; }
-interface MembershipRow { id: string; merchant_id: string; member_id: string; role: string; }
-interface SeatRow { id: string; merchant_id: string; }
 
 export class SqliteMerchantRepository implements MerchantRepository {
   constructor(private conn: SqliteConnection) {}
@@ -64,49 +59,3 @@ export class SqlitePlatformAccountRepository implements PlatformAccountRepositor
     return r ? { id: r.id, merchantId: r.merchant_id, platform: r.platform, externalRef: r.external_ref } : null;
   }
 }
-
-export class SqliteMemberRepository implements MemberRepository {
-  constructor(private conn: SqliteConnection) {}
-  save(m: MemberRecord): void {
-    this.conn.run("INSERT INTO members (id, account_ref_kind, account_ref_value) VALUES (?, ?, ?)", m.id, m.accountRefKind, m.accountRefValue);
-  }
-  findById(id: string): MemberRecord | null {
-    const r = this.conn.get<MemberRow | undefined>("SELECT id, account_ref_kind, account_ref_value FROM members WHERE id = ?", id);
-    return r ? { id: r.id, accountRefKind: r.account_ref_kind as MemberRecord["accountRefKind"], accountRefValue: r.account_ref_value } : null;
-  }
-}
-
-export class SqliteMembershipRepository implements MembershipRepository {
-  constructor(private conn: SqliteConnection) {}
-  save(m: MembershipRecord): void {
-    this.conn.run("INSERT INTO memberships (id, merchant_id, member_id, role) VALUES (?, ?, ?, ?)", m.id, m.merchantId, m.memberId, m.role);
-  }
-  findById(id: string): MembershipRecord | null {
-    const r = this.conn.get<MembershipRow | undefined>("SELECT id, merchant_id, member_id, role FROM memberships WHERE id = ?", id);
-    return r ? { id: r.id, merchantId: r.merchant_id, memberId: r.member_id, role: r.role } : null;
-  }
-  listByMerchant(merchantId: string): MembershipRecord[] {
-    return this.conn.all<MembershipRow>("SELECT id, merchant_id, member_id, role FROM memberships WHERE merchant_id = ? ORDER BY id", merchantId)
-      .map((r) => ({ id: r.id, merchantId: r.merchant_id, memberId: r.member_id, role: r.role }));
-  }
-  listByMember(memberId: string): MembershipRecord[] {
-    return this.conn.all<MembershipRow>("SELECT id, merchant_id, member_id, role FROM memberships WHERE member_id = ? ORDER BY id", memberId)
-      .map((r) => ({ id: r.id, merchantId: r.merchant_id, memberId: r.member_id, role: r.role }));
-  }
-}
-
-export class SqliteSeatRepository implements SeatRepository {
-  constructor(private conn: SqliteConnection) {}
-  save(s: SeatRecord): void {
-    this.conn.run("INSERT INTO seats (id, merchant_id) VALUES (?, ?)", s.id, s.merchantId);
-  }
-  findById(id: string): SeatRecord | null {
-    const r = this.conn.get<SeatRow | undefined>("SELECT id, merchant_id FROM seats WHERE id = ?", id);
-    return r ? { id: r.id, merchantId: r.merchant_id } : null;
-  }
-  listByMerchant(merchantId: string): SeatRecord[] {
-    return this.conn.all<SeatRow>("SELECT id, merchant_id FROM seats WHERE merchant_id = ? ORDER BY id", merchantId)
-      .map((r) => ({ id: r.id, merchantId: r.merchant_id }));
-  }
-}
-

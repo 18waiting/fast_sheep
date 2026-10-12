@@ -4,7 +4,8 @@
 // Guards: fresh v9 / v8->v9 upgrade (existing name preserved) / NULL-name insert /
 // no-empty-magic bootstrap value / FK+reference integrity / atomic identity
 // establishment / stable reopen / dangling pointer fail-closed / ambiguous legacy
-// fail-closed / no member-membership fabrication / initialized no silent replacement.
+// fail-closed / no member-membership tables (billing line removed) / initialized
+// no silent replacement.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, copyFileSync, readFileSync, rmSync } from "node:fs";
@@ -82,7 +83,7 @@ test("FK/reference integrity after 0009: valid insert ok, invalid child merchant
   });
 });
 
-test("bootstrap fresh: stable generated MerchantId (no magic default), name=NULL, pointer written, no member/auth fabrication", () => {
+test("bootstrap fresh: stable generated MerchantId (no magic default), name=NULL, pointer written, no member/membership/seat tables", () => {
   withTemp((r) => {
     const ctx = openDatabase(r);
     const b = new SqliteWorkspaceIdentityBootstrap(ctx.conn);
@@ -92,10 +93,11 @@ test("bootstrap fresh: stable generated MerchantId (no magic default), name=NULL
     assert.equal(b.resolveWorkspaceMerchantId(), id, "pointer written");
     const m = ctx.conn.get<{ id: string; name: string | null }>("SELECT id, name FROM merchants WHERE id = ?", id);
     assert.equal(m.name, null, "name=NULL (unknown); no fabricated/label/magic value persisted");
-    // no member/membership/seat/auth fabrication
-    assert.equal(ctx.conn.get("SELECT COUNT(*) AS c FROM members").c, 0);
-    assert.equal(ctx.conn.get("SELECT COUNT(*) AS c FROM memberships").c, 0);
-    assert.equal(ctx.conn.get("SELECT COUNT(*) AS c FROM seats").c, 0);
+    // billing/membership line removed in realignment B2: tables must not exist at all
+    for (const t of ["members", "memberships", "seats"]) {
+      const row = ctx.conn.get<{ name: string }>("SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?", t);
+      assert.equal(row, undefined, `table ${t} must be dropped (billing line removed)`);
+    }
     ctx.conn.close();
   });
 });
@@ -164,4 +166,3 @@ test("ambiguous existing identity fail-closed: merchant rows without pointer are
     ctx.conn.close();
   });
 });
-

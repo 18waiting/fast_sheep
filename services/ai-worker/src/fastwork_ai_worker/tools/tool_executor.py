@@ -38,7 +38,7 @@ class ToolExecutor:
             allow_unsigned=merged.get("allow_unsigned", False),
         )
 
-    def execute(self, tool_call: Dict[str, Any], entitlement: Optional[Any] = None) -> Dict[str, Any]:
+    def execute(self, tool_call: Dict[str, Any]) -> Dict[str, Any]:
         if not isinstance(tool_call, dict):
             return self._error("tool.bad_arguments", message="tool_call must be a dict")
 
@@ -51,7 +51,7 @@ class ToolExecutor:
         if definition is None:
             return self._error("tool.unknown", message="unknown tool: " + name)
 
-        if self._disabled(definition, entitlement):
+        if not definition.enabled:
             return self._error("tool.disabled", message="tool disabled: " + name)
         self.call_log.append(("tool", name))
 
@@ -109,23 +109,6 @@ class ToolExecutor:
     def _is_query(definition: ToolDefinition) -> bool:
         run = definition.run or {}
         return definition.skill_type in ("query", "script") or bool(run.get("command"))
-
-    def _disabled(self, definition: ToolDefinition, entitlement: Any) -> bool:
-        if not definition.enabled:
-            return True
-        disabled: Any = []
-        if isinstance(entitlement, dict):
-            disabled = entitlement.get("disabled", [])
-        elif entitlement is not None and hasattr(entitlement, "disabled"):
-            disabled = getattr(entitlement, "disabled", [])
-        elif isinstance(entitlement, (list, tuple, set)):
-            disabled = entitlement
-        if isinstance(disabled, str):
-            disabled = [disabled]
-        try:
-            return definition.name in disabled
-        except TypeError:
-            return False
 
     def _run_instruction(self, definition: ToolDefinition, arguments: Dict[str, Any]) -> Dict[str, Any]:
         if isinstance(definition.body, dict):
@@ -186,5 +169,3 @@ class ToolExecutor:
         else:
             executable = runtime
         return [executable, command, args_json]
-
-
