@@ -1,245 +1,85 @@
-# AGENTS.md — Fast Sheep Project Navigation
+ # AGENTS.md — Fast Sheep Project Navigation（重对齐版，2026-10-12）
 
-Project root: `E:\fast_sheep\`
-Product: 快羊客服 / fast_sheep
+ 项目根：`/Users/wb02605050/Documents/ChatGPT/fast_sheep`（macOS 开发机）
+ 产品：快羊客服 / fast_sheep —— FastWork（言店长）6.1008.4 的 clean-room 复刻
 
-This file is the Codex navigation and execution entrypoint. It does not replace
-the project constitution, locked decisions, product authority, or current state.
+ **2026-10-12 起项目进入重对齐清理阶段：FastWork 是唯一产品标尺，
+ 旧宪法、47 条锁定决策、V1.x Roadmap/Template、AU 交接文档全部失效，
+ 已归档至 `project/history/pre-realignment-2026-10-12/`（只读历史，不具约束力）。**
 
----
+ ---
 
-## 1. Required Read Order
+ ## 1. Required Read Order
 
-Before any project task, read in this order:
+ 任何任务开始前按序阅读：
 
-1. `project/FAST_SHEEP_MASTER_PROMPT.md` — constitution and hard invariants
-2. `project/DECISIONS.md` — locked/superseding product and architecture decisions
-3. `docs/product/FAST_SHEEP_NORTH_STAR.md` — stable product identity
-4. `docs/product/PDD_MVP_V1.md` — current PDD MVP scope
-5. `docs/architecture/AI_CUSTOMER_SERVICE_CORE.md` — core lifecycle and ownership
-6. `docs/architecture/PLATFORM_ADAPTER_CONTRACT.md` — platform adapter boundary
-7. `docs/architecture/REPLY_AND_ACTION_SAFETY.md` — deterministic execution safety
-8. `project/PROJECT_STATE.json` — current execution ledger and authorization
-9. the reviewed Coding Roadmap plus the current SHEEP task prompt
+ 1. `project/FAST_SHEEP_MASTER_PROMPT.md` — 现行宪法（V2.0 重对齐版）
+ 2. `project/REALIGNMENT_DEMOLITION_ORDER.md` — 批次、范围决策、验收标准、Phase 2 延迟项
+ 3. `project/PROJECT_STATE.json` — 执行账本（当前批次与授权状态）
+ 4. REA 取证仓库 `~/Documents/ChatGPT/fastwork-rea-batch1/` — 对标证据基线
+    （先读 `_INDEX.md` 与 `_EVIDENCE_LOG.md`，再按需读分册）
 
-All SHEEP task prompts must follow the active reviewed Codex Task Template.
-Resolve exact active paths from `project/PROJECT_STATE.json`; do not infer them
-from old filenames. The current execution authorities are the V1.1 Roadmap
-and V1.1 Task Template. V1.0 Roadmap/Template/task definitions are historical
-governance and unfinished V1.0 IDs remain deferred, not reusable.
+ 架构类旧文档（`docs/architecture/*`）在 Phase 2 重写前仅作背景参考；
+ 与 REA 证据冲突处一律以 REA 证据为准。
 
-`project/PROJECT_STATE.json` owns current lifecycle/authorization. It must not
-be treated as product narrative. The North Star and PDD MVP documents own
-product meaning and current MVP scope respectively.
+ ---
 
----
+ ## 2. 对标纪律（取代旧 Product Alignment Guard）
 
-## 2. Product Alignment Guard
+ 实质性实现前必须能回答：
 
-Before substantial implementation, state:
+ ```text
+ FASTWORK_EVIDENCE:      # 对应 REA 证据文件与结论；没有证据就写 NONE 并说明
+ ALIGNMENT_LEVEL:        # L1 行为 / L2 结构 / L3 风格
+ MVP_RELEVANCE:          # 与“拼多多单平台自用 MVP”的关系
+ DECISION:               # PROCEED / NEED_REA_EVIDENCE / OUT_OF_SCOPE
+ ```
 
-```text
-PRODUCT_ALIGNMENT:
-CURRENT_MVP_RELEVANCE:
-CUSTOMER_VALUE:
-SAFETY_IMPACT:
-OUT_OF_SCOPE:
-DECISION:
-```
+ - FastWork 中 NOT_FOUND 的自研概念（IdentityLock / ContextEnvelope / ReplyPlan /
+   pre-send guard / SHADOW-HUMAN_CONFIRM-AUTO）不得复活或新建同义变体。
+ - 无证据支撑的 FastWork 行为断言不得写入代码或文档；需要信息就排 REA 批次。
+ - `DECISION: NEED_REA_EVIDENCE` 时记录到 Phase 2 延迟项，不要猜着实现。
 
-Allowed `DECISION` values:
+ ---
 
-- `PROCEED`
-- `PRODUCT_DIRECTION_MISMATCH`
+ ## 3. 范围红线（Owner 拍板 2026-10-12）
 
-If a task primarily optimizes raw PDD UI and does not advance the AI-first
-customer-service loop, remove a Transport/runtime blocker, or have explicit
-Controller diagnostic/fallback authorization, stop with:
+ - 平台只做拼多多；其他平台适配已删除，未经 Owner 决定不得重建
+ - 授权/计费/试用/会员/积分整条线跳过
+ - BOSS 获客、CSDN 发文、远程控制、桌面 UI 自动化不做
+ - 真实平台操作（登录、收发真实消息）默认禁止，需 Owner 逐次授权
 
-`PRODUCT_DIRECTION_MISMATCH`
+ ---
 
-Do not start the next SHEEP task automatically. Wait for Controller `PASS` or
-`REPAIR`.
+ ## 4. Write Boundary
 
----
+ 所有项目写入限于仓库根 `/Users/wb02605050/Documents/ChatGPT/fast_sheep`。
+ 临时文件放 `.tmp/`。以下只读：
 
-## 3. Write Boundary and External References
+ - `~/Documents/ChatGPT/fastwork-rea-batch1/`（REA 证据）
+ - `project/history/`（归档治理）
+ - `reports/`（历史任务报告）
+ - `parity-tests/` 夹具与清单（修改须先在 `parity-tests/evidence-ledger.md`
+   登记证据条目，见宪法第 5 条）
 
-All project-controlled source, configuration, reports, tests, artifacts,
-staging, temporary project files, and persistent state must remain under:
+ 不得采集或写入任何真实店铺凭据、cookie、token、客户数据。
 
-`E:\fast_sheep\`
+ ---
 
-Preferred project temp root:
+ ## 5. 验证标准（macOS 开发机）
 
-`E:\fast_sheep\.tmp\`
+ 1. 每批次结束：`pnpm run typecheck` 全绿 + Python `compileall` 通过，独立 commit
+ 2. 该机 Node v20 不支持 `--experimental-strip-types`；`.ts` 测试经 `--import tsx`
+    运行（需先 `pnpm -r run build`），跑不了就如实标 DEFERRED，不得声称已运行
+ 3. 不得为跑测试擅自升级 Node
+ 4. 删除代码时同步删除其孤儿测试与根 `package.json` 中失效脚本
 
-External reference trees are read-only:
+ ---
 
-- `E:\ai客服数据\FastWork\rebuild\`
-- `E:\ai客服数据\FastWork_asar_extracted\dist\renderer\`
-- `E:\nixiang\` — pending classification; only with explicit task authorization
+ ## 6. 环境与主机判定
 
-Do not modify, rename, delete, or generate into those trees. Do not copy
-credentials, cookies, tokens, passwords, API keys, live seller sessions, or
-private user data.
-
----
-
-## 4. Evidence and Task Discipline
-
-Every material finding must be classified as:
-
-- `CONFIRMED`
-- `INFERRED`
-- `PRODUCT_DECISION_REQUIRED`
-- `BLOCKED`
-- `DEFERRED`
-
-Codex task results are only:
-
-- `COMPLETE`
-- `PARTIAL`
-- `FAIL`
-- `NOT_RUN`
-
-Controller review decisions are only:
-
-- `PASS`
-- `REPAIR`
-
-A Codex `COMPLETE` does not close a task. Only Controller `PASS` closes it.
-
-Do not guess or implement a `PRODUCT_DECISION_REQUIRED` item. Record it and
-complete only independent, safe work.
-
----
-
-## 5. Non-Negotiable Constraints by Reference
-
-The Master Constitution remains authoritative for:
-
-- Desktop security and typed IPC boundaries
-- tenant isolation and authoritative merchant scope
-- SecretStore and credential handling
-- Local-first data, sync, retention, and deletion rules
-- AI automation authority and tool-risk gates
-- platform commercial-compliance gates
-- release, migration, backup, and supply-chain requirements
-
-A current task prompt may narrow scope but must not override the Master.
-To change a Master invariant, use the governance decision process first.
-
-The current review authority is:
-
-- Product identity: `docs/product/FAST_SHEEP_NORTH_STAR.md`
-- Current MVP: `docs/product/PDD_MVP_V1.md`
-- Core architecture: `docs/architecture/AI_CUSTOMER_SERVICE_CORE.md`
-- Adapter architecture: `docs/architecture/PLATFORM_ADAPTER_CONTRACT.md`
-- Execution safety: `docs/architecture/REPLY_AND_ACTION_SAFETY.md`
-- Locked decisions: `project/DECISIONS.md`
-- Current state/authorization: `project/PROJECT_STATE.json`
-- Execution order: reviewed Coding Roadmap
-
-Do not create a second source of truth for these areas.
-
----
-
-## 6. Validation Before COMPLETE
-
-Before claiming `COMPLETE`:
-
-- verify every required output exists
-- run required tests, integration/smoke, and negative tests
-- verify security, tenant, data, and secret boundaries where applicable
-- verify read-only reference trees were not modified
-- write the required task report
-- disclose `INFERRED` findings
-- leave unresolved `PRODUCT_DECISION_REQUIRED` items unimplemented
-- ensure `next_stage_not_executed = true`
-
-If a required path or core validation is missing, do not claim `COMPLETE`.
-
----
-
-## 7. Current Hard Stop
-
-Do not resume `SHEEP-091` or add live execution authorization merely because a
-Roadmap item is next. Current task/live authorization remains exactly as
-recorded in `project/PROJECT_STATE.json`.
-
----
-
-## 8. Development and Testing Environment
-
-**重要：必须根据实际主机判断当前环境，不得沿用过期标签。**
-
-### 8.1 macOS 开发环境（公司电脑）
-
-- **机器：** macOS 公司电脑
-- **项目路径：** `/Users/wb02605050/Documents/ChatGPT/fast_sheep`
-- **该机 Node.js 快照：** v20（Homebrew，实测 v20.20.2）
-- **可用：** TypeScript typecheck、代码编辑、Git、`.mjs` 脚本与 `.mjs` 测试
-- **限制：** 该机 Node 不支持 `--experimental-strip-types`，因此 `.ts` 单元测试无法运行，不得声称其已运行
-- **不得：** 为运行测试而擅自升级 Node.js
-
-### 8.2 Windows 测试环境（个人电脑）
-
-- **机器：** Windows 个人电脑
-- **项目路径：** `E:\fast_sheep\`
-- **该机 Node.js 快照：** v24.13.0
-- **该机 pnpm 快照：** 10.17.1
-- **快照说明：** 以上为该机记录值，不是全局要求；全局以根 `package.json` 的 `engines.node >= 20` 与 `packageManager pnpm@10.17.1` 为准
-- **可用：**
-  - ✅ `pnpm run typecheck`
-  - ✅ `pnpm run test`
-  - ✅ 集成测试
-  - ✅ 完整验证与负向测试
-
-### 8.3 Codex 执行约束
-
-在实际为 macOS 开发环境时：
-
-1. 不要声称测试已运行。
-2. 不要升级 Node.js。
-3. `pnpm run typecheck` 可作为开发阶段的最高验证标准。
-4. 任务报告必须标记 `DEFERRED: 需要在个人电脑上运行测试`。
-
-在实际为 Windows 测试环境时：
-
-1. 按任务要求运行单元、集成和负向测试。
-2. 不得用 `typecheck` 代替 required tests。
-3. 必须报告测试命令、通过数量和失败数量。
-4. 不得把当前 Windows 主机描述成 macOS。
-
-### 8.4 环境识别
-
-每次任务开始时都必须实际执行判定，不得沿用本文或任何历史文档中的“当前环境”标签。
-
-macOS / Linux（POSIX shell）：
-
-```bash
-uname -s                                   # Darwin => macOS 开发环境
-pwd                                        # /Users/... => 公司电脑
-node --version
-pnpm --version
-node --experimental-strip-types -e "1"     # 报错 => 该机不能运行 .ts 单元测试
-```
-
-Windows（PowerShell）：
-
-```powershell
-[System.Environment]::OSVersion.Platform
-(Get-Location).Path                        # E:\fast_sheep => 个人电脑
-node --version
-pnpm --version
-```
-
-判定结果到可声称验证范围的映射：
-
-| 判定结果 | 环境 | 可声称的验证 |
-|---|---|---|
-| `Darwin` + `/Users/...` | macOS 开发环境 | `pnpm run typecheck`、`.mjs` 脚本与 `.mjs` 测试；`.ts` 单元测试标 `DEFERRED: 需要在个人电脑上运行测试` |
-| `Windows` + `E:\fast_sheep` | Windows 测试环境 | 单元、集成、负向测试与完整验证流程 |
-
-**当前环境：不由本文预设，必须按上述命令在实际主机上判定后再声明。**
+ 每次任务开始实际执行 `uname -s`、`pwd`、`node --version` 判定环境，
+ 不得沿用历史文档中的“当前环境”标签。
+ 本机为 macOS 开发环境（Darwin + `/Users/...`）时，可声称的最高验证为
+ typecheck + `.mjs`/tsx 测试；完整 Windows 测试环境（`E:\fast_sheep`，Node 24）
+ 目前不在本线程范围内。

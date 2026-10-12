@@ -149,7 +149,8 @@
     "ci:m12": "pnpm run run:m12-rc-gate"
   },
   "devDependencies": {
-    "ajv": "^8.17.1"
+    "ajv": "^8.17.1",
+    "tsx": "^4.23.15"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
