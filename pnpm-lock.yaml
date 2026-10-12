@@ -47,9 +47,6 @@ importers:
       '@fastwork/product-optimization':
         specifier: workspace:*
         version: link:../../packages/product-optimization
-      '@fastwork/secret-store':
-        specifier: workspace:*
-        version: link:../../packages/secret-store
       '@fastwork/test-kit':
         specifier: workspace:*
         version: link:../../packages/test-kit
@@ -221,15 +218,6 @@ importers:
       '@fastwork/worker-rpc':
         specifier: workspace:*
         version: link:../worker-rpc
-    devDependencies:
-      '@types/node':
-        specifier: ^22.0.0
-        version: 22.20.1
-      typescript:
-        specifier: ^5.5.0
-        version: 5.9.3
-
-  packages/secret-store:
     devDependencies:
       '@types/node':
         specifier: ^22.0.0

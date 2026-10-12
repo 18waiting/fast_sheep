@@ -106,7 +106,8 @@
     `apps/desktop/package.json`（移除 6 个已删包依赖）、`scripts/build-pdd-preload.mjs`
     （去掉平台循环）、`scripts/audit-electron-unpacked.mjs`（5 个 preload 硬校验改为反向校验：
     打包产物中不得再出现 `dist/platform-preloads/`）。
-  - workspace 由 20 个项目收缩为 15 个；`pnpm-lock.yaml` 已刷新。
+  - workspace 由 20 个项目收缩为 14 个（13 packages + apps/desktop）；`pnpm-lock.yaml` 已刷新。
+    〔2026-10-12 更正：本条与 B3 commit message 原写 “15”，实为 14；commit 已推送不改写历史，以本条为准。〕
 - 顺带修复（非拆除项）：`packages/desktop-ipc/tests/channel-registry.test.ts` 在 HEAD 即为红
   （SHEEP-305 新增 `store_knowledge` 后实际 47 条通道 vs 陈旧期望 42），更新为 47/12/24/11
   并补 `store_knowledge` 断言。
@@ -146,6 +147,49 @@
     套件必须走 Node 22（`/opt/homebrew/opt/node@22/bin`）；这不是失败，是主机能力差异。
     本轮实测 Node 22 下 `tests/scripts/create-controlled-pdd-shop.test.mjs` 6/6、
     `tests/secret-scan-rules.test.mjs` 5/5、`packages/secret-store` 9/9 全绿。
+
+### B4 完成记录（2026-10-12）
+
+- 依据：REA 批次 1 证据 —— FastWork 无 OS 级密钥库，凭据面 = `persist:shop-<id>` session 分区
+  cookie + 云端密钥注入；本机为自用（Owner D4），不需要 keychain/DPAPI 抽象层。
+- 已删除：
+  - `packages/secret-store` 整包（`secret-store.ts` / `os-backed.ts` / `in-memory.ts` / `index.ts` /
+    `tests/secret-store.test.mjs` / `package.json` / `tsconfig.json`，共 7 个跟踪文件 + 本地产物目录）。
+    workspace 14 → 13 个项目，`pnpm-lock.yaml` 已刷新。
+    **验收标准达成：`rg "fastwork/secret-store"` 全仓零命中**（仅治理文档中的历史叙述）。
+  - `apps/desktop/src/main/services/pdd-credential-reference-service.ts`（131 行）与
+    `apps/desktop/tests/pdd-credential-reference.test.ts`（11 条用例）。
+    侦察结论：**它是孤儿服务** —— 全仓只有自身测试从 `dist` 引用它，bootstrap / index / IPC /
+    worker-runtime 均无接线。因此拆除顺序表原文的「改造」在本批落为「删除」：
+    凭据引用语义如果 Phase 2 的 REA 证据（session 分区 + 云端注入）确实要求，再按新方案重建，
+    不保留自研的 sha256 派生 key 命名空间 `pdd.secret-ref.v1`。
+  - `apps/desktop/package.json` 的 `@fastwork/secret-store` 依赖；
+    `bootstrap.ts` 中从 `@fastwork/legacy-import` 引入却从未使用的 `SecretStoreAdapter`
+    （即拆除顺序表所说的 “bootstrap 的 stub 接线”）。
+- 明确保留（自含实现，不依赖被删包）：
+  - `packages/legacy-import` 的 `SecretStorePort` + `SecretStoreAdapter`：内存 Map，只存
+    `credential_ref`，明文不落盘；对应 FastWork 的 FastQA18 导入路径。
+  - `services/ai-worker/.../providers/credential_resolver.py`：`credential_ref` → 值解析 +
+    内置 fake store（离线测试用），无外部密钥库依赖。
+- 验证（macOS，`.ts` 走 Node 22 + tsx）：
+  - `pnpm run typecheck` 全绿（13 个项目）。
+  - apps/desktop **556/556**（B3 的 567 减去被删的 11 条凭据引用用例）；platform-pdd 119/119；
+    orchestrator 92/92；persistence 88/88；domain 86/86；worker-rpc 33/33；contracts 20/20；
+    product-optimization 17/17；background-jobs 13/13；desktop-ipc 9/9；feedback 9/9；
+    `tests/scripts/create-controlled-pdd-shop` 6/6；`tests/secret-scan-rules` 5/5。
+  - Python 472/472 + `compileall` OK。
+  - desktop 三包重建成功（`PDD preload bundled`）；Electron 实跑
+    `scripts/verify-platform-native-view-isolation.mjs` **PASS**（3 家 PDD 店，
+    `superseded_view_isolation` / `native_view_bounds_rejected` true，`external_network_calls = 0`）。
+- 残留：
+  - `scripts/run-m11-secret-migration-smoke.mjs` 在本机失败，根因是硬编码 Windows Python 启动器
+    `spawn: { executable: "py", args: ["-3.12", ...] }` → worker 起不来 → `startup_timeout`；
+    与 B4 无关 → `DEFERRED: 需要在个人电脑上运行测试`。B5 需决定：把所有 `py -3.12` 硬编码
+    改成可解析的解释器（`.venv/bin/python` / `python3`），还是随 m11 链一并清理。
+  - `packages/legacy-import/tests/path-safety.test.ts` 2 条 Windows 路径断言仍在 macOS 失败（主机相关）。
+  - `tests/project-state-consistency.test.mjs` + `scripts/validate-project-state.mjs` 旧账本孤儿 → B5。
+  - 凭据面现状（B4 之后）：PDD 登录态只存在于 Electron session 分区，仓库内不再有任何
+    OS 密钥库/落盘密钥路径；导入期的明文只在内存中换成 `credential_ref`。
 
 ---
 

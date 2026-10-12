@@ -22,7 +22,6 @@
     "@fastwork/background-jobs": "workspace:*",
     "@fastwork/product-optimization": "workspace:*",
     "@fastwork/legacy-import": "workspace:*",
-    "@fastwork/secret-store": "workspace:*",
     "@fastwork/test-kit": "workspace:*"
   },
   "devDependencies": {

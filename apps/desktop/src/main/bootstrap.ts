@@ -38,7 +38,7 @@ import { WorkbenchProjectionService, type ProjectionSource } from "./services/wo
 import { SettingsService, type SettingsSource } from "./services/settings-service.js";
 import { BackgroundJobService } from "./services/background-job-service.js";
 import {
-  ImportOrchestrator, PersistenceMainImportWriter, SecretStoreAdapter,
+  ImportOrchestrator, PersistenceMainImportWriter,
   type ImportSessionStorePort, type MainImportWriterPort, type WorkerImportClientPort,
   type DatabaseBackupPort, type VerificationDeps,
 } from "@fastwork/legacy-import";
@@ -663,4 +663,3 @@ class InMemoryMainImportWriter implements MainImportWriterPort {
   hasIdentity(): boolean { return false; }
   foreignRefsValid(): boolean { return true; }
 }
-

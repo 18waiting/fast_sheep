@@ -36,7 +36,12 @@
       "completed": "2026-10-12",
       "verification": "typecheck green (14 projects); apps/desktop 567/567; platform-pdd 119/119; orchestrator 92/92; persistence 88/88; domain 86/86; worker-rpc 33/33; contracts 20/20; background-jobs 13/13; desktop-ipc 9/9; feedback 9/9; product-optimization 17/17; secret-store 9/9; python 472/472 + compileall; electron verify-platform-native-view-isolation PASS (3 PDD shops, external_network_calls=0); 364 files deleted, workspace 20 -> 15 projects"
     },
-    "B4_secret_store_removal": { "status": "PENDING", "authorization": "OWNER_GRANTED_2026-10-12" },
+    "B4_secret_store_removal": {
+      "status": "COMPLETE",
+      "authorization": "OWNER_GRANTED_2026-10-12",
+      "completed": "2026-10-12",
+      "verification": "typecheck green (13 projects); rg \"fastwork/secret-store\" zero hits; apps/desktop 556/556; platform-pdd 119/119; orchestrator 92/92; persistence 88/88; domain 86/86; worker-rpc 33/33; contracts 20/20; product-optimization 17/17; background-jobs 13/13; desktop-ipc 9/9; feedback 9/9; python 472/472 + compileall; electron verify-platform-native-view-isolation PASS (external_network_calls=0); orphan pdd-credential-reference-service deleted; legacy-import self-contained SecretStoreAdapter kept"
+    },
     "B5_artifacts_scripts_cleanup": { "status": "PENDING", "authorization": "OWNER_GRANTED_2026-10-12" }
   },
   "phase2_deferred": ["P2-1 JSON stores", "P2-2 IPC redesign", "P2-3 worker API", "P2-4 RPC constants", "P2-5 sidecar split", "P2-6 faiss/cloud vectors", "P2-7 identityLock rename", "P2-8 parity fixtures", "P2-9 协同/全托管档位"],
@@ -47,8 +52,9 @@
   },
   "environment": {
     "host": "macOS dev box",
-    "node": "v20 (tsx for .ts tests)",
-    "max_verification": "pnpm run typecheck + python compileall"
+    "node": "default v20.20.2 (no node:sqlite); Node 22 at /opt/homebrew/opt/node@22/bin used for .ts/.mjs suites via tsx",
+    "python": ".venv/bin/python (3.12.14); scripts hardcoding `py -3.12` are Windows-only and NOT_RUN here",
+    "max_verification": "pnpm run typecheck + Node 22 unit/integration suites + python unittest/compileall + local-fixture Electron verification (no live platform, no external network)"
   },
   "next_stage_not_executed": false
 }
